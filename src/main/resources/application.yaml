@@ -1,0 +1,31 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  application:
+    name: library-api
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+logging:
+  level:
+    root: INFO
+    com.unichristus: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) [%magenta(%X{traceId})] %msg%n"
+#server:
+#  error:
+#    include-stacktrace: always
+#    include-exception: true
+#    include-message: ALWAYS
+#    include-binding-errors: NEVER
+
+minio:
+  bucket:
+    files: book-files
+    max-size-mb: 10

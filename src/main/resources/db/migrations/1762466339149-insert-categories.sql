@@ -1,0 +1,35 @@
+--liquibase formatted sql
+--changeset author:1762466339149
+-- Inserir categorias padrão
+
+INSERT INTO categories (name, description)
+VALUES ('Ficção Científica', 'Livros de ficção científica, futurismo e tecnologia'),
+       ('Romance', 'Histórias de amor, relacionamentos e drama romântico'),
+       ('Fantasia', 'Mundos mágicos, criaturas fantásticas e aventuras épicas'),
+       ('Suspense e Mistério', 'Thrillers, mistérios e histórias de investigação'),
+       ('Terror', 'Histórias de horror, suspense psicológico e sobrenatural'),
+       ('Biografia e Autobiografia', 'Histórias reais de vidas notáveis e memórias pessoais'),
+       ('Autoajuda', 'Desenvolvimento pessoal, motivação e crescimento'),
+       ('Negócios e Economia', 'Gestão, empreendedorismo, finanças e economia'),
+       ('Tecnologia e Computação', 'Programação, inteligência artificial, ciência da computação'),
+       ('História', 'Eventos históricos, civilizações antigas e análise histórica'),
+       ('Filosofia', 'Pensamento filosófico, ética e reflexões existenciais'),
+       ('Ciências', 'Biologia, física, química e ciências naturais'),
+       ('Psicologia', 'Comportamento humano, mente e processos mentais'),
+       ('Saúde e Bem-estar', 'Medicina, nutrição, fitness e qualidade de vida'),
+       ('Culinária', 'Receitas, gastronomia e técnicas culinárias'),
+       ('Arte e Fotografia', 'Técnicas artísticas, história da arte e fotografia'),
+       ('Poesia', 'Versos, poemas e literatura poética'),
+       ('Literatura Clássica', 'Grandes obras da literatura mundial'),
+       ('Literatura Brasileira', 'Obras de autores brasileiros e cultura nacional'),
+       ('Educação', 'Pedagogia, didática e métodos de ensino'),
+       ('Direito', 'Legislação, jurisprudência e ciências jurídicas'),
+       ('Religião e Espiritualidade', 'Textos religiosos, espiritualidade e fé'),
+       ('Política', 'Teoria política, sistemas de governo e análise política'),
+       ('Viagens', 'Guias de viagem, relatos e cultura de diferentes países'),
+       ('Quadrinhos e Graphic Novels', 'Histórias em quadrinhos e novelas gráficas'),
+       ('Infantil', 'Livros para crianças e jovens leitores'),
+       ('Juvenil', 'Literatura para adolescentes e jovens adultos'),
+       ('Contos', 'Narrativas curtas e coletâneas de contos'),
+       ('Drama', 'Obras dramáticas e literatura teatral'),
+       ('Humor', 'Comédia, sátira e literatura humorística');
