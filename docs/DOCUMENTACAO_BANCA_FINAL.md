@@ -66,6 +66,11 @@ $env:LIBRARY_ADMIN_PASSWORD="sua-senha"
 ./scripts/e2e-smoke.ps1
 ```
 
+Opcional (sem variaveis de ambiente):
+
+- Defina `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` no `backend/.env`
+- Execute `./scripts/e2e-smoke.ps1`
+
 Resultados mais recentes:
 
 - Backend `test + integrationTest`: **PASS**

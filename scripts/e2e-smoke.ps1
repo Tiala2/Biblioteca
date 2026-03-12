@@ -1,13 +1,40 @@
 ﻿param(
     [string]$BaseUrl = "http://localhost:8080",
     [string]$AdminEmail = $env:LIBRARY_ADMIN_EMAIL,
-    [string]$AdminPassword = $env:LIBRARY_ADMIN_PASSWORD
+    [string]$AdminPassword = $env:LIBRARY_ADMIN_PASSWORD,
+    [string]$EnvFilePath = ".\backend\.env"
 )
 
 $ErrorActionPreference = "Stop"
 
 function Write-Step([string]$Message) {
     Write-Host "`n==> $Message" -ForegroundColor Cyan
+}
+
+function Get-DotEnvValue {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Key
+    )
+
+    if (-not (Test-Path -Path $Path)) {
+        return $null
+    }
+
+    $line = Get-Content -Path $Path |
+        Where-Object { $_ -match "^\s*$Key\s*=" } |
+        Select-Object -First 1
+
+    if ([string]::IsNullOrWhiteSpace($line)) {
+        return $null
+    }
+
+    $parts = $line -split "=", 2
+    if ($parts.Count -lt 2) {
+        return $null
+    }
+
+    return $parts[1].Trim().Trim('"').Trim("'")
 }
 
 function Invoke-Api {
@@ -32,8 +59,16 @@ function Invoke-Api {
     return Invoke-RestMethod -Method $Method -Uri $uri -Headers $headers
 }
 
+if ([string]::IsNullOrWhiteSpace($AdminEmail)) {
+    $AdminEmail = Get-DotEnvValue -Path $EnvFilePath -Key "LIBRARY_ADMIN_EMAIL"
+}
+
+if ([string]::IsNullOrWhiteSpace($AdminPassword)) {
+    $AdminPassword = Get-DotEnvValue -Path $EnvFilePath -Key "LIBRARY_ADMIN_PASSWORD"
+}
+
 if ([string]::IsNullOrWhiteSpace($AdminEmail) -or [string]::IsNullOrWhiteSpace($AdminPassword)) {
-    throw "Informe credenciais admin por parametro ou variaveis LIBRARY_ADMIN_EMAIL e LIBRARY_ADMIN_PASSWORD."
+    throw "Informe credenciais admin por parametro, variaveis LIBRARY_ADMIN_EMAIL/LIBRARY_ADMIN_PASSWORD ou no arquivo $EnvFilePath."
 }
 
 Write-Step "Health check"

@@ -36,6 +36,11 @@ $env:LIBRARY_ADMIN_PASSWORD="sua-senha"
 ./scripts/e2e-smoke.ps1
 ```
 
+Opcao alternativa:
+
+- Definir `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` no `backend/.env`
+- Executar `./scripts/e2e-smoke.ps1` sem parametros
+
 ## Contratos de erro para o front
 
 - Erro padrao:

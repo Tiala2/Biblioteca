@@ -43,6 +43,11 @@ Executar:
 ./scripts/e2e-smoke.ps1
 ```
 
+Opcao alternativa:
+
+- Colocar `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` no arquivo `backend/.env`
+- Rodar `./scripts/e2e-smoke.ps1` sem parametros
+
 ## 5) Evidencias minimas para apresentar
 
 - Build verde (`test` + `integrationTest`)
