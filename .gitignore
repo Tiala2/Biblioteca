@@ -7,6 +7,7 @@ backend/bin/
 backend/backups/
 backups/
 backend/.env
+frontend/.env
 
 # Keep Gradle wrapper tracked
 !backend/gradle/wrapper/gradle-wrapper.jar
