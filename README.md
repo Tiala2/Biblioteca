@@ -1,24 +1,48 @@
-# 🧱 Requisitos para Subir o Projeto
+# library-api-projeto
 
-## ⚙️ Pré-requisitos
+Estrutura do repositorio:
 
-Você precisa ter **PostgreSQL** instalado **ou** o **Docker** disponível em sua máquina.
+- `backend/`: API Java (Spring Boot + Gradle + Docker)
+- `frontend/`: aplicacao React (Vite + TypeScript)
+- `docs/`: documentacao e evidencias
+- `scripts/`: automacoes utilitarias
 
-### 🐘 Caso esteja usando PostgreSQL local
-Crie um banco de dados local de acordo com as configurações definidas no arquivo:
-`src/main/resources/application.yaml`
+## Como rodar
 
-### Caso esteja usando Docker
-Na raiz do projeto execute o comando `docker-compose up -d` para subir um container de um banco local PostgreSQL.
+### Tudo junto (recomendado)
 
+```powershell
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1
+```
 
-## Criando Migrations
-Para criar uma migration, vá até o diretório `src/main/resources/db` e faça:
-### Caso esteja no Windows:
-Execute o comando `./generate-migration.ps1 nome-da-migration`
+### Backend
 
-### Caso esteja no Unix:
-Execute o comando `./generate-migration.sh nome-da-migration`
+No Windows (PowerShell):
 
-### Rodando a Migration
-Rode o projeto para executar as migrations automaticamente 
+```powershell
+cd backend
+.\gradlew.bat bootRun
+```
+
+No Linux/macOS:
+
+```bash
+cd backend
+./gradlew bootRun
+```
+
+Com Docker:
+
+```powershell
+cd backend
+powershell -ExecutionPolicy Bypass -File .\scripts\docker-up-safe.ps1 -Mode dev
+```
+
+### Frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```

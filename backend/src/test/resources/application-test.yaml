@@ -1,0 +1,20 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    enabled: true
+
+# JWT for tests (same default as dev)
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000
+
+# Minio (not used in tests, but avoids missing props)
+minio:
+  url: http://localhost:9000
+  access-key: test
+  secret-key: test
+  bucket:
+    files: book-files
+    max-size-mb: 10
