@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -54,5 +55,35 @@ class ForgotPasswordUseCaseTest {
         );
         verify(passwordResetTokenRepository).save(org.mockito.ArgumentMatchers.any());
         verify(mailSenderProvider, never()).getObject();
+    }
+
+    @Test
+    void shouldUseRequestedBaseUrlWhenAllowed() {
+        var useCase = new ForgotPasswordUseCase(userService, passwordResetTokenRepository, mailSenderProvider);
+        ReflectionTestUtils.setField(useCase, "frontendBaseUrl", "http://localhost:5173");
+        ReflectionTestUtils.setField(useCase, "allowedResetBaseUrls", "http://localhost:5173,https://library.school.gov");
+
+        String resolved = ReflectionTestUtils.invokeMethod(
+                useCase,
+                "resolveFrontendBaseUrl",
+                "https://library.school.gov/"
+        );
+
+        org.junit.jupiter.api.Assertions.assertEquals("https://library.school.gov", resolved);
+    }
+
+    @Test
+    void shouldFallbackToConfiguredBaseUrlWhenRequestedBaseUrlIsNotAllowed() {
+        var useCase = new ForgotPasswordUseCase(userService, passwordResetTokenRepository, mailSenderProvider);
+        ReflectionTestUtils.setField(useCase, "frontendBaseUrl", "http://library.local");
+        ReflectionTestUtils.setField(useCase, "allowedResetBaseUrls", "http://library.local");
+
+        String resolved = ReflectionTestUtils.invokeMethod(
+                useCase,
+                "resolveFrontendBaseUrl",
+                "https://external.example.com"
+        );
+
+        org.junit.jupiter.api.Assertions.assertEquals("http://library.local", resolved);
     }
 }

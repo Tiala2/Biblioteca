@@ -49,7 +49,7 @@ public class AuthenticationController {
     })
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
-        forgotPasswordUseCase.sendRecoveryEmail(request.email());
+        forgotPasswordUseCase.sendRecoveryEmail(request.email(), request.baseUrl());
         return ResponseEntity.noContent().build();
     }
 

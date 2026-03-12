@@ -35,7 +35,10 @@ export function ForgotPasswordPage() {
     setError("");
     setLoading(true);
     try {
-      await api.post("/api/v1/auth/forgot-password", { email });
+      await api.post("/api/v1/auth/forgot-password", {
+        email,
+        baseUrl: window.location.origin,
+      });
       setSubmitted(true);
       showToast("Solicitacao registrada. Verifique seu email.", "info");
     } catch (err: unknown) {

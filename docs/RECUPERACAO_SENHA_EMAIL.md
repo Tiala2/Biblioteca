@@ -14,6 +14,9 @@ Este projeto suporta 2 modos:
 Crie `backend/.env` (copie de `.env.example`) e preencha:
 
 ```env
+APP_FRONTEND_BASE_URL=https://library.seudominio.com
+APP_FRONTEND_ALLOWED_RESET_BASE_URLS=https://library.seudominio.com,http://localhost:5173,http://127.0.0.1:5173
+
 MAIL_HOST=smtp-relay.brevo.com
 MAIL_PORT=587
 MAIL_USERNAME=SEU_LOGIN_SMTP_BREVO
@@ -45,7 +48,10 @@ No modo `brevo`, abra `backend/.env` e substitua os campos `CHANGE_ME`.
 ## 3) Testar endpoint
 
 ```powershell
-$payload = @{ email = "tialanobre23@gmail.com" } | ConvertTo-Json
+$payload = @{
+  email = "tialanobre23@gmail.com"
+  baseUrl = "https://library.seudominio.com"
+} | ConvertTo-Json
 Invoke-RestMethod -Method POST `
   -Uri "http://localhost:8080/api/v1/auth/forgot-password" `
   -ContentType "application/json" `
@@ -53,6 +59,11 @@ Invoke-RestMethod -Method POST `
 ```
 
 Esperado: HTTP `204`.
+
+Observacao:
+- `baseUrl` e opcional.
+- Quando enviado, o backend so usa esse valor se ele estiver em `APP_FRONTEND_ALLOWED_RESET_BASE_URLS`.
+- Se nao enviar `baseUrl` (ou se for invalido), o backend usa `APP_FRONTEND_BASE_URL`.
 
 ## 4) Validar entrega
 

@@ -15,13 +15,17 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.UUID;
 
 @Slf4j
 @UseCase
 @RequiredArgsConstructor
 public class ForgotPasswordUseCase {
+    private static final String DEFAULT_FRONTEND_BASE_URL = "http://localhost:5173";
 
     private final UserService userService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
@@ -33,10 +37,13 @@ public class ForgotPasswordUseCase {
     @Value("${app.frontend.base-url:http://localhost:5173}")
     private String frontendBaseUrl;
 
+    @Value("${app.frontend.allowed-reset-base-urls:http://localhost:5173}")
+    private String allowedResetBaseUrls;
+
     @Value("${app.auth.reset-password.token-expiration-minutes:30}")
     private long tokenExpirationMinutes;
 
-    public void sendRecoveryEmail(String email) {
+    public void sendRecoveryEmail(String email, String requestedBaseUrl) {
         Optional<User> userOpt = userService.findUserByEmail(email);
         if (userOpt.isEmpty()) {
             log.info("Recuperacao de senha solicitada para email nao cadastrado: {}", email);
@@ -52,7 +59,7 @@ public class ForgotPasswordUseCase {
                 .token(token)
                 .expiresAt(now.plusMinutes(tokenExpirationMinutes))
                 .build());
-        String resetLink = frontendBaseUrl + "/reset-password/" + token;
+        String resetLink = resolveFrontendBaseUrl(requestedBaseUrl) + "/reset-password/" + token;
 
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
@@ -71,6 +78,55 @@ public class ForgotPasswordUseCase {
         } catch (Exception ex) {
             log.warn("Falha ao enviar email de recuperacao para {}: {}", user.getEmail(), ex.getMessage());
         }
+    }
+
+    public void sendRecoveryEmail(String email) {
+        sendRecoveryEmail(email, null);
+    }
+
+    private String resolveFrontendBaseUrl(String requestedBaseUrl) {
+        String fallbackBaseUrl = normalizeBaseUrl(frontendBaseUrl).orElse(DEFAULT_FRONTEND_BASE_URL);
+        Optional<String> requested = normalizeBaseUrl(requestedBaseUrl);
+        if (requested.isEmpty()) {
+            return fallbackBaseUrl;
+        }
+
+        Set<String> allowedBaseUrls = parseAllowedBaseUrls(allowedResetBaseUrls);
+        if (allowedBaseUrls.contains(requested.get())) {
+            return requested.get();
+        }
+
+        log.warn("Base URL de recuperacao ignorada por nao estar permitida: {}", requested.get());
+        return fallbackBaseUrl;
+    }
+
+    private Set<String> parseAllowedBaseUrls(String rawAllowedBaseUrls) {
+        if (rawAllowedBaseUrls == null || rawAllowedBaseUrls.isBlank()) {
+            return Set.of();
+        }
+
+        return Arrays.stream(rawAllowedBaseUrls.split(","))
+                .map(String::trim)
+                .map(this::normalizeBaseUrl)
+                .flatMap(Optional::stream)
+                .collect(Collectors.toSet());
+    }
+
+    private Optional<String> normalizeBaseUrl(String rawBaseUrl) {
+        if (rawBaseUrl == null || rawBaseUrl.isBlank()) {
+            return Optional.empty();
+        }
+
+        String value = rawBaseUrl.trim();
+        if (!(value.startsWith("http://") || value.startsWith("https://"))) {
+            return Optional.empty();
+        }
+
+        while (value.endsWith("/")) {
+            value = value.substring(0, value.length() - 1);
+        }
+
+        return Optional.of(value);
     }
 
     private String buildPlainBody(String name, String resetLink) {

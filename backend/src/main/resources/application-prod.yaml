@@ -33,5 +33,6 @@ minio:
 app:
   frontend:
     base-url: ${APP_FRONTEND_BASE_URL:http://localhost:5173}
+    allowed-reset-base-urls: ${APP_FRONTEND_ALLOWED_RESET_BASE_URLS:${APP_FRONTEND_BASE_URL:http://localhost:5173}}
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
