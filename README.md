@@ -1,48 +1,41 @@
 # library-api-projeto
 
-Estrutura do repositorio:
+Projeto de biblioteca virtual publica com foco em engajamento, com backend em Spring Boot e frontend em React.
 
-- `backend/`: API Java (Spring Boot + Gradle + Docker)
-- `frontend/`: aplicacao React (Vite + TypeScript)
-- `docs/`: documentacao e evidencias
-- `scripts/`: automacoes utilitarias
+## Estrutura
 
-## Como rodar
+- `backend/`: API Java, banco, Docker e scripts operacionais
+- `frontend/`: interface web em React + TypeScript
+- `docs/`: guias, evidencias e material de apoio
+- `scripts/`: validacoes e automacoes do projeto
 
-### Tudo junto (recomendado)
+## Fluxo recomendado para avaliacao
+
+Use o guia principal:
+
+- [Guia de Avaliacao do Projeto](C:\workspace\library-api-projeto\docs\GUIA_AVALIACAO_PROJETO.md)
+
+## Subida rapida
 
 ```powershell
 cd C:\workspace\library-api-projeto
 powershell -ExecutionPolicy Bypass -File .\start-all.ps1
 ```
 
-### Backend
+## URLs principais
 
-No Windows (PowerShell):
+- Frontend: `http://localhost:5173`
+- API: `http://localhost:8080`
+- Swagger: `http://localhost:8080/swagger-ui/index.html`
+- Health: `http://localhost:8080/actuator/health`
+- Mailpit: `http://localhost:8025`
 
-```powershell
-cd backend
-.\gradlew.bat bootRun
-```
-
-No Linux/macOS:
-
-```bash
-cd backend
-./gradlew bootRun
-```
-
-Com Docker:
+## Validacoes
 
 ```powershell
-cd backend
-powershell -ExecutionPolicy Bypass -File .\scripts\docker-up-safe.ps1 -Mode dev
+cd C:\workspace\library-api-projeto
+.\scripts\e2e-smoke.ps1
+.\scripts\route-checklist-exec.ps1
 ```
 
-### Frontend
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
+Os scripts podem usar `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` definidos no `backend/.env`.
