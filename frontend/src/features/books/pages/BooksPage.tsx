@@ -150,8 +150,8 @@ export function BooksPage() {
     <section>
       <div className="section-head">
         <div>
-          <h2>Escolha sua próxima jornada</h2>
-          <p className="section-sub">Busque livros do acervo local e importado da Open Library em tempo real.</p>
+          <h2>Escolha sua proxima jornada</h2>
+          <p className="section-sub">Busque livros do acervo local e importado em tempo real.</p>
         </div>
         <span className="kpi">{books.length} nesta pagina</span>
       </div>
@@ -159,29 +159,29 @@ export function BooksPage() {
       <article className="card">
         <form className="filters-grid" onSubmit={onSearch}>
           <input
-            placeholder="Pesquisar por título (ex: Hobbit, Duna, Clean Code)"
+            placeholder="Pesquisar por titulo (ex: Hobbit, Duna, Clean Code)"
             value={queryInput}
             onChange={(event) => setQueryInput(event.target.value)}
           />
           <input
             type="number"
             min={1}
-            placeholder="Mín páginas"
+            placeholder="Min paginas"
             value={minPagesInput}
             onChange={(event) => setMinPagesInput(event.target.value)}
           />
           <input
             type="number"
             min={1}
-            placeholder="Máx páginas"
+            placeholder="Max paginas"
             value={maxPagesInput}
             onChange={(event) => setMaxPagesInput(event.target.value)}
           />
           <select value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
-            <option value="BEST_RATED">Melhor avaliação</option>
-            <option value="NEW_RELEASES">Lançamentos</option>
-            <option value="TRENDING_WEEK">Tendência semanal</option>
-            <option value="TRENDING_MONTH">Tendência mensal</option>
+            <option value="BEST_RATED">Melhor avaliacao</option>
+            <option value="NEW_RELEASES">Lancamentos</option>
+            <option value="TRENDING_WEEK">Tendencia semanal</option>
+            <option value="TRENDING_MONTH">Tendencia mensal</option>
           </select>
           <label className="check-inline">
             <input
@@ -208,18 +208,15 @@ export function BooksPage() {
           <article key={book.id} className="card">
             {!book.hasPdf && <span className="import-badge">IMPORTADO</span>}
             <h3>{book.title}</h3>
-            <p>{book.numberOfPages} páginas</p>
-            <small>{book.hasPdf ? "PDF disponível" : "Sem PDF (metadado importado)"}</small>
+            <p>{book.numberOfPages} paginas</p>
+            <small>{book.hasPdf ? "PDF disponivel" : "Sem PDF (metadado importado)"}</small>
             <div className="card-actions">
-              {book.hasPdf ? (
-                <Link to={`/books/${book.id}/read`} className="btn-link">
-                  Ler no app
-                </Link>
-              ) : (
-                <Link to={`/books/${book.id}/read`} className="btn-muted btn-link">
-                  Ler no app
-                </Link>
-              )}
+              <Link
+                to={`/books/${book.id}/read`}
+                className={book.hasPdf ? "btn-link" : "btn-muted btn-link"}
+              >
+                {book.hasPdf ? "Ler no app" : "Abrir detalhes"}
+              </Link>
             </div>
           </article>
         ))}
@@ -230,14 +227,14 @@ export function BooksPage() {
           Anterior
         </button>
         <span className="section-sub">
-          Página {applied.page + 1} de {Math.max(totalPages, 1)}
+          Pagina {applied.page + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
           className="btn-muted"
           disabled={loading || applied.page + 1 >= Math.max(totalPages, 1)}
           onClick={() => goToPage(applied.page + 1)}
         >
-          Próxima
+          Proxima
         </button>
       </div>
 
@@ -247,4 +244,3 @@ export function BooksPage() {
     </section>
   );
 }
-

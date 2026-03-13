@@ -82,11 +82,7 @@ export function GoalsPage() {
     event.preventDefault();
     if (!headers) return;
     try {
-      await api.put(
-        "/api/v1/users/me/goals",
-        { period, targetPages: Number(targetPages) },
-        { headers }
-      );
+      await api.put("/api/v1/users/me/goals", { period, targetPages: Number(targetPages) }, { headers });
       await loadAll(period);
       showToast("Meta atualizada com sucesso.", "success");
     } catch {
@@ -95,26 +91,29 @@ export function GoalsPage() {
     }
   };
 
+  const progressPercent = Math.max(0, Math.min(100, Number(goal?.progressPercent ?? 0)));
+
   return (
     <section className="grid">
       <article className="card hero">
         <h2>Transforme leitura em constancia</h2>
-        <p>Defina, acompanhe e conclua metas sem pressão de competição.</p>
+        <p>Defina, acompanhe e conclua metas com um painel simples e claro.</p>
         <p className="quote">Streak atual: {streak} dia(s) consecutivos</p>
       </article>
 
       <article className="card">
         <div className="section-head">
           <h3>Configurar meta</h3>
+          <span className="kpi">{period === "WEEKLY" ? "Semanal" : "Mensal"}</span>
         </div>
         <form onSubmit={onSubmit}>
-          <label>Período</label>
+          <label>Periodo</label>
           <select value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
             <option value="WEEKLY">Semanal</option>
             <option value="MONTHLY">Mensal</option>
           </select>
 
-          <label>Páginas alvo</label>
+          <label>Paginas alvo</label>
           <input
             type="number"
             min={1}
@@ -128,17 +127,17 @@ export function GoalsPage() {
       <article className="card">
         <div className="section-head">
           <h3>Resumo</h3>
-          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} págs` : "Sem meta ativa"}</span>
+          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} pags` : "Sem meta ativa"}</span>
         </div>
         {goal ? (
           <>
             <p>Status: {goal.status}</p>
-            <p>Jornada atual: {goal.progressPages} páginas lidas de {goal.targetPages} planejadas.</p>
-            <p>Restante: {goal.remainingPages} páginas</p>
+            <p>Leitura acumulada: {goal.progressPages} paginas de {goal.targetPages} planejadas.</p>
+            <p>Restante: {goal.remainingPages} paginas</p>
             <p>Expira em: {goal.expiresInDays} dia(s)</p>
-            <p>Ritmo: {goal.paceWarning ? "Ajuste necessário" : "Bom ritmo"}</p>
+            <p>Ritmo: {goal.paceWarning ? "Ajuste necessario" : "Bom ritmo"}</p>
             <div className="progress-track" aria-hidden="true">
-              <div className="progress-fill" style={{ width: `${Math.max(0, Math.min(100, Number(goal.progressPercent)))}%` }} />
+              <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
           </>
         ) : (
@@ -149,20 +148,27 @@ export function GoalsPage() {
       <article className="card">
         <div className="section-head">
           <h3>Alertas</h3>
+          <span className="kpi">{alerts.length} aviso(s)</span>
         </div>
         {alerts.length === 0 && <p className="section-sub">Sem alertas no momento.</p>}
-        <ul>
-          {alerts.map((alert) => (
-            <li key={alert.id}>
-              [{alert.severity}] {alert.message}
-              {alert.suggestedDailyPages ? ` (${alert.suggestedDailyPages} págs/dia)` : ""}
-            </li>
-          ))}
-        </ul>
+        {alerts.length > 0 && (
+          <ul className="stacked-list">
+            {alerts.map((alert) => (
+              <li key={alert.id} className="stacked-list-item">
+                <div>
+                  <strong>{alert.severity}</strong>
+                  <p className="section-sub">{alert.message}</p>
+                </div>
+                {alert.suggestedDailyPages ? (
+                  <span className="kpi">{alert.suggestedDailyPages} pags/dia</span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
       </article>
 
       {error && <article className="card error">{error}</article>}
     </section>
   );
 }
-
