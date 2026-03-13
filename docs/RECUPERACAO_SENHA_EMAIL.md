@@ -44,6 +44,7 @@ cd C:\workspace\library-api-projeto\backend
 ```
 
 No modo `brevo`, abra `backend/.env` e substitua os campos `CHANGE_ME`.
+O script preserva as demais configuracoes do `.env` e altera apenas as chaves relacionadas ao envio de email.
 
 ## 3) Testar endpoint
 
