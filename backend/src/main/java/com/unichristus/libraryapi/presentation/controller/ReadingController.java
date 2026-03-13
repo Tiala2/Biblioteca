@@ -33,13 +33,13 @@ public class ReadingController {
     private final ReadingUseCase readingUseCase;
     private final ReadingNarrativeInsightUseCase readingNarrativeInsightUseCase;
 
-    @Operation(summary = "Sincronizar leitura", description = "Sincroniza o progresso de leitura de um livro para o usuário logado")
+    @Operation(summary = "Sincronizar leitura", description = "Sincroniza o progresso de leitura de um livro para o usuario logado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Leitura atualizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
-            @ApiResponse(responseCode = "404", description = "Esse livro não tem pdf disponível"),
-            @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
-            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados invalidos"),
+            @ApiResponse(responseCode = "404", description = "Esse livro nao tem pdf disponivel"),
+            @ApiResponse(responseCode = "404", description = "Livro nao encontrado"),
+            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado"),
     })
     @PostMapping
     public ResponseEntity<ReadingResponse> syncReading(
@@ -49,11 +49,11 @@ public class ReadingController {
         return ResponseEntity.ok(readingUseCase.syncReading(userId, request.bookId(), request.currentPage()));
     }
 
-    @Operation(summary = "Obter estado da trama", description = "Retorna beat narrativo, personagens conhecidos, quizzes e conquistas para a pÃ¡gina atual")
+    @Operation(summary = "Obter estado da trama", description = "Retorna beat narrativo, personagens conhecidos, quizzes e conquistas para a pagina atual")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Insights narrativos retornados com sucesso"),
-            @ApiResponse(responseCode = "400", description = "PÃ¡gina atual invÃ¡lida"),
-            @ApiResponse(responseCode = "404", description = "Livro ou usuÃ¡rio nÃ£o encontrado")
+            @ApiResponse(responseCode = "400", description = "Pagina atual invalida"),
+            @ApiResponse(responseCode = "404", description = "Livro ou usuario nao encontrado")
     })
     @GetMapping("/{bookId}/narrative")
     public ResponseEntity<ReadingNarrativeInsightResponse> getNarrativeInsight(
