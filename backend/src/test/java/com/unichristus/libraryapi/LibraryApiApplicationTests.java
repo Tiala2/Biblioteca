@@ -1,10 +1,8 @@
 package com.unichristus.libraryapi;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class LibraryApiApplicationTests {
+class LibraryApiApplicationTests extends AbstractIntegrationTest {
 
     @Test
     void contextLoads() {
