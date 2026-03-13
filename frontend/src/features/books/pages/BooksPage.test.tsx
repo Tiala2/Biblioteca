@@ -37,7 +37,8 @@ describe("BooksPage", () => {
     expect(await screen.findByText("Livro A")).toBeInTheDocument();
     expect(screen.getByText("IMPORTADO")).toBeInTheDocument();
     expect(screen.getByText("Livro B")).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Ler no app" })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: "Ler no app" })).toHaveLength(1);
+    expect(screen.getByRole("link", { name: "Abrir detalhes" })).toBeInTheDocument();
   });
 
   it("deve atualizar busca ao clicar em pesquisar", async () => {
@@ -58,7 +59,7 @@ describe("BooksPage", () => {
       </MemoryRouter>
     );
 
-    const input = await screen.findByPlaceholderText(/Pesquisar por t[ií]tulo/i);
+    const input = await screen.findByPlaceholderText(/Pesquisar por titulo/i);
     await user.type(input, "Hobbit");
     await user.click(screen.getByRole("button", { name: "Pesquisar" }));
 
