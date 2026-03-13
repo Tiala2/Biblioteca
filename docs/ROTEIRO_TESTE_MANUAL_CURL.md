@@ -132,4 +132,4 @@ Registre prints (ou saída JSON) destes itens:
 2. Progresso de leitura (`/api/v1/readings`)
 3. Endpoint narrativo (`/api/v1/readings/{bookId}/narrative`)
 4. Criação de livro admin (`/api/admin/books`)
-5. Relatório automatizado: `docs/ROUTE_COVERAGE_REPORT.md` com `PASS=56` e `FAIL=0`
+5. Relatorio automatizado: `docs/generated/ROUTE_COVERAGE_REPORT.md` com `PASS=56` e `FAIL=0`

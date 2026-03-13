@@ -40,3 +40,6 @@ frontend/coverage/
 
 # ===== VS Code =====
 .vscode/
+
+# ===== Generated docs / reports =====
+docs/generated/

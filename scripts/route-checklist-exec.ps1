@@ -2,7 +2,7 @@
     [string]$BaseUrl = "http://localhost:8080",
     [string]$AdminEmail = $env:LIBRARY_ADMIN_EMAIL,
     [string]$AdminPassword = $env:LIBRARY_ADMIN_PASSWORD,
-    [string]$ReportPath = "docs/ROUTE_COVERAGE_REPORT.md",
+    [string]$ReportPath = "docs/generated/ROUTE_COVERAGE_REPORT.md",
     [string]$EnvFilePath = ".\backend\.env"
 )
 
@@ -349,6 +349,11 @@ if ($failed -gt 0) {
     foreach ($f in ($rows | Where-Object { $_.Result -eq "FAIL" })) {
         $lines += "- $($f.Method) $($f.Path): status=$($f.Status), esperado=$($f.Expected)"
     }
+}
+
+$reportDirectory = Split-Path -Path $ReportPath -Parent
+if (-not [string]::IsNullOrWhiteSpace($reportDirectory) -and -not (Test-Path -Path $reportDirectory)) {
+    New-Item -ItemType Directory -Path $reportDirectory -Force | Out-Null
 }
 
 Set-Content -Path $ReportPath -Value ($lines -join "`r`n") -Encoding UTF8

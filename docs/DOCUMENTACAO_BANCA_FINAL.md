@@ -117,7 +117,7 @@ Cobertura de integracao inclui:
 - `docs/UAT_CHECKLIST.md`
 - `docs/READY_CHECKLIST_BANCA.md`
 - `docs/EVIDENCIA_SMOKE_EXECUCAO.md`
-- `docs/ROUTE_COVERAGE_REPORT.md`
+- `docs/generated/ROUTE_COVERAGE_REPORT.md`
 - `docs/EVIDENCIAS_FRONT_BANCA.md`
 - `docs/API_FRONT_READINESS.md`
 - `docs/openapi-lock.json`
@@ -139,4 +139,4 @@ Cobertura de integracao inclui:
 
 ## 9. Proximo passo tecnico recomendado
 
-- Fechar warning de deprecacao de `@MockBean` nos testes para manter compatibilidade futura do Spring Boot.
+- Warnings de deprecacao de `@MockBean` em testes principais foram tratados para reduzir ruido tecnico na manutencao.

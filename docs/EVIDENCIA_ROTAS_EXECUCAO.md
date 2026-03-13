@@ -11,7 +11,7 @@ Data/Hora: 2026-03-02 (America/Sao_Paulo)
 ```powershell
 $env:LIBRARY_ADMIN_EMAIL="seu-admin@email.com"
 $env:LIBRARY_ADMIN_PASSWORD="sua-senha"
-./scripts/route-checklist-exec.ps1 -BaseUrl "http://localhost:8080" -ReportPath "docs/ROUTE_COVERAGE_REPORT.md"
+./scripts/route-checklist-exec.ps1 -BaseUrl "http://localhost:8080" -ReportPath "docs/generated/ROUTE_COVERAGE_REPORT.md"
 ./scripts/e2e-smoke.ps1 -BaseUrl "http://localhost:8080" -AdminEmail "seu-admin@email.com" -AdminPassword "sua-senha"
 ```
 
@@ -20,9 +20,10 @@ $env:LIBRARY_ADMIN_PASSWORD="sua-senha"
 - Smoke E2E de API: concluido com sucesso
 
 ## Arquivos gerados
-- `docs/ROUTE_COVERAGE_REPORT.md`
+- `docs/generated/ROUTE_COVERAGE_REPORT.md`
 - `docs/EVIDENCIA_ROTAS_EXECUCAO.md`
 
 ## Observacoes
 - O checklist cobre rotas publicas, autenticadas (USER) e administrativas (ADMIN), incluindo cenarios de negocio com respostas esperadas `400/404/409` em casos de duplicidade, FK e recursos inexistentes.
 - A API foi validada na porta `8080`, conforme padrao do projeto.
+- O relatorio detalhado de rotas fica fora do Git para nao sujar o historico a cada execucao.

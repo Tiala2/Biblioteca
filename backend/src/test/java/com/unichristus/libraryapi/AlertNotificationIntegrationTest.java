@@ -4,8 +4,8 @@ import com.unichristus.libraryapi.application.notification.ReadingAlertNotifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.UUID;
 
@@ -18,11 +18,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AlertNotificationIntegrationTest extends IntegrationTestSupport {
 
-    @MockBean
+    @MockitoBean
     private ReadingAlertNotifier readingAlertNotifier;
 
     @Test
-    @DisplayName("Deve notificar quando usuário define meta e possui alertsOptIn=true")
+    @DisplayName("Deve notificar quando usuario define meta e possui alertsOptIn=true")
     void shouldNotifyOnGoalUpsertWhenOptInEnabled() throws Exception {
         String token = registerAndLogin("AlertGoal", "alert-goal" + System.nanoTime() + "@email.com", "StrongPass123");
 
@@ -59,7 +59,7 @@ class AlertNotificationIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("Não deve notificar quando usuário desativa alertsOptIn")
+    @DisplayName("Nao deve notificar quando usuario desativa alertsOptIn")
     void shouldNotNotifyWhenOptInDisabled() throws Exception {
         String token = registerAndLogin("AlertOff", "alert-off" + System.nanoTime() + "@email.com", "StrongPass123");
         UUID bookId = fetchAnyBookId(token);

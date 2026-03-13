@@ -4,7 +4,7 @@ import com.unichristus.libraryapi.infrastructure.integration.openlibrary.OpenLib
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -19,7 +19,7 @@ class BookRealtimeSearchIntegrationTest extends IntegrationTestSupport {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private OpenLibraryClient openLibraryClient;
 
     @Test
@@ -41,8 +41,8 @@ class BookRealtimeSearchIntegrationTest extends IntegrationTestSupport {
                         .param("q", query)
                         .param("page", "0")
                         .param("size", "12")
-                .param("includeWithoutPdf", "true")
-                .param("sort", "BEST_RATED"))
+                        .param("includeWithoutPdf", "true")
+                        .param("sort", "BEST_RATED"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].title").value("Realtime Unique Book"));
     }

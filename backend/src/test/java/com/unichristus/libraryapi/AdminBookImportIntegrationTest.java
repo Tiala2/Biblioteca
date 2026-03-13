@@ -3,8 +3,8 @@ package com.unichristus.libraryapi;
 import com.unichristus.libraryapi.infrastructure.integration.openlibrary.OpenLibraryClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminBookImportIntegrationTest extends IntegrationTestSupport {
 
-    @MockBean
+    @MockitoBean
     private OpenLibraryClient openLibraryClient;
 
     @Test
@@ -86,7 +86,7 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("Deve bloquear importação para usuário sem role ADMIN")
+    @DisplayName("Deve bloquear importacao para usuario sem role ADMIN")
     void shouldForbidImportForRegularUser() throws Exception {
         String token = registerAndLogin("Regular Import", "regular-import" + System.nanoTime() + "@email.com", "StrongPass123");
 

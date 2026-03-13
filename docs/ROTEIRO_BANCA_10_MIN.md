@@ -1,66 +1,78 @@
-# Roteiro de Apresentação da Banca (8-10 min)
+# Roteiro de Apresentacao do Projeto (8-10 min)
 
-## 1. Abertura (1 min)
+Este roteiro foi pensado para a avaliacao pratica do sistema `Library`, priorizando demonstracao funcional, clareza tecnica e baixo risco durante a execucao ao vivo.
 
-Objetivo do projeto:
+## 1. Abertura (40-60 s)
 
-"O Library é uma API de biblioteca virtual pública com foco em engajamento de leitura, unindo catálogo digital e mecanismos como metas, alertas, streak, badges e leaderboard."
+Mensagem sugerida:
 
-## 2. Arquitetura e stack (1 min)
+"O Library e uma biblioteca virtual publica com foco em engajamento. Alem do catalogo digital, o sistema incentiva a continuidade da leitura por meio de progresso, metas, badges, ranking e area administrativa."
 
-Pontos para explicar:
+## 2. Prova de ambiente no ar (40-60 s)
 
-1. Arquitetura em camadas: Presentation, Application, Domain e Infrastructure.
-2. Stack: Java 21, Spring Boot, Security JWT, JPA, PostgreSQL, Liquibase, OpenAPI.
-3. Deploy: Docker Compose com `api`, `library`, `minio`, `mailpit`.
+Abrir rapidamente:
 
-## 3. Prova de ambiente no ar (1 min)
+1. `http://localhost:5173` para mostrar o frontend
+2. `http://localhost:8080/actuator/health` para mostrar a API saudavel
+3. `http://localhost:8080/swagger-ui/index.html` para mostrar a documentacao da API
+4. `http://localhost:8025` se quiser demonstrar o fluxo de e-mail em ambiente local
 
-Abrir no navegador:
+## 3. Fluxo de usuario (3-4 min)
 
-1. `http://localhost:8080/actuator/health`
-2. `http://localhost:8080/swagger-ui/index.html`
-3. `http://localhost:8025` (Mailpit)
+Ordem recomendada:
 
-## 4. Demo funcional (4-5 min)
+1. Fazer login com usuario comum
+2. Mostrar a home com resumo de leitura, metas e engajamento
+3. Ir para o catalogo e buscar um livro
+4. Abrir a experiencia de leitura
+5. Atualizar a pagina atual e salvar o progresso
+6. Mostrar quiz, contexto narrativo e conquistas
+7. Ir para metas e mostrar acompanhamento automatico
+8. Mostrar favoritos, badges ou leaderboard
 
-### 4.1 Fluxo de usuário
+Mensagem tecnica curta:
 
-1. Cadastro: `POST /api/v1/users`
-2. Login: `POST /api/v1/auth/login`
-3. Busca de livros: `GET /api/v1/books`
-4. Definir meta: `PUT /api/v1/users/me/goals`
-5. Registrar leitura: `POST /api/v1/readings`
-6. Consultar alertas: `GET /api/v1/users/me/alerts`
-7. Mostrar e-mail gerado no Mailpit (`Library - Alertas de leitura`)
+"Aqui mostramos os requisitos centrais do projeto: autenticacao, consulta de livros, progresso, metas e engajamento."
 
-### 4.2 Fluxo admin
+## 4. Fluxo administrativo (2-3 min)
 
-1. Login admin
-2. Acessar endpoint admin (ex.: `GET /api/admin/tags`)
-3. Mostrar que operações administrativas exigem `ROLE_ADMIN`
+Ordem recomendada:
 
-## 5. Qualidade e rastreabilidade (1 min)
+1. Entrar com conta admin
+2. Abrir o painel administrativo
+3. Mostrar indicadores do sistema
+4. Criar ou listar categoria
+5. Criar ou listar tag
+6. Criar ou listar colecao
+7. Criar livro ou importar da Open Library
+8. Mostrar badges e controle administrativo
+
+Mensagem tecnica curta:
+
+"A area admin concentra o controle do catalogo e dos elementos de engajamento, respeitando autorizacao por perfil."
+
+## 5. Evidencias tecnicas (1-2 min)
 
 Mostrar rapidamente:
 
-1. [MATRIZ_RASTREABILIDADE.md](C:/workspace/library-api-projeto/docs/MATRIZ_RASTREABILIDADE.md)
-2. [UAT_CHECKLIST.md](C:/workspace/library-api-projeto/docs/UAT_CHECKLIST.md)
-3. [EVIDENCIA_SMOKE_EXECUCAO.md](C:/workspace/library-api-projeto/docs/EVIDENCIA_SMOKE_EXECUCAO.md)
-4. [EVIDENCIA_ROTAS_EXECUCAO.md](C:/workspace/library-api-projeto/docs/EVIDENCIA_ROTAS_EXECUCAO.md)
+1. [GUIA_AVALIACAO_PROJETO.md](C:\workspace\library-api-projeto\docs\GUIA_AVALIACAO_PROJETO.md)
+2. [EVIDENCIA_SMOKE_EXECUCAO.md](C:\workspace\library-api-projeto\docs\EVIDENCIA_SMOKE_EXECUCAO.md)
+3. [EVIDENCIA_ROTAS_EXECUCAO.md](C:\workspace\library-api-projeto\docs\EVIDENCIA_ROTAS_EXECUCAO.md)
+4. `docs/generated/ROUTE_COVERAGE_REPORT.md`
 
-Mensagem:
+Mensagem sugerida:
 
-"Cada requisito do template foi ligado a endpoint e teste, com evidência objetiva de execução."
+"O projeto nao ficou apenas implementado. Tambem deixamos validacoes automatizadas para smoke, rotas principais e testes de frontend e backend."
 
-## 6. Encerramento (30-45 s)
+## 6. Fechamento (30-40 s)
 
-Conclusão sugerida:
+Mensagem sugerida:
 
-"O projeto atende os objetivos de segurança, gestão de catálogo e engajamento de leitura. A solução está operacional em Docker, com testes automatizados e comprovação prática dos fluxos principais."
+"O sistema esta operacional, com autenticacao, catalogo, leitura, metas, engajamento e administracao. Alem da entrega funcional, a aplicacao foi organizada com testes, scripts de validacao e documentacao de apoio."
 
 ## 7. Plano B (se algo falhar ao vivo)
 
-1. Se token expirar: refazer login.
-2. Se porta ocupada: `docker compose up -d`.
-3. Se e-mail não aparecer no instante: atualizar Mailpit após 2-3 segundos.
+1. Se o token expirar, refazer login
+2. Se a API nao responder, executar `powershell -ExecutionPolicy Bypass -File .\start-all.ps1`
+3. Se o e-mail nao aparecer na hora, atualizar o Mailpit apos alguns segundos
+4. Se algum fluxo visual falhar, mostrar Swagger + evidencias automatizadas

@@ -88,7 +88,7 @@ cd C:\workspace\library-api-projeto
 
 Gera o relatorio em:
 
-- [ROUTE_COVERAGE_REPORT.md](C:\workspace\library-api-projeto\docs\ROUTE_COVERAGE_REPORT.md)
+- `docs/generated/ROUTE_COVERAGE_REPORT.md`
 
 ### Seed para demonstracao do frontend
 
@@ -120,3 +120,4 @@ cd C:\workspace\library-api-projeto
 - [GUIA_AVALIACAO_PROJETO.md](C:\workspace\library-api-projeto\docs\GUIA_AVALIACAO_PROJETO.md)
 - [RECUPERACAO_SENHA_EMAIL.md](C:\workspace\library-api-projeto\docs\RECUPERACAO_SENHA_EMAIL.md)
 - [ROTEIRO_TESTE_MANUAL_CURL.md](C:\workspace\library-api-projeto\docs\ROTEIRO_TESTE_MANUAL_CURL.md)
+- [ROTEIRO_BANCA_10_MIN.md](C:\workspace\library-api-projeto\docs\ROTEIRO_BANCA_10_MIN.md)
