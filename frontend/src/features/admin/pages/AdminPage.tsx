@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -28,6 +28,7 @@ const BADGE_CODES = [
   "TOTAL_BOOKS_10",
   "TOTAL_PAGES_1000",
 ] as const;
+
 const BADGE_CRITERIA = ["FIRST_BOOK", "STREAK_DAYS", "TOTAL_BOOKS", "TOTAL_PAGES"] as const;
 
 export function AdminPage() {
@@ -83,6 +84,7 @@ export function AdminPage() {
         api.get<Page<Collection>>("/api/v1/collections?page=0&size=30"),
         api.get<Page<Badge>>("/api/admin/badges?page=0&size=30&sort=code", { headers }),
       ]);
+
       setMetrics(m.data);
       setCategories(c.data);
       setTags(t.data);
@@ -90,9 +92,11 @@ export function AdminPage() {
       setCollections(col.data.content);
       setBadges(bd.data.content);
       setError("");
+
       if (!collectionBookId && b.data.content.length > 0) {
         setCollectionBookId(b.data.content[0].id);
       }
+
       if (!uploadBookId && b.data.content.length > 0) {
         setUploadBookId(b.data.content[0].id);
       }
@@ -106,8 +110,8 @@ export function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth?.token]);
 
-  const createCategory = async (e: FormEvent) => {
-    e.preventDefault();
+  const createCategory = async (event: FormEvent) => {
+    event.preventDefault();
     if (!headers) return;
     if (!categoryName.trim()) {
       showToast("Informe o nome da categoria.", "error");
@@ -128,8 +132,8 @@ export function AdminPage() {
     }
   };
 
-  const createTag = async (e: FormEvent) => {
-    e.preventDefault();
+  const createTag = async (event: FormEvent) => {
+    event.preventDefault();
     if (!headers) return;
     if (!tagName.trim()) {
       showToast("Informe o nome da tag.", "error");
@@ -149,8 +153,8 @@ export function AdminPage() {
     }
   };
 
-  const createCollection = async (e: FormEvent) => {
-    e.preventDefault();
+  const createCollection = async (event: FormEvent) => {
+    event.preventDefault();
     if (!headers || !collectionBookId) return;
     if (!collectionTitle.trim()) {
       showToast("Informe o titulo da colecao.", "error");
@@ -179,8 +183,8 @@ export function AdminPage() {
     }
   };
 
-  const createBook = async (e: FormEvent) => {
-    e.preventDefault();
+  const createBook = async (event: FormEvent) => {
+    event.preventDefault();
     if (!headers) return;
     if (!bookTitle.trim() || !bookIsbn.trim()) {
       showToast("Informe titulo e ISBN do livro.", "error");
@@ -215,8 +219,8 @@ export function AdminPage() {
     }
   };
 
-  const createBadge = async (e: FormEvent) => {
-    e.preventDefault();
+  const createBadge = async (event: FormEvent) => {
+    event.preventDefault();
     if (!headers) return;
     if (!badgeName.trim()) {
       showToast("Informe o nome do badge.", "error");
@@ -246,8 +250,8 @@ export function AdminPage() {
     }
   };
 
-  const importBooks = async (e: FormEvent) => {
-    e.preventDefault();
+  const importBooks = async (event: FormEvent) => {
+    event.preventDefault();
     if (!headers) return;
     if (!importQuery.trim()) {
       showToast("Informe o termo de busca para importacao.", "error");
@@ -278,8 +282,8 @@ export function AdminPage() {
     }
   };
 
-  const uploadPdf = async (e: FormEvent) => {
-    e.preventDefault();
+  const uploadPdf = async (event: FormEvent) => {
+    event.preventDefault();
     if (!headers) return;
     if (!uploadBookId || !uploadFile) {
       showToast("Selecione livro e arquivo PDF.", "error");
@@ -305,16 +309,16 @@ export function AdminPage() {
     }
   };
 
-  const deleteByPath = async (key: string, path: string, msg: string, successMsg: string) => {
+  const deleteByPath = async (key: string, path: string, message: string, successMessage: string) => {
     if (!headers) return;
     setDeletingKey(key);
     try {
       await api.delete(path, { headers });
       await loadAll();
-      showToast(successMsg, "success");
+      showToast(successMessage, "success");
     } catch {
-      setError(msg);
-      showToast(msg, "error");
+      setError(message);
+      showToast(message, "error");
     } finally {
       setDeletingKey(null);
     }
@@ -322,48 +326,103 @@ export function AdminPage() {
 
   return (
     <section className="grid">
-      <article className="card" id="admin-metrics">
-        <h2>Painel Admin</h2>
-        {metrics && (
-          <>
-            <p>Usuarios: {metrics.totalUsers}</p>
-            <p>Livros: {metrics.totalBooks}</p>
-            <p>Reviews: {metrics.totalReviews}</p>
-            <p>Favoritos: {metrics.totalFavorites}</p>
-            <p>Colecoes: {metrics.totalCollections}</p>
-            <p>Tags: {metrics.totalTags}</p>
-          </>
+      <article className="card hero" id="admin-metrics">
+        <div className="section-head">
+          <div>
+            <h2>Painel administrativo</h2>
+            <p>
+              Aqui ficam as acoes que mais ajudam na avaliacao do projeto:
+              cadastro de catalogo, badges, importacao e upload de PDF.
+            </p>
+          </div>
+          <span className="kpi">Perfil ADMIN</span>
+        </div>
+        <div className="card-actions">
+          <a className="btn-link" href="#admin-books">Livros</a>
+          <a className="btn-link" href="#admin-categories">Categorias</a>
+          <a className="btn-link" href="#admin-badges">Badges</a>
+        </div>
+      </article>
+
+      <article className="card">
+        <div className="section-head">
+          <h3>Indicadores do sistema</h3>
+          <span className="kpi">Visao geral</span>
+        </div>
+        {metrics ? (
+          <div className="stats-grid">
+            <div className="stat-box">
+              <strong>{metrics.totalUsers}</strong>
+              <span>usuarios</span>
+            </div>
+            <div className="stat-box">
+              <strong>{metrics.totalBooks}</strong>
+              <span>livros</span>
+            </div>
+            <div className="stat-box">
+              <strong>{metrics.totalReviews}</strong>
+              <span>reviews</span>
+            </div>
+            <div className="stat-box">
+              <strong>{metrics.totalFavorites}</strong>
+              <span>favoritos</span>
+            </div>
+            <div className="stat-box">
+              <strong>{metrics.totalCollections}</strong>
+              <span>colecoes</span>
+            </div>
+            <div className="stat-box">
+              <strong>{metrics.totalTags}</strong>
+              <span>tags</span>
+            </div>
+          </div>
+        ) : (
+          <p className="section-sub">Carregando indicadores...</p>
         )}
         {error && <p className="error">{error}</p>}
       </article>
 
       <article className="card" id="admin-categories">
-        <h3>Categorias</h3>
-        <form onSubmit={createCategory}>
-          <input placeholder="Nome da categoria" value={categoryName} onChange={(e) => setCategoryName(e.target.value)} required />
+        <div className="section-head">
+          <h3>Categorias</h3>
+          <span className="kpi">{categories.length} cadastrada(s)</span>
+        </div>
+        <form className="admin-form" onSubmit={createCategory}>
+          <input
+            placeholder="Nome da categoria"
+            value={categoryName}
+            onChange={(event) => setCategoryName(event.target.value)}
+            required
+          />
           <input
             placeholder="Descricao"
             value={categoryDescription}
-            onChange={(e) => setCategoryDescription(e.target.value)}
+            onChange={(event) => setCategoryDescription(event.target.value)}
           />
-          <button type="submit" disabled={creatingCategory}>{creatingCategory ? "Criando..." : "Criar categoria"}</button>
+          <button type="submit" disabled={creatingCategory}>
+            {creatingCategory ? "Criando..." : "Criar categoria"}
+          </button>
         </form>
-        <ul>
-          {categories.slice(0, 6).map((c) => (
-            <li key={c.id}>
-              {c.name}{" "}
+        <ul className="stacked-list">
+          {categories.slice(0, 6).map((category) => (
+            <li key={category.id} className="stacked-list-item">
+              <div>
+                <strong>{category.name}</strong>
+                <p className="section-sub">{category.description || "Sem descricao"}</p>
+              </div>
               <button
+                className="btn-muted"
                 onClick={() =>
                   deleteByPath(
-                    `category-${c.id}`,
-                    `/api/admin/categories/${c.id}`,
+                    `category-${category.id}`,
+                    `/api/admin/categories/${category.id}`,
                     "Falha ao deletar categoria.",
                     "Categoria removida com sucesso."
                   )
                 }
-                disabled={deletingKey === `category-${c.id}`}
+                disabled={deletingKey === `category-${category.id}`}
               >
-                {deletingKey === `category-${c.id}` ? "Excluindo..." : "Excluir"}
+                {deletingKey === `category-${category.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </li>
           ))}
@@ -371,27 +430,35 @@ export function AdminPage() {
       </article>
 
       <article className="card">
-        <h3>Tags</h3>
-        <form onSubmit={createTag}>
-          <input placeholder="Nome da tag" value={tagName} onChange={(e) => setTagName(e.target.value)} required />
-          <button type="submit" disabled={creatingTag}>{creatingTag ? "Criando..." : "Criar tag"}</button>
+        <div className="section-head">
+          <h3>Tags</h3>
+          <span className="kpi">{tags.length} cadastrada(s)</span>
+        </div>
+        <form className="admin-form" onSubmit={createTag}>
+          <input placeholder="Nome da tag" value={tagName} onChange={(event) => setTagName(event.target.value)} required />
+          <button type="submit" disabled={creatingTag}>
+            {creatingTag ? "Criando..." : "Criar tag"}
+          </button>
         </form>
-        <ul>
-          {tags.slice(0, 8).map((t) => (
-            <li key={t.id}>
-              {t.name}{" "}
+        <ul className="stacked-list">
+          {tags.slice(0, 8).map((tag) => (
+            <li key={tag.id} className="stacked-list-item">
+              <div>
+                <strong>{tag.name}</strong>
+              </div>
               <button
+                className="btn-muted"
                 onClick={() =>
                   deleteByPath(
-                    `tag-${t.id}`,
-                    `/api/admin/tags/${t.id}`,
+                    `tag-${tag.id}`,
+                    `/api/admin/tags/${tag.id}`,
                     "Falha ao deletar tag.",
                     "Tag removida com sucesso."
                   )
                 }
-                disabled={deletingKey === `tag-${t.id}`}
+                disabled={deletingKey === `tag-${tag.id}`}
               >
-                {deletingKey === `tag-${t.id}` ? "Excluindo..." : "Excluir"}
+                {deletingKey === `tag-${tag.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </li>
           ))}
@@ -399,18 +466,21 @@ export function AdminPage() {
       </article>
 
       <article className="card">
-        <h3>Colecoes</h3>
-        <form onSubmit={createCollection}>
+        <div className="section-head">
+          <h3>Colecoes</h3>
+          <span className="kpi">{collections.length} cadastrada(s)</span>
+        </div>
+        <form className="admin-form" onSubmit={createCollection}>
           <input
             placeholder="Titulo da colecao"
             value={collectionTitle}
-            onChange={(e) => setCollectionTitle(e.target.value)}
+            onChange={(event) => setCollectionTitle(event.target.value)}
             required
           />
-          <select value={collectionBookId} onChange={(e) => setCollectionBookId(e.target.value)}>
-            {books.map((b) => (
-              <option value={b.id} key={b.id}>
-                {b.title}
+          <select value={collectionBookId} onChange={(event) => setCollectionBookId(event.target.value)}>
+            {books.map((book) => (
+              <option value={book.id} key={book.id}>
+                {book.title}
               </option>
             ))}
           </select>
@@ -418,22 +488,25 @@ export function AdminPage() {
             {creatingCollection ? "Criando..." : "Criar colecao"}
           </button>
         </form>
-        <ul>
-          {collections.slice(0, 6).map((c) => (
-            <li key={c.id}>
-              {c.title}{" "}
+        <ul className="stacked-list">
+          {collections.slice(0, 6).map((collection) => (
+            <li key={collection.id} className="stacked-list-item">
+              <div>
+                <strong>{collection.title}</strong>
+              </div>
               <button
+                className="btn-muted"
                 onClick={() =>
                   deleteByPath(
-                    `collection-${c.id}`,
-                    `/api/admin/collections/${c.id}`,
+                    `collection-${collection.id}`,
+                    `/api/admin/collections/${collection.id}`,
                     "Falha ao deletar colecao.",
                     "Colecao removida com sucesso."
                   )
                 }
-                disabled={deletingKey === `collection-${c.id}`}
+                disabled={deletingKey === `collection-${collection.id}`}
               >
-                {deletingKey === `collection-${c.id}` ? "Excluindo..." : "Excluir"}
+                {deletingKey === `collection-${collection.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </li>
           ))}
@@ -441,111 +514,152 @@ export function AdminPage() {
       </article>
 
       <article className="card" id="admin-books">
-        <h3>Livros</h3>
-        <form onSubmit={createBook}>
-          <input placeholder="Titulo do livro" value={bookTitle} onChange={(e) => setBookTitle(e.target.value)} required />
-          <input placeholder="ISBN" value={bookIsbn} onChange={(e) => setBookIsbn(e.target.value)} required />
-          <input type="number" min={1} value={bookPages} onChange={(e) => setBookPages(Number(e.target.value))} required />
-          <input type="date" value={bookDate} onChange={(e) => setBookDate(e.target.value)} required />
-          <button type="submit" disabled={creatingBook}>{creatingBook ? "Criando..." : "Criar livro"}</button>
-        </form>
-        <hr />
-        <h4>Upload de PDF</h4>
-        <form onSubmit={uploadPdf}>
-          <select value={uploadBookId} onChange={(e) => setUploadBookId(e.target.value)} required>
-            {books.map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.title}
-              </option>
-            ))}
-          </select>
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
-            required
-          />
-          <button type="submit" disabled={uploadingPdf || books.length === 0}>
-            {uploadingPdf ? "Enviando..." : "Enviar PDF"}
-          </button>
-        </form>
-        <hr />
-        <h4>Importar da Open Library</h4>
-        <form onSubmit={importBooks}>
-          <input
-            placeholder="Termo de busca"
-            value={importQuery}
-            onChange={(e) => setImportQuery(e.target.value)}
-            required
-          />
-          <input
-            type="number"
-            min={1}
-            max={20}
-            value={importPages}
-            onChange={(e) => setImportPages(Number(e.target.value))}
-            required
-          />
-          <input
-            type="number"
-            min={1}
-            max={100}
-            value={importPageSize}
-            onChange={(e) => setImportPageSize(Number(e.target.value))}
-            required
-          />
-          <button type="submit" disabled={importingBooks}>
-            {importingBooks ? "Importando..." : "Importar livros"}
-          </button>
-        </form>
-        {importResult && (
-          <p>
-            Importação: {importResult.imported} importados, {importResult.skipped} pulados, {importResult.failed} falhas
-            (lidos: {importResult.fetched})
-          </p>
-        )}
+        <div className="section-head">
+          <h3>Livros</h3>
+          <span className="kpi">{books.length} carregado(s)</span>
+        </div>
+
+        <div className="admin-subsection">
+          <h4>Criar livro</h4>
+          <form className="admin-form" onSubmit={createBook}>
+            <input placeholder="Titulo do livro" value={bookTitle} onChange={(event) => setBookTitle(event.target.value)} required />
+            <input placeholder="ISBN" value={bookIsbn} onChange={(event) => setBookIsbn(event.target.value)} required />
+            <input type="number" min={1} value={bookPages} onChange={(event) => setBookPages(Number(event.target.value))} required />
+            <input type="date" value={bookDate} onChange={(event) => setBookDate(event.target.value)} required />
+            <button type="submit" disabled={creatingBook}>
+              {creatingBook ? "Criando..." : "Criar livro"}
+            </button>
+          </form>
+        </div>
+
+        <div className="admin-subsection">
+          <h4>Upload de PDF</h4>
+          <form className="admin-form" onSubmit={uploadPdf}>
+            <select value={uploadBookId} onChange={(event) => setUploadBookId(event.target.value)} required>
+              {books.map((book) => (
+                <option key={book.id} value={book.id}>
+                  {book.title}
+                </option>
+              ))}
+            </select>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(event) => setUploadFile(event.target.files?.[0] ?? null)}
+              required
+            />
+            <button type="submit" disabled={uploadingPdf || books.length === 0}>
+              {uploadingPdf ? "Enviando..." : "Enviar PDF"}
+            </button>
+          </form>
+        </div>
+
+        <div className="admin-subsection">
+          <div className="section-head">
+            <h4>Importar da Open Library</h4>
+            <span className="kpi">Acervo externo</span>
+          </div>
+          <form className="admin-form" onSubmit={importBooks}>
+            <input
+              placeholder="Termo de busca"
+              value={importQuery}
+              onChange={(event) => setImportQuery(event.target.value)}
+              required
+            />
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={importPages}
+              onChange={(event) => setImportPages(Number(event.target.value))}
+              required
+            />
+            <input
+              type="number"
+              min={1}
+              max={100}
+              value={importPageSize}
+              onChange={(event) => setImportPageSize(Number(event.target.value))}
+              required
+            />
+            <button type="submit" disabled={importingBooks}>
+              {importingBooks ? "Importando..." : "Importar livros"}
+            </button>
+          </form>
+          {importResult && (
+            <div className="stats-grid">
+              <div className="stat-box">
+                <strong>{importResult.imported}</strong>
+                <span>importados</span>
+              </div>
+              <div className="stat-box">
+                <strong>{importResult.skipped}</strong>
+                <span>pulados</span>
+              </div>
+              <div className="stat-box">
+                <strong>{importResult.failed}</strong>
+                <span>falhas</span>
+              </div>
+              <div className="stat-box">
+                <strong>{importResult.fetched}</strong>
+                <span>lidos</span>
+              </div>
+            </div>
+          )}
+        </div>
       </article>
 
       <article className="card" id="admin-badges">
-        <h3>Badges</h3>
-        <form onSubmit={createBadge}>
-          <select value={badgeCode} onChange={(e) => setBadgeCode(e.target.value as (typeof BADGE_CODES)[number])}>
-            {BADGE_CODES.map((c) => (
-              <option key={c} value={c}>
-                {c}
+        <div className="section-head">
+          <h3>Badges</h3>
+          <span className="kpi">{badges.length} configurado(s)</span>
+        </div>
+        <form className="admin-form" onSubmit={createBadge}>
+          <select value={badgeCode} onChange={(event) => setBadgeCode(event.target.value as (typeof BADGE_CODES)[number])}>
+            {BADGE_CODES.map((code) => (
+              <option key={code} value={code}>
+                {code}
               </option>
             ))}
           </select>
-          <input value={badgeName} onChange={(e) => setBadgeName(e.target.value)} placeholder="Nome do badge" />
+          <input value={badgeName} onChange={(event) => setBadgeName(event.target.value)} placeholder="Nome do badge" />
           <select
             value={badgeCriteria}
-            onChange={(e) => setBadgeCriteria(e.target.value as (typeof BADGE_CRITERIA)[number])}
+            onChange={(event) => setBadgeCriteria(event.target.value as (typeof BADGE_CRITERIA)[number])}
           >
-            {BADGE_CRITERIA.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {BADGE_CRITERIA.map((criteria) => (
+              <option key={criteria} value={criteria}>
+                {criteria}
               </option>
             ))}
           </select>
-          <input value={badgeValue} onChange={(e) => setBadgeValue(e.target.value)} placeholder="Valor criterio" required />
-          <button type="submit" disabled={creatingBadge}>{creatingBadge ? "Criando..." : "Criar badge"}</button>
+          <input value={badgeValue} onChange={(event) => setBadgeValue(event.target.value)} placeholder="Valor criterio" required />
+          <button type="submit" disabled={creatingBadge}>
+            {creatingBadge ? "Criando..." : "Criar badge"}
+          </button>
         </form>
-        <ul>
-          {badges.slice(0, 6).map((b) => (
-            <li key={b.id}>
-              {b.code}{" "}
+        <ul className="stacked-list">
+          {badges.slice(0, 6).map((badge) => (
+            <li key={badge.id} className="stacked-list-item">
+              <div>
+                <strong>{badge.name}</strong>
+                <p className="section-sub">
+                  {badge.code} | {badge.criteriaType} | {badge.criteriaValue ?? "sem valor"}
+                </p>
+              </div>
               <button
+                className="btn-muted"
                 onClick={() =>
                   deleteByPath(
-                    `badge-${b.id}`,
-                    `/api/admin/badges/${b.id}`,
+                    `badge-${badge.id}`,
+                    `/api/admin/badges/${badge.id}`,
                     "Falha ao deletar badge.",
                     "Badge removido com sucesso."
                   )
                 }
-                disabled={deletingKey === `badge-${b.id}`}
+                disabled={deletingKey === `badge-${badge.id}`}
               >
-                {deletingKey === `badge-${b.id}` ? "Excluindo..." : "Excluir"}
+                {deletingKey === `badge-${badge.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </li>
           ))}
@@ -554,4 +668,3 @@ export function AdminPage() {
     </section>
   );
 }
-
