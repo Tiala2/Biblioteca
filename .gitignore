@@ -6,8 +6,13 @@ backend/out/
 backend/bin/
 backend/backups/
 backups/
-backend/.env
-frontend/.env
+
+# Ignore environment files with secrets, but keep documented examples tracked
+backend/.env*
+frontend/.env*
+!backend/.env.example
+!backend/.env.brevo.example
+!frontend/.env.example
 
 # Keep Gradle wrapper tracked
 !backend/gradle/wrapper/gradle-wrapper.jar

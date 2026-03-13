@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $false)]
-  [string]$Email = "tialanobre23@gmail.com"
+  [string]$Email = "seu-usuario@email.com"
 )
 
 $ErrorActionPreference = "Stop"
@@ -38,4 +38,3 @@ try {
   Write-Host "Mailpit is not reachable at http://localhost:8025." -ForegroundColor Yellow
   Write-Host "If you are using Brevo/Gmail SMTP, this is expected."
 }
-

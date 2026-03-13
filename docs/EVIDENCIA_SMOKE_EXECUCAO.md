@@ -6,7 +6,7 @@ Data/Hora: 2026-02-27 13:37:07 -03:00
 
 ```powershell
 docker compose up -d --build
-./scripts/e2e-smoke.ps1 -AdminEmail "tialanobre23@gmail.com" -AdminPassword "******"
+./scripts/e2e-smoke.ps1 -AdminEmail "seu-admin@email.com" -AdminPassword "******"
 ```
 
 ## Estado dos containers

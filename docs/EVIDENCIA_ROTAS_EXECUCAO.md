@@ -9,10 +9,10 @@ Data/Hora: 2026-03-02 (America/Sao_Paulo)
 
 ## Comandos executados
 ```powershell
-$env:LIBRARY_ADMIN_EMAIL="tialanobre23@gmail.com"
-$env:LIBRARY_ADMIN_PASSWORD="858733"
+$env:LIBRARY_ADMIN_EMAIL="seu-admin@email.com"
+$env:LIBRARY_ADMIN_PASSWORD="sua-senha"
 ./scripts/route-checklist-exec.ps1 -BaseUrl "http://localhost:8080" -ReportPath "docs/ROUTE_COVERAGE_REPORT.md"
-./scripts/e2e-smoke.ps1 -BaseUrl "http://localhost:8080" -AdminEmail "tialanobre23@gmail.com" -AdminPassword "858733"
+./scripts/e2e-smoke.ps1 -BaseUrl "http://localhost:8080" -AdminEmail "seu-admin@email.com" -AdminPassword "sua-senha"
 ```
 
 ## Resultado

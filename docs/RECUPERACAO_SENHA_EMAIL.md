@@ -49,7 +49,7 @@ No modo `brevo`, abra `backend/.env` e substitua os campos `CHANGE_ME`.
 
 ```powershell
 $payload = @{
-  email = "tialanobre23@gmail.com"
+  email = "seu-usuario@email.com"
   baseUrl = "https://library.seudominio.com"
 } | ConvertTo-Json
 Invoke-RestMethod -Method POST `
@@ -74,5 +74,5 @@ Observacao:
 
 ```powershell
 cd C:\workspace\library-api-projeto\backend
-.\scripts\test-forgot-password.ps1 -Email "tialanobre23@gmail.com"
+.\scripts\test-forgot-password.ps1 -Email "seu-usuario@email.com"
 ```

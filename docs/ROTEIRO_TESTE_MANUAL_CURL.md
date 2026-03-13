@@ -9,7 +9,7 @@ Data de referência: `2026-03-02`
 ```bash
 curl -X POST "http://localhost:8080/api/v1/auth/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"tialanobre23@gmail.com","password":"858733"}'
+  -d '{"email":"seu-admin@email.com","password":"sua-senha"}'
 ```
 Esperado: `200 OK` com `token`, `type`, `userId`, `email`.
 
