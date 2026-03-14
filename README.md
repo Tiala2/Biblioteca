@@ -14,6 +14,7 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 Use o guia principal:
 
 - [Guia de Avaliacao do Projeto](C:\workspace\library-api-projeto\docs\GUIA_AVALIACAO_PROJETO.md)
+- [Architecture Overview](C:\workspace\library-api-projeto\docs\ARCHITECTURE_OVERVIEW.md)
 
 ## Subida rapida
 

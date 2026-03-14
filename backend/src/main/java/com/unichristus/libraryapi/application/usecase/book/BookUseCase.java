@@ -163,9 +163,9 @@ public class BookUseCase {
                     bookService.upsertOpenLibraryBook(
                             doc.title().trim(),
                             isbn,
-                            sanitizePages(doc.numberOfPagesMedian()),
-                            sanitizePublicationDate(doc.firstPublishYear()),
-                            doc.coverId() == null ? null : "https://covers.openlibrary.org/b/id/%d-L.jpg".formatted(doc.coverId()));
+                            OpenLibraryBookMetadataSupport.sanitizePages(doc.numberOfPagesMedian()),
+                            OpenLibraryBookMetadataSupport.sanitizePublicationDate(doc.firstPublishYear()),
+                            OpenLibraryBookMetadataSupport.coverUrlFrom(doc.coverId()));
                     imported++;
                 } catch (Exception ex) {
                     // Skip duplicates/conflicts and continue processing remaining docs.
@@ -238,24 +238,6 @@ public class BookUseCase {
         return core + checkDigit;
     }
 
-    private Integer sanitizePages(Integer value) {
-        if (value == null || value < 1) {
-            return 1;
-        }
-        return value;
-    }
-
-    private LocalDate sanitizePublicationDate(Integer firstPublishYear) {
-        if (firstPublishYear == null || firstPublishYear < 1000) {
-            return LocalDate.of(1970, 1, 1);
-        }
-        int currentYear = LocalDate.now().getYear();
-        if (firstPublishYear >= currentYear) {
-            return LocalDate.now().minusDays(1);
-        }
-        return LocalDate.of(firstPublishYear, 1, 1);
-    }
-
     private void validateFilters(Integer minPages, Integer maxPages, LocalDate publicationFrom, LocalDate publicationTo) {
         if (minPages != null && minPages < 0) {
             throw new DomainException(DomainError.SEARCH_FILTER_INVALID, "minPages não pode ser negativo");
@@ -316,6 +298,7 @@ public class BookUseCase {
                 request.isbn(),
                 request.numberOfPages(),
                 request.publicationDate(),
+                request.coverUrl(),
                 request.available(),
                 categories
         );
@@ -474,3 +457,4 @@ public class BookUseCase {
         return new UserPreferences(preferredCategories, preferredTags);
     }
 }
+

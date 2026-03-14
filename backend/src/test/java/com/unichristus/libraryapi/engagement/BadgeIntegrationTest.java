@@ -15,7 +15,7 @@ import com.unichristus.libraryapi.domain.reading.ReadingStatus;
 import com.unichristus.libraryapi.domain.user.PasswordHasher;
 import com.unichristus.libraryapi.domain.user.User;
 import com.unichristus.libraryapi.domain.user.UserService;
-import com.unichristus.libraryapi.infrastructure.security.Role;
+import com.unichristus.libraryapi.domain.user.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -204,7 +204,7 @@ class BadgeIntegrationTest {
                 .name("User " + prefix)
                 .email(email)
                 .password(passwordHasher.hash("password"))
-                .role(Role.USER)
+                .role(UserRole.USER)
                 .active(true)
                 .leaderboardOptIn(false)
                 .build();
@@ -251,3 +251,4 @@ class BadgeIntegrationTest {
         }
     }
 }
+

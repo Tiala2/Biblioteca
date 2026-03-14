@@ -3,7 +3,7 @@ package com.unichristus.libraryapi;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.unichristus.libraryapi.infrastructure.persistence.user.PasswordResetTokenJpaRepository;
 import com.unichristus.libraryapi.infrastructure.persistence.user.UserJpaRepository;
-import com.unichristus.libraryapi.infrastructure.security.Role;
+import com.unichristus.libraryapi.domain.user.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -61,8 +61,9 @@ public abstract class IntegrationTestSupport extends AbstractIntegrationTest {
     protected String registerPromoteAndLoginAdmin(String name, String email, String password) throws Exception {
         registerUser(name, email, password);
         var user = userJpaRepository.findByEmail(email).orElseThrow();
-        user.setRole(Role.ADMIN);
+        user.setRole(UserRole.ADMIN);
         userJpaRepository.save(user);
         return loginAndGetToken(email, password);
     }
 }
+

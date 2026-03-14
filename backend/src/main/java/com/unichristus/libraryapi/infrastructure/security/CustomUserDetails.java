@@ -1,5 +1,6 @@
 package com.unichristus.libraryapi.infrastructure.security;
 
+import com.unichristus.libraryapi.domain.user.UserRole;
 import com.unichristus.libraryapi.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
     private String email;
     private String password;
     private boolean active;
-    private Role role;
+    private UserRole role;
 
     public static CustomUserDetails from(User user) {
         return new CustomUserDetails(

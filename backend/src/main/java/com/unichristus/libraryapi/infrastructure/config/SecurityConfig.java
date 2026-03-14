@@ -1,7 +1,7 @@
 package com.unichristus.libraryapi.infrastructure.config;
 
 import com.unichristus.libraryapi.infrastructure.security.JwtAuthenticationFilter;
-import com.unichristus.libraryapi.infrastructure.security.Role;
+import com.unichristus.libraryapi.domain.user.UserRole;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                     // Admin area requires ADMIN role (Spring adds the ROLE_ prefix automatically)
-                    .requestMatchers(ServiceURI.ADMIN + "/**").hasRole(Role.ADMIN.name())
+                    .requestMatchers(ServiceURI.ADMIN + "/**").hasRole(UserRole.ADMIN.name())
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 ServiceURI.AUTH_RESOURCE + "/**",

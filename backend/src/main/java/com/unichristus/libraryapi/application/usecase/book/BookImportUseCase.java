@@ -11,7 +11,6 @@ import com.unichristus.libraryapi.infrastructure.storage.MinioFileStorageService
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -69,9 +68,9 @@ public class BookImportUseCase {
                         continue;
                     }
 
-                    Integer pages = sanitizePages(doc.numberOfPagesMedian());
-                    LocalDate publicationDate = sanitizePublicationDate(doc.firstPublishYear());
-                    String coverUrl = doc.coverId() == null ? null : "https://covers.openlibrary.org/b/id/%d-L.jpg".formatted(doc.coverId());
+                    Integer pages = OpenLibraryBookMetadataSupport.sanitizePages(doc.numberOfPagesMedian());
+                    var publicationDate = OpenLibraryBookMetadataSupport.sanitizePublicationDate(doc.firstPublishYear());
+                    String coverUrl = OpenLibraryBookMetadataSupport.coverUrlFrom(doc.coverId());
 
                     Book createdBook = bookService.upsertOpenLibraryBook(
                             doc.title().trim(),
@@ -110,26 +109,6 @@ public class BookImportUseCase {
             }
         }
         return Optional.empty();
-    }
-
-    private Integer sanitizePages(Integer value) {
-        if (value == null || value < 1) {
-            return 1;
-        }
-        return value;
-    }
-
-    private LocalDate sanitizePublicationDate(Integer firstPublishYear) {
-        if (firstPublishYear == null || firstPublishYear < 1000) {
-            return LocalDate.of(1970, 1, 1);
-        }
-
-        int currentYear = LocalDate.now().getYear();
-        if (firstPublishYear >= currentYear) {
-            return LocalDate.now().minusDays(1);
-        }
-
-        return LocalDate.of(firstPublishYear, 1, 1);
     }
 
     private void addMessage(List<String> messages, String message) {

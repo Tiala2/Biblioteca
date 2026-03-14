@@ -7,14 +7,14 @@ import com.unichristus.libraryapi.application.dto.response.UserResponse;
 import com.unichristus.libraryapi.application.mapper.UserResponseMapper;
 import com.unichristus.libraryapi.application.dto.response.BadgeResponse;
 import com.unichristus.libraryapi.domain.engagement.BadgeService;
+import com.unichristus.libraryapi.domain.user.PasswordHasher;
 import com.unichristus.libraryapi.domain.user.User;
+import com.unichristus.libraryapi.domain.user.UserRole;
 import com.unichristus.libraryapi.domain.user.UserService;
 import com.unichristus.libraryapi.domain.user.exception.EmailConflictException;
-import com.unichristus.libraryapi.infrastructure.security.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class UserUseCase {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordHasher passwordHasher;
     private final BadgeService badgeService;
 
     public UserResponse getUserById(UUID userId) {
@@ -39,11 +39,12 @@ public class UserUseCase {
                 User.builder()
                         .name(request.name().trim())
                         .email(request.email())
-                        .password(passwordEncoder.encode(request.password()))
-                    .leaderboardOptIn(false)
-                    .alertsOptIn(true)
-                        .role(Role.USER)
-                .active(Boolean.TRUE).build()
+                        .password(passwordHasher.hash(request.password()))
+                        .leaderboardOptIn(false)
+                        .alertsOptIn(true)
+                        .role(UserRole.USER)
+                        .active(Boolean.TRUE)
+                        .build()
         );
         return UserResponseMapper.toUserResponse(savedUser, java.util.List.of());
     }

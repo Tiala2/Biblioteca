@@ -3,7 +3,7 @@ package com.unichristus.libraryapi.application.usecase.auth;
 import com.unichristus.libraryapi.domain.user.User;
 import com.unichristus.libraryapi.domain.user.PasswordResetTokenRepository;
 import com.unichristus.libraryapi.domain.user.UserService;
-import com.unichristus.libraryapi.infrastructure.security.Role;
+import com.unichristus.libraryapi.domain.user.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,7 +38,7 @@ class ForgotPasswordUseCaseTest {
                 .name("Test User")
                 .email("test@example.com")
                 .password("hashed")
-                .role(Role.USER)
+                .role(UserRole.USER)
                 .build();
 
         when(userService.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
@@ -87,3 +87,4 @@ class ForgotPasswordUseCaseTest {
         org.junit.jupiter.api.Assertions.assertEquals("http://library.local", resolved);
     }
 }
+

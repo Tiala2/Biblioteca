@@ -1,6 +1,5 @@
 package com.unichristus.libraryapi.domain.user;
 
-import com.unichristus.libraryapi.infrastructure.security.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -44,7 +43,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private Role role;
+    private UserRole role;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)
