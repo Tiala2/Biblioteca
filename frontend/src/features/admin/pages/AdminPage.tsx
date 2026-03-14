@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { BookCover } from "@shared/ui/books/BookCover";
 
 type Metrics = {
   totalUsers: number;
@@ -15,7 +16,7 @@ type Metrics = {
 
 type Category = { id: string; name: string; description?: string };
 type Tag = { id: string; name: string };
-type Book = { id: string; title: string };
+type Book = { id: string; title: string; coverUrl?: string | null };
 type Collection = { id: string; title: string };
 type Badge = { id: string; code: string; name: string; criteriaType: string; criteriaValue?: string; active: boolean };
 type Page<T> = { content: T[] };
@@ -53,6 +54,7 @@ export function AdminPage() {
   const [bookIsbn, setBookIsbn] = useState("");
   const [bookPages, setBookPages] = useState(150);
   const [bookDate, setBookDate] = useState("2020-01-01");
+  const [bookCoverUrl, setBookCoverUrl] = useState("");
   const [badgeCode, setBadgeCode] = useState<(typeof BADGE_CODES)[number]>("TOTAL_BOOKS_10");
   const [badgeName, setBadgeName] = useState("Meta de 10 livros");
   const [badgeCriteria, setBadgeCriteria] =
@@ -63,6 +65,8 @@ export function AdminPage() {
   const [importPageSize, setImportPageSize] = useState(20);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [uploadBookId, setUploadBookId] = useState("");
+  const [coverBookId, setCoverBookId] = useState("");
+  const [coverBookUrl, setCoverBookUrl] = useState("");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [creatingCategory, setCreatingCategory] = useState(false);
   const [creatingTag, setCreatingTag] = useState(false);
@@ -71,7 +75,10 @@ export function AdminPage() {
   const [creatingBadge, setCreatingBadge] = useState(false);
   const [importingBooks, setImportingBooks] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [updatingBookCover, setUpdatingBookCover] = useState(false);
   const [deletingKey, setDeletingKey] = useState<string | null>(null);
+
+  const selectedCoverBook = books.find((book) => book.id === coverBookId) ?? null;
 
   const loadAll = async () => {
     if (!headers) return;
@@ -99,6 +106,11 @@ export function AdminPage() {
 
       if (!uploadBookId && b.data.content.length > 0) {
         setUploadBookId(b.data.content[0].id);
+      }
+
+      if (!coverBookId && b.data.content.length > 0) {
+        setCoverBookId(b.data.content[0].id);
+        setCoverBookUrl(b.data.content[0].coverUrl ?? "");
       }
     } catch {
       setError("Falha ao carregar dados admin.");
@@ -203,12 +215,14 @@ export function AdminPage() {
           isbn: bookIsbn,
           numberOfPages: Number(bookPages),
           publicationDate: bookDate,
+          coverUrl: bookCoverUrl.trim() || null,
           categories: [],
         },
         { headers }
       );
       setBookTitle("");
       setBookIsbn("");
+      setBookCoverUrl("");
       await loadAll();
       showToast("Livro criado com sucesso.", "success");
     } catch {
@@ -306,6 +320,29 @@ export function AdminPage() {
       showToast("Falha no upload do PDF.", "error");
     } finally {
       setUploadingPdf(false);
+    }
+  };
+
+  const updateBookCover = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!headers || !coverBookId) return;
+
+    setUpdatingBookCover(true);
+    try {
+      await api.patch(
+        `/api/admin/books/${coverBookId}`,
+        {
+          coverUrl: coverBookUrl,
+        },
+        { headers }
+      );
+      await loadAll();
+      showToast("Capa do livro atualizada com sucesso.", "success");
+    } catch {
+      setError("Falha ao atualizar capa do livro.");
+      showToast("Falha ao atualizar capa do livro.", "error");
+    } finally {
+      setUpdatingBookCover(false);
     }
   };
 
@@ -526,10 +563,63 @@ export function AdminPage() {
             <input placeholder="ISBN" value={bookIsbn} onChange={(event) => setBookIsbn(event.target.value)} required />
             <input type="number" min={1} value={bookPages} onChange={(event) => setBookPages(Number(event.target.value))} required />
             <input type="date" value={bookDate} onChange={(event) => setBookDate(event.target.value)} required />
+            <input
+              placeholder="URL da capa (opcional)"
+              value={bookCoverUrl}
+              onChange={(event) => setBookCoverUrl(event.target.value)}
+            />
             <button type="submit" disabled={creatingBook}>
               {creatingBook ? "Criando..." : "Criar livro"}
             </button>
           </form>
+          <p className="section-sub">
+            Dica: use uma URL direta de imagem (`.jpg`, `.png` ou `.webp`) para a capa aparecer no sistema inteiro.
+          </p>
+        </div>
+
+        <div className="admin-subsection">
+          <h4>Atualizar capa do livro</h4>
+          <form className="admin-form" onSubmit={updateBookCover}>
+            <select
+              value={coverBookId}
+              onChange={(event) => {
+                const selectedId = event.target.value;
+                setCoverBookId(selectedId);
+                const selectedBook = books.find((book) => book.id === selectedId);
+                setCoverBookUrl(selectedBook?.coverUrl ?? "");
+              }}
+              required
+            >
+              {books.map((book) => (
+                <option key={book.id} value={book.id}>
+                  {book.title}
+                </option>
+              ))}
+            </select>
+            <input
+              placeholder="URL da nova capa"
+              value={coverBookUrl}
+              onChange={(event) => setCoverBookUrl(event.target.value)}
+            />
+            <button type="submit" disabled={updatingBookCover || books.length === 0}>
+              {updatingBookCover ? "Salvando..." : "Salvar capa"}
+            </button>
+          </form>
+          {selectedCoverBook && (
+            <div className="inline-book-row">
+              <BookCover
+                title={selectedCoverBook.title}
+                coverUrl={coverBookUrl.trim() || selectedCoverBook.coverUrl}
+                size="small"
+              />
+              <div>
+                <strong>{selectedCoverBook.title}</strong>
+                <p className="section-sub">
+                  Se o campo ficar vazio, a capa visual padrao continua sendo usada.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="admin-subsection">

@@ -42,10 +42,7 @@ public class ReadingService {
                 .orElseGet(() -> createReading(userId, book));
     }
 
-    private Reading createReading(UUID userId, Book book) throws PdfNotAvailableException {
-        if (!book.isHasPdf()) {
-            throw new PdfNotAvailableException(book.getId());
-        }
+    private Reading createReading(UUID userId, Book book) {
         LocalDateTime now = LocalDateTime.now();
         if (hasInProgressReading(userId, book)) {
             throw new ReadingInProgressException(userId, book.getId());

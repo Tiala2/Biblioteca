@@ -86,7 +86,7 @@ public class BookService {
         return save(created);
     }
 
-    public void updateBook(UUID bookId, String title, String isbn, Integer numberOfPages, LocalDate publicationDate, Boolean available, Set<Category> categories) {
+    public void updateBook(UUID bookId, String title, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl, Boolean available, Set<Category> categories) {
         Book book = findBookByIdOrThrow(bookId);
         boolean changed = false;
         if (title != null && !title.equals(book.getTitle())) {
@@ -105,6 +105,13 @@ public class BookService {
         if (publicationDate != null && !publicationDate.equals(book.getPublicationDate())) {
             book.setPublicationDate(publicationDate);
             changed = true;
+        }
+        if (coverUrl != null) {
+            String normalizedCoverUrl = coverUrl.isBlank() ? null : coverUrl.trim();
+            if (!java.util.Objects.equals(normalizedCoverUrl, book.getCoverUrl())) {
+                book.setCoverUrl(normalizedCoverUrl);
+                changed = true;
+            }
         }
         if (available != null && !available.equals(book.isAvailable())) {
             book.setAvailable(available);
@@ -182,3 +189,4 @@ public class BookService {
                 pageable);
     }
 }
+

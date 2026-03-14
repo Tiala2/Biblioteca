@@ -1,5 +1,6 @@
 package com.unichristus.libraryapi.application.dto.response;
 
+import com.unichristus.libraryapi.domain.book.BookSource;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
@@ -17,6 +18,7 @@ public class BookResponse {
     private LocalDate publicationDate;
     private String coverUrl;
     private Boolean hasPdf;
+    private BookSource source;
     private List<CategoryLowResponse> categories;
     private List<TagResponse> tags;
 }

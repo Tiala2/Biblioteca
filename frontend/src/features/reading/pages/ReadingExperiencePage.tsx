@@ -3,14 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { BookCover } from "@shared/ui/books/BookCover";
 
 type BookDetail = {
   id: string;
   title: string;
   isbn?: string;
   pdfUrl?: string | null;
+  coverUrl?: string | null;
   numberOfPages: number;
   hasPdf: boolean;
+  source?: "LOCAL" | "OPEN";
 };
 
 type NarrativeCharacter = {
@@ -63,6 +66,10 @@ type HomeReading = {
 
 type HomeResumeResponse = {
   readings: HomeReading[];
+};
+
+type Favorite = {
+  bookId: string;
 };
 
 type ReadingSyncResponse = {
@@ -171,6 +178,8 @@ export function ReadingExperiencePage() {
   const [saving, setSaving] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [externalReaderEmbedUrl, setExternalReaderEmbedUrl] = useState<string | null>(null);
   const [externalReaderFallbackUrl, setExternalReaderFallbackUrl] = useState<string | null>(null);
   const [externalReaderLoading, setExternalReaderLoading] = useState(false);
@@ -182,10 +191,13 @@ export function ReadingExperiencePage() {
   );
 
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
+  const isExternalReading = Boolean(book && !book.hasPdf);
+  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "PDF local" : "Catalogo";
   const derivedProgress = Math.round((currentPage / totalPages) * 100);
   const progressPercent = Math.max(0, Math.min(100, readingSnapshot?.progress ?? derivedProgress));
   const pagesRemaining = Math.max(totalPages - currentPage, 0);
   const phaseLabel = insight?.phase ? PHASE_LABEL[insight.phase] ?? insight.phase : "Nao definida";
+  const externalSourceActionLabel = book?.source === "OPEN" ? "Continuar na Open Library" : "Continuar na fonte externa";
 
   const internalPdfUrl = useMemo(() => {
     if (!book?.id || !book.hasPdf) return null;
@@ -233,6 +245,19 @@ export function ReadingExperiencePage() {
       isActive = false;
     };
   }, [bookId, headers]);
+
+  useEffect(() => {
+    if (!headers || !bookId) return;
+
+    api
+      .get<Favorite[]>("/api/v1/users/me/favorites", { headers })
+      .then((response) => {
+        setIsFavorite(response.data.some((item) => item.bookId === bookId));
+      })
+      .catch(() => {
+        setIsFavorite(false);
+      });
+  }, [headers, bookId]);
 
   useEffect(() => {
     if (!book) return;
@@ -371,6 +396,27 @@ export function ReadingExperiencePage() {
     }
   };
 
+  const toggleFavorite = async () => {
+    if (!headers || !bookId) return;
+
+    setFavoriteLoading(true);
+    try {
+      if (isFavorite) {
+        await api.delete(`/api/v1/users/me/favorites/${bookId}`, { headers });
+        setIsFavorite(false);
+        showToast("Livro removido dos favoritos.", "success");
+      } else {
+        await api.post("/api/v1/users/me/favorites", { bookId }, { headers });
+        setIsFavorite(true);
+        showToast("Livro adicionado aos favoritos.", "success");
+      }
+    } catch {
+      showToast("Nao foi possivel atualizar favorito.", "error");
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
   const onSelectOption = (quizId: string, option: string) => {
     setSelectedOptions((previous) => ({ ...previous, [quizId]: option }));
     setRevealed((previous) => ({ ...previous, [quizId]: false }));
@@ -391,11 +437,14 @@ export function ReadingExperiencePage() {
   return (
     <section className="grid">
       <article className="card hero">
+        {book && <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />}
         <div className="section-head">
           <div>
             <h2>{book?.title ?? "Leitura"}</h2>
             <p>
-              Retome sua leitura, acompanhe a fase narrativa e salve o progresso sem sair da experiencia.
+              {isExternalReading
+                ? "Leia na fonte externa e registre aqui a pagina atual para manter metas, ranking e continuidade da leitura."
+                : "Retome sua leitura, acompanhe a fase narrativa e salve o progresso sem sair da experiencia."}
             </p>
           </div>
           <span className="kpi">{progressPercent}% concluido</span>
@@ -423,8 +472,16 @@ export function ReadingExperiencePage() {
         <p className="quote">{insight?.plotState ?? "Acompanhe sua narrativa por trecho lido."}</p>
 
         <div className="card-actions">
-          <button type="button" onClick={syncReading} disabled={saving || !book?.hasPdf}>
+          <button type="button" onClick={syncReading} disabled={saving || !book}>
             {saving ? "Salvando..." : "Salvar progresso"}
+          </button>
+          <button
+            type="button"
+            className={isFavorite ? "favorite-toggle active" : "favorite-toggle"}
+            onClick={toggleFavorite}
+            disabled={favoriteLoading}
+          >
+            {favoriteLoading ? "Salvando..." : isFavorite ? "Nos favoritos" : "Salvar nos favoritos"}
           </button>
           <Link to="/books" className="btn-link">
             Voltar ao catalogo
@@ -479,7 +536,44 @@ export function ReadingExperiencePage() {
         <article className="card">
           <div className="section-head">
             <h3>Leitura online</h3>
-            <span className="kpi">Livro importado</span>
+            <span className="kpi">{sourceLabel}</span>
+          </div>
+          <div className="external-reading-panel">
+            <div className="external-reading-panel__head">
+              <div>
+                <p className="eyebrow">Leitura externa guiada</p>
+                <h4>Continue a leitura sem perder seu progresso</h4>
+              </div>
+              <span className="external-source-pill">{sourceLabel}</span>
+            </div>
+            <p className="section-sub">
+              Este livro e acessado em fonte externa. Leia no provedor oficial e volte aqui para registrar a pagina atual,
+              mantendo metas, ranking, historico e favoritos no mesmo fluxo.
+            </p>
+            <div className="external-reading-steps" aria-label="Como usar leitura externa">
+              <div className="external-step">
+                <strong>1</strong>
+                <span>Abra o livro na fonte oficial.</span>
+              </div>
+              <div className="external-step">
+                <strong>2</strong>
+                <span>Leia normalmente fora da plataforma.</span>
+              </div>
+              <div className="external-step">
+                <strong>3</strong>
+                <span>Volte e salve a pagina lida aqui.</span>
+              </div>
+            </div>
+            {externalReaderFallbackUrl && (
+              <div className="card-actions external-reading-actions">
+                <a className="btn-link external-reading-primary" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
+                  {externalSourceActionLabel}
+                </a>
+                <button type="button" className="btn-muted" onClick={syncReading} disabled={saving}>
+                  {saving ? "Salvando..." : "Salvar pagina atual"}
+                </button>
+              </div>
+            )}
           </div>
           {externalReaderLoading && <p className="section-sub">Preparando leitor online...</p>}
           {!externalReaderLoading && externalReaderEmbedUrl && (
@@ -501,7 +595,7 @@ export function ReadingExperiencePage() {
           {externalReaderFallbackUrl && (
             <div className="card-actions">
               <a className="btn-link btn-muted" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
-                Abrir no Open Library
+                {book.source === "OPEN" ? "Abrir fonte alternativa" : "Abrir fonte externa"}
               </a>
             </div>
           )}
@@ -521,7 +615,7 @@ export function ReadingExperiencePage() {
 
         {!book?.hasPdf && (
           <p className="section-sub">
-            Para livros sem PDF local, esta tela prioriza consulta e contexto narrativo. O salvamento manual pode ficar indisponivel.
+            Mesmo sem PDF local, voce pode informar manualmente a pagina atual. Assim o livro continua contando em metas, historico e engajamento.
           </p>
         )}
 
@@ -557,7 +651,6 @@ export function ReadingExperiencePage() {
               min={1}
               max={totalPages}
               value={currentPage}
-              disabled={!book?.hasPdf}
               onChange={(event) => updateCurrentPage(Number(event.target.value))}
             />
           </div>
@@ -570,23 +663,22 @@ export function ReadingExperiencePage() {
               min={1}
               max={totalPages}
               value={currentPage}
-              disabled={!book?.hasPdf}
               onChange={(event) => updateCurrentPage(Number(event.target.value))}
             />
           </div>
         </div>
 
         <div className="page-jump-grid">
-          <button type="button" className="btn-muted" disabled={!book?.hasPdf} onClick={() => updateCurrentPage(1)}>
+          <button type="button" className="btn-muted" onClick={() => updateCurrentPage(1)}>
             Ir para inicio
           </button>
-          <button type="button" className="btn-muted" disabled={!book?.hasPdf} onClick={() => jumpPages(-10)}>
+          <button type="button" className="btn-muted" onClick={() => jumpPages(-10)}>
             Voltar 10 pags
           </button>
-          <button type="button" className="btn-muted" disabled={!book?.hasPdf} onClick={() => jumpPages(10)}>
+          <button type="button" className="btn-muted" onClick={() => jumpPages(10)}>
             Avancar 10 pags
           </button>
-          <button type="button" className="btn-muted" disabled={!book?.hasPdf} onClick={() => updateCurrentPage(totalPages)}>
+          <button type="button" className="btn-muted" onClick={() => updateCurrentPage(totalPages)}>
             Ir para final
           </button>
         </div>

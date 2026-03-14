@@ -14,6 +14,8 @@ public final class FavoriteResponseMapper {
                 favorite.getBook().getId(),
                 favorite.getBook().getTitle(),
                 favorite.getBook().getIsbn(),
+                favorite.getBook().getCoverUrl(),
+                favorite.getBook().getSource(),
                 favorite.getCreatedAt()
         );
     }

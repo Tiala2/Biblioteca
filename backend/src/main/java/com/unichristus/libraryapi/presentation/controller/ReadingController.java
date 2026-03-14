@@ -37,7 +37,6 @@ public class ReadingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Leitura atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados invalidos"),
-            @ApiResponse(responseCode = "404", description = "Esse livro nao tem pdf disponivel"),
             @ApiResponse(responseCode = "404", description = "Livro nao encontrado"),
             @ApiResponse(responseCode = "404", description = "Usuario nao encontrado"),
     })

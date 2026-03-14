@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { BookCover } from "@shared/ui/books/BookCover";
 
 type RankMode = "MOST_READ" | "TRENDING" | "ACCLAIMED";
 type BookSort = "TRENDING_MONTH" | "TRENDING_WEEK" | "BEST_RATED";
@@ -8,6 +9,8 @@ type BookSort = "TRENDING_MONTH" | "TRENDING_WEEK" | "BEST_RATED";
 type RankedBook = {
   id: string;
   title: string;
+  coverUrl?: string | null;
+  source?: "LOCAL" | "OPEN";
   numberOfPages: number;
   averageRating?: number | null;
   totalReviews?: number | null;
@@ -73,6 +76,10 @@ export function LeaderboardPage() {
       <div className="grid">
         {books.map((book, index) => (
           <article key={book.id} className="card">
+            <BookCover title={book.title} coverUrl={book.coverUrl} size="medium" />
+            <div className="book-card-badges">
+              {book.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
+            </div>
             <h3>
               #{index + 1} {book.title}
             </h3>

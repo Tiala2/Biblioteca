@@ -27,6 +27,9 @@ public record BookUpdateRequest(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate publicationDate,
 
+        @Schema(description = "URL da capa do livro", example = "https://exemplo.com/capas/senhor-dos-aneis.jpg", nullable = true)
+        String coverUrl,
+
         @Schema(description = "Livro disponível", example = "true", nullable = true)
         Boolean available,
 
@@ -34,3 +37,4 @@ public record BookUpdateRequest(
         List<UUID> categories
 ) {
 }
+

@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
+import { BookCover } from "@shared/ui/books/BookCover";
 
 type HomeBook = {
   id: string;
   title: string;
+  coverUrl?: string | null;
+  source?: "LOCAL" | "OPEN";
   favorite?: boolean;
   numberOfPages?: number;
   averageRating?: number | null;
@@ -175,10 +178,16 @@ export function HomePage() {
         </div>
         {currentReading ? (
           <>
-            <p><strong>{currentReading.book.title}</strong></p>
-            <p className="section-sub">
-              Pagina atual: {currentReading.currentPage} | Status: {currentReading.status}
-            </p>
+            <div className="inline-book-row">
+              <BookCover title={currentReading.book.title} coverUrl={currentReading.book.coverUrl} size="small" />
+              <div>
+                <p><strong>{currentReading.book.title}</strong></p>
+                {currentReading.book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
+                <p className="section-sub">
+                  Pagina atual: {currentReading.currentPage} | Status: {currentReading.status}
+                </p>
+              </div>
+            </div>
             <div className="progress-track" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${currentReading.progress}%` }} />
             </div>
@@ -226,8 +235,10 @@ export function HomePage() {
           <ul className="stacked-list">
             {home.recommendations.slice(0, 4).map((book) => (
               <li key={book.id} className="stacked-list-item">
+                <BookCover title={book.title} coverUrl={book.coverUrl} size="small" />
                 <div>
                   <strong>{book.title}</strong>
+                  {book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
                   <p className="section-sub">
                     Nota {Number(book.averageRating ?? 0).toFixed(1)}
                   </p>

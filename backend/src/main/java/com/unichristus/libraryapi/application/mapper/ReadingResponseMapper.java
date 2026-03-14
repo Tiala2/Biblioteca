@@ -15,7 +15,12 @@ public final class ReadingResponseMapper {
         if (reading == null) return null;
         return ReadingHomeResponse.builder()
                 .id(reading.getId())
-                .book(new BookHomeResponse(reading.getBook().getId(), reading.getBook().getTitle(), favorite))
+                .book(new BookHomeResponse(
+                        reading.getBook().getId(),
+                        reading.getBook().getTitle(),
+                        reading.getBook().getCoverUrl(),
+                        reading.getBook().getSource(),
+                        favorite))
                 .status(reading.getStatus())
                 .currentPage(reading.getCurrentPage())
                 .progress(ReadingService.calculateProgressPercentage(reading))

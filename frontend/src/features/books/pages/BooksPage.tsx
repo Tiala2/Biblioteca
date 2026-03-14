@@ -1,11 +1,22 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useAuth } from "@features/auth/context/AuthContext";
+import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
+import { BookCover } from "@shared/ui/books/BookCover";
 
-type Book = { id: string; title: string; numberOfPages: number; hasPdf: boolean };
+type Book = {
+  id: string;
+  title: string;
+  numberOfPages: number;
+  hasPdf: boolean;
+  source?: "LOCAL" | "OPEN";
+  coverUrl?: string | null;
+};
 type Paged<T> = { content: T[]; page: { size: number; number: number; totalElements: number; totalPages: number } };
 type BookSort = "TRENDING_WEEK" | "TRENDING_MONTH" | "BEST_RATED" | "NEW_RELEASES";
+type Favorite = { bookId: string };
 
 const DEFAULT_SORT: BookSort = "BEST_RATED";
 const PAGE_SIZE = 12;
@@ -31,7 +42,10 @@ function parsePage(value: string | null): number {
 }
 
 export function BooksPage() {
+  const { auth } = useAuth();
+  const { showToast } = useToast();
   const [books, setBooks] = useState<Book[]>([]);
+  const [favoriteBookIds, setFavoriteBookIds] = useState<Set<string>>(new Set());
   const [totalPages, setTotalPages] = useState(0);
   const [queryInput, setQueryInput] = useState("");
   const [minPagesInput, setMinPagesInput] = useState("");
@@ -39,8 +53,10 @@ export function BooksPage() {
   const [sortInput, setSortInput] = useState<BookSort>(DEFAULT_SORT);
   const [onlyWithPdfInput, setOnlyWithPdfInput] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [favoriteLoadingBookId, setFavoriteLoadingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
 
   const applied = useMemo(() => {
     return {
@@ -90,6 +106,21 @@ export function BooksPage() {
 
     void loadBooks();
   }, [applied]);
+
+  useEffect(() => {
+    if (!headers) return;
+
+    const loadFavorites = async () => {
+      try {
+        const response = await api.get<Favorite[]>("/api/v1/users/me/favorites", { headers });
+        setFavoriteBookIds(new Set(response.data.map((item) => item.bookId)));
+      } catch {
+        setFavoriteBookIds(new Set());
+      }
+    };
+
+    void loadFavorites();
+  }, [headers]);
 
   const updateUrl = (
     next: Partial<{
@@ -144,6 +175,36 @@ export function BooksPage() {
     setSortInput(DEFAULT_SORT);
     setOnlyWithPdfInput(false);
     setSearchParams({}, { replace: true });
+  };
+
+  const toggleFavorite = async (bookId: string) => {
+    if (!headers) return;
+
+    const isFavorite = favoriteBookIds.has(bookId);
+    setFavoriteLoadingBookId(bookId);
+    try {
+      if (isFavorite) {
+        await api.delete(`/api/v1/users/me/favorites/${bookId}`, { headers });
+        setFavoriteBookIds((previous) => {
+          const next = new Set(previous);
+          next.delete(bookId);
+          return next;
+        });
+        showToast("Livro removido dos favoritos.", "success");
+      } else {
+        await api.post(
+          "/api/v1/users/me/favorites",
+          { bookId },
+          { headers }
+        );
+        setFavoriteBookIds((previous) => new Set(previous).add(bookId));
+        showToast("Livro adicionado aos favoritos.", "success");
+      }
+    } catch {
+      showToast("Nao foi possivel atualizar favorito.", "error");
+    } finally {
+      setFavoriteLoadingBookId(null);
+    }
   };
 
   return (
@@ -206,17 +267,40 @@ export function BooksPage() {
       <div className="grid">
         {books.map((book) => (
           <article key={book.id} className="card">
-            {!book.hasPdf && <span className="import-badge">IMPORTADO</span>}
+            <BookCover title={book.title} coverUrl={book.coverUrl} size="medium" />
+            <div className="book-card-badges">
+              {book.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
+              {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">SEM PDF</span>}
+              {favoriteBookIds.has(book.id) && <span className="favorite-badge">FAVORITO</span>}
+            </div>
             <h3>{book.title}</h3>
             <p>{book.numberOfPages} paginas</p>
-            <small>{book.hasPdf ? "PDF disponivel" : "Sem PDF (metadado importado)"}</small>
+            <small>
+              {book.hasPdf
+                ? "PDF disponivel"
+                : book.source === "OPEN"
+                  ? "Leitura externa com progresso manual"
+                  : "Sem PDF local"}
+            </small>
             <div className="card-actions">
               <Link
                 to={`/books/${book.id}/read`}
                 className={book.hasPdf ? "btn-link" : "btn-muted btn-link"}
               >
-                {book.hasPdf ? "Ler no app" : "Abrir detalhes"}
+                {book.hasPdf ? "Ler no app" : "Ler com progresso"}
               </Link>
+              <button
+                type="button"
+                className={favoriteBookIds.has(book.id) ? "favorite-toggle active" : "favorite-toggle"}
+                onClick={() => toggleFavorite(book.id)}
+                disabled={favoriteLoadingBookId === book.id}
+              >
+                {favoriteLoadingBookId === book.id
+                  ? "Salvando..."
+                  : favoriteBookIds.has(book.id)
+                    ? "Nos favoritos"
+                    : "Salvar nos favoritos"}
+              </button>
             </div>
           </article>
         ))}

@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { BookCover } from "@shared/ui/books/BookCover";
 
 type Favorite = {
   bookId: string;
   bookTitle: string;
   bookIsbn: string;
+  coverUrl?: string | null;
+  source?: "LOCAL" | "OPEN";
   createdAt: string;
 };
 
@@ -58,7 +62,7 @@ export function FavoritesPage() {
     <section>
       <div className="section-head">
         <div>
-          <h2>Seus capítulos preferidos continuam aqui</h2>
+          <h2>Seus capitulos preferidos continuam aqui</h2>
           <p className="section-sub">Retome os livros que marcaram sua jornada.</p>
         </div>
         <span className="kpi">{favorites.length} itens</span>
@@ -67,13 +71,34 @@ export function FavoritesPage() {
       {loading && <p className="section-sub">Carregando favoritos...</p>}
       {error && <p className="error">{error}</p>}
 
+      {!loading && favorites.length > 0 && (
+        <article className="card">
+          <div className="section-head">
+            <div>
+              <h3>Prontos para reabrir</h3>
+              <p className="section-sub">Escolha um favorito e volte direto para a experiencia de leitura.</p>
+            </div>
+            <span className="kpi">Biblioteca pessoal</span>
+          </div>
+        </article>
+      )}
+
       <div className="grid">
         {favorites.map((item) => (
           <article key={item.bookId} className="card">
+            <BookCover title={item.bookTitle} coverUrl={item.coverUrl} size="medium" />
+            <div className="book-card-badges">
+              {item.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
+              <span className="favorite-badge">FAVORITO</span>
+            </div>
             <h3>{item.bookTitle}</h3>
             <p>ISBN: {item.bookIsbn}</p>
+            {item.source === "OPEN" && <small>Leitura externa com progresso manual</small>}
             <small>Favoritado em: {new Date(item.createdAt).toLocaleString()}</small>
             <div className="card-actions">
+              <Link to={`/books/${item.bookId}/read`} className="btn-link">
+                Ler agora
+              </Link>
               <button
                 className="btn-muted"
                 onClick={() => removeFavorite(item.bookId)}
@@ -86,8 +111,9 @@ export function FavoritesPage() {
         ))}
       </div>
 
-      {!loading && favorites.length === 0 && <p className="section-sub">Você ainda não adicionou livros aos favoritos.</p>}
+      {!loading && favorites.length === 0 && (
+        <p className="section-sub">Voce ainda nao adicionou livros aos favoritos.</p>
+      )}
     </section>
   );
 }
-
