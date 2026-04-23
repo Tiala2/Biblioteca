@@ -16,13 +16,16 @@ import com.unichristus.libraryapi.domain.reading.ReadingGoalMetrics;
 import com.unichristus.libraryapi.domain.user.User;
 import com.unichristus.libraryapi.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.UUID;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+@Slf4j
 @UseCase
 @RequiredArgsConstructor
 public class ReadingGoalUseCase {
@@ -35,7 +38,11 @@ public class ReadingGoalUseCase {
     public ReadingGoalResponse upsertGoal(UUID userId, ReadingGoalRequest request) {
         ReadingGoal goal = readingGoalService.upsertGoal(userId, request.period(), request.targetPages());
         ReadingGoalResponse response = toResponse(userId, goal);
-        notifyReadingAlertsIfEnabled(userId, request.period());
+        CompletableFuture.runAsync(() -> notifyReadingAlertsIfEnabled(userId, request.period()))
+                .exceptionally(ex -> {
+                    log.warn("Falha ao processar alertas de meta para usuario {}: {}", userId, ex.getMessage());
+                    return null;
+                });
         return response;
     }
 

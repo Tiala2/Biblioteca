@@ -46,6 +46,7 @@ public class BookUseCase {
     private final MeterRegistry meterRegistry;
 
     public Page<BookListResponse> getAllBooks(String query,
+                                              String author,
                                               List<UUID> categoryIds,
                                               List<UUID> tagIds,
                                               Integer minPages,
@@ -57,11 +58,13 @@ public class BookUseCase {
                                               Pageable pageable) {
         validateFilters(minPages, maxPages, publicationFrom, publicationTo);
         String sortTag = sort != null ? sort.name() : "BEST_RATED";
-        boolean hasFilters = hasFilters(query, categoryIds, tagIds, minPages, maxPages, publicationFrom, publicationTo);
+        boolean hasFilters = hasFilters(query, author, categoryIds, tagIds, minPages, maxPages, publicationFrom, publicationTo);
         Timer.Sample sample = Timer.start(meterRegistry);
+        String externalSearchTerm = resolveExternalSearchTerm(query, author);
 
-        log.info("book-search filters query='{}' categories={} tags={} pages=[{}, {}] publication=[{}, {}] sort={} page={} size={} filters={}",
+        log.info("book-search filters query='{}' author='{}' categories={} tags={} pages=[{}, {}] publication=[{}, {}] sort={} page={} size={} filters={}",
             query,
+            author,
             categoryIds,
             tagIds,
             minPages,
@@ -75,6 +78,7 @@ public class BookUseCase {
 
         Page<BookSearchHit> hits = bookService.search(
                 query,
+                author,
                 categoryIds,
                 tagIds,
                 minPages,
@@ -86,11 +90,12 @@ public class BookUseCase {
                 pageable);
 
         // Real-time fallback: if local search has no result on first page, fetch from Open Library and retry.
-        if (shouldFallbackToOpenLibrary(query, pageable, hits)) {
-            int imported = importFromOpenLibraryRealtime(query, Math.max(pageable.getPageSize(), 20));
+        if (shouldFallbackToOpenLibrary(externalSearchTerm, pageable, hits)) {
+            int imported = importFromOpenLibraryRealtime(externalSearchTerm, Math.max(pageable.getPageSize(), 20));
             if (imported > 0) {
                 hits = bookService.search(
                         query,
+                        author,
                         categoryIds,
                         tagIds,
                         minPages,
@@ -127,16 +132,16 @@ public class BookUseCase {
         return new PageImpl<>(responses, pageable, hits.getTotalElements());
     }
 
-    private boolean shouldFallbackToOpenLibrary(String query, Pageable pageable, Page<BookSearchHit> hits) {
-        return query != null
-                && !query.isBlank()
+    private boolean shouldFallbackToOpenLibrary(String searchTerm, Pageable pageable, Page<BookSearchHit> hits) {
+        return searchTerm != null
+                && !searchTerm.isBlank()
                 && pageable.getPageNumber() == 0
                 && hits.getTotalElements() == 0;
     }
 
-    private int importFromOpenLibraryRealtime(String query, int limit) {
+    private int importFromOpenLibraryRealtime(String searchTerm, int limit) {
         try {
-            OpenLibraryClient.OpenLibrarySearchResponse result = openLibraryClient.search(query, 1, Math.min(limit, 40));
+            OpenLibraryClient.OpenLibrarySearchResponse result = openLibraryClient.search(searchTerm, 1, Math.min(limit, 40));
             if (result == null || result.docs() == null || result.docs().isEmpty()) {
                 return 0;
             }
@@ -162,6 +167,7 @@ public class BookUseCase {
                 try {
                     bookService.upsertOpenLibraryBook(
                             doc.title().trim(),
+                            resolveAuthor(doc.authorNames()),
                             isbn,
                             OpenLibraryBookMetadataSupport.sanitizePages(doc.numberOfPagesMedian()),
                             OpenLibraryBookMetadataSupport.sanitizePublicationDate(doc.firstPublishYear()),
@@ -174,15 +180,37 @@ public class BookUseCase {
             }
 
             if (imported > 0) {
-                log.info("Open Library realtime import added {} book(s) for query='{}'", imported, query);
+                log.info("Open Library realtime import added {} book(s) for query='{}'", imported, searchTerm);
             } else {
-                log.info("Open Library realtime import returned 0 new books for query='{}'", query);
+                log.info("Open Library realtime import returned 0 new books for query='{}'", searchTerm);
             }
             return imported;
         } catch (Exception ex) {
-            log.warn("Open Library realtime fallback failed for query='{}': {}", query, ex.getMessage());
+            log.warn("Open Library realtime fallback failed for query='{}': {}", searchTerm, ex.getMessage());
             return 0;
         }
+    }
+
+    private String resolveExternalSearchTerm(String query, String author) {
+        if (query != null && !query.isBlank()) {
+            return query.trim();
+        }
+        if (author != null && !author.isBlank()) {
+            return author.trim();
+        }
+        return null;
+    }
+
+    private String resolveAuthor(List<String> authorNames) {
+        if (authorNames == null || authorNames.isEmpty()) {
+            return "Autor nao informado";
+        }
+        return authorNames.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(name -> !name.isBlank())
+                .findFirst()
+                .orElse("Autor nao informado");
     }
 
     private Optional<String> extractOrGenerateIsbn13(List<String> isbns, String title, Integer firstPublishYear) {
@@ -254,6 +282,7 @@ public class BookUseCase {
     }
 
     private boolean hasFilters(String query,
+                               String author,
                                List<UUID> categoryIds,
                                List<UUID> tagIds,
                                Integer minPages,
@@ -261,6 +290,7 @@ public class BookUseCase {
                                LocalDate publicationFrom,
                                LocalDate publicationTo) {
         return (query != null && !query.isBlank())
+                || (author != null && !author.isBlank())
                 || (categoryIds != null && !categoryIds.isEmpty())
                 || (tagIds != null && !tagIds.isEmpty())
                 || minPages != null
@@ -277,6 +307,7 @@ public class BookUseCase {
 
         Book createdBook = bookService.createBook(
                 request.title(),
+                request.author(),
                 request.isbn(),
                 request.numberOfPages(),
                 request.publicationDate(),
@@ -295,6 +326,7 @@ public class BookUseCase {
         bookService.updateBook(
                 bookId,
                 request.title(),
+                request.author(),
                 request.isbn(),
                 request.numberOfPages(),
                 request.publicationDate(),
@@ -322,6 +354,7 @@ public class BookUseCase {
         List<BookListResponse> personalizedList = mapHitsToResponses(
                 bookService.search(
                         null,
+                        null,
                         preferences.categories().isEmpty() ? null : preferences.categories(),
                         preferences.tags().isEmpty() ? null : preferences.tags(),
                         null,
@@ -342,7 +375,7 @@ public class BookUseCase {
 
         // Fallback: top-rated global, ainda respeitando exclusões
         List<BookListResponse> fallback = mapHitsToResponses(
-                bookService.search(null, null, null, null, null, null, null, false, BookSort.BEST_RATED, pageable),
+                bookService.search(null, null, null, null, null, null, null, null, false, BookSort.BEST_RATED, pageable),
                 excludeBookIds,
                 effectiveLimit);
 

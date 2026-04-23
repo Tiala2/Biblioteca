@@ -31,6 +31,7 @@ class BookRealtimeSearchIntegrationTest extends IntegrationTestSupport {
                         1,
                         List.of(new OpenLibraryClient.OpenLibraryDoc(
                                 "Realtime Unique Book",
+                                List.of("Martin Fowler"),
                                 List.of("9780134494166"),
                                 432,
                                 2017,
@@ -44,6 +45,7 @@ class BookRealtimeSearchIntegrationTest extends IntegrationTestSupport {
                         .param("includeWithoutPdf", "true")
                         .param("sort", "BEST_RATED"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("Realtime Unique Book"));
+                .andExpect(jsonPath("$.content[0].title").value("Realtime Unique Book"))
+                .andExpect(jsonPath("$.content[0].author").value("Martin Fowler"));
     }
 }

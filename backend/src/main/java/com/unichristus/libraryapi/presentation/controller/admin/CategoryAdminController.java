@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "[Admin]", description = "Operações administrativas da API")
@@ -22,6 +23,15 @@ import java.util.UUID;
 public class CategoryAdminController {
 
     private final CategoryUseCase categoryUseCase;
+
+    @GetMapping
+    @Operation(summary = "Listar categorias", description = "Retorna a lista completa de categorias para administracao")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso")
+    })
+    public List<CategoryResponse> getAllCategories() {
+        return categoryUseCase.getAllCategories();
+    }
 
     @Operation(summary = "Criar uma nova categoria", description = "Cria uma nova categoria no sistema")
     @ApiResponses(value = {

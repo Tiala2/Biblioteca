@@ -44,6 +44,11 @@ Backups sao gravados em `backend\backups\<timestamp>`:
 - `postgres-library.sql`
 - `minio-data.tar.gz`
 
+## Restauracao
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\restore-volumes.ps1 -BackupDir .\backups\<timestamp> -Force
+```
+
 ## Observacao
 No primeiro start, aguarde `Started LibraryApiApplication` nos logs:
 

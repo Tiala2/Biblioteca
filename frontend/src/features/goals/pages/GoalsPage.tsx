@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type Period = "WEEKLY" | "MONTHLY";
 
@@ -32,6 +33,11 @@ function parsePeriod(value: string | null): Period {
   return value === "WEEKLY" ? "WEEKLY" : "MONTHLY";
 }
 
+function normalizeGoal(value: GoalResponse | "" | null | undefined): GoalResponse | null {
+  if (!value || typeof value !== "object") return null;
+  return value;
+}
+
 export function GoalsPage() {
   const { auth } = useAuth();
   const { showToast } = useToast();
@@ -40,6 +46,7 @@ export function GoalsPage() {
   const [alerts, setAlerts] = useState<AlertResponse[]>([]);
   const [streak, setStreak] = useState<number>(0);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const period = useMemo(() => parsePeriod(searchParams.get("period")), [searchParams]);
@@ -48,18 +55,26 @@ export function GoalsPage() {
   const loadAll = async (selectedPeriod: Period) => {
     if (!headers) return;
     try {
+      setLoading(true);
       const [goalRes, alertsRes, streakRes] = await Promise.all([
-        api.get<GoalResponse>(`/api/v1/users/me/goals?period=${selectedPeriod}`, { headers }),
+        api.get<GoalResponse | "">(`/api/v1/users/me/goals?period=${selectedPeriod}`, { headers }),
         api.get<AlertResponse[]>(`/api/v1/users/me/alerts?period=${selectedPeriod}`, { headers }),
         api.get<StreakResponse>("/api/v1/users/me/streak", { headers }),
       ]);
-      setGoal(goalRes.data);
-      setTargetPages(goalRes.data.targetPages);
-      setAlerts(alertsRes.data);
-      setStreak(streakRes.data.streakDays);
+
+      const nextGoal = normalizeGoal(goalRes.data);
+      setGoal(nextGoal);
+      if (nextGoal) {
+        setTargetPages(nextGoal.targetPages);
+      }
+
+      setAlerts(Array.isArray(alertsRes.data) ? alertsRes.data : []);
+      setStreak(streakRes.data?.streakDays ?? 0);
       setError("");
     } catch {
       setError("Nao foi possivel carregar metas e alertas.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,8 +97,27 @@ export function GoalsPage() {
     event.preventDefault();
     if (!headers) return;
     try {
-      await api.put("/api/v1/users/me/goals", { period, targetPages: Number(targetPages) }, { headers });
-      await loadAll(period);
+      const response = await api.put<GoalResponse>("/api/v1/users/me/goals", { period, targetPages: Number(targetPages) }, { headers });
+      const nextGoal = normalizeGoal(response.data);
+      setGoal(nextGoal);
+      if (nextGoal) {
+        setTargetPages(nextGoal.targetPages);
+      }
+
+      const [alertsResult, streakResult] = await Promise.allSettled([
+        api.get<AlertResponse[]>(`/api/v1/users/me/alerts?period=${period}`, { headers }),
+        api.get<StreakResponse>("/api/v1/users/me/streak", { headers }),
+      ]);
+
+      if (alertsResult.status === "fulfilled") {
+        setAlerts(Array.isArray(alertsResult.value.data) ? alertsResult.value.data : []);
+      }
+
+      if (streakResult.status === "fulfilled") {
+        setStreak(streakResult.value.data?.streakDays ?? 0);
+      }
+
+      setError("");
       showToast("Meta atualizada com sucesso.", "success");
     } catch {
       setError("Falha ao atualizar meta.");
@@ -92,6 +126,16 @@ export function GoalsPage() {
   };
 
   const progressPercent = Math.max(0, Math.min(100, Number(goal?.progressPercent ?? 0)));
+
+  if (loading) {
+    return (
+      <StateCard
+        title="Metas em carregamento"
+        message="Estamos atualizando seu resumo, alertas e o ritmo atual da leitura."
+        variant="loading"
+      />
+    );
+  }
 
   return (
     <section className="grid">
@@ -167,8 +211,7 @@ export function GoalsPage() {
           </ul>
         )}
       </article>
-
-      {error && <article className="card error">{error}</article>}
+      {error && <StateCard title="Falha ao carregar metas" message={error} variant="error" />}
     </section>
   );
 }

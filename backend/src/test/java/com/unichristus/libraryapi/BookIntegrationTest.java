@@ -29,6 +29,16 @@ class BookIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
+    @DisplayName("Deve filtrar livros por autor")
+    void shouldFilterBooksByAuthor() throws Exception {
+        mockMvc.perform(get("/api/v1/books")
+                        .param("author", "George Orwell")
+                        .param("includeWithoutPdf", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].author").value("George Orwell"));
+    }
+
+    @Test
     @DisplayName("Deve retornar recomendações com limite padrão")
     void shouldReturnRecommendations() throws Exception {
         mockMvc.perform(get("/api/v1/books/recommendations"))

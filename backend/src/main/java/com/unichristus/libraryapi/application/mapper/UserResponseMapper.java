@@ -20,6 +20,7 @@ public final class UserResponseMapper {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .active(user.getActive())
                 .leaderboardOptIn(user.getLeaderboardOptIn())
                 .alertsOptIn(user.getAlertsOptIn())
                 .badges(toBadgeResponses(badges))

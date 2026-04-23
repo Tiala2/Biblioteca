@@ -28,6 +28,9 @@ export function AppLayout() {
           <NavLink to="/" end className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             Inicio
           </NavLink>
+          <NavLink to="/profile" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            Perfil
+          </NavLink>
           <NavLink to="/books" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             Livros
           </NavLink>
@@ -64,7 +67,9 @@ export function AppLayout() {
 
         <div className="sidebar-user">
           <p className="user-name">{auth?.name}</p>
-          <button onClick={onLogout}>Sair</button>
+            <button type="button" onClick={onLogout} aria-label="Encerrar sessao">
+              Sair
+            </button>
         </div>
       </aside>
 
@@ -78,7 +83,12 @@ export function AppLayout() {
             <span className="kpi">
               {theme === "night" ? "Tema Noite" : "Tema Dia"} ({mode})
             </span>
-            <button className="btn-muted" onClick={cycleMode}>
+            <button
+              type="button"
+              className="btn-muted"
+              onClick={cycleMode}
+              aria-label={`Alternar tema. Modo atual: ${mode}`}
+            >
               {mode === "auto" ? "Auto" : mode === "night" ? "Noite" : "Dia"}
             </button>
           </div>

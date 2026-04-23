@@ -35,8 +35,22 @@ vi.mock("@shared/api/http", () => {
 import { api } from "@shared/api/http";
 
 describe("BooksPage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("deve carregar livros e mostrar selo OPEN LIBRARY para livro externo sem pdf", async () => {
     const mockedGet = vi.mocked(api.get);
+    mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "cat-1", name: "Fantasia" },
+      ],
+    } as never);
+    mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "tag-1", name: "Aventura" },
+      ],
+    } as never);
     mockedGet.mockResolvedValueOnce({
       data: {
         content: [
@@ -68,6 +82,16 @@ describe("BooksPage", () => {
   it("deve atualizar busca ao clicar em pesquisar", async () => {
     const mockedGet = vi.mocked(api.get);
     mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "cat-1", name: "Fantasia" },
+      ],
+    } as never);
+    mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "tag-1", name: "Aventura" },
+      ],
+    } as never);
+    mockedGet.mockResolvedValueOnce({
       data: {
         content: [],
         page: { size: 12, number: 0, totalElements: 0, totalPages: 0 },
@@ -91,5 +115,57 @@ describe("BooksPage", () => {
     await user.click(screen.getByRole("button", { name: "Pesquisar" }));
 
     await waitFor(() => expect(mockedGet).toHaveBeenCalled());
+  });
+
+  it("deve enviar filtros de categoria e tag para o backend", async () => {
+    const mockedGet = vi.mocked(api.get);
+    mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "cat-1", name: "Fantasia" },
+        { id: "cat-2", name: "Drama" },
+      ],
+    } as never);
+    mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "tag-1", name: "Aventura" },
+        { id: "tag-2", name: "Classico" },
+      ],
+    } as never);
+    mockedGet.mockResolvedValueOnce({
+      data: {
+        content: [],
+        page: { size: 12, number: 0, totalElements: 0, totalPages: 0 },
+      },
+    } as never);
+    mockedGet.mockResolvedValue({
+      data: [],
+    } as never);
+
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={["/books"]}>
+        <Routes>
+          <Route path="/books" element={<BooksPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await screen.findByPlaceholderText(/Pesquisar por titulo/i);
+
+    await user.selectOptions(screen.getByLabelText("Filtrar por categoria"), "cat-1");
+    await user.selectOptions(screen.getByLabelText("Filtrar por tag"), "tag-2");
+    await user.click(screen.getByRole("button", { name: "Pesquisar" }));
+
+    await waitFor(() =>
+      expect(mockedGet).toHaveBeenCalledWith(
+        "/api/v1/books",
+        expect.objectContaining({
+          params: expect.objectContaining({
+            categoryIds: "cat-1",
+            tagIds: "tag-2",
+          }),
+        })
+      )
+    );
   });
 });

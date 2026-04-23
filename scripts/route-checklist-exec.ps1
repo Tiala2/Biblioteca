@@ -155,6 +155,7 @@ $categoryId = (ConvertFrom-Json $categoryCreate.body).id
 
 $bookAdminCreate = Invoke-ApiStatus -Method POST -Path "/api/admin/books" -Token $adminToken -Body @{
     title = "Route Book $stamp"
+    author = "Route Author $stamp"
     isbn = [string](9782220000000 + ($stamp % 1000000))
     numberOfPages = 210
     publicationDate = "2020-01-01"
@@ -177,32 +178,34 @@ $collectionCreate = Invoke-ApiStatus -Method POST -Path "/api/admin/collections"
 if ($collectionCreate.status -ne 201) { throw "Falha ao criar collection admin: $($collectionCreate.status)" }
 $collectionId = (ConvertFrom-Json $collectionCreate.body).id
 
-$reviewId = $null
+$favoriteCreate = Invoke-ApiStatus -Method POST -Path "/api/v1/users/me/favorites" -Token $userToken -Body @{ bookId = $bookId }
+if ($favoriteCreate.status -notin 201,409) { throw "Falha ao criar favorito base: $($favoriteCreate.status)" }
+
+$readingBootstrap = Invoke-ApiStatus -Method POST -Path "/api/v1/readings" -Token $userToken -Body @{
+    bookId = $bookId
+    currentPage = 10
+}
+if ($readingBootstrap.status -ne 200) { throw "Falha ao criar leitura base: $($readingBootstrap.status)" }
+
 $reviewCreate = Invoke-ApiStatus -Method POST -Path "/api/v1/reviews" -Token $userToken -Body @{
     bookId = $bookId
     rating = 4
     comment = "review route check"
 }
-if ($reviewCreate.status -eq 201) {
-    $reviewId = (ConvertFrom-Json $reviewCreate.body).id
-} else {
-    $reviewListBootstrap = Invoke-ApiStatus -Method GET -Path "/api/v1/reviews?page=0&size=10"
-    if ($reviewListBootstrap.status -eq 200) {
-        $reviewListBootstrapJson = ConvertFrom-Json $reviewListBootstrap.body
-        if ($reviewListBootstrapJson.content.Count -gt 0) {
-            $reviewId = $reviewListBootstrapJson.content[0].id
-        }
-    }
-}
-
-$favoriteCreate = Invoke-ApiStatus -Method POST -Path "/api/v1/users/me/favorites" -Token $userToken -Body @{ bookId = $bookId }
-if ($favoriteCreate.status -notin 201,409) { throw "Falha ao criar favorito base: $($favoriteCreate.status)" }
+if ($reviewCreate.status -ne 201) { throw "Falha ao criar review base: $($reviewCreate.status)" }
+$reviewId = (ConvertFrom-Json $reviewCreate.body).id
 
 $badgesList = Invoke-ApiStatus -Method GET -Path "/api/admin/badges?page=0&size=20&sort=code" -Token $adminToken
 $badgeId = $null
+$badgeData = $null
+$badgeDeletedPayload = $null
 if ($badgesList.status -eq 200) {
     $badgeJson = ConvertFrom-Json $badgesList.body
-    if ($badgeJson.content.Count -gt 0) { $badgeId = $badgeJson.content[0].id }
+    $badgeData = $badgeJson.content | Where-Object { $_.code -eq "TOTAL_PAGES_1000" } | Select-Object -First 1
+    if ($null -eq $badgeData -and $badgeJson.content.Count -gt 0) {
+        $badgeData = $badgeJson.content[0]
+    }
+    if ($null -ne $badgeData) { $badgeId = $badgeData.id }
 }
 
 # 56 operations
@@ -217,12 +220,17 @@ Expect "DELETE" "/api/admin/collections/{id}" @(204) "" { Invoke-ApiStatus -Meth
 Expect "PUT" "/api/admin/categories/{categoryId}" @(200) "" { Invoke-ApiStatus -Method PUT -Path "/api/admin/categories/$categoryId" -Token $adminToken -Body @{ name="RouteCatUpdated-$stamp"; description="updated" } }
 Expect "DELETE" "/api/admin/categories/{categoryId}" @(204,400) "pode falhar se referenciado" { Invoke-ApiStatus -Method DELETE -Path "/api/admin/categories/$categoryId" -Token $adminToken }
 if ($badgeId) {
-    $badgeData = (ConvertFrom-Json $badgesList.body).content | Where-Object { $_.id -eq $badgeId } | Select-Object -First 1
-    Expect "PUT" "/api/admin/badges/{id}" @(200) "" { Invoke-ApiStatus -Method PUT -Path "/api/admin/badges/$badgeId" -Token $adminToken -Body @{ code=$badgeData.code; name=$badgeData.name; description=$badgeData.description; criteriaType=$badgeData.criteriaType; criteriaValue=$badgeData.criteriaValue; active=$badgeData.active } }
-    Expect "DELETE" "/api/admin/badges/{id}" @(204,400,404) "depende de FK/user_badges" { Invoke-ApiStatus -Method DELETE -Path "/api/admin/badges/$badgeId" -Token $adminToken }
+    Expect "PUT" "/api/admin/badges/{id}" @(200) "" { Invoke-ApiStatus -Method PUT -Path "/api/admin/badges/$badgeId" -Token $adminToken -Body @{ code=$badgeData.code; name="Route Badge Updated $stamp"; description="updated"; criteriaType=$badgeData.criteriaType; criteriaValue=$badgeData.criteriaValue; active=$true } }
+    Expect "DELETE" "/api/admin/badges/{id}" @(204) "excluir badge para recriacao controlada" {
+        $result = Invoke-ApiStatus -Method DELETE -Path "/api/admin/badges/$badgeId" -Token $adminToken
+        if ($result.status -eq 204) {
+            $script:badgeDeletedPayload = $badgeData
+        }
+        $result
+    }
 } else {
     $unknown = [guid]::NewGuid().ToString()
-    Expect "PUT" "/api/admin/badges/{id}" @(404) "nenhum badge encontrado na lista" { Invoke-ApiStatus -Method PUT -Path "/api/admin/badges/$unknown" -Token $adminToken -Body @{ code="TOTAL_BOOKS_10"; name="x"; description="x"; criteriaType="BOOKS_FINISHED"; criteriaValue="10"; active=$true } }
+    Expect "PUT" "/api/admin/badges/{id}" @(404) "nenhum badge encontrado na lista" { Invoke-ApiStatus -Method PUT -Path "/api/admin/badges/$unknown" -Token $adminToken -Body @{ code="TOTAL_BOOKS_10"; name="x"; description="x"; criteriaType="TOTAL_BOOKS"; criteriaValue="10"; active=$true } }
     Expect "DELETE" "/api/admin/badges/{id}" @(404) "nenhum badge encontrado na lista" { Invoke-ApiStatus -Method DELETE -Path "/api/admin/badges/$unknown" -Token $adminToken }
 }
 Expect "POST" "/api/v1/users" @(201,409) "" { Invoke-ApiStatus -Method POST -Path "/api/v1/users" -Body @{ name="Extra User"; email="extra-$stamp@email.com"; password=$userPwd } }
@@ -236,7 +244,7 @@ Expect "GET" "/api/admin/tags" @(200) "" { Invoke-ApiStatus -Method GET -Path "/
 Expect "POST" "/api/admin/tags" @(201,409) "" { Invoke-ApiStatus -Method POST -Path "/api/admin/tags" -Token $adminToken -Body @{ name="RouteTagPost-$stamp" } }
 Expect "POST" "/api/admin/collections" @(201,404) "" { Invoke-ApiStatus -Method POST -Path "/api/admin/collections" -Token $adminToken -Body @{ title="Route Collection Post"; description="x"; coverUrl="https://example.com/x.jpg"; bookIds=@($bookId) } }
 Expect "POST" "/api/admin/categories" @(201,409) "" { Invoke-ApiStatus -Method POST -Path "/api/admin/categories" -Token $adminToken -Body @{ name="RouteCategoryPost-$stamp"; description="x" } }
-Expect "POST" "/api/admin/books" @(201,409,404) "" { Invoke-ApiStatus -Method POST -Path "/api/admin/books" -Token $adminToken -Body @{ title="Route Book Post $stamp"; isbn=[string](9783330000000 + ($stamp % 1000000)); numberOfPages=120; publicationDate="2020-01-01"; coverUrl="https://example.com/p.jpg"; categories=@() } }
+Expect "POST" "/api/admin/books" @(201,409,404) "" { Invoke-ApiStatus -Method POST -Path "/api/admin/books" -Token $adminToken -Body @{ title="Route Book Post $stamp"; author="Route Author Post $stamp"; isbn=[string](9783330000000 + ($stamp % 1000000)); numberOfPages=120; publicationDate="2020-01-01"; coverUrl="https://example.com/p.jpg"; categories=@() } }
 Expect "POST" "/api/admin/books/{bookId}/upload" @(204,400,413,415) "upload multipart com pdf temporario" {
     $tempFile = Join-Path $env:TEMP "route-upload-$stamp.pdf"
     $tempOut = Join-Path $env:TEMP "route-upload-response-$stamp.json"
@@ -285,11 +293,26 @@ Expect "POST" "/api/admin/books/{bookId}/upload" @(204,400,413,415) "upload mult
     }
 }
 Expect "GET" "/api/admin/badges" @(200) "" { Invoke-ApiStatus -Method GET -Path "/api/admin/badges?page=0&size=20&sort=code" -Token $adminToken }
-Expect "POST" "/api/admin/badges" @(201,400,409) "restricoes de enum/duplicidade" { Invoke-ApiStatus -Method POST -Path "/api/admin/badges" -Token $adminToken -Body @{ code="TOTAL_BOOKS_10"; name="Books10"; description="d"; criteriaType="BOOKS_FINISHED"; criteriaValue="10"; active=$true } }
+Expect "POST" "/api/admin/badges" @(201) "recriar badge apos exclusao controlada" {
+    if ($null -eq $script:badgeDeletedPayload) {
+        return @{
+            status = 0
+            body = "badge nao foi excluido previamente"
+        }
+    }
+    Invoke-ApiStatus -Method POST -Path "/api/admin/badges" -Token $adminToken -Body @{
+        code = $script:badgeDeletedPayload.code
+        name = "Route Badge Recreated $stamp"
+        description = "recreated"
+        criteriaType = $script:badgeDeletedPayload.criteriaType
+        criteriaValue = $script:badgeDeletedPayload.criteriaValue
+        active = $true
+    }
+}
 if ($reviewId) {
     Expect "GET" "/api/v1/reviews/{reviewId}" @(200) "" { Invoke-ApiStatus -Method GET -Path "/api/v1/reviews/$reviewId" -Token $userToken }
-    Expect "DELETE" "/api/v1/reviews/{reviewId}" @(204,403) "regra de ownership pode bloquear exclusao" { Invoke-ApiStatus -Method DELETE -Path "/api/v1/reviews/$reviewId" -Token $userToken }
-    Expect "PATCH" "/api/v1/reviews/{reviewId}" @(200,403,404) "regras de ownership/review removida" { Invoke-ApiStatus -Method PATCH -Path "/api/v1/reviews/$reviewId" -Token $userToken -Body @{ rating=4; comment="updated" } }
+    Expect "PATCH" "/api/v1/reviews/{reviewId}" @(200) "" { Invoke-ApiStatus -Method PATCH -Path "/api/v1/reviews/$reviewId" -Token $userToken -Body @{ rating=4; comment="updated" } }
+    Expect "DELETE" "/api/v1/reviews/{reviewId}" @(204) "" { Invoke-ApiStatus -Method DELETE -Path "/api/v1/reviews/$reviewId" -Token $userToken }
 } else {
     $dummyReviewId = [guid]::NewGuid().ToString()
     Expect "GET" "/api/v1/reviews/{reviewId}" @(404) "sem review id disponivel no bootstrap" { Invoke-ApiStatus -Method GET -Path "/api/v1/reviews/$dummyReviewId" -Token $userToken }

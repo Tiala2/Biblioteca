@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { BookCover } from "@shared/ui/books/BookCover";
+import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type HomeBook = {
   id: string;
@@ -117,6 +118,31 @@ export function HomePage() {
   const currentReading = home.readings[0];
   const progressPercent = Math.max(0, Math.min(100, Number(home.readingProgress.goal?.progressPercent ?? 0)));
 
+  if (loading) {
+    return (
+      <StateCard
+        title="Painel inicial em carregamento"
+        message="Estamos preparando seu resumo de leitura, metas e recomendacoes."
+        variant="loading"
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <StateCard
+        title="Nao foi possivel carregar o painel"
+        message={error}
+        variant="error"
+        action={
+          <Link to="/books" className="btn-link">
+            Ir para o catalogo
+          </Link>
+        }
+      />
+    );
+  }
+
   return (
     <section className="grid">
       <article className="card hero">
@@ -124,14 +150,16 @@ export function HomePage() {
           <div>
             <h2>Bem-vinda, {auth?.name}</h2>
             <p>
-              Seu painel mostra o que realmente importa para a avaliacao do projeto:
-              leitura atual, metas, recomendacoes e sinais de engajamento.
+              Seu painel reune leitura atual, metas, recomendacoes e sinais de engajamento em um unico lugar.
             </p>
           </div>
           <span className="kpi">{home.readingProgress.streakDays} dia(s) de streak</span>
         </div>
 
         <div className="card-actions">
+          <Link to="/profile" className="btn-link">
+            Abrir perfil
+          </Link>
           <Link to="/books" className="btn-link">
             Explorar catalogo
           </Link>
@@ -192,6 +220,9 @@ export function HomePage() {
               <div className="progress-fill" style={{ width: `${currentReading.progress}%` }} />
             </div>
             <div className="card-actions">
+              <Link to={`/books/${currentReading.book.id}`} className="btn-muted btn-link">
+                Ver detalhes
+              </Link>
               <Link to={`/books/${currentReading.book.id}/read`} className="btn-link">
                 Continuar leitura
               </Link>
@@ -243,8 +274,8 @@ export function HomePage() {
                     Nota {Number(book.averageRating ?? 0).toFixed(1)}
                   </p>
                 </div>
-                <Link to="/books" className="btn-muted btn-link">
-                  Ver catalogo
+                <Link to={`/books/${book.id}`} className="btn-muted btn-link">
+                  Ver detalhes
                 </Link>
               </li>
             ))}
@@ -297,9 +328,6 @@ export function HomePage() {
           <p className="section-sub">Suas proximas avaliacoes aparecerao aqui.</p>
         )}
       </article>
-
-      {loading && <article className="card"><p className="section-sub">Carregando painel inicial...</p></article>}
-      {error && <article className="card error">{error}</article>}
     </section>
   );
 }

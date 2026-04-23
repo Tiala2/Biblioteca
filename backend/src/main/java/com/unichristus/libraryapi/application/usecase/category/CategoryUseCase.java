@@ -24,6 +24,13 @@ public class CategoryUseCase {
     private final CategoryService categoryService;
     private final BookService bookService;
 
+    public List<CategoryResponse> getAllCategories() {
+        List<Category> categories = categoryService.findAll();
+        return categories.stream()
+                .map(CategoryResponseMapper::toResponse)
+                .toList();
+    }
+
     public List<CategoryResponse> getAllActiveCategories() {
         List<Category> categories = categoryService.findAllActive();
         return categories.stream()

@@ -9,12 +9,11 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 - `docs/`: guias, evidencias e material de apoio
 - `scripts/`: validacoes e automacoes do projeto
 
-## Fluxo recomendado para avaliacao
+## Documentacao principal
 
-Use o guia principal:
-
-- [Guia de Avaliacao do Projeto](C:\workspace\library-api-projeto\docs\GUIA_AVALIACAO_PROJETO.md)
+- [Documentacao Final](C:\workspace\library-api-projeto\docs\DOCUMENTACAO_FINAL.md)
 - [Architecture Overview](C:\workspace\library-api-projeto\docs\ARCHITECTURE_OVERVIEW.md)
+- [Relatorio do Projeto](C:\workspace\library-api-projeto\docs\RELATORIO_PROJETO.md)
 
 ## Subida rapida
 

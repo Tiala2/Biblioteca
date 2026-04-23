@@ -13,6 +13,7 @@ import java.util.UUID;
 public class BookResponse {
     private UUID id;
     private String title;
+    private String author;
     private String isbn;
     private Integer numberOfPages;
     private LocalDate publicationDate;

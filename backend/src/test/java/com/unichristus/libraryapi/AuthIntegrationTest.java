@@ -79,4 +79,32 @@ class AuthIntegrationTest extends IntegrationTestSupport {
                         .content("{\"email\":\"" + email + "\",\"password\":\"" + newPassword + "\"}"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @DisplayName("Deve gerar token ao solicitar recuperacao de senha")
+    void shouldGenerateResetTokenOnForgotPassword() throws Exception {
+        String email = "forgot" + System.nanoTime() + "@email.com";
+        String password = "StrongPass123";
+
+        registerUser("Forgot User", email, password);
+
+        mockMvc.perform(post("/api/v1/auth/forgot-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"" + email + "\"}"))
+                .andExpect(status().isNoContent());
+
+        var user = userJpaRepository.findByEmail(email).orElseThrow();
+        var token = passwordResetTokenJpaRepository.findTopByUserIdOrderByCreatedAtDesc(user.getId()).orElse(null);
+        org.assertj.core.api.Assertions.assertThat(token).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(token.getUsedAt()).isNull();
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar redefinicao com token invalido")
+    void shouldRejectResetPasswordWithInvalidToken() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"token\":\"00000000-0000-0000-0000-000000000000\",\"newPassword\":\"NewStrongPass456\"}"))
+                .andExpect(status().isBadRequest());
+    }
 }

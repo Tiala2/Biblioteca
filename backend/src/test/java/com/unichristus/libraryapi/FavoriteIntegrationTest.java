@@ -53,6 +53,28 @@ class FavoriteIntegrationTest extends IntegrationTestSupport {
         assertThat(containsBook(favoritesAfterDelete, bookId)).isFalse();
     }
 
+    @Test
+    @DisplayName("Deve rejeitar favorito duplicado com conflito")
+    void shouldRejectDuplicateFavorite() throws Exception {
+        String email = "dup-fav" + System.nanoTime() + "@email.com";
+        String password = "StrongPass123";
+        String token = registerAndLogin("Dup Fav User", email, password);
+
+        UUID bookId = fetchAnyBookId(token);
+
+        mockMvc.perform(post("/api/v1/users/me/favorites")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\"}"))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/v1/users/me/favorites")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\"}"))
+                .andExpect(status().isConflict());
+    }
+
     private boolean containsBook(JsonNode array, UUID bookId) {
         if (!array.isArray()) {
             return false;

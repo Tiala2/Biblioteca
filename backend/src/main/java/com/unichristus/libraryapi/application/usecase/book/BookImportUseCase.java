@@ -74,6 +74,7 @@ public class BookImportUseCase {
 
                     Book createdBook = bookService.upsertOpenLibraryBook(
                             doc.title().trim(),
+                            resolveAuthor(doc.authorNames()),
                             isbn,
                             pages,
                             publicationDate,
@@ -136,5 +137,17 @@ public class BookImportUseCase {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private String resolveAuthor(List<String> authorNames) {
+        if (authorNames == null || authorNames.isEmpty()) {
+            return "Autor nao informado";
+        }
+        return authorNames.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(name -> !name.isBlank())
+                .findFirst()
+                .orElse("Autor nao informado");
     }
 }

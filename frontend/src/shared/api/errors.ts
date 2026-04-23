@@ -11,6 +11,11 @@ type ApiErrorPayload = {
   fieldErrors?: FieldError[];
 };
 
+export function extractApiErrorCode(error: unknown): string | undefined {
+  if (!isAxiosError<ApiErrorPayload>(error)) return undefined;
+  return error.response?.data?.code;
+}
+
 export function extractApiErrorMessage(error: unknown, fallback: string): string {
   if (!isAxiosError<ApiErrorPayload>(error)) return fallback;
   if (!error.response) return "Falha de conexao com o servidor.";
@@ -30,4 +35,3 @@ export function extractFieldErrorMessages(error: unknown): string[] {
     })
     .filter((value) => value.length > 0);
 }
-

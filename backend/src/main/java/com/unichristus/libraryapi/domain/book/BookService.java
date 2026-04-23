@@ -42,11 +42,12 @@ public class BookService {
         return bookRepository.findByIds(ids);
     }
 
-    public Book createBook(String title, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl,
+    public Book createBook(String title, String author, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl,
                            Set<Category> categories) {
         validateISBNUnique(isbn);
         Book book = Book.builder()
                 .title(title)
+                .author(author)
                 .coverUrl(coverUrl)
                 .isbn(isbn)
                 .numberOfPages(numberOfPages)
@@ -60,12 +61,15 @@ public class BookService {
     }
 
     @Transactional
-    public Book upsertOpenLibraryBook(String title, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl) {
+    public Book upsertOpenLibraryBook(String title, String author, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl) {
         LocalDateTime now = LocalDateTime.now();
         var existing = bookRepository.findByIsbn(isbn);
         if (existing.isPresent()) {
             Book book = existing.get();
             book.setLastSeenAt(now);
+            if ((book.getAuthor() == null || book.getAuthor().isBlank()) && author != null && !author.isBlank()) {
+                book.setAuthor(author);
+            }
             if ((book.getCoverUrl() == null || book.getCoverUrl().isBlank()) && coverUrl != null && !coverUrl.isBlank()) {
                 book.setCoverUrl(coverUrl);
             }
@@ -74,6 +78,7 @@ public class BookService {
 
         Book created = Book.builder()
                 .title(title)
+                .author(author)
                 .coverUrl(coverUrl)
                 .isbn(isbn)
                 .numberOfPages(numberOfPages)
@@ -86,11 +91,15 @@ public class BookService {
         return save(created);
     }
 
-    public void updateBook(UUID bookId, String title, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl, Boolean available, Set<Category> categories) {
+    public void updateBook(UUID bookId, String title, String author, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl, Boolean available, Set<Category> categories) {
         Book book = findBookByIdOrThrow(bookId);
         boolean changed = false;
         if (title != null && !title.equals(book.getTitle())) {
             book.setTitle(title);
+            changed = true;
+        }
+        if (author != null && !author.equals(book.getAuthor())) {
+            book.setAuthor(author);
             changed = true;
         }
         if (isbn != null && !isbn.equals(book.getIsbn())) {
@@ -151,6 +160,7 @@ public class BookService {
     }
 
     public Page<BookSearchHit> search(String query,
+                                      String author,
                                       List<UUID> categoryIds,
                                       List<UUID> tagIds,
                                       Integer minPages,
@@ -177,6 +187,7 @@ public class BookService {
 
         return bookRepository.search(
                 query,
+                author,
                 normalizedCategories,
                 normalizedTags,
                 minPages,

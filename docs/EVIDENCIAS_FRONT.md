@@ -1,12 +1,12 @@
-﻿# Evidencias Front - Banca
+# Evidencias Front
 
 Data de referencia: `2026-03-12`
 
 ## 1. Acessibilidade aplicada
 
-- Skip link para conteÃºdo principal.
-- `aria-label` na navegaÃ§Ã£o principal.
-- foco visÃ­vel (`:focus-visible`) para links, botÃµes e campos.
+- Skip link para conteudo principal.
+- `aria-label` na navegacao principal.
+- foco visivel (`:focus-visible`) para links, botoes e campos.
 - `aria-live` no stack de toasts.
 
 Arquivos:
@@ -14,7 +14,7 @@ Arquivos:
 - `frontend/src/shared/styles/index.css`
 - `frontend/src/shared/ui/toast/ToastContext.tsx`
 
-## 2. Testes Frontend (unitÃ¡rios)
+## 2. Testes Frontend (unitarios)
 
 Scripts:
 - `npm run test`
@@ -33,7 +33,7 @@ Config e caso inicial:
 - `frontend/playwright.config.ts`
 - `frontend/e2e/smoke.spec.ts`
 
-PrÃ©-requisito:
+Pre-requisito:
 - Front rodando em `http://localhost:5173` (ou `FRONT_BASE_URL` configurado).
 
 ## 4. Fluxos UX finalizados
@@ -42,14 +42,14 @@ PrÃ©-requisito:
   - login
   - salvar meta
   - salvar leitura
-  - aÃ§Ãµes admin (criar/excluir/importar)
-- PÃ¡gina de leitura narrativa com quiz interativo.
-- PÃ¡ginas de favoritos e reviews.
-- PaginaÃ§Ã£o real em books, badges e reviews.
+  - acoes admin (criar/excluir/importar)
+- Pagina de leitura narrativa com quiz interativo.
+- Paginas de favoritos e reviews.
+- Paginacao real em books, badges e reviews.
 
-## 5. Comandos de validaÃ§Ã£o tÃ©cnica
+## 5. Comandos de validacao tecnica
 
-No diretÃ³rio `frontend`:
+No diretorio `frontend`:
 
 ```bash
 npm install
@@ -62,4 +62,3 @@ E2E (com app rodando):
 ```bash
 npm run test:e2e
 ```
-

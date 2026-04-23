@@ -176,6 +176,7 @@ public class OpenLibraryClient {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record OpenLibraryDoc(
             @JsonProperty("title") String title,
+            @JsonProperty("author_name") List<String> authorNames,
             @JsonProperty("isbn") List<String> isbn,
             @JsonProperty("number_of_pages_median") Integer numberOfPagesMedian,
             @JsonProperty("first_publish_year") Integer firstPublishYear,
@@ -184,11 +185,20 @@ public class OpenLibraryClient {
             @JsonProperty("availability") OpenLibraryAvailability availability
     ) {
         public OpenLibraryDoc(String title,
+                              List<String> authorNames,
                               List<String> isbn,
                               Integer numberOfPagesMedian,
                               Integer firstPublishYear,
                               Integer coverId) {
-            this(title, isbn, numberOfPagesMedian, firstPublishYear, coverId, List.of(), null);
+            this(title, authorNames, isbn, numberOfPagesMedian, firstPublishYear, coverId, List.of(), null);
+        }
+
+        public OpenLibraryDoc(String title,
+                              List<String> isbn,
+                              Integer numberOfPagesMedian,
+                              Integer firstPublishYear,
+                              Integer coverId) {
+            this(title, List.of(), isbn, numberOfPagesMedian, firstPublishYear, coverId, List.of(), null);
         }
     }
 

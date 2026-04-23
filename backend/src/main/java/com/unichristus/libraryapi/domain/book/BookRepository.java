@@ -30,6 +30,7 @@ public interface BookRepository {
 
         Page<BookSearchHit> search(
             String query,
+            String author,
             List<UUID> categoryIds,
             List<UUID> tagIds,
             Integer minPages,

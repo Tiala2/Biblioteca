@@ -80,7 +80,7 @@ Implementar com nested routes:
 6. `/leaderboard`
 7. `/admin` (dashboard mÃ­nimo)
 
-## Fase 2 (diferencial para banca)
+## Fase 2 (reforco de experiencia)
 1. `/books/:bookId/read` com:
    - estado da trama
    - quem Ã© quem
@@ -116,6 +116,6 @@ Implementar com nested routes:
 1. Todas as rotas Fase 1 e Fase 2 funcionando com API real.
 2. Tokens JWT e regras de perfil aplicadas em navegaÃ§Ã£o e chamadas.
 3. Erros e carregamento tratados sem tela quebrada.
-4. Visual consistente com `FRONT_VISUAL_GUIDE.md`.
+4. Visual consistente com os componentes e estilos compartilhados do frontend.
 
 

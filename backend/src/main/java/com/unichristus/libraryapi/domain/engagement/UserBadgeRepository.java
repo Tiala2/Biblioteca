@@ -11,4 +11,5 @@ public interface UserBadgeRepository {
     UserBadge save(UserBadge userBadge);
     List<UserBadge> findByUser(UUID userId);
     Page<UserBadge> findByUser(UUID userId, Pageable pageable);
+    void deleteByBadge(UUID badgeId);
 }

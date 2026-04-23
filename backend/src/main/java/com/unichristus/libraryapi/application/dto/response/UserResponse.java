@@ -12,6 +12,7 @@ public class UserResponse {
     private UUID id;
     private String name;
     private String email;
+    private Boolean active;
     private Boolean leaderboardOptIn;
     private Boolean alertsOptIn;
     private List<BadgeResponse> badges;

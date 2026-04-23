@@ -30,6 +30,7 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
 
         OpenLibraryClient.OpenLibraryDoc validDoc = new OpenLibraryClient.OpenLibraryDoc(
                 importedTitle,
+                List.of("Robert C. Martin"),
                 List.of(importedIsbn),
                 464,
                 2008,
@@ -37,6 +38,7 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
         );
         OpenLibraryClient.OpenLibraryDoc invalidDocNoIsbn = new OpenLibraryClient.OpenLibraryDoc(
                 "Sem Isbn",
+                List.of("Autor sem ISBN"),
                 List.of(),
                 100,
                 2010,
@@ -44,6 +46,7 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
         );
         OpenLibraryClient.OpenLibraryDoc duplicateDoc = new OpenLibraryClient.OpenLibraryDoc(
                 importedTitle + " Dup",
+                List.of("Robert C. Martin"),
                 List.of(importedIsbn),
                 200,
                 2011,

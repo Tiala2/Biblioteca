@@ -5,10 +5,14 @@ import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
 import { BookCover } from "@shared/ui/books/BookCover";
+import { StateCard } from "@shared/ui/feedback/StateCard";
 
+type Category = { id: string; name: string };
+type Tag = { id: string; name: string };
 type Book = {
   id: string;
   title: string;
+  author?: string | null;
   numberOfPages: number;
   hasPdf: boolean;
   source?: "LOCAL" | "OPEN";
@@ -45,9 +49,14 @@ export function BooksPage() {
   const { auth } = useAuth();
   const { showToast } = useToast();
   const [books, setBooks] = useState<Book[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [favoriteBookIds, setFavoriteBookIds] = useState<Set<string>>(new Set());
   const [totalPages, setTotalPages] = useState(0);
   const [queryInput, setQueryInput] = useState("");
+  const [authorInput, setAuthorInput] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedTagId, setSelectedTagId] = useState("");
   const [minPagesInput, setMinPagesInput] = useState("");
   const [maxPagesInput, setMaxPagesInput] = useState("");
   const [sortInput, setSortInput] = useState<BookSort>(DEFAULT_SORT);
@@ -61,6 +70,9 @@ export function BooksPage() {
   const applied = useMemo(() => {
     return {
       query: searchParams.get("q") ?? "",
+      author: searchParams.get("author") ?? "",
+      categoryId: searchParams.get("categoryId") ?? "",
+      tagId: searchParams.get("tagId") ?? "",
       minPages: parsePositiveInt(searchParams.get("minPages")),
       maxPages: parsePositiveInt(searchParams.get("maxPages")),
       sort: parseSort(searchParams.get("sort")),
@@ -71,11 +83,32 @@ export function BooksPage() {
 
   useEffect(() => {
     setQueryInput(applied.query);
+    setAuthorInput(applied.author);
+    setSelectedCategoryId(applied.categoryId);
+    setSelectedTagId(applied.tagId);
     setMinPagesInput(applied.minPages ? String(applied.minPages) : "");
     setMaxPagesInput(applied.maxPages ? String(applied.maxPages) : "");
     setSortInput(applied.sort);
     setOnlyWithPdfInput(applied.onlyWithPdf);
   }, [applied]);
+
+  useEffect(() => {
+    const loadFilters = async () => {
+      try {
+        const [categoryResponse, tagResponse] = await Promise.all([
+          api.get<Category[]>("/api/v1/categories"),
+          api.get<Tag[]>("/api/v1/tags"),
+        ]);
+        setCategories(categoryResponse.data);
+        setTags(tagResponse.data);
+      } catch {
+        setCategories([]);
+        setTags([]);
+      }
+    };
+
+    void loadFilters();
+  }, []);
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -87,6 +120,9 @@ export function BooksPage() {
             size: PAGE_SIZE,
             includeWithoutPdf: !applied.onlyWithPdf,
             q: applied.query || undefined,
+            author: applied.author || undefined,
+            categoryIds: applied.categoryId || undefined,
+            tagIds: applied.tagId || undefined,
             minPages: applied.minPages,
             maxPages: applied.maxPages,
             sort: applied.sort,
@@ -125,6 +161,9 @@ export function BooksPage() {
   const updateUrl = (
     next: Partial<{
       query: string;
+      author: string;
+      categoryId: string;
+      tagId: string;
       minPages: string;
       maxPages: string;
       sort: BookSort;
@@ -133,6 +172,9 @@ export function BooksPage() {
     }>
   ) => {
     const nextQuery = next.query ?? queryInput.trim();
+    const nextAuthor = next.author ?? authorInput.trim();
+    const nextCategoryId = next.categoryId ?? selectedCategoryId;
+    const nextTagId = next.tagId ?? selectedTagId;
     const nextMin = next.minPages ?? minPagesInput.trim();
     const nextMax = next.maxPages ?? maxPagesInput.trim();
     const nextSort = next.sort ?? sortInput;
@@ -141,6 +183,9 @@ export function BooksPage() {
 
     const params = new URLSearchParams();
     if (nextQuery) params.set("q", nextQuery);
+    if (nextAuthor) params.set("author", nextAuthor);
+    if (nextCategoryId) params.set("categoryId", nextCategoryId);
+    if (nextTagId) params.set("tagId", nextTagId);
     if (nextMin) params.set("minPages", nextMin);
     if (nextMax) params.set("maxPages", nextMax);
     if (nextSort !== DEFAULT_SORT) params.set("sort", nextSort);
@@ -170,6 +215,9 @@ export function BooksPage() {
 
   const clearFilters = () => {
     setQueryInput("");
+    setAuthorInput("");
+    setSelectedCategoryId("");
+    setSelectedTagId("");
     setMinPagesInput("");
     setMaxPagesInput("");
     setSortInput(DEFAULT_SORT);
@@ -220,11 +268,35 @@ export function BooksPage() {
       <article className="card">
         <form className="filters-grid" onSubmit={onSearch}>
           <input
-            placeholder="Pesquisar por titulo (ex: Hobbit, Duna, Clean Code)"
+            aria-label="Pesquisar livros por titulo ou autor"
+            placeholder="Pesquisar por titulo ou autor"
             value={queryInput}
             onChange={(event) => setQueryInput(event.target.value)}
           />
           <input
+            aria-label="Filtrar livros por autor"
+            placeholder="Filtrar por autor"
+            value={authorInput}
+            onChange={(event) => setAuthorInput(event.target.value)}
+          />
+          <select aria-label="Filtrar por categoria" value={selectedCategoryId} onChange={(event) => setSelectedCategoryId(event.target.value)}>
+            <option value="">Todas as categorias</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <select aria-label="Filtrar por tag" value={selectedTagId} onChange={(event) => setSelectedTagId(event.target.value)}>
+            <option value="">Todas as tags</option>
+            {tags.map((tag) => (
+              <option key={tag.id} value={tag.id}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
+          <input
+            aria-label="Quantidade minima de paginas"
             type="number"
             min={1}
             placeholder="Min paginas"
@@ -232,13 +304,14 @@ export function BooksPage() {
             onChange={(event) => setMinPagesInput(event.target.value)}
           />
           <input
+            aria-label="Quantidade maxima de paginas"
             type="number"
             min={1}
             placeholder="Max paginas"
             value={maxPagesInput}
             onChange={(event) => setMaxPagesInput(event.target.value)}
           />
-          <select value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
+          <select aria-label="Ordenacao do catalogo" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
             <option value="BEST_RATED">Melhor avaliacao</option>
             <option value="NEW_RELEASES">Lancamentos</option>
             <option value="TRENDING_WEEK">Tendencia semanal</option>
@@ -261,10 +334,16 @@ export function BooksPage() {
         </form>
       </article>
 
-      {loading && <p className="section-sub">Carregando livros...</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && (
+        <StateCard
+          title="Catalogo em carregamento"
+          message="Estamos reunindo livros, filtros e destaques para sua proxima leitura."
+          variant="loading"
+        />
+      )}
+      {!loading && error && <StateCard title="Falha ao carregar catalogo" message={error} variant="error" />}
 
-      <div className="grid">
+      {!loading && !error && <div className="grid">
         {books.map((book) => (
           <article key={book.id} className="card">
             <BookCover title={book.title} coverUrl={book.coverUrl} size="medium" />
@@ -273,7 +352,12 @@ export function BooksPage() {
               {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">SEM PDF</span>}
               {favoriteBookIds.has(book.id) && <span className="favorite-badge">FAVORITO</span>}
             </div>
-            <h3>{book.title}</h3>
+            <h3>
+              <Link to={`/books/${book.id}`} className="btn-link">
+                {book.title}
+              </Link>
+            </h3>
+            <p>{book.author || "Autor nao informado"}</p>
             <p>{book.numberOfPages} paginas</p>
             <small>
               {book.hasPdf
@@ -283,6 +367,9 @@ export function BooksPage() {
                   : "Sem PDF local"}
             </small>
             <div className="card-actions">
+              <Link to={`/books/${book.id}`} className="btn-muted btn-link">
+                Ver detalhes
+              </Link>
               <Link
                 to={`/books/${book.id}/read`}
                 className={book.hasPdf ? "btn-link" : "btn-muted btn-link"}
@@ -304,7 +391,7 @@ export function BooksPage() {
             </div>
           </article>
         ))}
-      </div>
+      </div>}
 
       <div className="pagination-row">
         <button className="btn-muted" disabled={applied.page <= 0 || loading} onClick={() => goToPage(applied.page - 1)}>
@@ -322,8 +409,16 @@ export function BooksPage() {
         </button>
       </div>
 
-      {!loading && books.length === 0 && (
-        <p className="section-sub">Nenhum livro encontrado para a busca informada.</p>
+      {!loading && !error && books.length === 0 && (
+        <StateCard
+          title="Nenhum livro encontrado"
+          message="Ajuste os filtros ou limpe a busca para explorar outras combinacoes do catalogo."
+          action={
+            <button type="button" className="btn-muted" onClick={clearFilters}>
+              Limpar filtros
+            </button>
+          }
+        />
       )}
     </section>
   );

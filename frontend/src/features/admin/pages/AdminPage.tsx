@@ -1,36 +1,63 @@
-import type { FormEvent } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
-import { BookCover } from "@shared/ui/books/BookCover";
+import { AdminHeroPanel } from "../components/AdminHeroPanel";
+import { AlertAuditPanel } from "../components/AlertAuditPanel";
+import { BadgePanel } from "../components/BadgePanel";
+import { BookPanel } from "../components/BookPanel";
+import { CategoryPanel } from "../components/CategoryPanel";
+import { CollectionPanel } from "../components/CollectionPanel";
+import { FavoriteAdminPanel } from "../components/FavoriteAdminPanel";
+import { TagPanel } from "../components/TagPanel";
+import { UserPanel } from "../components/UserPanel";
+import {
+  type AlertDeliveryAdmin,
+  EMPTY_BADGE,
+  EMPTY_BOOK,
+  EMPTY_CATEGORY,
+  EMPTY_COLLECTION,
+  EMPTY_TAG,
+  EMPTY_USER,
+  type Badge,
+  type BadgeForm,
+  type Book,
+  type BookForm,
+  type Category,
+  type CategoryForm,
+  type Collection,
+  type CollectionForm,
+  type FavoriteAdmin,
+  type ImportResult,
+  type Metrics,
+  type Page,
+  type Tag,
+  type TagForm,
+  type UserAdmin,
+  type UserForm,
+} from "../types";
 
-type Metrics = {
-  totalUsers: number;
-  totalBooks: number;
-  totalReviews: number;
-  totalFavorites: number;
-  totalCollections: number;
-  totalTags: number;
+type AdminSectionProps = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  children: ReactNode;
+  variant?: "compact" | "wide";
 };
 
-type Category = { id: string; name: string; description?: string };
-type Tag = { id: string; name: string };
-type Book = { id: string; title: string; coverUrl?: string | null };
-type Collection = { id: string; title: string };
-type Badge = { id: string; code: string; name: string; criteriaType: string; criteriaValue?: string; active: boolean };
-type Page<T> = { content: T[] };
-type ImportResult = { fetched: number; imported: number; skipped: number; failed: number; messages: string[] };
-
-const BADGE_CODES = [
-  "FIRST_BOOK_FINISHED",
-  "STREAK_7_DAYS",
-  "STREAK_30_DAYS",
-  "TOTAL_BOOKS_10",
-  "TOTAL_PAGES_1000",
-] as const;
-
-const BADGE_CRITERIA = ["FIRST_BOOK", "STREAK_DAYS", "TOTAL_BOOKS", "TOTAL_PAGES"] as const;
+function AdminSection({ eyebrow, title, description, children, variant = "compact" }: AdminSectionProps) {
+  return (
+    <section className={`admin-section admin-section--${variant}`}>
+      <div className="admin-section__head">
+        <p className="eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+        <p className="section-sub">{description}</p>
+      </div>
+      <div className="admin-section__grid">{children}</div>
+    </section>
+  );
+}
 
 export function AdminPage() {
   const { auth } = useAuth();
@@ -43,78 +70,101 @@ export function AdminPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [badges, setBadges] = useState<Badge[]>([]);
+  const [users, setUsers] = useState<UserAdmin[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteAdmin[]>([]);
+  const [alertDeliveries, setAlertDeliveries] = useState<AlertDeliveryAdmin[]>([]);
   const [error, setError] = useState("");
-
-  const [categoryName, setCategoryName] = useState("");
-  const [categoryDescription, setCategoryDescription] = useState("");
-  const [tagName, setTagName] = useState("");
-  const [collectionTitle, setCollectionTitle] = useState("");
-  const [collectionBookId, setCollectionBookId] = useState("");
-  const [bookTitle, setBookTitle] = useState("");
-  const [bookIsbn, setBookIsbn] = useState("");
-  const [bookPages, setBookPages] = useState(150);
-  const [bookDate, setBookDate] = useState("2020-01-01");
-  const [bookCoverUrl, setBookCoverUrl] = useState("");
-  const [badgeCode, setBadgeCode] = useState<(typeof BADGE_CODES)[number]>("TOTAL_BOOKS_10");
-  const [badgeName, setBadgeName] = useState("Meta de 10 livros");
-  const [badgeCriteria, setBadgeCriteria] =
-    useState<(typeof BADGE_CRITERIA)[number]>("TOTAL_BOOKS");
-  const [badgeValue, setBadgeValue] = useState("10");
-  const [importQuery, setImportQuery] = useState("programming");
-  const [importPages, setImportPages] = useState(1);
-  const [importPageSize, setImportPageSize] = useState(20);
-  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
+  const [categoryForm, setCategoryForm] = useState<CategoryForm>(EMPTY_CATEGORY);
+  const [tagForm, setTagForm] = useState<TagForm>(EMPTY_TAG);
+  const [collectionForm, setCollectionForm] = useState<CollectionForm>(EMPTY_COLLECTION);
+  const [bookForm, setBookForm] = useState<BookForm>(EMPTY_BOOK);
+  const [badgeForm, setBadgeForm] = useState<BadgeForm>(EMPTY_BADGE);
+  const [userForm, setUserForm] = useState<UserForm>(EMPTY_USER);
   const [uploadBookId, setUploadBookId] = useState("");
   const [coverBookId, setCoverBookId] = useState("");
   const [coverBookUrl, setCoverBookUrl] = useState("");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [creatingCategory, setCreatingCategory] = useState(false);
-  const [creatingTag, setCreatingTag] = useState(false);
-  const [creatingCollection, setCreatingCollection] = useState(false);
-  const [creatingBook, setCreatingBook] = useState(false);
-  const [creatingBadge, setCreatingBadge] = useState(false);
-  const [importingBooks, setImportingBooks] = useState(false);
-  const [uploadingPdf, setUploadingPdf] = useState(false);
-  const [updatingBookCover, setUpdatingBookCover] = useState(false);
-  const [deletingKey, setDeletingKey] = useState<string | null>(null);
-
-  const selectedCoverBook = books.find((book) => book.id === coverBookId) ?? null;
+  const [importQuery, setImportQuery] = useState("programming");
+  const [importPages, setImportPages] = useState(1);
+  const [importPageSize, setImportPageSize] = useState(20);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
 
   const loadAll = async () => {
     if (!headers) return;
-    try {
-      const [m, c, t, b, col, bd] = await Promise.all([
-        api.get<Metrics>("/api/admin/metrics", { headers }),
-        api.get<Category[]>("/api/v1/categories"),
-        api.get<Tag[]>("/api/v1/tags"),
-        api.get<Page<Book>>("/api/v1/books?page=0&size=30&includeWithoutPdf=true"),
-        api.get<Page<Collection>>("/api/v1/collections?page=0&size=30"),
-        api.get<Page<Badge>>("/api/admin/badges?page=0&size=30&sort=code", { headers }),
-      ]);
+    const failedSections: string[] = [];
+    const [m, c, t, b, col, bd, u, f, a] = await Promise.allSettled([
+      api.get<Metrics>("/api/admin/metrics", { headers }),
+      api.get<Category[]>("/api/admin/categories", { headers }),
+      api.get<Tag[]>("/api/admin/tags", { headers }),
+      api.get<Page<Book>>("/api/v1/books?page=0&size=200&includeWithoutPdf=true"),
+      api.get<Page<Collection>>("/api/v1/collections?page=0&size=50&sort=createdAt,desc"),
+      api.get<Page<Badge>>("/api/admin/badges?page=0&size=50&sort=code", { headers }),
+      api.get<Page<UserAdmin>>("/api/admin/users?page=0&size=50&sort=createdAt,desc", { headers }),
+      api.get<Page<FavoriteAdmin>>("/api/admin/favorites?page=0&size=50&sort=createdAt,desc", { headers }),
+      api.get<Page<AlertDeliveryAdmin>>("/api/admin/alerts/deliveries?page=0&size=50&sort=createdAt,desc", { headers }),
+    ]);
 
-      setMetrics(m.data);
-      setCategories(c.data);
-      setTags(t.data);
-      setBooks(b.data.content);
-      setCollections(col.data.content);
-      setBadges(bd.data.content);
-      setError("");
-
-      if (!collectionBookId && b.data.content.length > 0) {
-        setCollectionBookId(b.data.content[0].id);
-      }
-
-      if (!uploadBookId && b.data.content.length > 0) {
-        setUploadBookId(b.data.content[0].id);
-      }
-
-      if (!coverBookId && b.data.content.length > 0) {
-        setCoverBookId(b.data.content[0].id);
-        setCoverBookUrl(b.data.content[0].coverUrl ?? "");
-      }
-    } catch {
-      setError("Falha ao carregar dados admin.");
+    if (m.status === "fulfilled") {
+      setMetrics(m.value.data);
+    } else {
+      failedSections.push("metricas");
     }
+
+    if (c.status === "fulfilled") {
+      setCategories(c.value.data);
+    } else {
+      failedSections.push("categorias");
+    }
+
+    if (t.status === "fulfilled") {
+      setTags(t.value.data);
+    } else {
+      failedSections.push("tags");
+    }
+
+    if (b.status === "fulfilled") {
+      setBooks(b.value.data.content);
+      if (!uploadBookId && b.value.data.content[0]) setUploadBookId(b.value.data.content[0].id);
+      if (!coverBookId && b.value.data.content[0]) {
+        setCoverBookId(b.value.data.content[0].id);
+        setCoverBookUrl(b.value.data.content[0].coverUrl ?? "");
+      }
+    } else {
+      failedSections.push("livros");
+    }
+
+    if (col.status === "fulfilled") {
+      setCollections(col.value.data.content);
+    } else {
+      failedSections.push("colecoes");
+    }
+
+    if (bd.status === "fulfilled") {
+      setBadges(bd.value.data.content);
+    } else {
+      failedSections.push("badges");
+    }
+
+    if (u.status === "fulfilled") {
+      setUsers(u.value.data.content);
+    } else {
+      failedSections.push("usuarios");
+    }
+
+    if (f.status === "fulfilled") {
+      setFavorites(f.value.data.content);
+    } else {
+      failedSections.push("favoritos");
+    }
+
+    if (a.status === "fulfilled") {
+      setAlertDeliveries(a.value.data.content);
+    } else {
+      failedSections.push("alertas");
+    }
+
+    setError(failedSections.length ? `Falha ao carregar: ${failedSections.join(", ")}.` : "");
   };
 
   useEffect(() => {
@@ -122,639 +172,368 @@ export function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth?.token]);
 
-  const createCategory = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!headers) return;
-    if (!categoryName.trim()) {
-      showToast("Informe o nome da categoria.", "error");
-      return;
-    }
-    setCreatingCategory(true);
+  const runAction = async (key: string, action: () => Promise<unknown>, successMessage: string, errorMessage: string) => {
+    setBusyKey(key);
     try {
-      await api.post("/api/admin/categories", { name: categoryName, description: categoryDescription }, { headers });
-      setCategoryName("");
-      setCategoryDescription("");
+      await action();
       await loadAll();
-      showToast("Categoria criada com sucesso.", "success");
+      setError("");
+      showToast(successMessage, "success");
     } catch {
-      setError("Falha ao criar categoria.");
-      showToast("Falha ao criar categoria.", "error");
+      setError(errorMessage);
+      showToast(errorMessage, "error");
     } finally {
-      setCreatingCategory(false);
+      setBusyKey(null);
     }
   };
 
-  const createTag = async (event: FormEvent) => {
+  const submitCategory = async (event: FormEvent) => {
     event.preventDefault();
-    if (!headers) return;
-    if (!tagName.trim()) {
-      showToast("Informe o nome da tag.", "error");
-      return;
-    }
-    setCreatingTag(true);
-    try {
-      await api.post("/api/admin/tags", { name: tagName }, { headers });
-      setTagName("");
-      await loadAll();
-      showToast("Tag criada com sucesso.", "success");
-    } catch {
-      setError("Falha ao criar tag.");
-      showToast("Falha ao criar tag.", "error");
-    } finally {
-      setCreatingTag(false);
-    }
+    if (!headers || !categoryForm.name.trim()) return;
+    await runAction(
+      categoryForm.id ? `category-save-${categoryForm.id}` : "category-create",
+      () =>
+        categoryForm.id
+          ? api.put(`/api/admin/categories/${categoryForm.id}`, { name: categoryForm.name, description: categoryForm.description }, { headers })
+          : api.post("/api/admin/categories", { name: categoryForm.name, description: categoryForm.description }, { headers }),
+      categoryForm.id ? "Categoria atualizada com sucesso." : "Categoria criada com sucesso.",
+      categoryForm.id ? "Falha ao atualizar categoria." : "Falha ao criar categoria."
+    );
+    setCategoryForm(EMPTY_CATEGORY);
   };
 
-  const createCollection = async (event: FormEvent) => {
+  const submitTag = async (event: FormEvent) => {
     event.preventDefault();
-    if (!headers || !collectionBookId) return;
-    if (!collectionTitle.trim()) {
-      showToast("Informe o titulo da colecao.", "error");
-      return;
-    }
-    setCreatingCollection(true);
-    try {
-      await api.post(
-        "/api/admin/collections",
-        {
-          title: collectionTitle,
-          description: "Colecao criada no painel admin",
-          coverUrl: "https://example.com/cover.jpg",
-          bookIds: [collectionBookId],
-        },
-        { headers }
-      );
-      setCollectionTitle("");
-      await loadAll();
-      showToast("Colecao criada com sucesso.", "success");
-    } catch {
-      setError("Falha ao criar colecao.");
-      showToast("Falha ao criar colecao.", "error");
-    } finally {
-      setCreatingCollection(false);
-    }
+    if (!headers || !tagForm.name.trim()) return;
+    await runAction(
+      tagForm.id ? `tag-save-${tagForm.id}` : "tag-create",
+      () => (tagForm.id ? api.put(`/api/admin/tags/${tagForm.id}`, { name: tagForm.name }, { headers }) : api.post("/api/admin/tags", { name: tagForm.name }, { headers })),
+      tagForm.id ? "Tag atualizada com sucesso." : "Tag criada com sucesso.",
+      tagForm.id ? "Falha ao atualizar tag." : "Falha ao criar tag."
+    );
+    setTagForm(EMPTY_TAG);
   };
 
-  const createBook = async (event: FormEvent) => {
+  const submitCollection = async (event: FormEvent) => {
     event.preventDefault();
-    if (!headers) return;
-    if (!bookTitle.trim() || !bookIsbn.trim()) {
-      showToast("Informe titulo e ISBN do livro.", "error");
-      return;
-    }
-    if (bookPages < 1) {
-      showToast("Numero de paginas deve ser maior que zero.", "error");
-      return;
-    }
-    setCreatingBook(true);
-    try {
-      await api.post(
-        "/api/admin/books",
-        {
-          title: bookTitle,
-          isbn: bookIsbn,
-          numberOfPages: Number(bookPages),
-          publicationDate: bookDate,
-          coverUrl: bookCoverUrl.trim() || null,
-          categories: [],
-        },
-        { headers }
-      );
-      setBookTitle("");
-      setBookIsbn("");
-      setBookCoverUrl("");
-      await loadAll();
-      showToast("Livro criado com sucesso.", "success");
-    } catch {
-      setError("Falha ao criar livro.");
-      showToast("Falha ao criar livro.", "error");
-    } finally {
-      setCreatingBook(false);
-    }
+    if (!headers || !collectionForm.title.trim() || collectionForm.bookIds.length === 0) return;
+    await runAction(
+      collectionForm.id ? `collection-save-${collectionForm.id}` : "collection-create",
+      () =>
+        collectionForm.id
+          ? api.put(`/api/admin/collections/${collectionForm.id}`, collectionForm, { headers })
+          : api.post("/api/admin/collections", collectionForm, { headers }),
+      collectionForm.id ? "Colecao atualizada com sucesso." : "Colecao criada com sucesso.",
+      collectionForm.id ? "Falha ao atualizar colecao." : "Falha ao criar colecao."
+    );
+    setCollectionForm(EMPTY_COLLECTION);
   };
 
-  const createBadge = async (event: FormEvent) => {
+  const submitBook = async (event: FormEvent) => {
     event.preventDefault();
-    if (!headers) return;
-    if (!badgeName.trim()) {
-      showToast("Informe o nome do badge.", "error");
-      return;
-    }
-    setCreatingBadge(true);
-    try {
-      await api.post(
-        "/api/admin/badges",
-        {
-          code: badgeCode,
-          name: badgeName,
-          description: badgeName,
-          criteriaType: badgeCriteria,
-          criteriaValue: badgeValue,
-          active: true,
-        },
-        { headers }
-      );
-      await loadAll();
-      showToast("Badge criado com sucesso.", "success");
-    } catch {
-      setError("Falha ao criar badge (pode ja existir).");
-      showToast("Falha ao criar badge.", "error");
-    } finally {
-      setCreatingBadge(false);
-    }
+    if (!headers || !bookForm.title.trim() || !bookForm.isbn.trim()) return;
+    await runAction(
+      bookForm.id ? `book-save-${bookForm.id}` : "book-create",
+      () =>
+        bookForm.id
+          ? api.patch(
+              `/api/admin/books/${bookForm.id}`,
+              {
+                title: bookForm.title,
+                author: bookForm.author,
+                isbn: bookForm.isbn,
+                numberOfPages: bookForm.numberOfPages,
+                publicationDate: bookForm.publicationDate,
+                coverUrl: bookForm.coverUrl.trim() || null,
+                categories: bookForm.categoryIds,
+              },
+              { headers }
+            )
+          : api.post(
+              "/api/admin/books",
+              {
+                title: bookForm.title,
+                author: bookForm.author,
+                isbn: bookForm.isbn,
+                numberOfPages: bookForm.numberOfPages,
+                publicationDate: bookForm.publicationDate,
+                coverUrl: bookForm.coverUrl.trim() || null,
+                categories: bookForm.categoryIds,
+              },
+              { headers }
+            ),
+      bookForm.id ? "Livro atualizado com sucesso." : "Livro criado com sucesso.",
+      bookForm.id ? "Falha ao atualizar livro." : "Falha ao criar livro."
+    );
+    setBookForm(EMPTY_BOOK);
   };
 
-  const importBooks = async (event: FormEvent) => {
+  const submitBadge = async (event: FormEvent) => {
     event.preventDefault();
+    if (!headers || !badgeForm.name.trim()) return;
+    await runAction(
+      badgeForm.id ? `badge-save-${badgeForm.id}` : "badge-create",
+      () => (badgeForm.id ? api.put(`/api/admin/badges/${badgeForm.id}`, badgeForm, { headers }) : api.post("/api/admin/badges", badgeForm, { headers })),
+      badgeForm.id ? "Badge atualizado com sucesso." : "Badge criado com sucesso.",
+      badgeForm.id ? "Falha ao atualizar badge." : "Falha ao criar badge."
+    );
+    setBadgeForm(EMPTY_BADGE);
+  };
+
+  const submitUser = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!headers || !userForm.id || !userForm.name.trim() || !userForm.email.trim()) return;
+    await runAction(
+      `user-save-${userForm.id}`,
+      () =>
+        api.put(
+          `/api/admin/users/${userForm.id}`,
+          {
+            name: userForm.name,
+            email: userForm.email,
+            leaderboardOptIn: userForm.leaderboardOptIn,
+            alertsOptIn: userForm.alertsOptIn,
+          },
+          { headers }
+        ),
+      "Usuario atualizado com sucesso.",
+      "Falha ao atualizar usuario."
+    );
+    setUserForm(EMPTY_USER);
+  };
+
+  const removeItem = async (key: string, path: string, successMessage: string, errorMessage: string) => {
     if (!headers) return;
-    if (!importQuery.trim()) {
-      showToast("Informe o termo de busca para importacao.", "error");
-      return;
-    }
-    setImportingBooks(true);
-    try {
-      const response = await api.post<ImportResult>(
-        "/api/admin/books/import/open-library",
-        {
-          query: importQuery,
-          pages: Number(importPages),
-          pageSize: Number(importPageSize),
-        },
-        { headers }
-      );
-      setImportResult(response.data);
-      await loadAll();
-      showToast(
-        `Importacao concluida: ${response.data.imported} importados e ${response.data.skipped} pulados.`,
-        "success"
-      );
-    } catch {
-      setError("Falha ao importar livros da Open Library.");
-      showToast("Falha ao importar livros da Open Library.", "error");
-    } finally {
-      setImportingBooks(false);
-    }
+    await runAction(key, () => api.delete(path, { headers }), successMessage, errorMessage);
+  };
+
+  const reactivateUser = async (userId: string) => {
+    if (!headers) return;
+    await runAction(
+      `user-reactivate-${userId}`,
+      () => api.patch(`/api/admin/users/${userId}/reactivate`, undefined, { headers }),
+      "Usuario reativado com sucesso.",
+      "Falha ao reativar usuario."
+    );
   };
 
   const uploadPdf = async (event: FormEvent) => {
     event.preventDefault();
-    if (!headers) return;
-    if (!uploadBookId || !uploadFile) {
-      showToast("Selecione livro e arquivo PDF.", "error");
-      return;
-    }
+    if (!headers || !uploadBookId || !uploadFile) return;
     const formData = new FormData();
     formData.append("file", uploadFile);
-    setUploadingPdf(true);
-    try {
-      await api.post(`/api/admin/books/${uploadBookId}/upload`, formData, {
-        headers: {
-          ...headers,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setUploadFile(null);
-      await loadAll();
-      showToast("PDF enviado com sucesso.", "success");
-    } catch {
-      showToast("Falha no upload do PDF.", "error");
-    } finally {
-      setUploadingPdf(false);
-    }
+    await runAction(
+      "book-upload",
+      () => api.post(`/api/admin/books/${uploadBookId}/upload`, formData, { headers: { ...headers, "Content-Type": "multipart/form-data" } }),
+      "PDF enviado com sucesso.",
+      "Falha no upload do PDF."
+    );
+    setUploadFile(null);
   };
 
-  const updateBookCover = async (event: FormEvent) => {
+  const updateCover = async (event: FormEvent) => {
     event.preventDefault();
     if (!headers || !coverBookId) return;
-
-    setUpdatingBookCover(true);
-    try {
-      await api.patch(
-        `/api/admin/books/${coverBookId}`,
-        {
-          coverUrl: coverBookUrl,
-        },
-        { headers }
-      );
-      await loadAll();
-      showToast("Capa do livro atualizada com sucesso.", "success");
-    } catch {
-      setError("Falha ao atualizar capa do livro.");
-      showToast("Falha ao atualizar capa do livro.", "error");
-    } finally {
-      setUpdatingBookCover(false);
-    }
+    await runAction(
+      "book-cover",
+      () => api.patch(`/api/admin/books/${coverBookId}`, { coverUrl: coverBookUrl }, { headers }),
+      "Capa do livro atualizada com sucesso.",
+      "Falha ao atualizar capa do livro."
+    );
   };
 
-  const deleteByPath = async (key: string, path: string, message: string, successMessage: string) => {
-    if (!headers) return;
-    setDeletingKey(key);
+  const importBooks = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!headers || !importQuery.trim()) return;
+    setBusyKey("book-import");
     try {
-      await api.delete(path, { headers });
+      const response = await api.post<ImportResult>(
+        "/api/admin/books/import/open-library",
+        { query: importQuery, pages: Number(importPages), pageSize: Number(importPageSize) },
+        { headers }
+      );
+      setImportResult(response.data);
       await loadAll();
-      showToast(successMessage, "success");
+      showToast("Importacao concluida com sucesso.", "success");
     } catch {
-      setError(message);
-      showToast(message, "error");
+      setError("Falha ao importar livros da Open Library.");
+      showToast("Falha ao importar livros da Open Library.", "error");
     } finally {
-      setDeletingKey(null);
+      setBusyKey(null);
     }
   };
 
   return (
-    <section className="grid">
-      <article className="card hero" id="admin-metrics">
-        <div className="section-head">
-          <div>
-            <h2>Painel administrativo</h2>
-            <p>
-              Aqui ficam as acoes que mais ajudam na avaliacao do projeto:
-              cadastro de catalogo, badges, importacao e upload de PDF.
-            </p>
-          </div>
-          <span className="kpi">Perfil ADMIN</span>
-        </div>
-        <div className="card-actions">
-          <a className="btn-link" href="#admin-books">Livros</a>
-          <a className="btn-link" href="#admin-categories">Categorias</a>
-          <a className="btn-link" href="#admin-badges">Badges</a>
-        </div>
-      </article>
+    <section className="admin-page">
+      <AdminHeroPanel metrics={metrics} error={error} />
 
-      <article className="card">
-        <div className="section-head">
-          <h3>Indicadores do sistema</h3>
-          <span className="kpi">Visao geral</span>
-        </div>
-        {metrics ? (
-          <div className="stats-grid">
-            <div className="stat-box">
-              <strong>{metrics.totalUsers}</strong>
-              <span>usuarios</span>
-            </div>
-            <div className="stat-box">
-              <strong>{metrics.totalBooks}</strong>
-              <span>livros</span>
-            </div>
-            <div className="stat-box">
-              <strong>{metrics.totalReviews}</strong>
-              <span>reviews</span>
-            </div>
-            <div className="stat-box">
-              <strong>{metrics.totalFavorites}</strong>
-              <span>favoritos</span>
-            </div>
-            <div className="stat-box">
-              <strong>{metrics.totalCollections}</strong>
-              <span>colecoes</span>
-            </div>
-            <div className="stat-box">
-              <strong>{metrics.totalTags}</strong>
-              <span>tags</span>
-            </div>
-          </div>
-        ) : (
-          <p className="section-sub">Carregando indicadores...</p>
-        )}
-        {error && <p className="error">{error}</p>}
-      </article>
+      <nav className="admin-quick-nav" aria-label="Atalhos do painel administrativo">
+        <a href="#admin-books">Catalogo</a>
+        <a href="#admin-categories">Taxonomia</a>
+        <a href="#admin-badges">Engajamento</a>
+        <a href="#admin-users">Usuarios</a>
+        <a href="#admin-alerts">Auditoria</a>
+      </nav>
 
-      <article className="card" id="admin-categories">
-        <div className="section-head">
-          <h3>Categorias</h3>
-          <span className="kpi">{categories.length} cadastrada(s)</span>
-        </div>
-        <form className="admin-form" onSubmit={createCategory}>
-          <input
-            placeholder="Nome da categoria"
-            value={categoryName}
-            onChange={(event) => setCategoryName(event.target.value)}
-            required
-          />
-          <input
-            placeholder="Descricao"
-            value={categoryDescription}
-            onChange={(event) => setCategoryDescription(event.target.value)}
-          />
-          <button type="submit" disabled={creatingCategory}>
-            {creatingCategory ? "Criando..." : "Criar categoria"}
-          </button>
-        </form>
-        <ul className="stacked-list">
-          {categories.slice(0, 6).map((category) => (
-            <li key={category.id} className="stacked-list-item">
-              <div>
-                <strong>{category.name}</strong>
-                <p className="section-sub">{category.description || "Sem descricao"}</p>
-              </div>
-              <button
-                className="btn-muted"
-                onClick={() =>
-                  deleteByPath(
-                    `category-${category.id}`,
-                    `/api/admin/categories/${category.id}`,
-                    "Falha ao deletar categoria.",
-                    "Categoria removida com sucesso."
-                  )
-                }
-                disabled={deletingKey === `category-${category.id}`}
-              >
-                {deletingKey === `category-${category.id}` ? "Excluindo..." : "Excluir"}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </article>
+      <AdminSection
+        eyebrow="Catalogo"
+        title="Acervo e descoberta"
+        description="Cadastre livros, organize categorias, tags e colecoes sem sair do mesmo fluxo."
+        variant="wide"
+      >
+        <BookPanel
+          form={bookForm}
+          books={books}
+          categories={categories}
+          busyKey={busyKey}
+          uploadBookId={uploadBookId}
+          coverBookId={coverBookId}
+          coverBookUrl={coverBookUrl}
+          importQuery={importQuery}
+          importPages={importPages}
+          importPageSize={importPageSize}
+          importResult={importResult}
+          onSubmitBook={submitBook}
+          onSubmitUpload={uploadPdf}
+          onSubmitCover={updateCover}
+          onSubmitImport={importBooks}
+          onFormChange={setBookForm}
+          onReset={() => setBookForm(EMPTY_BOOK)}
+          onEdit={(book) =>
+            setBookForm({
+              id: book.id,
+              title: book.title,
+              author: book.author ?? "",
+              isbn: book.isbn ?? "",
+              numberOfPages: book.numberOfPages ?? 1,
+              publicationDate: book.publicationDate ?? "2020-01-01",
+              coverUrl: book.coverUrl ?? "",
+              categoryIds: book.categories?.map((category) => category.id) ?? [],
+            })
+          }
+          onDelete={(bookId) => void removeItem(`book-delete-${bookId}`, `/api/admin/books/${bookId}`, "Livro removido com sucesso.", "Falha ao deletar livro.")}
+          onUploadBookChange={setUploadBookId}
+          onCoverBookChange={setCoverBookId}
+          onCoverUrlChange={setCoverBookUrl}
+          onUploadFileChange={setUploadFile}
+          onImportQueryChange={setImportQuery}
+          onImportPagesChange={setImportPages}
+          onImportPageSizeChange={setImportPageSize}
+        />
 
-      <article className="card">
-        <div className="section-head">
-          <h3>Tags</h3>
-          <span className="kpi">{tags.length} cadastrada(s)</span>
-        </div>
-        <form className="admin-form" onSubmit={createTag}>
-          <input placeholder="Nome da tag" value={tagName} onChange={(event) => setTagName(event.target.value)} required />
-          <button type="submit" disabled={creatingTag}>
-            {creatingTag ? "Criando..." : "Criar tag"}
-          </button>
-        </form>
-        <ul className="stacked-list">
-          {tags.slice(0, 8).map((tag) => (
-            <li key={tag.id} className="stacked-list-item">
-              <div>
-                <strong>{tag.name}</strong>
-              </div>
-              <button
-                className="btn-muted"
-                onClick={() =>
-                  deleteByPath(
-                    `tag-${tag.id}`,
-                    `/api/admin/tags/${tag.id}`,
-                    "Falha ao deletar tag.",
-                    "Tag removida com sucesso."
-                  )
-                }
-                disabled={deletingKey === `tag-${tag.id}`}
-              >
-                {deletingKey === `tag-${tag.id}` ? "Excluindo..." : "Excluir"}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </article>
+        <CategoryPanel
+          form={categoryForm}
+          categories={categories}
+          busyKey={busyKey}
+          onSubmit={submitCategory}
+          onFormChange={setCategoryForm}
+          onEdit={(category) => setCategoryForm({ id: category.id, name: category.name, description: category.description ?? "" })}
+          onReset={() => setCategoryForm(EMPTY_CATEGORY)}
+          onDelete={(categoryId) =>
+            void removeItem(`category-delete-${categoryId}`, `/api/admin/categories/${categoryId}`, "Categoria removida com sucesso.", "Falha ao deletar categoria.")
+          }
+        />
 
-      <article className="card">
-        <div className="section-head">
-          <h3>Colecoes</h3>
-          <span className="kpi">{collections.length} cadastrada(s)</span>
-        </div>
-        <form className="admin-form" onSubmit={createCollection}>
-          <input
-            placeholder="Titulo da colecao"
-            value={collectionTitle}
-            onChange={(event) => setCollectionTitle(event.target.value)}
-            required
-          />
-          <select value={collectionBookId} onChange={(event) => setCollectionBookId(event.target.value)}>
-            {books.map((book) => (
-              <option value={book.id} key={book.id}>
-                {book.title}
-              </option>
-            ))}
-          </select>
-          <button type="submit" disabled={creatingCollection}>
-            {creatingCollection ? "Criando..." : "Criar colecao"}
-          </button>
-        </form>
-        <ul className="stacked-list">
-          {collections.slice(0, 6).map((collection) => (
-            <li key={collection.id} className="stacked-list-item">
-              <div>
-                <strong>{collection.title}</strong>
-              </div>
-              <button
-                className="btn-muted"
-                onClick={() =>
-                  deleteByPath(
-                    `collection-${collection.id}`,
-                    `/api/admin/collections/${collection.id}`,
-                    "Falha ao deletar colecao.",
-                    "Colecao removida com sucesso."
-                  )
-                }
-                disabled={deletingKey === `collection-${collection.id}`}
-              >
-                {deletingKey === `collection-${collection.id}` ? "Excluindo..." : "Excluir"}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </article>
+        <TagPanel
+          form={tagForm}
+          tags={tags}
+          busyKey={busyKey}
+          onSubmit={submitTag}
+          onFormChange={setTagForm}
+          onEdit={(tag) => setTagForm({ id: tag.id, name: tag.name })}
+          onReset={() => setTagForm(EMPTY_TAG)}
+          onDelete={(tagId) => void removeItem(`tag-delete-${tagId}`, `/api/admin/tags/${tagId}`, "Tag removida com sucesso.", "Falha ao deletar tag.")}
+        />
 
-      <article className="card" id="admin-books">
-        <div className="section-head">
-          <h3>Livros</h3>
-          <span className="kpi">{books.length} carregado(s)</span>
-        </div>
+        <CollectionPanel
+          form={collectionForm}
+          collections={collections}
+          books={books}
+          busyKey={busyKey}
+          onSubmit={submitCollection}
+          onFormChange={setCollectionForm}
+          onEdit={(collection) =>
+            setCollectionForm({
+              id: collection.id,
+              title: collection.title,
+              description: collection.description ?? "",
+              coverUrl: collection.coverUrl ?? "",
+              bookIds: collection.books?.map((book) => book.id) ?? [],
+            })
+          }
+          onReset={() => setCollectionForm(EMPTY_COLLECTION)}
+          onDelete={(collectionId) =>
+            void removeItem(`collection-delete-${collectionId}`, `/api/admin/collections/${collectionId}`, "Colecao removida com sucesso.", "Falha ao deletar colecao.")
+          }
+        />
+      </AdminSection>
 
-        <div className="admin-subsection">
-          <h4>Criar livro</h4>
-          <form className="admin-form" onSubmit={createBook}>
-            <input placeholder="Titulo do livro" value={bookTitle} onChange={(event) => setBookTitle(event.target.value)} required />
-            <input placeholder="ISBN" value={bookIsbn} onChange={(event) => setBookIsbn(event.target.value)} required />
-            <input type="number" min={1} value={bookPages} onChange={(event) => setBookPages(Number(event.target.value))} required />
-            <input type="date" value={bookDate} onChange={(event) => setBookDate(event.target.value)} required />
-            <input
-              placeholder="URL da capa (opcional)"
-              value={bookCoverUrl}
-              onChange={(event) => setBookCoverUrl(event.target.value)}
-            />
-            <button type="submit" disabled={creatingBook}>
-              {creatingBook ? "Criando..." : "Criar livro"}
-            </button>
-          </form>
-          <p className="section-sub">
-            Dica: use uma URL direta de imagem (`.jpg`, `.png` ou `.webp`) para a capa aparecer no sistema inteiro.
-          </p>
-        </div>
+      <AdminSection
+        eyebrow="Engajamento"
+        title="Gamificacao e comunidade"
+        description="Acompanhe mecanismos de permanencia, reputacao social e uso real da plataforma."
+      >
+        <BadgePanel
+          form={badgeForm}
+          badges={badges}
+          busyKey={busyKey}
+          onSubmit={submitBadge}
+          onFormChange={setBadgeForm}
+          onEdit={(badge) =>
+            setBadgeForm({
+              id: badge.id,
+              code: badge.code,
+              name: badge.name,
+              description: badge.description ?? "",
+              criteriaType: badge.criteriaType,
+              criteriaValue: badge.criteriaValue ?? "",
+              active: badge.active,
+            })
+          }
+          onReset={() => setBadgeForm(EMPTY_BADGE)}
+          onDelete={(badgeId) => void removeItem(`badge-delete-${badgeId}`, `/api/admin/badges/${badgeId}`, "Badge removido com sucesso.", "Falha ao deletar badge.")}
+        />
 
-        <div className="admin-subsection">
-          <h4>Atualizar capa do livro</h4>
-          <form className="admin-form" onSubmit={updateBookCover}>
-            <select
-              value={coverBookId}
-              onChange={(event) => {
-                const selectedId = event.target.value;
-                setCoverBookId(selectedId);
-                const selectedBook = books.find((book) => book.id === selectedId);
-                setCoverBookUrl(selectedBook?.coverUrl ?? "");
-              }}
-              required
-            >
-              {books.map((book) => (
-                <option key={book.id} value={book.id}>
-                  {book.title}
-                </option>
-              ))}
-            </select>
-            <input
-              placeholder="URL da nova capa"
-              value={coverBookUrl}
-              onChange={(event) => setCoverBookUrl(event.target.value)}
-            />
-            <button type="submit" disabled={updatingBookCover || books.length === 0}>
-              {updatingBookCover ? "Salvando..." : "Salvar capa"}
-            </button>
-          </form>
-          {selectedCoverBook && (
-            <div className="inline-book-row">
-              <BookCover
-                title={selectedCoverBook.title}
-                coverUrl={coverBookUrl.trim() || selectedCoverBook.coverUrl}
-                size="small"
-              />
-              <div>
-                <strong>{selectedCoverBook.title}</strong>
-                <p className="section-sub">
-                  Se o campo ficar vazio, a capa visual padrao continua sendo usada.
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
+        <FavoriteAdminPanel favorites={favorites} />
+      </AdminSection>
 
-        <div className="admin-subsection">
-          <h4>Upload de PDF</h4>
-          <form className="admin-form" onSubmit={uploadPdf}>
-            <select value={uploadBookId} onChange={(event) => setUploadBookId(event.target.value)} required>
-              {books.map((book) => (
-                <option key={book.id} value={book.id}>
-                  {book.title}
-                </option>
-              ))}
-            </select>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={(event) => setUploadFile(event.target.files?.[0] ?? null)}
-              required
-            />
-            <button type="submit" disabled={uploadingPdf || books.length === 0}>
-              {uploadingPdf ? "Enviando..." : "Enviar PDF"}
-            </button>
-          </form>
-        </div>
+      <AdminSection
+        eyebrow="Operacao"
+        title="Gestao de usuarios"
+        description="Edite dados basicos e controle acesso sem apagar historico de leitura, reviews e auditoria."
+        variant="wide"
+      >
+        <UserPanel
+          form={userForm}
+          users={users}
+          currentUserEmail={auth?.email ?? ""}
+          busyKey={busyKey}
+          onSubmit={submitUser}
+          onFormChange={setUserForm}
+          onEdit={(user) =>
+            setUserForm({
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              leaderboardOptIn: user.leaderboardOptIn,
+              alertsOptIn: user.alertsOptIn,
+            })
+          }
+          onReset={() => setUserForm(EMPTY_USER)}
+          onInvalidate={(userId) =>
+            void removeItem(`user-invalidate-${userId}`, `/api/admin/users/${userId}`, "Usuario invalidado com sucesso.", "Falha ao invalidar usuario.")
+          }
+          onReactivate={(userId) => void reactivateUser(userId)}
+        />
+      </AdminSection>
 
-        <div className="admin-subsection">
-          <div className="section-head">
-            <h4>Importar da Open Library</h4>
-            <span className="kpi">Acervo externo</span>
-          </div>
-          <form className="admin-form" onSubmit={importBooks}>
-            <input
-              placeholder="Termo de busca"
-              value={importQuery}
-              onChange={(event) => setImportQuery(event.target.value)}
-              required
-            />
-            <input
-              type="number"
-              min={1}
-              max={20}
-              value={importPages}
-              onChange={(event) => setImportPages(Number(event.target.value))}
-              required
-            />
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={importPageSize}
-              onChange={(event) => setImportPageSize(Number(event.target.value))}
-              required
-            />
-            <button type="submit" disabled={importingBooks}>
-              {importingBooks ? "Importando..." : "Importar livros"}
-            </button>
-          </form>
-          {importResult && (
-            <div className="stats-grid">
-              <div className="stat-box">
-                <strong>{importResult.imported}</strong>
-                <span>importados</span>
-              </div>
-              <div className="stat-box">
-                <strong>{importResult.skipped}</strong>
-                <span>pulados</span>
-              </div>
-              <div className="stat-box">
-                <strong>{importResult.failed}</strong>
-                <span>falhas</span>
-              </div>
-              <div className="stat-box">
-                <strong>{importResult.fetched}</strong>
-                <span>lidos</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </article>
-
-      <article className="card" id="admin-badges">
-        <div className="section-head">
-          <h3>Badges</h3>
-          <span className="kpi">{badges.length} configurado(s)</span>
-        </div>
-        <form className="admin-form" onSubmit={createBadge}>
-          <select value={badgeCode} onChange={(event) => setBadgeCode(event.target.value as (typeof BADGE_CODES)[number])}>
-            {BADGE_CODES.map((code) => (
-              <option key={code} value={code}>
-                {code}
-              </option>
-            ))}
-          </select>
-          <input value={badgeName} onChange={(event) => setBadgeName(event.target.value)} placeholder="Nome do badge" />
-          <select
-            value={badgeCriteria}
-            onChange={(event) => setBadgeCriteria(event.target.value as (typeof BADGE_CRITERIA)[number])}
-          >
-            {BADGE_CRITERIA.map((criteria) => (
-              <option key={criteria} value={criteria}>
-                {criteria}
-              </option>
-            ))}
-          </select>
-          <input value={badgeValue} onChange={(event) => setBadgeValue(event.target.value)} placeholder="Valor criterio" required />
-          <button type="submit" disabled={creatingBadge}>
-            {creatingBadge ? "Criando..." : "Criar badge"}
-          </button>
-        </form>
-        <ul className="stacked-list">
-          {badges.slice(0, 6).map((badge) => (
-            <li key={badge.id} className="stacked-list-item">
-              <div>
-                <strong>{badge.name}</strong>
-                <p className="section-sub">
-                  {badge.code} | {badge.criteriaType} | {badge.criteriaValue ?? "sem valor"}
-                </p>
-              </div>
-              <button
-                className="btn-muted"
-                onClick={() =>
-                  deleteByPath(
-                    `badge-${badge.id}`,
-                    `/api/admin/badges/${badge.id}`,
-                    "Falha ao deletar badge.",
-                    "Badge removido com sucesso."
-                  )
-                }
-                disabled={deletingKey === `badge-${badge.id}`}
-              >
-                {deletingKey === `badge-${badge.id}` ? "Excluindo..." : "Excluir"}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </article>
+      <AdminSection
+        eyebrow="Auditoria"
+        title="Alertas e rastreabilidade"
+        description="Veja entregas de alertas por e-mail, status de envio e mensagens geradas pela plataforma."
+      >
+        <AlertAuditPanel deliveries={alertDeliveries} />
+      </AdminSection>
     </section>
   );
 }

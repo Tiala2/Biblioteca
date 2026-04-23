@@ -17,6 +17,10 @@ public record BookCreateRequest(
         @NotBlank
         String title,
 
+        @Schema(description = "Autor do livro", example = "J. R. R. Tolkien")
+        @NotBlank
+        String author,
+
         @Schema(description = "ISBN do livro", example = "9783161484100")
         @NotBlank
         String isbn,

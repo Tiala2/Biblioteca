@@ -58,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, ServiceURI.CATEGORIES_RESOURCE, ServiceURI.CATEGORIES_RESOURCE + "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, ServiceURI.COLLECTIONS_RESOURCE, ServiceURI.COLLECTIONS_RESOURCE + "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, ServiceURI.TAGS_RESOURCE, ServiceURI.TAGS_RESOURCE + "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, ServiceURI.REVIEWS_RESOURCE + "/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, ServiceURI.REVIEWS_RESOURCE, ServiceURI.REVIEWS_RESOURCE + "/*").permitAll()
                         .requestMatchers(HttpMethod.GET, ServiceURI.USERS_RESOURCE + "/leaderboard").permitAll()
                         .requestMatchers(HttpMethod.POST, ServiceURI.USERS_RESOURCE).permitAll()
                         .anyRequest().authenticated()

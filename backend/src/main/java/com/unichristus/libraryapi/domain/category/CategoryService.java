@@ -24,6 +24,10 @@ public class CategoryService {
         return categoryRepository.findAllByActiveTrue();
     }
 
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
+    }
+
     public Category save(Category category) {
         categoryRepository.findCategoryByNameIgnoreCase(category.getName())
                 .ifPresent(existing -> {

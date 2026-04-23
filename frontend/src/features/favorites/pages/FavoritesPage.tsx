@@ -96,6 +96,9 @@ export function FavoritesPage() {
             {item.source === "OPEN" && <small>Leitura externa com progresso manual</small>}
             <small>Favoritado em: {new Date(item.createdAt).toLocaleString()}</small>
             <div className="card-actions">
+              <Link to={`/books/${item.bookId}`} className="btn-muted btn-link">
+                Ver detalhes
+              </Link>
               <Link to={`/books/${item.bookId}/read`} className="btn-link">
                 Ler agora
               </Link>

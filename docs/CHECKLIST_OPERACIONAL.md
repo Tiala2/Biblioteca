@@ -1,4 +1,4 @@
-﻿# Checklist de Prontidao da Banca
+# Checklist Operacional
 
 Data de referencia: 2026-03-12
 
@@ -48,7 +48,7 @@ Opcao alternativa:
 - Colocar `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` no arquivo `backend/.env`
 - Rodar `./scripts/e2e-smoke.ps1` sem parametros
 
-## 5) Evidencias minimas para apresentar
+## 5) Evidencias minimas para validar
 
 - Build verde (`test` + `integrationTest`)
 - Health `UP`
@@ -63,5 +63,4 @@ Opcao alternativa:
 - `GET /` retorna `403` por configuracao de seguranca; usar Swagger/rotas da API.
 - Badge code e enum fixo; para novos codigos e necessario evolucao do enum e regra.
 - Upload PDF pode falhar com `Maximum upload size exceeded` para arquivos acima do limite.
-- Alertas por e-mail sao sem custo usando Mailpit local (nao envia e-mail real para internet).
-
+- Alertas por e-mail sao sem custo usando Mailpit local ou SMTP configurado no ambiente.

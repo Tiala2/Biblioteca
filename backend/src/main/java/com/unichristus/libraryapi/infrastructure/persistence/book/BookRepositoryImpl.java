@@ -62,6 +62,7 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Page<BookSearchHit> search(String query,
+                                      String author,
                                       List<UUID> categoryIds,
                                       List<UUID> tagIds,
                                       Integer minPages,
@@ -82,6 +83,7 @@ public class BookRepositoryImpl implements BookRepository {
 
         Page<BookSearchProjection> page = bookJpaRepository.search(
                 query,
+                author,
                 safeCategoryIds,
                 safeTagIds,
                 minPages,

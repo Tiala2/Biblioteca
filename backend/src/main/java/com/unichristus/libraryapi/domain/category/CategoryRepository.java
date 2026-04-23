@@ -11,6 +11,8 @@ public interface CategoryRepository {
 
     Optional<Category> findById(UUID categoryId);
 
+    List<Category> findAll();
+
     List<Category> findAllByActiveTrue();
 
     Optional<Category> findCategoryByNameIgnoreCase(String name);

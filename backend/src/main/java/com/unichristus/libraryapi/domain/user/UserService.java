@@ -78,6 +78,11 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void reactivateUser(User user) {
+        user.setActive(true);
+        userRepository.save(user);
+    }
+
     public long count() {
         return userRepository.count();
     }

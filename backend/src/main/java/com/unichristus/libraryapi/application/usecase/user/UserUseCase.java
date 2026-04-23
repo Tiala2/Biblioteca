@@ -67,4 +67,9 @@ public class UserUseCase {
         User user = userService.findUserByIdOrThrow(userId);
         userService.invalidateUser(user);
     }
+
+    public void reactivateUser(UUID userId) {
+        User user = userService.findUserByIdOrThrow(userId);
+        userService.reactivateUser(user);
+    }
 }

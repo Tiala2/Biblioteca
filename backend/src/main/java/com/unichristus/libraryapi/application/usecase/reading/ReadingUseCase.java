@@ -17,6 +17,7 @@ import com.unichristus.libraryapi.domain.user.User;
 import com.unichristus.libraryapi.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @UseCase
@@ -51,6 +52,12 @@ public class ReadingUseCase {
     public Reading findReadingInProgressOrCreateReading(UUID userId, UUID bookId) {
         Book book = bookService.findBookByIdOrThrow(bookId);
         return readingService.findReadingInProgressOrCreateReading(userId, book);
+    }
+
+    public List<ReadingResponse> listUserReadings(UUID userId) {
+        return readingService.findReadingsByUser(userId).stream()
+                .map(ReadingResponseMapper::toReadingResponse)
+                .toList();
     }
 
     private void notifyReadingAlertsIfEnabled(UUID userId) {

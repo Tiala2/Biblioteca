@@ -15,6 +15,9 @@ public record BookUpdateRequest(
         @Schema(description = "Título do livro", example = "O Senhor dos Anéis", nullable = true)
         String title,
 
+        @Schema(description = "Autor do livro", example = "J. R. R. Tolkien", nullable = true)
+        String author,
+
         @Schema(description = "ISBN do livro", example = "9783161484100", nullable = true)
         String isbn,
 

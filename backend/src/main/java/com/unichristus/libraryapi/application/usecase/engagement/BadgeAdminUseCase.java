@@ -5,10 +5,12 @@ import com.unichristus.libraryapi.application.dto.request.BadgeUpsertRequest;
 import com.unichristus.libraryapi.application.dto.response.BadgeDefinitionResponse;
 import com.unichristus.libraryapi.domain.engagement.Badge;
 import com.unichristus.libraryapi.domain.engagement.BadgeDefinitionRepository;
+import com.unichristus.libraryapi.domain.engagement.UserBadgeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class BadgeAdminUseCase {
 
     private final BadgeDefinitionRepository badgeDefinitionRepository;
+    private final UserBadgeRepository userBadgeRepository;
 
     public Page<BadgeDefinitionResponse> list(Pageable pageable) {
         return badgeDefinitionRepository.findAll(pageable)
@@ -43,8 +46,10 @@ public class BadgeAdminUseCase {
         return toResponse(save(badge));
     }
 
+    @Transactional
     public void delete(UUID id) {
         Badge badge = getById(id);
+        userBadgeRepository.deleteByBadge(badge.getId());
         badgeDefinitionRepository.delete(badge);
     }
 

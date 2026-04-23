@@ -74,6 +74,7 @@ public class BookController {
     @GetMapping
     public Page<BookListResponse> getAllBooks(
             @RequestParam(value = "q", required = false) String query,
+            @RequestParam(value = "author", required = false) String author,
             @RequestParam(value = "categoryIds", required = false) List<UUID> categoryIds,
             @RequestParam(value = "tagIds", required = false) List<UUID> tagIds,
             @RequestParam(value = "minPages", required = false) Integer minPages,
@@ -86,6 +87,7 @@ public class BookController {
         Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
         return bookUseCase.getAllBooks(
                 query,
+                author,
                 categoryIds,
                 tagIds,
                 minPages,

@@ -10,7 +10,9 @@ const ForgotPasswordPage = lazy(() => import("@features/auth/pages/ForgotPasswor
 const ForbiddenPage = lazy(() => import("@features/system/pages/ForbiddenPage").then((module) => ({ default: module.ForbiddenPage })));
 const HomePage = lazy(() => import("@features/home/pages/HomePage").then((module) => ({ default: module.HomePage })));
 const BooksPage = lazy(() => import("@features/books/pages/BooksPage").then((module) => ({ default: module.BooksPage })));
+const BookDetailsPage = lazy(() => import("@features/books/pages/BookDetailsPage").then((module) => ({ default: module.BookDetailsPage })));
 const ReadingExperiencePage = lazy(() => import("@features/reading/pages/ReadingExperiencePage").then((module) => ({ default: module.ReadingExperiencePage })));
+const ProfilePage = lazy(() => import("@features/profile/pages/ProfilePage").then((module) => ({ default: module.ProfilePage })));
 const FavoritesPage = lazy(() => import("@features/favorites/pages/FavoritesPage").then((module) => ({ default: module.FavoritesPage })));
 const ReviewsPage = lazy(() => import("@features/reviews/pages/ReviewsPage").then((module) => ({ default: module.ReviewsPage })));
 const GoalsPage = lazy(() => import("@features/goals/pages/GoalsPage").then((module) => ({ default: module.GoalsPage })));
@@ -41,7 +43,9 @@ export function AppRouter() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route index element={<HomePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/books" element={<BooksPage />} />
+            <Route path="/books/:bookId" element={<BookDetailsPage />} />
             <Route path="/books/:bookId/read" element={<ReadingExperiencePage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />

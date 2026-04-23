@@ -1,6 +1,7 @@
 # ===== Backend =====
 HELP.md
 backend/.gradle/
+backend/.gradle-home/
 backend/build/
 backend/out/
 backend/bin/
@@ -37,6 +38,7 @@ frontend/dist-ssr/
 frontend/playwright-report/
 frontend/test-results/
 frontend/coverage/
+frontend/*.log
 
 # ===== VS Code =====
 .vscode/

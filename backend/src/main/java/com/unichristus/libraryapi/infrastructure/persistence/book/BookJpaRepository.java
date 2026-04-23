@@ -51,7 +51,8 @@ public interface BookJpaRepository extends JpaRepository<Book, UUID> {
                         ) period_reads ON period_reads.book_id = b.id
                         WHERE b.available = TRUE
                             AND (:includeWithoutPdf = TRUE OR b.has_pdf = TRUE)
-                            AND (:query IS NULL OR LOWER(b.title) LIKE CONCAT('%', LOWER(:query), '%'))
+                            AND (:query IS NULL OR LOWER(b.title) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(b.author) LIKE CONCAT('%', LOWER(:query), '%'))
+                            AND (:author IS NULL OR LOWER(b.author) LIKE CONCAT('%', LOWER(:author), '%'))
                             AND (:minPages IS NULL OR b.number_of_pages >= :minPages)
                             AND (:maxPages IS NULL OR b.number_of_pages <= :maxPages)
                             AND (:hasPublicationFrom = FALSE OR b.publication_date >= CAST(:publicationFrom AS DATE))
@@ -71,7 +72,8 @@ public interface BookJpaRepository extends JpaRepository<Book, UUID> {
                         FROM books b
                         WHERE b.available = TRUE
                             AND (:includeWithoutPdf = TRUE OR b.has_pdf = TRUE)
-                            AND (:query IS NULL OR LOWER(b.title) LIKE CONCAT('%', LOWER(:query), '%'))
+                            AND (:query IS NULL OR LOWER(b.title) LIKE CONCAT('%', LOWER(:query), '%') OR LOWER(b.author) LIKE CONCAT('%', LOWER(:query), '%'))
+                            AND (:author IS NULL OR LOWER(b.author) LIKE CONCAT('%', LOWER(:author), '%'))
                             AND (:minPages IS NULL OR b.number_of_pages >= :minPages)
                             AND (:maxPages IS NULL OR b.number_of_pages <= :maxPages)
                             AND (:hasPublicationFrom = FALSE OR b.publication_date >= CAST(:publicationFrom AS DATE))
@@ -81,6 +83,7 @@ public interface BookJpaRepository extends JpaRepository<Book, UUID> {
                         """,
                         nativeQuery = true)
         Page<BookSearchProjection> search(@Param("query") String query,
+                                                                            @Param("author") String author,
                                                                             @Param("categoryIds") java.util.List<UUID> categoryIds,
                                                                             @Param("tagIds") java.util.List<UUID> tagIds,
                                                                             @Param("minPages") Integer minPages,

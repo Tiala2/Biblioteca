@@ -4,7 +4,7 @@ Data base de execução: 27/02/2026
 
 ## Escopo
 
-Este checklist cobre validação funcional (RF) e não funcional (RNF) do template do TCC.
+Este checklist cobre validacao funcional (RF) e nao funcional (RNF) do projeto.
 
 ## Funcionais (RF)
 
@@ -33,4 +33,4 @@ Este checklist cobre validação funcional (RF) e não funcional (RNF) do templa
 ## Critério de aceite
 
 - Marcar `Concluído` quando o cenário executar sem erro e com evidência (print/log/curl).
-- Se falhar, registrar causa, impacto e ação corretiva antes da banca.
+- Se falhar, registrar causa, impacto e acao corretiva antes de nova validacao.

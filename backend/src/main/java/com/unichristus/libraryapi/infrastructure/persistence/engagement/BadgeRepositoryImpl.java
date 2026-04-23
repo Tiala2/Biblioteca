@@ -71,4 +71,9 @@ public class BadgeRepositoryImpl implements BadgeDefinitionRepository, UserBadge
     public Page<UserBadge> findByUser(UUID userId, Pageable pageable) {
         return userBadgeJpaRepository.findByUser_Id(userId, pageable);
     }
+
+    @Override
+    public void deleteByBadge(UUID badgeId) {
+        userBadgeJpaRepository.deleteAll(userBadgeJpaRepository.findByBadge_Id(badgeId));
+    }
 }

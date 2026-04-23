@@ -1,5 +1,6 @@
 package com.unichristus.libraryapi.presentation.controller.admin;
 
+import com.unichristus.libraryapi.application.dto.request.UserUpdateRequest;
 import com.unichristus.libraryapi.application.dto.response.UserResponse;
 import com.unichristus.libraryapi.application.usecase.user.UserUseCase;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,11 +49,21 @@ public class UserAdminController {
             @ApiResponse(responseCode = "204", description = "Usuário invalidado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
+    @PutMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUser(@PathVariable UUID userId, @RequestBody @Valid UserUpdateRequest request) {
+        userUseCase.updateUser(userId, request);
+    }
+
+    @PatchMapping("/{userId}/reactivate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void reactivateUser(@PathVariable UUID userId) {
+        userUseCase.reactivateUser(userId);
+    }
+
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void invalidateUser(@PathVariable UUID userId) {
         userUseCase.invalidateUser(userId);
     }
 }
-
-

@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface UserBadgeJpaRepository extends JpaRepository<UserBadge, UUID> {
     boolean existsByUser_IdAndBadge_Code(UUID userId, BadgeCode code);
+    List<UserBadge> findByBadge_Id(UUID badgeId);
 
     @EntityGraph(attributePaths = {"badge"})
     List<UserBadge> findByUser_IdOrderByAwardedAtDesc(UUID userId);

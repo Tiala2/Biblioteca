@@ -1,8 +1,8 @@
-﻿# Documentacao Banca Final - Library API
+# Documentacao Final - Library API
 
 Data de referencia: 2026-03-12
 
-## 1. Escopo do projeto (template)
+## 1. Escopo do projeto
 
 Backend de biblioteca virtual publica com foco em engajamento:
 
@@ -93,7 +93,7 @@ Cobertura de integracao inclui:
 - admin upload PDF (success/forbidden)
 - audit de alertas admin
 
-## 5. Status por requisito (template)
+## 5. Status por requisito
 
 | Requisito | Status | Evidencia |
 |---|---|---|
@@ -111,15 +111,16 @@ Cobertura de integracao inclui:
 | RNF04 | Concluido | Swagger em `/swagger-ui/index.html` |
 | RNF05 | Concluido | Docker Compose stack |
 
-## 6. Artefatos para anexar no TCC
+## 6. Artefatos principais do projeto
 
 - `docs/MATRIZ_RASTREABILIDADE.md`
-- `docs/UAT_CHECKLIST.md`
-- `docs/READY_CHECKLIST_BANCA.md`
-- `docs/EVIDENCIA_SMOKE_EXECUCAO.md`
+- `docs/CHECKLIST_OPERACIONAL.md`
 - `docs/generated/ROUTE_COVERAGE_REPORT.md`
-- `docs/EVIDENCIAS_FRONT_BANCA.md`
+- `docs/EVIDENCIAS_FRONT.md`
 - `docs/API_FRONT_READINESS.md`
+- `docs/UAT_CHECKLIST.md`
+- `docs/BACKEND_FINAL_VALIDACAO.md`
+- `docs/RELATORIO_PROJETO.md`
 - `docs/openapi-lock.json`
 
 ## 7. Limites conhecidos
@@ -130,11 +131,11 @@ Cobertura de integracao inclui:
 - E-mail de recuperacao suporta Mailpit (local) e SMTP real (producao).
 - Nesta fase nao ha refresh token; expiracao de JWT exige novo login.
 
-## 8. Decisao formal de autenticacao para o front
+## 8. Decisao de autenticacao para o front
 
 - Estrategia adotada: JWT stateless com relogin no vencimento.
 - Regra de UX/API: resposta `401` deve encerrar sessao local e redirecionar para tela de login.
-- Justificativa: menor complexidade e menor risco para escopo atual do TCC.
+- Justificativa: menor complexidade e menor risco para o escopo atual do projeto.
 - Roadmap: refresh token com revogacao como evolucao futura.
 
 ## 9. Proximo passo tecnico recomendado

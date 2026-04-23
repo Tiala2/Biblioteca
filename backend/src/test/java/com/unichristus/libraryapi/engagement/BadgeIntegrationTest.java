@@ -214,6 +214,7 @@ class BadgeIntegrationTest {
     private Book createBook(String prefix) {
         return bookService.createBook(
                 "Book " + prefix,
+                "Author " + prefix,
                 UUID.randomUUID().toString().replace("-", "").substring(0, 13),
                 200,
                 LocalDate.now().minusYears(1),

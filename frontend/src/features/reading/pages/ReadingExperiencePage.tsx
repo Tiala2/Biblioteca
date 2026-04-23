@@ -3,167 +3,25 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
-import { BookCover } from "@shared/ui/books/BookCover";
-
-type BookDetail = {
-  id: string;
-  title: string;
-  isbn?: string;
-  pdfUrl?: string | null;
-  coverUrl?: string | null;
-  numberOfPages: number;
-  hasPdf: boolean;
-  source?: "LOCAL" | "OPEN";
-};
-
-type NarrativeCharacter = {
-  name: string;
-  role: string;
-  note: string;
-};
-
-type NarrativeQuiz = {
-  id: string;
-  question: string;
-  options: string[];
-  correctOption: string;
-  explanation: string;
-};
-
-type NarrativeAchievement = {
-  code: string;
-  title: string;
-  description: string;
-  flashcardSymbol: string;
-  unlockPage: number;
-  unlocked: boolean;
-};
-
-type NarrativeInsight = {
-  bookId: string;
-  currentPage: number;
-  phase: "BEGINNING" | "MIDDLE" | "CLIMAX" | null;
-  beatTitle: string | null;
-  plotState: string;
-  knownCharacters: NarrativeCharacter[];
-  quizzes: NarrativeQuiz[];
-  achievements: NarrativeAchievement[];
-};
-
-type HomeReading = {
-  id: string;
-  status: string;
-  currentPage: number;
-  progress: number;
-  startedAt?: string | null;
-  finishedAt?: string | null;
-  lastReadedAt?: string | null;
-  book: {
-    id: string;
-    title: string;
-  };
-};
-
-type HomeResumeResponse = {
-  readings: HomeReading[];
-};
-
-type Favorite = {
-  bookId: string;
-};
-
-type ReadingSyncResponse = {
-  id: string;
-  status: string;
-  currentPage: number;
-  progress: number;
-  startedAt?: string | null;
-  finishedAt?: string | null;
-  lastReadedAt?: string | null;
-};
-
-type CachedReaderLookup = {
-  embedUrl: string | null;
-  fallbackUrl: string | null;
-  cachedAt: number;
-};
-
-const PHASE_LABEL: Record<string, string> = {
-  BEGINNING: "Inicio",
-  MIDDLE: "Meio",
-  CLIMAX: "Climax",
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  NOT_STARTED: "Nao iniciado",
-  IN_PROGRESS: "Em andamento",
-  FINISHED: "Concluido",
-  DROPPED: "Interrompido",
-  READING: "Em leitura",
-};
-
-const OPEN_LIBRARY_READER_CACHE_KEY = "library.openlibrary.reader-cache.v1";
-const OPEN_LIBRARY_CACHE_TTL_MS = 1000 * 60 * 60 * 24;
-
-function getReaderCacheKey(book: BookDetail): string {
-  return `${book.id}::${book.isbn ?? ""}::${book.title}`.toLowerCase();
-}
-
-function readReaderCache(book: BookDetail): CachedReaderLookup | null {
-  const raw = localStorage.getItem(OPEN_LIBRARY_READER_CACHE_KEY);
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw) as Record<string, CachedReaderLookup>;
-    const value = parsed[getReaderCacheKey(book)];
-    if (!value) return null;
-    if (Date.now() - value.cachedAt > OPEN_LIBRARY_CACHE_TTL_MS) return null;
-    return value;
-  } catch {
-    return null;
-  }
-}
-
-function writeReaderCache(book: BookDetail, value: Omit<CachedReaderLookup, "cachedAt">) {
-  const raw = localStorage.getItem(OPEN_LIBRARY_READER_CACHE_KEY);
-  let parsed: Record<string, CachedReaderLookup> = {};
-
-  if (raw) {
-    try {
-      parsed = JSON.parse(raw) as Record<string, CachedReaderLookup>;
-    } catch {
-      parsed = {};
-    }
-  }
-
-  parsed[getReaderCacheKey(book)] = {
-    ...value,
-    cachedAt: Date.now(),
-  };
-
-  localStorage.setItem(OPEN_LIBRARY_READER_CACHE_KEY, JSON.stringify(parsed));
-}
-
-function clampPage(value: number, totalPages: number): number {
-  if (!Number.isFinite(value)) return 1;
-  return Math.max(1, Math.min(Math.round(value), Math.max(totalPages, 1)));
-}
-
-function formatStatusLabel(status?: string | null): string {
-  if (!status) return "Nao iniciado";
-  return STATUS_LABEL[status] ?? status;
-}
-
-function formatDateLabel(value?: string | null): string {
-  if (!value) return "Sem registro";
-
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "Sem registro";
-
-  return new Intl.DateTimeFormat("pt-BR", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(parsed);
-}
+import { StateCard } from "@shared/ui/feedback/StateCard";
+import { readReaderCache, writeReaderCache } from "../lib/readerCache";
+import { clampPage, formatStatusLabel, getPhaseLabel } from "../lib/readingPresentation";
+import { AchievementsPanel } from "../components/AchievementsPanel";
+import { CharactersPanel } from "../components/CharactersPanel";
+import { ExternalReaderPanel } from "../components/ExternalReaderPanel";
+import { InternalPdfReaderPanel } from "../components/InternalPdfReaderPanel";
+import { NarrativeContextPanel } from "../components/NarrativeContextPanel";
+import { QuizPanel } from "../components/QuizPanel";
+import { ReadingHeroPanel } from "../components/ReadingHeroPanel";
+import { ReadingProgressPanel } from "../components/ReadingProgressPanel";
+import type {
+  BookDetail,
+  Favorite,
+  HomeReading,
+  HomeResumeResponse,
+  NarrativeInsight,
+  ReadingSyncResponse,
+} from "../types";
 
 export function ReadingExperiencePage() {
   const { bookId } = useParams<{ bookId: string }>();
@@ -196,8 +54,9 @@ export function ReadingExperiencePage() {
   const derivedProgress = Math.round((currentPage / totalPages) * 100);
   const progressPercent = Math.max(0, Math.min(100, readingSnapshot?.progress ?? derivedProgress));
   const pagesRemaining = Math.max(totalPages - currentPage, 0);
-  const phaseLabel = insight?.phase ? PHASE_LABEL[insight.phase] ?? insight.phase : "Nao definida";
-  const externalSourceActionLabel = book?.source === "OPEN" ? "Continuar na Open Library" : "Continuar na fonte externa";
+  const phaseLabel = getPhaseLabel(insight?.phase);
+  const externalSourceActionLabel =
+    book?.source === "OPEN" ? "Continuar na Open Library" : "Continuar na fonte externa";
 
   const internalPdfUrl = useMemo(() => {
     if (!book?.id || !book.hasPdf) return null;
@@ -222,8 +81,7 @@ export function ReadingExperiencePage() {
         if (!isActive) return;
 
         const loadedBook = bookResponse.data;
-        const savedReading =
-          homeResponse?.data.readings.find((reading) => reading.book.id === bookId) ?? null;
+        const savedReading = homeResponse?.data.readings.find((reading) => reading.book.id === bookId) ?? null;
 
         setBook(loadedBook);
         setReadingSnapshot(savedReading);
@@ -315,7 +173,8 @@ export function ReadingExperiencePage() {
         };
 
         const docs = data.docs ?? [];
-        const preferred = docs.find((doc) => doc.availability?.identifier || doc.ia || doc.edition_key?.length) ?? docs[0];
+        const preferred =
+          docs.find((doc) => doc.availability?.identifier || doc.ia || doc.edition_key?.length) ?? docs[0];
 
         const iaIdentifier =
           preferred?.availability?.identifier ??
@@ -427,387 +286,104 @@ export function ReadingExperiencePage() {
   };
 
   if (!bookId) {
-    return <section className="card error">Livro nao informado.</section>;
+    return (
+      <StateCard
+        title="Livro nao informado"
+        message="Selecione um livro valido para abrir a experiencia de leitura."
+        variant="error"
+        action={
+          <Link to="/books" className="btn-link">
+            Voltar ao catalogo
+          </Link>
+        }
+      />
+    );
   }
 
   if (loading) {
-    return <section className="card">Carregando leitura...</section>;
+    return (
+      <StateCard
+        title="Carregando leitura"
+        message="Estamos preparando o livro, o progresso salvo e o contexto narrativo."
+        variant="loading"
+      />
+    );
+  }
+
+  if (!book) {
+    return (
+      <StateCard
+        title="Leitura indisponivel"
+        message={error || "Nao foi possivel carregar os detalhes da leitura."}
+        variant="error"
+        action={
+          <Link to="/books" className="btn-link">
+            Voltar ao catalogo
+          </Link>
+        }
+      />
+    );
   }
 
   return (
     <section className="grid">
-      <article className="card hero">
-        {book && <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />}
-        <div className="section-head">
-          <div>
-            <h2>{book?.title ?? "Leitura"}</h2>
-            <p>
-              {isExternalReading
-                ? "Leia na fonte externa e registre aqui a pagina atual para manter metas, ranking e continuidade da leitura."
-                : "Retome sua leitura, acompanhe a fase narrativa e salve o progresso sem sair da experiencia."}
-            </p>
-          </div>
-          <span className="kpi">{progressPercent}% concluido</span>
-        </div>
+      <ReadingHeroPanel
+        book={book}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pagesRemaining={pagesRemaining}
+        progressPercent={progressPercent}
+        readingStatusLabel={formatStatusLabel(readingSnapshot?.status)}
+        isExternalReading={isExternalReading}
+        plotState={insight?.plotState}
+        saving={saving}
+        isFavorite={isFavorite}
+        favoriteLoading={favoriteLoading}
+        internalPdfUrl={internalPdfUrl}
+        externalReaderFallbackUrl={externalReaderFallbackUrl}
+        onSyncReading={syncReading}
+        onToggleFavorite={toggleFavorite}
+      />
 
-        <div className="stats-grid">
-          <div className="stat-box">
-            <strong>{currentPage}</strong>
-            <span>pagina atual</span>
-          </div>
-          <div className="stat-box">
-            <strong>{totalPages}</strong>
-            <span>paginas totais</span>
-          </div>
-          <div className="stat-box">
-            <strong>{pagesRemaining}</strong>
-            <span>paginas restantes</span>
-          </div>
-          <div className="stat-box">
-            <strong>{formatStatusLabel(readingSnapshot?.status)}</strong>
-            <span>status da leitura</span>
-          </div>
-        </div>
+      {book.hasPdf ? <InternalPdfReaderPanel bookTitle={book.title} internalPdfUrl={internalPdfUrl} /> : null}
 
-        <p className="quote">{insight?.plotState ?? "Acompanhe sua narrativa por trecho lido."}</p>
+      {!book.hasPdf ? (
+        <ExternalReaderPanel
+          book={book}
+          sourceLabel={sourceLabel}
+          externalReaderLoading={externalReaderLoading}
+          externalReaderEmbedUrl={externalReaderEmbedUrl}
+          externalReaderFallbackUrl={externalReaderFallbackUrl}
+          externalSourceActionLabel={externalSourceActionLabel}
+          saving={saving}
+          onSyncReading={syncReading}
+        />
+      ) : null}
 
-        <div className="card-actions">
-          <button type="button" onClick={syncReading} disabled={saving || !book}>
-            {saving ? "Salvando..." : "Salvar progresso"}
-          </button>
-          <button
-            type="button"
-            className={isFavorite ? "favorite-toggle active" : "favorite-toggle"}
-            onClick={toggleFavorite}
-            disabled={favoriteLoading}
-          >
-            {favoriteLoading ? "Salvando..." : isFavorite ? "Nos favoritos" : "Salvar nos favoritos"}
-          </button>
-          <Link to="/books" className="btn-link">
-            Voltar ao catalogo
-          </Link>
-          {book?.hasPdf && internalPdfUrl && (
-            <a className="btn-link" href={internalPdfUrl} target="_blank" rel="noreferrer">
-              Abrir leitor
-            </a>
-          )}
-          {!book?.hasPdf && externalReaderFallbackUrl && (
-            <a className="btn-link" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
-              Abrir fonte externa
-            </a>
-          )}
-        </div>
-      </article>
+      <ReadingProgressPanel
+        hasPdf={book.hasPdf}
+        phaseLabel={phaseLabel}
+        readingSnapshot={readingSnapshot}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        progressPercent={progressPercent}
+        insight={insight}
+        onUpdateCurrentPage={updateCurrentPage}
+        onJumpPages={jumpPages}
+      />
 
-      {book?.hasPdf && (
-        <article className="card">
-          <div className="section-head">
-            <h3>Leitor interno</h3>
-            <span className="kpi">PDF local</span>
-          </div>
-          {internalPdfUrl ? (
-            <>
-              <div className="external-reader-wrap">
-                <iframe
-                  title={`Leitor PDF - ${book.title}`}
-                  src={internalPdfUrl}
-                  className="external-reader-frame"
-                  loading="lazy"
-                />
-              </div>
-              <div className="card-actions">
-                <a className="btn-muted btn-link" href={internalPdfUrl} target="_blank" rel="noreferrer">
-                  Abrir em nova aba
-                </a>
-                <a className="btn-muted btn-link" href={`${internalPdfUrl}?download=true`}>
-                  Baixar PDF
-                </a>
-              </div>
-            </>
-          ) : (
-            <p className="section-sub">
-              O PDF deste livro existe, mas a URL de leitura ainda nao esta disponivel. Tente novamente em instantes.
-            </p>
-          )}
-        </article>
-      )}
+      <NarrativeContextPanel phaseLabel={phaseLabel} plotState={insight?.plotState} />
+      <CharactersPanel characters={insight?.knownCharacters ?? []} />
+      <QuizPanel
+        quizzes={insight?.quizzes ?? []}
+        selectedOptions={selectedOptions}
+        revealed={revealed}
+        onSelectOption={onSelectOption}
+        onCheckQuiz={onCheckQuiz}
+      />
+      <AchievementsPanel achievements={insight?.achievements ?? []} />
 
-      {book && !book.hasPdf && (
-        <article className="card">
-          <div className="section-head">
-            <h3>Leitura online</h3>
-            <span className="kpi">{sourceLabel}</span>
-          </div>
-          <div className="external-reading-panel">
-            <div className="external-reading-panel__head">
-              <div>
-                <p className="eyebrow">Leitura externa guiada</p>
-                <h4>Continue a leitura sem perder seu progresso</h4>
-              </div>
-              <span className="external-source-pill">{sourceLabel}</span>
-            </div>
-            <p className="section-sub">
-              Este livro e acessado em fonte externa. Leia no provedor oficial e volte aqui para registrar a pagina atual,
-              mantendo metas, ranking, historico e favoritos no mesmo fluxo.
-            </p>
-            <div className="external-reading-steps" aria-label="Como usar leitura externa">
-              <div className="external-step">
-                <strong>1</strong>
-                <span>Abra o livro na fonte oficial.</span>
-              </div>
-              <div className="external-step">
-                <strong>2</strong>
-                <span>Leia normalmente fora da plataforma.</span>
-              </div>
-              <div className="external-step">
-                <strong>3</strong>
-                <span>Volte e salve a pagina lida aqui.</span>
-              </div>
-            </div>
-            {externalReaderFallbackUrl && (
-              <div className="card-actions external-reading-actions">
-                <a className="btn-link external-reading-primary" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
-                  {externalSourceActionLabel}
-                </a>
-                <button type="button" className="btn-muted" onClick={syncReading} disabled={saving}>
-                  {saving ? "Salvando..." : "Salvar pagina atual"}
-                </button>
-              </div>
-            )}
-          </div>
-          {externalReaderLoading && <p className="section-sub">Preparando leitor online...</p>}
-          {!externalReaderLoading && externalReaderEmbedUrl && (
-            <div className="external-reader-wrap">
-              <iframe
-                title={`Leitor online - ${book.title}`}
-                src={externalReaderEmbedUrl}
-                className="external-reader-frame"
-                loading="lazy"
-                allowFullScreen
-              />
-            </div>
-          )}
-          {!externalReaderLoading && !externalReaderEmbedUrl && (
-            <p className="section-sub">
-              Nao encontramos uma versao incorporavel deste livro. Use o link oficial para continuar a leitura fora da plataforma.
-            </p>
-          )}
-          {externalReaderFallbackUrl && (
-            <div className="card-actions">
-              <a className="btn-link btn-muted" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
-                {book.source === "OPEN" ? "Abrir fonte alternativa" : "Abrir fonte externa"}
-              </a>
-            </div>
-          )}
-        </article>
-      )}
-
-      <article className="card">
-        <div className="section-head">
-          <div>
-            <h3>Painel de progresso</h3>
-            <p className="section-sub">
-              Ajuste a pagina atual e registre o que foi lido para refletir metas, ranking e badges.
-            </p>
-          </div>
-          <span className="kpi">Fase: {phaseLabel}</span>
-        </div>
-
-        {!book?.hasPdf && (
-          <p className="section-sub">
-            Mesmo sem PDF local, voce pode informar manualmente a pagina atual. Assim o livro continua contando em metas, historico e engajamento.
-          </p>
-        )}
-
-        <div className="stats-grid">
-          <div className="stat-box">
-            <strong>{readingSnapshot?.currentPage ?? currentPage}</strong>
-            <span>ultima pagina salva</span>
-          </div>
-          <div className="stat-box">
-            <strong>{formatDateLabel(readingSnapshot?.lastReadedAt)}</strong>
-            <span>ultima sincronizacao</span>
-          </div>
-          <div className="stat-box">
-            <strong>{formatDateLabel(readingSnapshot?.startedAt)}</strong>
-            <span>inicio da leitura</span>
-          </div>
-          <div className="stat-box">
-            <strong>{formatDateLabel(readingSnapshot?.finishedAt)}</strong>
-            <span>conclusao</span>
-          </div>
-        </div>
-
-        <div className="progress-track" aria-hidden="true">
-          <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
-        </div>
-
-        <div className="reading-control-row">
-          <div>
-            <label htmlFor="reading-range">Selecione a pagina lida</label>
-            <input
-              id="reading-range"
-              type="range"
-              min={1}
-              max={totalPages}
-              value={currentPage}
-              onChange={(event) => updateCurrentPage(Number(event.target.value))}
-            />
-          </div>
-
-          <div className="reading-page-box">
-            <label htmlFor="reading-page-input">Pagina</label>
-            <input
-              id="reading-page-input"
-              type="number"
-              min={1}
-              max={totalPages}
-              value={currentPage}
-              onChange={(event) => updateCurrentPage(Number(event.target.value))}
-            />
-          </div>
-        </div>
-
-        <div className="page-jump-grid">
-          <button type="button" className="btn-muted" onClick={() => updateCurrentPage(1)}>
-            Ir para inicio
-          </button>
-          <button type="button" className="btn-muted" onClick={() => jumpPages(-10)}>
-            Voltar 10 pags
-          </button>
-          <button type="button" className="btn-muted" onClick={() => jumpPages(10)}>
-            Avancar 10 pags
-          </button>
-          <button type="button" className="btn-muted" onClick={() => updateCurrentPage(totalPages)}>
-            Ir para final
-          </button>
-        </div>
-
-        <p className="section-sub">
-          Beat atual: {insight?.beatTitle ?? "Sem beat definido para a pagina selecionada."}
-        </p>
-      </article>
-
-      <article className="card">
-        <div className="section-head">
-          <h3>Contexto narrativo</h3>
-          <span className="kpi">{phaseLabel}</span>
-        </div>
-        <p>{insight?.plotState ?? "Sem resumo narrativo disponivel para este trecho."}</p>
-      </article>
-
-      <article className="card">
-        <div className="section-head">
-          <h3>Quem e quem</h3>
-          <span className="kpi">{insight?.knownCharacters?.length ?? 0} personagem(ns)</span>
-        </div>
-        {insight?.knownCharacters?.length ? (
-          <ul className="stacked-list">
-            {insight.knownCharacters.map((character) => (
-              <li key={`${character.name}-${character.role}`} className="stacked-list-item">
-                <div>
-                  <strong>{character.name}</strong>
-                  <p className="section-sub">{character.role}</p>
-                </div>
-                <span>{character.note}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="section-sub">Nenhum personagem mapeado neste trecho.</p>
-        )}
-      </article>
-
-      <article className="card">
-        <div className="section-head">
-          <h3>Quiz do trecho</h3>
-          <span className="kpi">{insight?.quizzes?.length ?? 0} pergunta(s)</span>
-        </div>
-        {insight?.quizzes?.length ? (
-          <div className="quiz-list">
-            {insight.quizzes.map((quiz) => (
-              <article key={quiz.id} className="quiz-card">
-                <h4>{quiz.question}</h4>
-                <div className="quiz-options">
-                  {quiz.options.map((option) => {
-                    const selected = selectedOptions[quiz.id] === option;
-                    const isCorrect = quiz.correctOption === option;
-                    const showResult = revealed[quiz.id];
-                    const className = showResult
-                      ? isCorrect
-                        ? "quiz-option correct"
-                        : selected
-                          ? "quiz-option wrong"
-                          : "quiz-option"
-                      : selected
-                        ? "quiz-option selected"
-                        : "quiz-option";
-
-                    return (
-                      <button
-                        key={option}
-                        type="button"
-                        className={className}
-                        onClick={() => onSelectOption(quiz.id, option)}
-                      >
-                        {option}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="card-actions">
-                  <button
-                    type="button"
-                    className="btn-muted"
-                    onClick={() => onCheckQuiz(quiz.id)}
-                    disabled={!selectedOptions[quiz.id]}
-                  >
-                    Verificar resposta
-                  </button>
-                </div>
-                {revealed[quiz.id] && (
-                  <small>
-                    {selectedOptions[quiz.id] === quiz.correctOption ? "Correto. " : "Incorreto. "}
-                    {quiz.explanation}
-                  </small>
-                )}
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className="section-sub">Nenhum quiz para a pagina selecionada.</p>
-        )}
-      </article>
-
-      <article className="card">
-        <div className="section-head">
-          <h3>Conquistas e flashcards</h3>
-          <span className="kpi">{insight?.achievements?.length ?? 0} item(ns)</span>
-        </div>
-        {insight?.achievements?.length ? (
-          <div className="flashcards">
-            {insight.achievements.map((achievement) => (
-              <article
-                key={achievement.code}
-                className={achievement.unlocked ? "flashcard unlocked" : "flashcard locked"}
-              >
-                <p className="flash-symbol">{achievement.flashcardSymbol ?? "CARD"}</p>
-                <h4>{achievement.title}</h4>
-                <p>{achievement.description}</p>
-                <small>
-                  {achievement.unlocked
-                    ? "Desbloqueado"
-                    : `Bloqueado ate pagina ${achievement.unlockPage ?? "?"}`}
-                </small>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className="section-sub">Sem conquistas mapeadas para este livro.</p>
-        )}
-      </article>
-
-      {error && <article className="card error">{error}</article>}
+      {error ? <article className="card error">{error}</article> : null}
     </section>
   );
 }

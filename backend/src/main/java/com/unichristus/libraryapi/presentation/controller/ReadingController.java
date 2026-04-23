@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
+import java.util.List;
 
 @Tag(name = "Readings", description = "Gerenciamento de leituras")
 @RestController
@@ -46,6 +47,13 @@ public class ReadingController {
             @LoggedUser UUID userId
     ) {
         return ResponseEntity.ok(readingUseCase.syncReading(userId, request.bookId(), request.currentPage()));
+    }
+
+    @Operation(summary = "Listar historico de leituras", description = "Retorna as leituras do usuario logado ordenadas pela ultima atualizacao")
+    @ApiResponse(responseCode = "200", description = "Historico retornado com sucesso")
+    @GetMapping("/me")
+    public ResponseEntity<List<ReadingResponse>> listMyReadings(@LoggedUser UUID userId) {
+        return ResponseEntity.ok(readingUseCase.listUserReadings(userId));
     }
 
     @Operation(summary = "Obter estado da trama", description = "Retorna beat narrativo, personagens conhecidos, quizzes e conquistas para a pagina atual")

@@ -32,6 +32,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
+    public List<Category> findAll() {
+        return repository.findAll();
+    }
+
+    @Override
     public List<Category> findAllByActiveTrue() {
         return repository.findAllByActiveTrue();
     }
