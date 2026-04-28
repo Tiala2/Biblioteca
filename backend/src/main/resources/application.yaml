@@ -25,6 +25,8 @@ logging:
   level:
     root: INFO
     com.unichristus: TRACE
+    org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor: INFO
+    org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{36}) [%magenta(%X{traceId})] %msg%n"
 #server:
@@ -33,6 +35,16 @@ logging:
 #    include-exception: true
 #    include-message: ALWAYS
 #    include-binding-errors: NEVER
+
+management:
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
 
 minio:
   bucket:

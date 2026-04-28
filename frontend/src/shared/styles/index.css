@@ -421,6 +421,10 @@ label {
   border-style: dashed;
 }
 
+.error-boundary-card {
+  width: min(520px, 92vw);
+}
+
 .quick-links-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -481,6 +485,12 @@ label {
   color: var(--text-main);
   font-size: 0.85rem;
   font-weight: 800;
+}
+
+.admin-quick-nav a.active {
+  background: linear-gradient(120deg, color-mix(in srgb, var(--admin) 34%, white), color-mix(in srgb, var(--primary-b) 25%, white));
+  border-color: color-mix(in srgb, var(--admin) 55%, transparent);
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--admin) 22%, transparent);
 }
 
 .admin-section {
@@ -657,6 +667,26 @@ label {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 0.6rem;
+}
+
+.admin-filters-grid {
+  align-items: end;
+  margin-top: 0.85rem;
+}
+
+.field-stack {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.field-stack span {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.admin-list-stat {
+  min-height: 100%;
 }
 
 .filter-actions {
@@ -1138,6 +1168,23 @@ body[data-theme="day"] .login-form {
   color: #133f68;
   border-color: #b0cbe5;
   background: #eaf3fc;
+}
+
+.api-status-banner {
+  position: fixed;
+  top: 0.75rem;
+  left: 50%;
+  z-index: 3200;
+  width: min(560px, calc(100vw - 1.5rem));
+  transform: translateX(-50%);
+  border: 1px solid #efb8b2;
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  color: #742f28;
+  background: #fdecea;
+  box-shadow: var(--shadow-soft);
+  font-weight: 700;
+  text-align: center;
 }
 
 @keyframes content-in {

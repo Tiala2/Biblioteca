@@ -6,6 +6,7 @@ import com.unichristus.libraryapi.application.dto.response.BadgeResponse;
 import com.unichristus.libraryapi.application.dto.response.UserResponse;
 import com.unichristus.libraryapi.application.usecase.user.UserUseCase;
 import com.unichristus.libraryapi.infrastructure.security.LoggedUser;
+import com.unichristus.libraryapi.presentation.common.PageableSanitizer;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,12 +17,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Set;
 import java.util.UUID;
 
 @Tag(name = "Users", description = "Operações com usuário autenticado")
@@ -29,6 +31,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping(ServiceURI.USERS_RESOURCE)
 public class UserController {
+
+    private static final Sort USER_BADGES_DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "awardedAt");
+    private static final Set<String> USER_BADGES_ALLOWED_SORTS = Set.of("awardedAt");
 
     private final UserUseCase userUseCase;
 
@@ -64,12 +69,10 @@ public class UserController {
         @GetMapping("/me/badges")
         public Page<BadgeResponse> getMyBadges(
                         @LoggedUser UUID userId,
-                        @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "20") int size
+                        Pageable pageable
         ) {
-                int safeSize = Math.min(Math.max(size, 1), 100);
-                Pageable pageable = PageRequest.of(Math.max(page, 0), safeSize, org.springframework.data.domain.Sort.by("awardedAt").descending());
-                return userUseCase.getBadges(userId, pageable);
+                Pageable safePageable = PageableSanitizer.sanitize(pageable, USER_BADGES_DEFAULT_SORT, USER_BADGES_ALLOWED_SORTS);
+                return userUseCase.getBadges(userId, safePageable);
         }
 
     @Operation(summary = "Atualizar informações do usuário atual", description = "Atualiza as informações do usuário autenticado")

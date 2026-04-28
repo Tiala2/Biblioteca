@@ -1,5 +1,6 @@
 package com.unichristus.libraryapi.application.dto.request;
 
+import com.unichristus.libraryapi.domain.user.UserRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,9 @@ public record UserUpdateRequest(
         Boolean leaderboardOptIn,
 
         @Schema(description = "Receber alertas internos de leitura", example = "true", nullable = true)
-        Boolean alertsOptIn
+        Boolean alertsOptIn,
+
+        @Schema(description = "Papel do usuario", example = "ADMIN", nullable = true)
+        UserRole role
 ) {
 }

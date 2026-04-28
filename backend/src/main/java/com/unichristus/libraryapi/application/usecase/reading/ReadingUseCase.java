@@ -15,11 +15,14 @@ import com.unichristus.libraryapi.domain.reading.ReadingService;
 import com.unichristus.libraryapi.domain.reading.ReadingStatus;
 import com.unichristus.libraryapi.domain.user.User;
 import com.unichristus.libraryapi.domain.user.UserService;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @UseCase
 @RequiredArgsConstructor
 public class ReadingUseCase {
@@ -33,9 +36,11 @@ public class ReadingUseCase {
     private final UserService userService;
     private final ReadingAlertNotifier readingAlertNotifier;
 
+    @Transactional
     public ReadingResponse syncReading(UUID userId, UUID bookId, Integer currentPage) {
         Reading reading = findReadingInProgressOrCreateReading(userId, bookId);
         int previousPage = reading.getCurrentPage();
+        ReadingStatus previousStatus = reading.getStatus();
         Reading updated = readingService.updateReadingProgress(reading, currentPage);
         int pagesRead = Math.max(0, updated.getCurrentPage() - previousPage);
         if (pagesRead > 0) {
@@ -45,7 +50,9 @@ public class ReadingUseCase {
         if (updated.getStatus() == ReadingStatus.FINISHED) {
             engagementEventPublisher.readingCompleted(userId);
         }
-        notifyReadingAlertsIfEnabled(userId);
+        if (pagesRead > 0 || updated.getStatus() != previousStatus) {
+            notifyReadingAlertsSafely(userId);
+        }
         return ReadingResponseMapper.toReadingResponse(updated);
     }
 
@@ -70,6 +77,14 @@ public class ReadingUseCase {
                 user.getEmail(),
                 readingGoalUseCase.listAlerts(userId, GoalPeriod.MONTHLY)
         );
+    }
+
+    private void notifyReadingAlertsSafely(UUID userId) {
+        try {
+            notifyReadingAlertsIfEnabled(userId);
+        } catch (Exception ex) {
+            log.warn("Falha ao enviar alertas de leitura para usuario {}: {}", userId, ex.getMessage());
+        }
     }
 
 }

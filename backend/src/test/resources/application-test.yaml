@@ -18,3 +18,18 @@ minio:
   bucket:
     files: book-files
     max-size-mb: 10
+
+app:
+  security:
+    login-rate-limit:
+      max-attempts: 3
+      window-seconds: 900
+    forgot-password-rate-limit:
+      max-attempts: 2
+      window-seconds: 900
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

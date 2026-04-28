@@ -32,6 +32,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Page<User> search(String query, Boolean active, com.unichristus.libraryapi.domain.user.UserRole role, Pageable pageable) {
+        return userJpaRepository.search(query, active, role, pageable);
+    }
+
+    @Override
     public long count() {
         return userJpaRepository.count();
     }

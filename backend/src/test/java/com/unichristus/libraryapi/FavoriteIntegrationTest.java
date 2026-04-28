@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class FavoriteIntegrationTest extends IntegrationTestSupport {
@@ -30,7 +31,8 @@ class FavoriteIntegrationTest extends IntegrationTestSupport {
                         .header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"bookId\":\"" + bookId + "\"}"))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "http://localhost/api/v1/users/me/favorites/" + bookId));
 
         MvcResult listAfterCreate = mockMvc.perform(get("/api/v1/users/me/favorites")
                         .header("Authorization", bearer(token)))

@@ -1,11 +1,13 @@
 package com.unichristus.libraryapi.application.dto.request;
 
+import com.unichristus.libraryapi.application.validation.SafeHttpUrl;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,6 +39,8 @@ public record BookCreateRequest(
         LocalDate publicationDate,
 
         @Schema(description = "URL da capa do livro", example = "https://exemplo.com/capas/senhor-dos-aneis.jpg", nullable = true)
+        @Size(max = 512)
+        @SafeHttpUrl
         String coverUrl,
 
         @Schema(description = "IDs das categorias do livro", example = "[\"123e4567-e89b-12d3-a456-426614174000\"]", nullable = true)

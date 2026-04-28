@@ -105,4 +105,55 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
                                 """))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    @DisplayName("Deve retornar resultado parcial quando uma pagina externa falha na importacao admin")
+    void shouldReturnPartialImportWhenExternalPageFails() throws Exception {
+        String adminToken = registerPromoteAndLoginAdmin("Admin Import Partial", "admin-import-partial" + System.nanoTime() + "@email.com", "StrongPass123");
+        String importedTitle = "Partial Import Book " + System.nanoTime();
+        String importedIsbn = "9791234567001";
+
+        OpenLibraryClient.OpenLibraryDoc validDoc = new OpenLibraryClient.OpenLibraryDoc(
+                importedTitle,
+                List.of("Grace Hopper"),
+                List.of(importedIsbn),
+                250,
+                2015,
+                98765
+        );
+
+        when(openLibraryClient.search(eq("partial import"), eq(1), eq(2)))
+                .thenReturn(new OpenLibraryClient.OpenLibrarySearchResponse(1, List.of(validDoc)));
+        when(openLibraryClient.search(eq("partial import"), eq(2), eq(2)))
+                .thenThrow(new IllegalStateException("upstream timeout"));
+
+        String responseBody = mockMvc.perform(post("/api/admin/books/import/open-library")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "query": "partial import",
+                                  "pages": 2,
+                                  "pageSize": 2
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(responseBody).contains("\"imported\":1");
+        assertThat(responseBody).contains("\"failed\":1");
+        assertThat(responseBody).contains("Failed fetching Open Library page 2");
+
+        String listBody = mockMvc.perform(get("/api/v1/books")
+                        .param("includeWithoutPdf", "true")
+                        .param("q", importedTitle))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(listBody).contains(importedTitle);
+    }
 }

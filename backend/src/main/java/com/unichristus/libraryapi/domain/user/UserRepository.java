@@ -14,6 +14,8 @@ public interface UserRepository {
 
     Page<User> findAll(Pageable pageable);
 
+    Page<User> search(String query, Boolean active, UserRole role, Pageable pageable);
+
     long count();
 
     boolean existsByEmail(String email);

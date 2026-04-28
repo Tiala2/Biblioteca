@@ -18,7 +18,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -29,8 +28,6 @@ public class LoggingFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    public static final String TRACE_ID_KEY = "traceId";
-    private static final String TRACE_ID_HEADER = "X-Trace-Id";
     private static final Pattern PASSWORD_FIELD = Pattern.compile("(?i)\"password\"\\s*:\\s*\"[^\"]*\"");
 
     @Override
@@ -41,12 +38,6 @@ public class LoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String traceId = UUID.randomUUID().toString();
-        MDC.put(TRACE_ID_KEY, traceId);
-
-        // Coloca o traceId no header da resposta
-        response.setHeader(TRACE_ID_HEADER, traceId);
-
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
@@ -58,7 +49,6 @@ public class LoggingFilter extends OncePerRequestFilter {
         logResponse(responseWrapper, elapsed);
 
         responseWrapper.copyBodyToResponse();
-        MDC.remove(TRACE_ID_KEY);
     }
 
     private void logRequest(ContentCachingRequestWrapper requestWrapper) {

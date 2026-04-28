@@ -9,63 +9,39 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.unichristus.libraryapi.infrastructure.tracing.LoggingFilter.TRACE_ID_KEY;
+import static com.unichristus.libraryapi.infrastructure.tracing.TraceIdFilter.TRACE_ID_KEY;
 
-/**
- * Aspect que intercepta métodos das camadas Controller, Service e Repository
- * e loga automaticamente com o traceId, nome do method e parâmetros.
- * <p>
- * Só loga quando há um traceId no contexto (ou seja, dentro de um request HTTP).
- */
 @Aspect
 @Component
 public class TraceAspect {
 
     private static final Logger log = LoggerFactory.getLogger(TraceAspect.class);
+    private static final Pattern OBJECT_SENSITIVE_FIELD = Pattern.compile("(?i)\\b(password|newPassword|token|authorization|secret)=[^,\\])}]+");
+    private static final Pattern JSON_SENSITIVE_FIELD = Pattern.compile("(?i)\"(password|newPassword|token|authorization|secret)\"\\s*:\\s*\"[^\"]*\"");
 
-    /**
-     * Intercepta todos os métodos públicos de classes anotadas com:
-     * - @RestController
-     * - @Controller
-     * - @UseCase (anotação personalizada para casos de uso)
-     * - @Service
-     * - @Repository
-     */
     @Before("@within(org.springframework.web.bind.annotation.RestController) || " +
             "@within(com.unichristus.libraryapi.application.annotation.UseCase) || " +
             "@within(org.springframework.stereotype.Service) || " +
             "@within(org.springframework.stereotype.Repository)")
     public void logMethodExecution(JoinPoint joinPoint) {
-        // Só loga se estiver dentro de um contexto de request HTTP
         String traceId = MDC.get(TRACE_ID_KEY);
-
         if (traceId == null) {
-            // Não está em contexto HTTP, não loga
             return;
         }
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String methodName = signature.getName();
+        String parameters = formatParameters(signature.getParameterNames(), joinPoint.getArgs());
 
-        // Captura os parâmetros do method
-        Object[] args = joinPoint.getArgs();
-        String[] paramNames = signature.getParameterNames();
-        String parameters = formatParameters(paramNames, args);
-
-        // Log estruturado com traceId, classe, method e parâmetros
-        log.debug("{}.{}({})",
-                className,
-                methodName,
-                parameters);
+        log.debug("{}.{}({})", className, methodName, parameters);
     }
 
-    /**
-     * Formata os parâmetros do method de forma legível
-     */
     private String formatParameters(String[] paramNames, Object[] args) {
         if (args == null || args.length == 0) {
             return "";
@@ -76,10 +52,36 @@ public class TraceAspect {
                     String name = (paramNames != null && paramNames.length > i)
                             ? paramNames[i]
                             : "arg" + i;
-                    Object value = args[i];
-                    return name + "=" + (value != null ? value : "null");
+                    return name + "=" + sanitizeValue(name, args[i]);
                 })
                 .collect(Collectors.joining(", "));
     }
-}
 
+    private String sanitizeValue(String name, Object value) {
+        if (value == null) {
+            return "null";
+        }
+
+        if (isSensitiveName(name)) {
+            return "***";
+        }
+
+        String packageName = value.getClass().getPackageName();
+        if (packageName.startsWith("jakarta.servlet.") || packageName.startsWith("org.springframework.security.")) {
+            return value.getClass().getSimpleName();
+        }
+
+        String text = String.valueOf(value);
+        text = OBJECT_SENSITIVE_FIELD.matcher(text).replaceAll("$1=***");
+        text = JSON_SENSITIVE_FIELD.matcher(text).replaceAll("\"$1\":\"***\"");
+        return text;
+    }
+
+    private boolean isSensitiveName(String name) {
+        String normalized = name == null ? "" : name.toLowerCase(Locale.ROOT);
+        return normalized.contains("password")
+                || normalized.contains("token")
+                || normalized.contains("authorization")
+                || normalized.contains("secret");
+    }
+}

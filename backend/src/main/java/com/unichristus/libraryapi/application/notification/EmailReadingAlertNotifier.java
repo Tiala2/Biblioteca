@@ -44,7 +44,7 @@ public class EmailReadingAlertNotifier implements ReadingAlertNotifier {
         String previous = lastDigestByUser.put(userId, digest);
         if (digest.equals(previous)) {
             for (AlertResponse alert : alerts) {
-                alertDeliveryService.register(
+                safeRegister(
                         userId,
                         userEmail,
                         alert.type(),
@@ -64,7 +64,7 @@ public class EmailReadingAlertNotifier implements ReadingAlertNotifier {
             helper.setText(buildBody(alerts), false);
             mailSender.send(message);
             for (AlertResponse alert : alerts) {
-                alertDeliveryService.register(
+                safeRegister(
                         userId,
                         userEmail,
                         alert.type(),
@@ -75,7 +75,7 @@ public class EmailReadingAlertNotifier implements ReadingAlertNotifier {
         } catch (MessagingException | MailException ex) {
             log.warn("Falha ao enviar alerta de leitura para {}: {}", userEmail, ex.getMessage());
             for (AlertResponse alert : alerts) {
-                alertDeliveryService.register(
+                safeRegister(
                         userId,
                         userEmail,
                         alert.type(),
@@ -83,6 +83,21 @@ public class EmailReadingAlertNotifier implements ReadingAlertNotifier {
                         AlertDeliveryStatus.FAILED,
                         ex.getMessage());
             }
+        }
+    }
+
+    private void safeRegister(
+            UUID userId,
+            String userEmail,
+            com.unichristus.libraryapi.application.dto.response.AlertType alertType,
+            AlertChannel channel,
+            AlertDeliveryStatus status,
+            String message
+    ) {
+        try {
+            alertDeliveryService.register(userId, userEmail, alertType, channel, status, message);
+        } catch (Exception ex) {
+            log.warn("Falha ao registrar auditoria de alerta {} para usuario {}: {}", alertType, userId, ex.getMessage());
         }
     }
 

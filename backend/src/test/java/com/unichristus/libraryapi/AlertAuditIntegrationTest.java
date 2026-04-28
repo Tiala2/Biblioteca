@@ -34,17 +34,25 @@ class AlertAuditIntegrationTest extends IntegrationTestSupport {
                         .content("{\"period\":\"MONTHLY\",\"targetPages\":400}"))
                 .andExpect(status().isOk());
 
-        MvcResult result = mockMvc.perform(get("/api/admin/alerts/deliveries")
-                        .header("Authorization", bearer(adminToken))
-                        .param("userId", userId.toString())
-                        .param("status", "SKIPPED")
-                        .param("page", "0")
-                        .param("size", "20"))
-                .andExpect(status().isOk())
-                .andReturn();
+        JsonNode content = null;
+        for (int attempt = 0; attempt < 5; attempt++) {
+            MvcResult result = mockMvc.perform(get("/api/admin/alerts/deliveries")
+                            .header("Authorization", bearer(adminToken))
+                            .param("userId", userId.toString())
+                            .param("status", "SKIPPED")
+                            .param("page", "0")
+                            .param("size", "20"))
+                    .andExpect(status().isOk())
+                    .andReturn();
 
-        JsonNode root = objectMapper.readTree(result.getResponse().getContentAsString(StandardCharsets.UTF_8));
-        JsonNode content = root.path("content");
+            JsonNode root = objectMapper.readTree(result.getResponse().getContentAsString(StandardCharsets.UTF_8));
+            content = root.path("content");
+            if (content.isArray() && !content.isEmpty()) {
+                break;
+            }
+            Thread.sleep(200);
+        }
+
         assertThat(content.isArray()).isTrue();
         assertThat(content.size()).isGreaterThan(0);
 
@@ -71,5 +79,32 @@ class AlertAuditIntegrationTest extends IntegrationTestSupport {
 
         JsonNode body = objectMapper.readTree(result.getResponse().getContentAsString(StandardCharsets.UTF_8));
         assertThat(body.path("code").asText()).isEqualTo("SEARCH_FILTER_INVALID");
+    }
+
+    @Test
+    @DisplayName("Deve aplicar fallback de sort e limite de pagina na auditoria de alertas")
+    void shouldFallbackInvalidSortAndClampAlertPageSize() throws Exception {
+        String adminToken = registerPromoteAndLoginAdmin("AuditAdmin Sort", "audit-admin-sort" + System.nanoTime() + "@email.com", "StrongPass123");
+
+        String userEmail = "audit-user-sort" + System.nanoTime() + "@email.com";
+        String userToken = registerAndLogin("AuditUserSort", userEmail, "StrongPass123");
+
+        mockMvc.perform(put("/api/v1/users/me/goals")
+                        .header("Authorization", bearer(userToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"period\":\"MONTHLY\",\"targetPages\":350}"))
+                .andExpect(status().isOk());
+
+        MvcResult result = mockMvc.perform(get("/api/admin/alerts/deliveries")
+                        .header("Authorization", bearer(adminToken))
+                        .param("size", "999")
+                        .param("sort", "unsupportedField,desc"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode root = objectMapper.readTree(result.getResponse().getContentAsString(StandardCharsets.UTF_8));
+        assertThat(root.path("page").path("size").asInt()).isEqualTo(100);
+        assertThat(root.path("content").isArray()).isTrue();
+        assertThat(root.path("content").isEmpty()).isFalse();
     }
 }

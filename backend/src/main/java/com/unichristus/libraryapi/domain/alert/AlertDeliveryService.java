@@ -43,15 +43,17 @@ public class AlertDeliveryService {
         return repository.findByUserId(userId, pageable);
     }
 
-    public Page<AlertDelivery> search(UUID userId,
+    public Page<AlertDelivery> search(String query,
+                                      UUID userId,
                                       AlertDeliveryStatus status,
                                       AlertType alertType,
                                       LocalDateTime dateFrom,
                                       LocalDateTime dateTo,
                                       Pageable pageable) {
         if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
-            throw new DomainException(DomainError.SEARCH_FILTER_INVALID, "dateFrom não pode ser após dateTo");
+            throw new DomainException(DomainError.SEARCH_FILTER_INVALID, "dateFrom nao pode ser apos dateTo");
         }
-        return repository.search(userId, status, alertType, dateFrom, dateTo, pageable);
+        String normalizedQuery = query == null || query.isBlank() ? null : query.trim().toLowerCase();
+        return repository.search(normalizedQuery, userId, status, alertType, dateFrom, dateTo, pageable);
     }
 }

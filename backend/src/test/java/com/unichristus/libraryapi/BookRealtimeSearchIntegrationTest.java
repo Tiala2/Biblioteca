@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,8 +45,28 @@ class BookRealtimeSearchIntegrationTest extends IntegrationTestSupport {
                         .param("size", "12")
                         .param("includeWithoutPdf", "true")
                         .param("sort", "BEST_RATED"))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.content[0].title").value("Realtime Unique Book"))
+                        .andExpect(jsonPath("$.content[0].author").value("Martin Fowler"));
+    }
+
+    @Test
+    @DisplayName("Deve manter busca 200 com lista vazia quando fallback em tempo real falha")
+    void shouldKeepSearchStableWhenRealtimeFallbackFails() throws Exception {
+        String query = "Realtime Failure Book";
+        when(openLibraryClient.search(query, 1, 20))
+                .thenThrow(new IllegalStateException("open library unavailable"));
+
+        mockMvc.perform(get("/api/v1/books")
+                        .param("q", query)
+                        .param("page", "0")
+                        .param("size", "12")
+                        .param("includeWithoutPdf", "true")
+                        .param("sort", "BEST_RATED"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title").value("Realtime Unique Book"))
-                .andExpect(jsonPath("$.content[0].author").value("Martin Fowler"));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.page.number").value(0))
+                .andExpect(jsonPath("$.page.size").value(12));
     }
 }

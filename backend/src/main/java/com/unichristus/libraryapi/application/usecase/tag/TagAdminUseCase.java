@@ -4,6 +4,7 @@ import com.unichristus.libraryapi.application.annotation.UseCase;
 import com.unichristus.libraryapi.application.dto.request.TagRequest;
 import com.unichristus.libraryapi.application.dto.response.TagResponse;
 import com.unichristus.libraryapi.application.mapper.TagResponseMapper;
+import com.unichristus.libraryapi.application.util.RequestTextNormalizer;
 import com.unichristus.libraryapi.domain.tag.Tag;
 import com.unichristus.libraryapi.domain.tag.TagService;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,13 @@ public class TagAdminUseCase {
 
     public TagResponse createTag(TagRequest request) {
         Tag tag = new Tag();
-        tag.setName(request.name());
+        tag.setName(RequestTextNormalizer.normalizeRequired(request.name()));
         return TagResponseMapper.toResponse(tagService.save(tag));
     }
 
     public TagResponse updateTag(UUID tagId, TagRequest request) {
         Tag tag = tagService.findByIdOrThrow(tagId);
-        tag.setName(request.name());
+        tag.setName(RequestTextNormalizer.normalizeRequired(request.name()));
         return TagResponseMapper.toResponse(tagService.save(tag));
     }
 

@@ -8,6 +8,7 @@ import com.unichristus.libraryapi.application.dto.response.ExternalBooksImportRe
 import com.unichristus.libraryapi.application.usecase.book.BookPdfUseCase;
 import com.unichristus.libraryapi.application.usecase.book.BookImportUseCase;
 import com.unichristus.libraryapi.application.usecase.book.BookUseCase;
+import com.unichristus.libraryapi.presentation.common.CreatedResponses;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,10 +42,9 @@ public class BookAdminController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     })
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    //TODO: Adicionar CreatedResource para retornar o Location do recurso criado
-    public BookResponse createBook(@RequestBody @Valid BookCreateRequest request) {
-        return bookUseCase.createBook(request);
+    public ResponseEntity<BookResponse> createBook(@RequestBody @Valid BookCreateRequest request) {
+        BookResponse response = bookUseCase.createBook(request);
+        return CreatedResponses.createdCurrentResource(response.getId(), response);
     }
 
     @Operation(summary = "Importar livros da Open Library", description = "Importa metadados de livros da Open Library e cadastra no catálogo sem PDF")
@@ -67,7 +68,6 @@ public class BookAdminController {
             @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     })
-    //TODO: receber entidade completa e atualizar todos os campos?
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping("{bookId}")
     public void updateBook(@PathVariable UUID bookId, @RequestBody BookUpdateRequest request) {

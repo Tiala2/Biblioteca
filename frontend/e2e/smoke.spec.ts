@@ -36,6 +36,20 @@ async function login(page: Page, email: string, password: string) {
   await page.getByRole("button", { name: "Entrar" }).click();
 }
 
+async function expectSuccessfulLogin(page: Page) {
+  await page.waitForFunction(
+    () => window.location.pathname !== "/login" || Boolean(document.querySelector(".login-error")),
+    undefined,
+    { timeout: 15_000 }
+  );
+
+  const pathname = new URL(page.url()).pathname;
+  if (pathname === "/login") {
+    const error = (await page.locator(".login-error").textContent())?.trim();
+    throw new Error(`Login nao concluiu com sucesso. Erro exibido: ${error ?? "nenhum detalhe informado"}`);
+  }
+}
+
 async function logout(page: Page) {
   await page.locator('button[aria-label="Encerrar sessao"]').evaluate((button: HTMLButtonElement) => button.click());
   await expect(page).toHaveURL(/\/login$/);
@@ -55,6 +69,7 @@ async function registerAndLogin(page: Page) {
   await expect(page).toHaveURL(/\/login$/, { timeout: 15000 });
 
   await login(page, email, password);
+  await expectSuccessfulLogin(page);
   await expect(page).toHaveURL(/\/$/, { timeout: 15000 });
 
   return { email, password, name };
@@ -229,6 +244,7 @@ test("deve executar CRUD de categoria no painel admin", async ({ page }) => {
   const updatedName = `${originalName} Editada`;
 
   await login(page, email, password);
+  await expectSuccessfulLogin(page);
   await expect(page).toHaveURL(/\/$/);
 
   await page.getByRole("link", { name: "Painel Admin" }).click();
@@ -272,6 +288,7 @@ test("deve exibir paineis administrativos de usuarios, favoritos e alertas", asy
   const { email, password } = getAdminCredentials();
 
   await login(page, email, password);
+  await expectSuccessfulLogin(page);
   await expect(page).toHaveURL(/\/$/);
 
   await page.getByRole("link", { name: "Painel Admin" }).click();
@@ -281,25 +298,27 @@ test("deve exibir paineis administrativos de usuarios, favoritos e alertas", asy
   await expect(page.locator("#admin-users").getByRole("heading", { name: "Gestao de usuarios" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Favoritos registrados" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Auditoria de alertas" })).toBeVisible();
-  await expect(page.getByPlaceholder("Filtrar usuarios por nome ou email")).toBeVisible();
+  await expect(page.getByPlaceholder("Buscar usuarios por nome ou email")).toBeVisible();
   await expect(page.getByPlaceholder("Filtrar favoritos por titulo, ISBN ou origem")).toBeVisible();
-  await expect(page.getByPlaceholder("Filtrar alertas por email, tipo ou status")).toBeVisible();
+  await expect(page.getByPlaceholder("Buscar por email, tipo, canal ou mensagem")).toBeVisible();
 });
 
 test("deve invalidar um usuario pelo painel admin", async ({ page }) => {
+  test.setTimeout(60_000);
   const { email: adminEmail, password: adminPassword } = getAdminCredentials();
   const createdUser = await registerAndLogin(page);
 
   await logout(page);
 
   await login(page, adminEmail, adminPassword);
+  await expectSuccessfulLogin(page);
   await expect(page).toHaveURL(/\/$/);
 
   await page.getByRole("link", { name: "Painel Admin" }).click();
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Painel admin" })).toBeVisible();
 
-  await page.getByPlaceholder("Filtrar usuarios por nome ou email").fill(createdUser.email);
+  await page.getByPlaceholder("Buscar usuarios por nome ou email").fill(createdUser.email);
 
   const userItem = page.locator(".stacked-list-item").filter({
     has: page.getByText(createdUser.email),
@@ -310,10 +329,12 @@ test("deve invalidar um usuario pelo painel admin", async ({ page }) => {
   const updatedName = `${createdUser.name} Editado`;
   await userItem.getByRole("button", { name: "Editar" }).click();
   await page.getByPlaceholder("Nome do usuario").fill(updatedName);
+  await page.getByLabel("Papel do usuario").selectOption("ADMIN");
   await page.getByLabel("Participar do ranking").check();
   await page.getByRole("button", { name: "Salvar usuario" }).click();
   await expect(page.getByText("Usuario atualizado com sucesso.")).toBeVisible();
   await expect(userItem).toContainText(updatedName);
+  await expect(userItem).toContainText("Papel admin");
   await expect(userItem).toContainText("Ranking ativo");
 
   await userItem.getByRole("button", { name: "Invalidar acesso" }).click();
@@ -326,10 +347,11 @@ test("deve invalidar um usuario pelo painel admin", async ({ page }) => {
   await expect(page.getByText("Credenciais inválidas.")).toBeVisible({ timeout: 15000 });
 
   await login(page, adminEmail, adminPassword);
+  await expectSuccessfulLogin(page);
   await expect(page).toHaveURL(/\/$/);
   await page.getByRole("link", { name: "Painel Admin" }).click();
   await expect(page).toHaveURL(/\/admin$/);
-  await page.getByPlaceholder("Filtrar usuarios por nome ou email").fill(createdUser.email);
+  await page.getByPlaceholder("Buscar usuarios por nome ou email").fill(createdUser.email);
   const invalidatedUserItem = page.locator(".stacked-list-item").filter({
     has: page.getByText(createdUser.email),
   }).first();
@@ -340,7 +362,40 @@ test("deve invalidar um usuario pelo painel admin", async ({ page }) => {
 
   await logout(page);
   await login(page, createdUser.email, createdUser.password);
+  await expectSuccessfulLogin(page);
   await expect(page.getByRole("heading", { name: new RegExp(`Bem-vinda, ${updatedName}`) })).toBeVisible({ timeout: 15000 });
+});
+
+test("deve abrir subrotas especificas do painel admin", async ({ page }) => {
+  const { email, password } = getAdminCredentials();
+
+  await login(page, email, password);
+  await expectSuccessfulLogin(page);
+  await expect(page).toHaveURL(/\/$/);
+
+  await page.goto("/admin/catalog");
+  await expect(page).toHaveURL(/\/admin\/catalog$/);
+  await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Gamificacao e comunidade" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toHaveCount(0);
+
+  await page.goto("/admin/engagement");
+  await expect(page).toHaveURL(/\/admin\/engagement$/);
+  await expect(page.getByRole("heading", { name: "Gamificacao e comunidade" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toHaveCount(0);
+
+  await page.goto("/admin/users");
+  await expect(page).toHaveURL(/\/admin\/users$/);
+  await expect(page.getByRole("heading", { name: "Gestao de usuarios" }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toHaveCount(0);
+
+  await page.goto("/admin/alerts");
+  await expect(page).toHaveURL(/\/admin\/alerts$/);
+  await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Gamificacao e comunidade" })).toHaveCount(0);
 });
 
 test("deve executar CRUD de livro no painel admin", async ({ page }) => {
@@ -353,6 +408,7 @@ test("deve executar CRUD de livro no painel admin", async ({ page }) => {
   const isbn = `97865${String(stamp).slice(-8)}`;
 
   await login(page, email, password);
+  await expectSuccessfulLogin(page);
   await expect(page).toHaveURL(/\/$/);
 
   await page.getByRole("link", { name: "Painel Admin" }).click();

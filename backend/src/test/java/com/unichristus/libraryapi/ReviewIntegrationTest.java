@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ReviewIntegrationTest extends IntegrationTestSupport {
@@ -33,11 +34,19 @@ class ReviewIntegrationTest extends IntegrationTestSupport {
                         .content("{\"bookId\":\"" + bookId + "\",\"currentPage\":10}"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/api/v1/reviews")
+        MvcResult reviewCreateResult = mockMvc.perform(post("/api/v1/reviews")
                         .header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"bookId\":\"" + bookId + "\",\"rating\":5,\"comment\":\"Otimo livro\"}"))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String reviewId = objectMapper.readTree(reviewCreateResult.getResponse().getContentAsString(StandardCharsets.UTF_8))
+                .path("id")
+                .asText();
+        assertThat(reviewId).isNotBlank();
+        assertThat(reviewCreateResult.getResponse().getHeader("Location"))
+                .isEqualTo("http://localhost/api/v1/reviews/" + reviewId);
 
         mockMvc.perform(post("/api/v1/reviews")
                         .header("Authorization", bearer(token))
@@ -65,8 +74,9 @@ class ReviewIntegrationTest extends IntegrationTestSupport {
                         .header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"bookId\":\"" + bookId + "\",\"rating\":5,\"comment\":\"Primeira versao\"}"))
-                .andExpect(status().isCreated())
-                .andReturn();
+                        .andExpect(status().isCreated())
+                        .andExpect(header().exists("Location"))
+                        .andReturn();
 
         JsonNode created = objectMapper.readTree(createResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
         String reviewId = created.path("id").asText();
@@ -114,6 +124,96 @@ class ReviewIntegrationTest extends IntegrationTestSupport {
         mockMvc.perform(get("/api/v1/reviews/{reviewId}", reviewId)
                         .header("Authorization", bearer(token)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("Deve permitir atualizar review removendo comentario opcional")
+    void shouldAllowUpdatingReviewWithNullComment() throws Exception {
+        String email = "review-null-comment" + System.nanoTime() + "@email.com";
+        String password = "StrongPass123";
+        String token = registerAndLogin("Review Null Comment", email, password);
+
+        UUID bookId = fetchAnyBookId(token);
+
+        mockMvc.perform(post("/api/v1/readings")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\",\"currentPage\":10}"))
+                .andExpect(status().isOk());
+
+        MvcResult createResult = mockMvc.perform(post("/api/v1/reviews")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\",\"rating\":5,\"comment\":\"Comentario inicial\"}"))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String reviewId = objectMapper.readTree(createResult.getResponse().getContentAsString(StandardCharsets.UTF_8))
+                .path("id")
+                .asText();
+
+        String updatedBody = mockMvc.perform(patch("/api/v1/reviews/{reviewId}", reviewId)
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"rating\":4,\"comment\":null}"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        JsonNode updated = objectMapper.readTree(updatedBody);
+        assertThat(updated.path("rating").asInt()).isEqualTo(4);
+        assertThat(updated.path("comment").isNull()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Deve aplicar fallback de sort e limite de pagina nas listagens de reviews")
+    void shouldClampReviewPageSizeAndIgnoreUnsupportedSort() throws Exception {
+        String email = "review-pageable" + System.nanoTime() + "@email.com";
+        String password = "StrongPass123";
+        String token = registerAndLogin("Review Pageable", email, password);
+
+        UUID bookId = fetchAnyBookId(token);
+
+        mockMvc.perform(post("/api/v1/readings")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\",\"currentPage\":10}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/v1/reviews")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\",\"rating\":5,\"comment\":\"Review paginada\"}"))
+                .andExpect(status().isCreated());
+
+        String myReviewsBody = mockMvc.perform(get("/api/v1/reviews/me")
+                        .header("Authorization", bearer(token))
+                        .param("size", "999")
+                        .param("sort", "unsupportedField,asc"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        JsonNode myReviews = objectMapper.readTree(myReviewsBody);
+        assertThat(myReviews.path("page").path("size").asInt()).isEqualTo(100);
+        assertThat(myReviews.path("content").isArray()).isTrue();
+        assertThat(myReviews.path("content").isEmpty()).isFalse();
+
+        String allReviewsBody = mockMvc.perform(get("/api/v1/reviews")
+                        .header("Authorization", bearer(token))
+                        .param("size", "999")
+                        .param("sort", "unsupportedField,desc"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        JsonNode allReviews = objectMapper.readTree(allReviewsBody);
+        assertThat(allReviews.path("page").path("size").asInt()).isEqualTo(100);
+        assertThat(allReviews.path("content").isArray()).isTrue();
+        assertThat(allReviews.path("content").isEmpty()).isFalse();
     }
 
     @Test

@@ -1,6 +1,6 @@
 # Documentacao Final - Library API
 
-Data de referencia: 2026-03-12
+Data de referencia: 2026-04-28
 
 ## 1. Escopo do projeto
 
@@ -73,9 +73,11 @@ Opcional (sem variaveis de ambiente):
 
 Resultados mais recentes:
 
-- Backend `test + integrationTest`: **PASS**
+- Backend `./gradlew.bat test --no-daemon`: **BUILD SUCCESSFUL**
+- Backend `./gradlew.bat integrationTest --no-daemon`: **BUILD SUCCESSFUL**
 - Frontend `npm run build`: **PASS**
-- Frontend `npm run test`: **PASS**
+- Frontend `npm run test`: **32 passed**
+- Frontend `npm run test:e2e`: **13 passed**
 - Smoke API (`scripts/e2e-smoke.ps1`): **PASS**
 - Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0**
 
@@ -92,6 +94,11 @@ Cobertura de integracao inclui:
 - admin users (list/get/delete)
 - admin upload PDF (success/forbidden)
 - audit de alertas admin
+- smoke E2E frontend com cadastro/login, catalogo, leitura, metas, reviews, badges, ranking e admin
+- observabilidade com `traceId` e mascaramento de campos sensiveis em logs
+- seguranca HTTP/CORS e expiracao de sessao no front
+- fallback global contra tela branca no frontend
+- aviso visual quando a API fica indisponivel
 
 ## 5. Status por requisito
 
@@ -119,6 +126,7 @@ Cobertura de integracao inclui:
 - `docs/EVIDENCIAS_FRONT.md`
 - `docs/API_FRONT_READINESS.md`
 - `docs/UAT_CHECKLIST.md`
+- `docs/SECURITY_DEPLOY_CHECKLIST.md`
 - `docs/BACKEND_FINAL_VALIDACAO.md`
 - `docs/RELATORIO_PROJETO.md`
 - `docs/openapi-lock.json`
@@ -130,6 +138,10 @@ Cobertura de integracao inclui:
 - Upload PDF respeita limite de multipart.
 - E-mail de recuperacao suporta Mailpit (local) e SMTP real (producao).
 - Nesta fase nao ha refresh token; expiracao de JWT exige novo login.
+- Logs de aplicacao mascaram senha, token e authorization; loggers verbosos de body do Spring permanecem em `INFO`.
+- O front remove sessao local expirada e redireciona para login em `401`.
+- CORS deve ser mantido restrito por ambiente via `APP_CORS_ALLOWED_ORIGINS`.
+- Mutacoes administrativas em `/api/admin/**` geram log `ADMIN_AUDIT` com ator, rota, status e `traceId`.
 
 ## 8. Decisao de autenticacao para o front
 
@@ -140,4 +152,5 @@ Cobertura de integracao inclui:
 
 ## 9. Proximo passo tecnico recomendado
 
-- Warnings de deprecacao de `@MockBean` em testes principais foram tratados para reduzir ruido tecnico na manutencao.
+- A base atual esta pronta para fechamento de entrega no escopo do template.
+- Antes de release formal, recomenda-se apenas revisao final do diff para commit.

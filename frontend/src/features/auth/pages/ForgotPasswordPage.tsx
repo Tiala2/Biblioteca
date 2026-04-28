@@ -48,6 +48,8 @@ export function ForgotPasswordPage() {
         const fieldErrors = extractFieldErrorMessages(err);
         if (fieldErrors.length > 0) {
           setError(`Dados invalidos: ${fieldErrors.join(" | ")}`);
+        } else if (err.response?.status === 429) {
+          setError(extractApiErrorMessage(err, "Muitas solicitacoes de recuperacao. Aguarde alguns minutos antes de tentar novamente."));
         } else {
           setError(extractApiErrorMessage(err, "Nao foi possivel enviar o email de recuperacao."));
         }

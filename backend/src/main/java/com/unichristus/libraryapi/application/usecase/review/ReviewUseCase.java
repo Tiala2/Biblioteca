@@ -5,6 +5,7 @@ import com.unichristus.libraryapi.application.dto.request.ReviewCreateRequest;
 import com.unichristus.libraryapi.application.dto.request.ReviewUpdateRequest;
 import com.unichristus.libraryapi.application.dto.response.ReviewResponse;
 import com.unichristus.libraryapi.application.mapper.ReviewResponseMapper;
+import com.unichristus.libraryapi.application.util.RequestTextNormalizer;
 import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.book.BookService;
 import com.unichristus.libraryapi.domain.reading.Reading;
@@ -48,7 +49,7 @@ public class ReviewUseCase {
                 .user(User.builder().id(userId).build())
                 .rating(request.rating())
                 .progress(ReadingService.calculateProgressPercentage(reading))
-                .comment(request.comment())
+                .comment(normalizeComment(request.comment()))
                 .build();
         return ReviewResponseMapper.toReviewResponse(reviewService.save(review));
     }
@@ -57,9 +58,13 @@ public class ReviewUseCase {
         Review existingReview = reviewService.findByIdOrThrow(reviewId);
         checkUser(userId, existingReview);
         existingReview.setRating(request.rating());
-        existingReview.setComment(request.comment().trim());
+        existingReview.setComment(normalizeComment(request.comment()));
         Review updatedReview = reviewService.save(existingReview);
         return ReviewResponseMapper.toReviewResponse(updatedReview);
+    }
+
+    private String normalizeComment(String comment) {
+        return RequestTextNormalizer.normalizeOptional(comment);
     }
 
     private static void checkUser(UUID userId, Review existingReview) {

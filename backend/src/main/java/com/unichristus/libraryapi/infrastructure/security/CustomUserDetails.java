@@ -60,7 +60,6 @@ public class CustomUserDetails implements UserDetails {
         return email;
     }
 
-    //TODO Implementar lógica de expiração, bloqueio e credenciais se necessário
     @Override
     public boolean isAccountNonExpired() {
         return true;

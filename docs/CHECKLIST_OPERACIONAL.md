@@ -1,6 +1,6 @@
 # Checklist Operacional
 
-Data de referencia: 2026-03-12
+Data de referencia: 2026-04-28
 
 ## 1) Subir ambiente
 
@@ -28,6 +28,22 @@ docker compose ps
 ./gradlew.bat test integrationTest
 ```
 
+Validacao rapida usada na rodada final:
+
+```powershell
+cd backend
+.\gradlew.bat test --no-daemon
+.\gradlew.bat integrationTest --no-daemon
+
+cd ..\frontend
+npm.cmd run test
+npm.cmd run build
+npm.cmd run test:e2e
+
+cd ..
+powershell -ExecutionPolicy Bypass -File .\scripts\route-checklist-exec.ps1
+```
+
 ## 4) Rodar smoke E2E no terminal
 
 Definir credenciais admin:
@@ -50,13 +66,22 @@ Opcao alternativa:
 
 ## 5) Evidencias minimas para validar
 
-- Build verde (`test` + `integrationTest`)
+- Backend `test` verde
+- Frontend `test`, `build` e `test:e2e` verdes
+- Checklist de rotas com `56 PASS / 0 FAIL`
 - Health `UP`
 - Login JWT funcionando
+- Expiracao de JWT limpando sessao local do front
+- Erro inesperado do front exibindo fallback recuperavel
+- API indisponivel exibindo aviso global no front
 - Criacao de categoria e livro por admin
 - Registro de leitura e meta por usuario
 - Leaderboard retornando dados
 - Auditoria de alertas em `/api/admin/alerts/deliveries`
+- Logs com `traceId` e sem exposicao de senha, token ou authorization
+- Logs `ADMIN_AUDIT` em mutacoes administrativas
+- CORS aceitando apenas origens configuradas
+- Fluxos resilientes de e-mail, PDF externo e Open Library sem derrubar o fluxo principal
 
 ## 6) Limites e decisoes conhecidas
 

@@ -19,6 +19,10 @@ const GoalsPage = lazy(() => import("@features/goals/pages/GoalsPage").then((mod
 const BadgesPage = lazy(() => import("@features/badges/pages/BadgesPage").then((module) => ({ default: module.BadgesPage })));
 const LeaderboardPage = lazy(() => import("@features/leaderboard/pages/LeaderboardPage").then((module) => ({ default: module.LeaderboardPage })));
 const AdminPage = lazy(() => import("@features/admin/pages/AdminPage").then((module) => ({ default: module.AdminPage })));
+const AdminCatalogPage = lazy(() => import("@features/admin/pages/AdminCatalogPage").then((module) => ({ default: module.AdminCatalogPage })));
+const AdminEngagementPage = lazy(() => import("@features/admin/pages/AdminEngagementPage").then((module) => ({ default: module.AdminEngagementPage })));
+const AdminUsersPage = lazy(() => import("@features/admin/pages/AdminUsersPage").then((module) => ({ default: module.AdminUsersPage })));
+const AdminAlertsPage = lazy(() => import("@features/admin/pages/AdminAlertsPage").then((module) => ({ default: module.AdminAlertsPage })));
 
 function RouteLoadingFallback() {
   return (
@@ -57,6 +61,38 @@ export function AppRouter() {
               element={
                 <RoleRoute role="ROLE_ADMIN">
                   <AdminPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/admin/catalog"
+              element={
+                <RoleRoute role="ROLE_ADMIN">
+                  <AdminCatalogPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/admin/engagement"
+              element={
+                <RoleRoute role="ROLE_ADMIN">
+                  <AdminEngagementPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <RoleRoute role="ROLE_ADMIN">
+                  <AdminUsersPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/admin/alerts"
+              element={
+                <RoleRoute role="ROLE_ADMIN">
+                  <AdminAlertsPage />
                 </RoleRoute>
               }
             />

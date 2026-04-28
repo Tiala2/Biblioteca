@@ -4,17 +4,22 @@ import com.unichristus.libraryapi.domain.user.User;
 import com.unichristus.libraryapi.domain.user.PasswordResetTokenRepository;
 import com.unichristus.libraryapi.domain.user.UserService;
 import com.unichristus.libraryapi.domain.user.UserRole;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
+import java.util.Properties;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -85,6 +90,38 @@ class ForgotPasswordUseCaseTest {
         );
 
         org.junit.jupiter.api.Assertions.assertEquals("http://library.local", resolved);
+    }
+
+    @Test
+    void shouldNotFailWhenMailSendThrows() {
+        var user = User.builder()
+                .id(UUID.randomUUID())
+                .name("Test User")
+                .email("test@example.com")
+                .password("hashed")
+                .role(UserRole.USER)
+                .build();
+
+        JavaMailSender mailSender = org.mockito.Mockito.mock(JavaMailSender.class);
+        when(userService.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(mailSenderProvider.getIfAvailable()).thenReturn(mailSender);
+        when(mailSender.createMimeMessage()).thenReturn(new MimeMessage(Session.getInstance(new Properties())));
+        org.mockito.Mockito.doThrow(new MailSendException("smtp unavailable"))
+                .when(mailSender)
+                .send(org.mockito.ArgumentMatchers.any(MimeMessage.class));
+
+        var useCase = new ForgotPasswordUseCase(userService, passwordResetTokenRepository, mailSenderProvider);
+        ReflectionTestUtils.setField(useCase, "from", "no-reply@library.local");
+
+        assertThatCode(() -> useCase.sendRecoveryEmail("test@example.com"))
+                .doesNotThrowAnyException();
+
+        verify(passwordResetTokenRepository).invalidateActiveByUserId(
+                org.mockito.ArgumentMatchers.eq(user.getId()),
+                org.mockito.ArgumentMatchers.any()
+        );
+        verify(passwordResetTokenRepository).save(org.mockito.ArgumentMatchers.any());
+        verify(mailSender).send(org.mockito.ArgumentMatchers.any(MimeMessage.class));
     }
 }
 

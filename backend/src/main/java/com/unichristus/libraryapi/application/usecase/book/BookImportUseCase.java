@@ -40,8 +40,15 @@ public class BookImportUseCase {
         Set<String> seenIsbn = new HashSet<>();
 
         for (int page = 1; page <= request.pages(); page++) {
-            OpenLibraryClient.OpenLibrarySearchResponse result = openLibraryClient.search(request.query(), page, request.pageSize());
-            List<OpenLibraryClient.OpenLibraryDoc> docs = result.docs() == null ? List.of() : result.docs();
+            List<OpenLibraryClient.OpenLibraryDoc> docs;
+            try {
+                OpenLibraryClient.OpenLibrarySearchResponse result = openLibraryClient.search(request.query(), page, request.pageSize());
+                docs = result.docs() == null ? List.of() : result.docs();
+            } catch (Exception ex) {
+                failed++;
+                addMessage(messages, "Failed fetching Open Library page %d: %s".formatted(page, ex.getMessage()));
+                continue;
+            }
             if (docs.isEmpty()) {
                 break;
             }

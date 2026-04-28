@@ -6,6 +6,7 @@ import com.unichristus.libraryapi.application.dto.response.BookResponse;
 import com.unichristus.libraryapi.application.dto.response.CategoryResponse;
 import com.unichristus.libraryapi.application.mapper.BookResponseMapper;
 import com.unichristus.libraryapi.application.mapper.CategoryResponseMapper;
+import com.unichristus.libraryapi.application.util.RequestTextNormalizer;
 import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.book.BookService;
 import com.unichristus.libraryapi.domain.category.Category;
@@ -45,8 +46,8 @@ public class CategoryUseCase {
 
     public CategoryResponse createCategory(CategoryRequest request) {
         Category category = Category.builder()
-                .name(request.name())
-                .description(request.description())
+                .name(RequestTextNormalizer.normalizeRequired(request.name()))
+                .description(RequestTextNormalizer.normalizeOptional(request.description()))
                 .active(true)
                 .build();
         Category savedCategory = categoryService.save(category);
@@ -56,8 +57,8 @@ public class CategoryUseCase {
     public CategoryResponse updateCategory(UUID categoryId, CategoryRequest request) {
         Category existingCategory = categoryService.findByIdOrThrow(categoryId);
 
-        existingCategory.setName(request.name());
-        existingCategory.setDescription(request.description());
+        existingCategory.setName(RequestTextNormalizer.normalizeRequired(request.name()));
+        existingCategory.setDescription(RequestTextNormalizer.normalizeOptional(request.description()));
 
         Category updatedCategory = categoryService.save(existingCategory);
         return CategoryResponseMapper.toResponse(updatedCategory);

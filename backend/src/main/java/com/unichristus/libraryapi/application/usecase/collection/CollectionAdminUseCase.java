@@ -4,6 +4,7 @@ import com.unichristus.libraryapi.application.annotation.UseCase;
 import com.unichristus.libraryapi.application.dto.request.CollectionUpsertRequest;
 import com.unichristus.libraryapi.application.dto.response.CollectionResponse;
 import com.unichristus.libraryapi.application.mapper.CollectionResponseMapper;
+import com.unichristus.libraryapi.application.util.RequestTextNormalizer;
 import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.book.BookService;
 import com.unichristus.libraryapi.domain.book.exception.BookNotFoundException;
@@ -55,8 +56,8 @@ public class CollectionAdminUseCase {
             throw new BookNotFoundException(missingId);
         }
 
-        collection.setTitle(request.title());
-        collection.setDescription(request.description());
+        collection.setTitle(RequestTextNormalizer.normalizeRequired(request.title()));
+        collection.setDescription(RequestTextNormalizer.normalizeOptional(request.description()));
         collection.setCoverUrl(request.coverUrl());
         collection.setBooks(new HashSet<>(books));
     }

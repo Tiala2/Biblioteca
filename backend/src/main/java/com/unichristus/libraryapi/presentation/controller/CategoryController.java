@@ -3,6 +3,7 @@ package com.unichristus.libraryapi.presentation.controller;
 import com.unichristus.libraryapi.application.dto.response.BookResponse;
 import com.unichristus.libraryapi.application.dto.response.CategoryResponse;
 import com.unichristus.libraryapi.application.usecase.category.CategoryUseCase;
+import com.unichristus.libraryapi.presentation.common.PageableSanitizer;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,12 +12,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Tag(name = "Categories", description = "Operações com categorias de livros")
@@ -24,6 +27,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping(path = ServiceURI.CATEGORIES_RESOURCE)
 public class CategoryController {
+
+    private static final Sort CATEGORY_BOOKS_DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "title");
+    private static final Set<String> CATEGORY_BOOKS_ALLOWED_SORTS = Set.of(
+            "title",
+            "author",
+            "numberOfPages",
+            "publicationDate",
+            "createdAt",
+            "updatedAt"
+    );
 
     private final CategoryUseCase categoryUseCase;
 
@@ -56,6 +69,7 @@ public class CategoryController {
             @PathVariable UUID categoryId,
             Pageable pageable
     ) {
-        return categoryUseCase.getBooksByCategory(categoryId, pageable);
+        Pageable safePageable = PageableSanitizer.sanitize(pageable, CATEGORY_BOOKS_DEFAULT_SORT, CATEGORY_BOOKS_ALLOWED_SORTS);
+        return categoryUseCase.getBooksByCategory(categoryId, safePageable);
     }
 }

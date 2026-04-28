@@ -5,6 +5,7 @@ import com.unichristus.libraryapi.application.dto.response.BookListResponse;
 import com.unichristus.libraryapi.application.usecase.book.BookPdfUseCase;
 import com.unichristus.libraryapi.application.usecase.book.BookUseCase;
 import com.unichristus.libraryapi.domain.book.BookSort;
+import com.unichristus.libraryapi.presentation.common.PageableSanitizer;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,8 +17,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Tag(name = "Books", description = "Operações de busca de livros destinada ao usuário")
@@ -33,6 +35,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping(ServiceURI.BOOKS_RESOURCE)
 public class BookController {
+
+    private static final Sort DEFAULT_SORT = Sort.unsorted();
 
     private final BookUseCase bookUseCase;
     private final BookPdfUseCase bookPdfUseCase;
@@ -84,7 +88,7 @@ public class BookController {
             @RequestParam(value = "includeWithoutPdf", required = false, defaultValue = "false") boolean includeWithoutPdf,
             @RequestParam(value = "sort", required = false) BookSort sort,
             Pageable pageable) {
-        Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Pageable safePageable = PageableSanitizer.sanitize(pageable, DEFAULT_SORT, Set.of());
         return bookUseCase.getAllBooks(
                 query,
                 author,

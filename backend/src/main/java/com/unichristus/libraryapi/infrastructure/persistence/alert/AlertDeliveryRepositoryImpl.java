@@ -47,7 +47,8 @@ public class AlertDeliveryRepositoryImpl implements AlertDeliveryRepository {
     }
 
     @Override
-    public Page<AlertDelivery> search(UUID userId,
+    public Page<AlertDelivery> search(String query,
+                                      UUID userId,
                                       AlertDeliveryStatus status,
                                       AlertType alertType,
                                       LocalDateTime dateFrom,
@@ -59,18 +60,18 @@ public class AlertDeliveryRepositoryImpl implements AlertDeliveryRepository {
 
         CriteriaQuery<AlertDelivery> cq = cb.createQuery(AlertDelivery.class);
         Root<AlertDelivery> root = cq.from(AlertDelivery.class);
-        Predicate[] predicates = buildPredicates(userId, status, alertType, dateFrom, dateTo, cb, root);
+        Predicate[] predicates = buildPredicates(query, userId, status, alertType, dateFrom, dateTo, cb, root);
         cq.where(predicates);
         cq.orderBy(cb.desc(root.get("createdAt")));
 
-        TypedQuery<AlertDelivery> query = entityManager.createQuery(cq);
-        query.setFirstResult((int) sorted.getOffset());
-        query.setMaxResults(sorted.getPageSize());
-        var content = query.getResultList();
+        TypedQuery<AlertDelivery> typedQuery = entityManager.createQuery(cq);
+        typedQuery.setFirstResult((int) sorted.getOffset());
+        typedQuery.setMaxResults(sorted.getPageSize());
+        var content = typedQuery.getResultList();
 
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<AlertDelivery> countRoot = countQuery.from(AlertDelivery.class);
-        Predicate[] countPredicates = buildPredicates(userId, status, alertType, dateFrom, dateTo, cb, countRoot);
+        Predicate[] countPredicates = buildPredicates(query, userId, status, alertType, dateFrom, dateTo, cb, countRoot);
         countQuery.select(cb.count(countRoot)).where(countPredicates);
         Long total = entityManager.createQuery(countQuery).getSingleResult();
 
@@ -87,7 +88,8 @@ public class AlertDeliveryRepositoryImpl implements AlertDeliveryRepository {
                 Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
-    private Predicate[] buildPredicates(UUID userId,
+    private Predicate[] buildPredicates(String query,
+                                        UUID userId,
                                         AlertDeliveryStatus status,
                                         AlertType alertType,
                                         LocalDateTime dateFrom,
@@ -95,6 +97,16 @@ public class AlertDeliveryRepositoryImpl implements AlertDeliveryRepository {
                                         CriteriaBuilder cb,
                                         Root<AlertDelivery> root) {
         java.util.List<Predicate> predicates = new java.util.ArrayList<>();
+        if (query != null) {
+            String pattern = "%" + query + "%";
+            predicates.add(cb.or(
+                    cb.like(cb.lower(root.get("email")), pattern),
+                    cb.like(cb.lower(root.get("message")), pattern),
+                    cb.like(cb.lower(root.get("status").as(String.class)), pattern),
+                    cb.like(cb.lower(root.get("channel").as(String.class)), pattern),
+                    cb.like(cb.lower(root.get("alertType").as(String.class)), pattern)
+            ));
+        }
         if (userId != null) {
             predicates.add(cb.equal(root.get("userId"), userId));
         }

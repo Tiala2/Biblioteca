@@ -15,7 +15,8 @@ public final class HttpErrorMapper {
             case EMAIL_ALREADY_EXISTS, ISBN_CONFLICT, FAVORITE_ALREADY_EXISTS, REVIEW_ALREADY_EXISTS,
                  CATEGORY_ALREADY_EXISTS, TAG_ALREADY_EXISTS ->
                     HttpStatus.CONFLICT;
-            case READING_BELONGS_TO_ANOTHER_USER, REVIEW_BELONGS_TO_ANOTHER_USER -> HttpStatus.FORBIDDEN;
+            case READING_BELONGS_TO_ANOTHER_USER, REVIEW_BELONGS_TO_ANOTHER_USER, USER_ROLE_SELF_CHANGE_FORBIDDEN ->
+                    HttpStatus.FORBIDDEN;
             case USER_NOT_AUTHENTICATED -> HttpStatus.UNAUTHORIZED;
             default -> HttpStatus.BAD_REQUEST;
         };

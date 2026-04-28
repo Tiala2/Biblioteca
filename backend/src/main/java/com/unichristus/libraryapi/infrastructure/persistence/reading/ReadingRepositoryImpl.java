@@ -4,7 +4,9 @@ import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.reading.Reading;
 import com.unichristus.libraryapi.domain.reading.ReadingRepository;
 import com.unichristus.libraryapi.domain.reading.ReadingStatus;
+import com.unichristus.libraryapi.domain.reading.exception.ReadingInProgressException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,7 +22,14 @@ public class ReadingRepositoryImpl implements ReadingRepository {
 
     @Override
     public Reading save(Reading reading) {
-        return repository.save(reading);
+        try {
+            return repository.save(reading);
+        } catch (DataIntegrityViolationException ex) {
+            if (reading.getUser() != null && reading.getBook() != null && reading.getStatus() == ReadingStatus.IN_PROGRESS) {
+                throw new ReadingInProgressException(reading.getUser().getId(), reading.getBook().getId());
+            }
+            throw ex;
+        }
     }
 
     @Override

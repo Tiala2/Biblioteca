@@ -6,6 +6,7 @@ import com.unichristus.libraryapi.application.dto.request.UserUpdateRequest;
 import com.unichristus.libraryapi.application.dto.response.UserResponse;
 import com.unichristus.libraryapi.application.mapper.UserResponseMapper;
 import com.unichristus.libraryapi.application.dto.response.BadgeResponse;
+import com.unichristus.libraryapi.application.util.RequestTextNormalizer;
 import com.unichristus.libraryapi.domain.engagement.BadgeService;
 import com.unichristus.libraryapi.domain.user.PasswordHasher;
 import com.unichristus.libraryapi.domain.user.User;
@@ -37,8 +38,8 @@ public class UserUseCase {
         }
         User savedUser = userService.save(
                 User.builder()
-                        .name(request.name().trim())
-                        .email(request.email())
+                        .name(RequestTextNormalizer.normalizeRequired(request.name()))
+                        .email(RequestTextNormalizer.normalizeRequired(request.email()))
                         .password(passwordHasher.hash(request.password()))
                         .leaderboardOptIn(false)
                         .alertsOptIn(true)
@@ -50,11 +51,31 @@ public class UserUseCase {
     }
 
     public void updateUser(UUID userId, UserUpdateRequest request) {
-            userService.updateUser(userId, request.name(), request.email(), request.password(), request.leaderboardOptIn(), request.alertsOptIn());
+        userService.updateUser(
+                userId,
+                RequestTextNormalizer.normalizeOptional(request.name()),
+                RequestTextNormalizer.normalizeOptional(request.email()),
+                request.password(),
+                request.leaderboardOptIn(),
+                request.alertsOptIn()
+        );
     }
 
-    public Page<UserResponse> getAllUsers(Pageable pageable) {
-        return userService.findAll(pageable)
+    public void updateUserAsAdmin(UUID actorUserId, UUID targetUserId, UserUpdateRequest request) {
+        userService.updateUserAsAdmin(
+                actorUserId,
+                targetUserId,
+                RequestTextNormalizer.normalizeOptional(request.name()),
+                RequestTextNormalizer.normalizeOptional(request.email()),
+                request.password(),
+                request.leaderboardOptIn(),
+                request.alertsOptIn(),
+                request.role()
+        );
+    }
+
+    public Page<UserResponse> getAllUsers(String query, Boolean active, UserRole role, Pageable pageable) {
+        return userService.search(query, active, role, pageable)
                 .map(user -> UserResponseMapper.toUserResponse(user, badgeService.findByUser(user.getId())));
     }
 

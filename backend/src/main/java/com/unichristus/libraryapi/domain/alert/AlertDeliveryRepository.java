@@ -15,7 +15,8 @@ public interface AlertDeliveryRepository {
 
     Page<AlertDelivery> findByUserId(UUID userId, Pageable pageable);
 
-    Page<AlertDelivery> search(UUID userId,
+    Page<AlertDelivery> search(String query,
+                               UUID userId,
                                AlertDeliveryStatus status,
                                AlertType alertType,
                                LocalDateTime dateFrom,

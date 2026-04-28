@@ -1,10 +1,12 @@
 # Checklist Final De Aderencia Ao Template
 
-Data de referencia: 2026-04-08
+Data de referencia: 2026-04-28
 
 Observacao adicional:
 
 - o backend tambem recebeu validacao operacional real em 2026-04-08 para `health`, `login` e `forgot-password`, registrada em `docs/BACKEND_FINAL_VALIDACAO.md`
+- a rodada de retomada em 2026-04-28 confirmou backend unitario, backend integracao, frontend unitario, build de producao, E2E completo e checklist de rotas
+- resultados atuais: backend `test` PASS, backend `integrationTest` PASS, frontend `32 passed`, frontend E2E `13 passed`, rotas `56 PASS / 0 FAIL`
 
 ## Requisitos Funcionais
 
@@ -25,7 +27,7 @@ Observacao adicional:
 |---|---|---|---|
 | RNF001 | OK | Senha com hash forte | [SecurityConfig.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/infrastructure/config/SecurityConfig.java) |
 | RNF002 | OK | Controle por perfil no backend e frontend | [SecurityConfig.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/infrastructure/config/SecurityConfig.java), [RoleRoute.tsx](/c:/workspace/library-api-projeto/frontend/src/features/auth/routes/RoleRoute.tsx) |
-| RNF003 | OK | JWT com expiracao e reset token controlado | [AuthenticationController.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/presentation/controller/AuthenticationController.java) |
+| RNF003 | OK | JWT com expiracao, reset token controlado e limpeza de sessao expirada no front | [AuthenticationController.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/presentation/controller/AuthenticationController.java) |
 | RNF004 | OK | LGPD tratada no escopo do projeto | [RNF_TEMPLATE_COMPLEMENTOS.md](/c:/workspace/library-api-projeto/docs/RNF_TEMPLATE_COMPLEMENTOS.md) |
 | RNF005 | OK | Resposta media abaixo de 2 segundos | [response-time-report.json](/c:/workspace/library-api-projeto/docs/generated/response-time-report.json) |
 | RNF006 | OK | Paginacao, compressao e carregamento progressivo | [RNF_TEMPLATE_COMPLEMENTOS.md](/c:/workspace/library-api-projeto/docs/RNF_TEMPLATE_COMPLEMENTOS.md) |
@@ -35,6 +37,7 @@ Observacao adicional:
 | RNF010 | OK | Boas praticas de acessibilidade aplicadas | [RNF_TEMPLATE_COMPLEMENTOS.md](/c:/workspace/library-api-projeto/docs/RNF_TEMPLATE_COMPLEMENTOS.md) |
 | RNF011 | OK | Manutenibilidade com arquitetura e testes | [RELATORIO_PROJETO.md](/c:/workspace/library-api-projeto/docs/RELATORIO_PROJETO.md) |
 | RNF012 | OK | Backup e restauracao documentados | [BACKUP_E_RESTAURACAO.md](/c:/workspace/library-api-projeto/docs/BACKUP_E_RESTAURACAO.md) |
+| RNF013 | OK | Degradacao segura para dependencias externas | [BookImportUseCase.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/application/usecase/book/BookImportUseCase.java), [ForgotPasswordUseCaseTest.java](/c:/workspace/library-api-projeto/backend/src/test/java/com/unichristus/libraryapi/application/usecase/auth/ForgotPasswordUseCaseTest.java) |
 
 ## Casos De Teste Prioritarios Do Template
 

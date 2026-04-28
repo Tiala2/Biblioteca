@@ -4,6 +4,7 @@ import com.unichristus.libraryapi.application.dto.request.FavoriteBookRequest;
 import com.unichristus.libraryapi.application.dto.response.FavoriteResponse;
 import com.unichristus.libraryapi.application.usecase.favorite.FavoriteBookUseCase;
 import com.unichristus.libraryapi.infrastructure.security.LoggedUser;
+import com.unichristus.libraryapi.presentation.common.CreatedResponses;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,13 +55,13 @@ public class FavoriteController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
             @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
     })
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public FavoriteResponse favoriteBook(
+    public ResponseEntity<FavoriteResponse> favoriteBook(
             @RequestBody @Valid FavoriteBookRequest request,
             @LoggedUser UUID userId
     ) {
-        return favoriteBookUseCase.favoriteBook(request.bookId(), userId);
+        FavoriteResponse response = favoriteBookUseCase.favoriteBook(request.bookId(), userId);
+        return CreatedResponses.createdCurrentResource(response.bookId(), response);
     }
 
     @Operation(summary = "Remover livro dos favoritos")

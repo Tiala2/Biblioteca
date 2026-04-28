@@ -1,24 +1,10 @@
 import axios from "axios";
+import { clearStoredAuth, readStoredToken } from "@shared/auth/authStorage";
 
-const STORAGE_KEY = "library.auth";
-
-type StoredAuth = {
-  token?: string;
-};
-
-function readStoredToken(): string | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as StoredAuth;
-    return typeof parsed.token === "string" && parsed.token.length > 0 ? parsed.token : null;
-  } catch {
-    return null;
-  }
-}
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080",
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -36,7 +22,8 @@ api.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      localStorage.removeItem(STORAGE_KEY);
+      const hadActiveSession = readStoredToken() !== null;
+      clearStoredAuth({ notify: hadActiveSession });
       if (window.location.pathname !== "/login") {
         window.location.assign("/login");
       }

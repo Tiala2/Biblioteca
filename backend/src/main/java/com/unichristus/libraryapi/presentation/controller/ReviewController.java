@@ -5,6 +5,8 @@ import com.unichristus.libraryapi.application.dto.request.ReviewUpdateRequest;
 import com.unichristus.libraryapi.application.dto.response.ReviewResponse;
 import com.unichristus.libraryapi.application.usecase.review.ReviewUseCase;
 import com.unichristus.libraryapi.infrastructure.security.LoggedUser;
+import com.unichristus.libraryapi.presentation.common.CreatedResponses;
+import com.unichristus.libraryapi.presentation.common.PageableSanitizer;
 import com.unichristus.libraryapi.presentation.common.ServiceURI;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,10 +16,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Tag(name = "Reviews", description = "Operações com avaliações de livros")
@@ -25,6 +29,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping(path = ServiceURI.REVIEWS_RESOURCE)
 public class ReviewController {
+
+    private static final Sort REVIEW_DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "createdAt");
+    private static final Set<String> REVIEW_ALLOWED_SORTS = Set.of("createdAt");
 
     private final ReviewUseCase reviewUseCase;
 
@@ -37,7 +44,8 @@ public class ReviewController {
             @LoggedUser UUID userId,
             Pageable pageable
     ) {
-        return reviewUseCase.getUserReviews(userId, pageable);
+        Pageable safePageable = PageableSanitizer.sanitize(pageable, REVIEW_DEFAULT_SORT, REVIEW_ALLOWED_SORTS);
+        return reviewUseCase.getUserReviews(userId, safePageable);
     }
 
     @Operation(summary = "Listar avaliações", description = "Lista todas as avaliações com paginação e filtros opcionais")
@@ -46,7 +54,8 @@ public class ReviewController {
     })
     @GetMapping
     public Page<ReviewResponse> getAllReviews(Pageable pageable) {
-        return reviewUseCase.findReviews(pageable);
+        Pageable safePageable = PageableSanitizer.sanitize(pageable, REVIEW_DEFAULT_SORT, REVIEW_ALLOWED_SORTS);
+        return reviewUseCase.findReviews(safePageable);
     }
 
     @Operation(summary = "Obter detalhes de uma avaliação específica")
@@ -71,8 +80,8 @@ public class ReviewController {
             @RequestBody @Valid ReviewCreateRequest request,
             @LoggedUser UUID userId
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reviewUseCase.createReview(userId, request));
+        ReviewResponse response = reviewUseCase.createReview(userId, request);
+        return CreatedResponses.createdCurrentResource(response.getId(), response);
     }
 
     @Operation(summary = "Atualizar uma avaliação existente", description = "Atualiza uma avaliação do usuário logado")

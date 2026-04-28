@@ -23,6 +23,7 @@ public final class UserResponseMapper {
                 .active(user.getActive())
                 .leaderboardOptIn(user.getLeaderboardOptIn())
                 .alertsOptIn(user.getAlertsOptIn())
+                .role(user.getRole())
                 .badges(toBadgeResponses(badges))
                 .build();
     }

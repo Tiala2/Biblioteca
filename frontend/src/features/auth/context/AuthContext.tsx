@@ -1,13 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { api } from "@shared/api/http";
+import {
+  AUTH_EXPIRED_EVENT,
+  clearStoredAuth,
+  decodeRoles,
+  getTokenExpirationMs,
+  readStoredAuth,
+  type StoredAuth,
+  writeStoredAuth,
+} from "@shared/auth/authStorage";
+import { useToast } from "@shared/ui/toast/ToastContext";
 
-type AuthState = {
-  token: string;
-  email: string;
-  name: string;
-  roles: string[];
-};
+type AuthState = StoredAuth;
 
 type LoginResponse = {
   token: string;
@@ -22,38 +27,10 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
-const STORAGE_KEY = "library.auth";
-
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
-  const parts = token.split(".");
-  if (parts.length < 2) return null;
-
-  try {
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
-    return JSON.parse(atob(padded)) as Record<string, unknown>;
-  } catch {
-    return null;
-  }
-}
-
-function decodeRoles(token: string): string[] {
-  const payload = decodeJwtPayload(token);
-  if (!payload) return [];
-  return Array.isArray(payload.roles) ? payload.roles.filter((role): role is string => typeof role === "string") : [];
-}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [auth, setAuth] = useState<AuthState | null>(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as AuthState;
-    } catch {
-      return null;
-    }
-  });
+  const { showToast } = useToast();
+  const [auth, setAuth] = useState<AuthState | null>(() => readStoredAuth());
 
   const login = async (email: string, password: string) => {
     const { data } = await api.post<LoginResponse>("/api/v1/auth/login", { email, password });
@@ -63,14 +40,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: data.name,
       roles: decodeRoles(data.token),
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    writeStoredAuth(next);
     setAuth(next);
   };
 
   const logout = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    clearStoredAuth();
     setAuth(null);
   };
+
+  useEffect(() => {
+    const syncSession = () => setAuth(readStoredAuth());
+    const expireSession = () => {
+      setAuth(null);
+      showToast("Sua sessao expirou. Faca login novamente.", "info");
+    };
+
+    window.addEventListener("storage", syncSession);
+    window.addEventListener(AUTH_EXPIRED_EVENT, expireSession);
+
+    return () => {
+      window.removeEventListener("storage", syncSession);
+      window.removeEventListener(AUTH_EXPIRED_EVENT, expireSession);
+    };
+  }, [showToast]);
+
+  useEffect(() => {
+    if (!auth) return undefined;
+
+    const expirationMs = getTokenExpirationMs(auth.token);
+    if (expirationMs === null) return undefined;
+
+    const delay = expirationMs - Date.now();
+    if (delay <= 0) {
+      clearStoredAuth({ notify: true });
+      setAuth(null);
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(() => {
+      clearStoredAuth({ notify: true });
+      setAuth(null);
+    }, Math.min(delay, 2_147_483_647));
+
+    return () => window.clearTimeout(timeout);
+  }, [auth, showToast]);
 
   useEffect(() => {
     if (!auth) {

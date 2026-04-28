@@ -3,7 +3,9 @@ package com.unichristus.libraryapi.infrastructure.persistence.review;
 import com.unichristus.libraryapi.domain.review.BookAverageRating;
 import com.unichristus.libraryapi.domain.review.Review;
 import com.unichristus.libraryapi.domain.review.ReviewRepository;
+import com.unichristus.libraryapi.domain.review.exception.ReviewAlreadyExists;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +29,11 @@ public class ReviewRepositoryImpl implements ReviewRepository {
 
     @Override
     public Review save(Review review) {
-        return reviewJpaRepository.save(review);
+        try {
+            return reviewJpaRepository.save(review);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ReviewAlreadyExists();
+        }
     }
 
     @Override

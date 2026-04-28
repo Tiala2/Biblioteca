@@ -18,13 +18,14 @@ public class AlertDeliveryAdminUseCase {
 
     private final AlertDeliveryService alertDeliveryService;
 
-    public Page<AlertDeliveryResponse> list(UUID userId,
+    public Page<AlertDeliveryResponse> list(String query,
+                                            UUID userId,
                                             AlertDeliveryStatus status,
                                             AlertType alertType,
                                             LocalDateTime dateFrom,
                                             LocalDateTime dateTo,
                                             Pageable pageable) {
-        return alertDeliveryService.search(userId, status, alertType, dateFrom, dateTo, pageable)
+        return alertDeliveryService.search(query, userId, status, alertType, dateFrom, dateTo, pageable)
                 .map(delivery -> new AlertDeliveryResponse(
                         delivery.getId(),
                         delivery.getUserId(),

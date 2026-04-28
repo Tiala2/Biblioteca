@@ -102,4 +102,58 @@ class ReadingGoalIntegrationTest extends IntegrationTestSupport {
         assertThat(afterSummary.path("streakDays").asInt()).isEqualTo(1);
         assertThat(afterSummary.path("alerts").toString()).doesNotContain("NO_STREAK");
     }
+
+    @Test
+    @DisplayName("Deve manter progresso da meta quando sincroniza a mesma pagina sem avancar")
+    void shouldKeepGoalProgressStableWhenReadingSyncDoesNotAdvancePage() throws Exception {
+        String email = "goal-stable-progress" + System.nanoTime() + "@email.com";
+        String password = "StrongPass123";
+        String token = registerAndLogin("Goal Stable Progress", email, password);
+
+        mockMvc.perform(put("/api/v1/users/me/goals")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"period\":\"MONTHLY\",\"targetPages\":200}"))
+                .andExpect(status().isOk());
+
+        UUID bookId = fetchAnyBookId(token);
+
+        mockMvc.perform(post("/api/v1/readings")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\",\"currentPage\":10}"))
+                .andExpect(status().isOk());
+
+        String firstSummaryBody = mockMvc.perform(get("/api/v1/users/me/goals/summary?period=MONTHLY")
+                        .header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        int progressAfterFirstSync = objectMapper.readTree(firstSummaryBody)
+                .path("goal")
+                .path("progressPages")
+                .asInt();
+        assertThat(progressAfterFirstSync).isGreaterThan(0);
+
+        mockMvc.perform(post("/api/v1/readings")
+                        .header("Authorization", bearer(token))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"bookId\":\"" + bookId + "\",\"currentPage\":10}"))
+                .andExpect(status().isOk());
+
+        String secondSummaryBody = mockMvc.perform(get("/api/v1/users/me/goals/summary?period=MONTHLY")
+                        .header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        int progressAfterSecondSync = objectMapper.readTree(secondSummaryBody)
+                .path("goal")
+                .path("progressPages")
+                .asInt();
+        assertThat(progressAfterSecondSync).isEqualTo(progressAfterFirstSync);
+    }
 }

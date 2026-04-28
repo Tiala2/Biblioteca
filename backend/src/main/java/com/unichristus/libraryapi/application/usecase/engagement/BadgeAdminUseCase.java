@@ -3,6 +3,7 @@ package com.unichristus.libraryapi.application.usecase.engagement;
 import com.unichristus.libraryapi.application.annotation.UseCase;
 import com.unichristus.libraryapi.application.dto.request.BadgeUpsertRequest;
 import com.unichristus.libraryapi.application.dto.response.BadgeDefinitionResponse;
+import com.unichristus.libraryapi.application.util.RequestTextNormalizer;
 import com.unichristus.libraryapi.domain.engagement.Badge;
 import com.unichristus.libraryapi.domain.engagement.BadgeDefinitionRepository;
 import com.unichristus.libraryapi.domain.engagement.UserBadgeRepository;
@@ -81,17 +82,17 @@ public class BadgeAdminUseCase {
             case STREAK_DAYS, TOTAL_BOOKS, TOTAL_PAGES -> true;
             case FIRST_BOOK -> false;
         };
-        if (requiresValue && (request.getCriteriaValue() == null || request.getCriteriaValue().isBlank())) {
-            throw new IllegalArgumentException("criteriaValue é obrigatório para o tipo " + request.getCriteriaType());
+        if (requiresValue && RequestTextNormalizer.normalizeOptional(request.getCriteriaValue()) == null) {
+            throw new IllegalArgumentException("criteriaValue is required for type " + request.getCriteriaType());
         }
     }
 
     private static Badge toEntity(Badge badge, BadgeUpsertRequest request) {
         badge.setCode(request.getCode());
-        badge.setName(request.getName());
-        badge.setDescription(request.getDescription());
+        badge.setName(RequestTextNormalizer.normalizeRequired(request.getName()));
+        badge.setDescription(RequestTextNormalizer.normalizeOptional(request.getDescription()));
         badge.setCriteriaType(request.getCriteriaType());
-        badge.setCriteriaValue(request.getCriteriaValue());
+        badge.setCriteriaValue(RequestTextNormalizer.normalizeOptional(request.getCriteriaValue()));
         badge.setActive(request.getActive());
         return badge;
     }

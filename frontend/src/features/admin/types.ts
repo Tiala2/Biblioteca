@@ -57,6 +57,7 @@ export type UserAdmin = {
   active: boolean;
   leaderboardOptIn: boolean;
   alertsOptIn: boolean;
+  role: "USER" | "ADMIN";
   badges?: { id: string; name: string }[];
 };
 
@@ -66,6 +67,7 @@ export type UserForm = {
   email: string;
   leaderboardOptIn: boolean;
   alertsOptIn: boolean;
+  role: "USER" | "ADMIN";
 };
 
 export type FavoriteAdmin = {
@@ -81,14 +83,22 @@ export type AlertDeliveryAdmin = {
   id: string;
   userId: string;
   email: string;
-  alertType: string;
+  alertType: "GOAL_EXPIRING" | "PACE_WARNING" | "NO_STREAK";
   channel: string;
-  status: string;
+  status: "SENT" | "FAILED" | "SKIPPED";
   message: string;
   createdAt?: string | null;
 };
 
-export type Page<T> = { content: T[] };
+export type Page<T> = {
+  content: T[];
+  page?: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
+};
 export type ImportResult = { fetched: number; imported: number; skipped: number; failed: number };
 
 export type CategoryForm = { id: string | null; name: string; description: string };
@@ -129,7 +139,7 @@ export const BADGE_CRITERIA: BadgeCriteria[] = ["FIRST_BOOK", "STREAK_DAYS", "TO
 export const EMPTY_CATEGORY: CategoryForm = { id: null, name: "", description: "" };
 export const EMPTY_TAG: TagForm = { id: null, name: "" };
 export const EMPTY_COLLECTION: CollectionForm = { id: null, title: "", description: "", coverUrl: "", bookIds: [] };
-export const EMPTY_USER: UserForm = { id: null, name: "", email: "", leaderboardOptIn: false, alertsOptIn: true };
+export const EMPTY_USER: UserForm = { id: null, name: "", email: "", leaderboardOptIn: false, alertsOptIn: true, role: "USER" };
 export const EMPTY_BOOK: BookForm = {
   id: null,
   title: "",

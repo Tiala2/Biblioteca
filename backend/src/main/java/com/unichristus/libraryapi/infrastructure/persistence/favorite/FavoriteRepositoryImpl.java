@@ -3,7 +3,9 @@ package com.unichristus.libraryapi.infrastructure.persistence.favorite;
 import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.favorite.Favorite;
 import com.unichristus.libraryapi.domain.favorite.FavoriteRepository;
+import com.unichristus.libraryapi.domain.favorite.exception.FavoriteAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -19,7 +21,11 @@ public class FavoriteRepositoryImpl implements FavoriteRepository {
 
     @Override
     public Favorite save(Favorite favorite) {
-        return favoriteJpaRepository.save(favorite);
+        try {
+            return favoriteJpaRepository.save(favorite);
+        } catch (DataIntegrityViolationException ex) {
+            throw new FavoriteAlreadyExistsException(favorite.getUser().getId(), favorite.getBook().getId());
+        }
     }
 
     @Override

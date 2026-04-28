@@ -19,6 +19,15 @@ class BookIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
+    @DisplayName("Deve limitar o tamanho maximo da paginacao de livros")
+    void shouldClampBookPageSize() throws Exception {
+        mockMvc.perform(get("/api/v1/books")
+                        .param("size", "999"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.size").value(100));
+    }
+
+    @Test
     @DisplayName("Deve listar livros com ordenacao de negocio sem quebrar SQL nativo")
     void shouldListBooksWithBusinessSortParam() throws Exception {
         mockMvc.perform(get("/api/v1/books")

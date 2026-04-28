@@ -39,6 +39,13 @@ export function LoginPage() {
           return;
         }
 
+        if (err.response.status === 429) {
+          const apiMessage = extractApiErrorMessage(err, "Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.");
+          setError(apiMessage);
+          showToast(apiMessage, "error");
+          return;
+        }
+
         const fallback = `Erro na API (${err.response.status}).`;
         const apiMessage = extractApiErrorMessage(err, fallback);
         setError(apiMessage ?? fallback);

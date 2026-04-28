@@ -1,5 +1,7 @@
 package com.unichristus.libraryapi.domain.user;
 
+import com.unichristus.libraryapi.domain.exception.DomainError;
+import com.unichristus.libraryapi.domain.exception.DomainException;
 import com.unichristus.libraryapi.domain.user.exception.EmailConflictException;
 import com.unichristus.libraryapi.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,14 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
+    public Page<User> search(String query, Boolean active, UserRole role, Pageable pageable) {
+        String normalizedQuery = query == null || query.isBlank() ? null : query.trim().toLowerCase();
+        if (normalizedQuery == null && active == null && role == null) {
+            return findAll(pageable);
+        }
+        return userRepository.search(normalizedQuery, active, role, pageable);
+    }
+
     public User findUserByIdOrThrow(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId.toString()));
@@ -39,15 +49,19 @@ public class UserService {
     }
 
     public void updateUser(UUID id, String name, String email, String password, Boolean leaderboardOptIn, Boolean alertsOptIn) {
+        updateUser(id, name, email, password, leaderboardOptIn, alertsOptIn, null);
+    }
+
+    public void updateUser(UUID id, String name, String email, String password, Boolean leaderboardOptIn, Boolean alertsOptIn, UserRole role) {
         User user = findUserByIdOrThrow(id);
         boolean changed = false;
 
-        if (name != null && !name.equals(user.getName())) {
+        if (name != null && !name.isBlank() && !name.equals(user.getName())) {
             user.setName(name);
             changed = true;
         }
 
-        if (email != null && !email.equals(user.getEmail())) {
+        if (email != null && !email.isBlank() && !email.equals(user.getEmail())) {
             validateEmailUnique(email);
             user.setEmail(email);
             changed = true;
@@ -68,17 +82,44 @@ public class UserService {
             changed = true;
         }
 
+        if (role != null && role != user.getRole()) {
+            user.setRole(role);
+            changed = true;
+        }
+
         if (changed) {
             save(user);
         }
     }
 
+    public void updateUserAsAdmin(
+            UUID actorUserId,
+            UUID targetUserId,
+            String name,
+            String email,
+            String password,
+            Boolean leaderboardOptIn,
+            Boolean alertsOptIn,
+            UserRole role
+    ) {
+        if (actorUserId.equals(targetUserId) && role == UserRole.USER) {
+            throw new DomainException(DomainError.USER_ROLE_SELF_CHANGE_FORBIDDEN);
+        }
+        updateUser(targetUserId, name, email, password, leaderboardOptIn, alertsOptIn, role);
+    }
+
     public void invalidateUser(User user) {
+        if (Boolean.FALSE.equals(user.getActive())) {
+            return;
+        }
         user.setActive(false);
         userRepository.save(user);
     }
 
     public void reactivateUser(User user) {
+        if (Boolean.TRUE.equals(user.getActive())) {
+            return;
+        }
         user.setActive(true);
         userRepository.save(user);
     }

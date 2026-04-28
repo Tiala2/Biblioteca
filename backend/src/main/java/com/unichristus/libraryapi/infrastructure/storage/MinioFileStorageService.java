@@ -13,13 +13,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class MinioFileStorageService {
+
+    private static final String PDF_CONTENT_TYPE = "application/pdf";
+    private static final String OCTET_STREAM_CONTENT_TYPE = "application/octet-stream";
+    private static final byte[] PDF_SIGNATURE = "%PDF-".getBytes(StandardCharsets.US_ASCII);
 
     public record StoredFile(InputStream stream, String contentType, long size) {}
 
@@ -38,17 +44,12 @@ public class MinioFileStorageService {
     private String publicMinioUrl;
 
     public void uploadPdf(MultipartFile file, String objectName) {
-        validateFileSize(file);
+        validatePdfUpload(file, objectName);
         uploadFile(file, filesBucket, objectName);
     }
 
     public void uploadPdf(byte[] content, String objectName, String contentType) {
-        if (content == null || content.length == 0) {
-            throw new FileStorageException("File content is empty");
-        }
-        if (content.length > (long) maxFileSizeMb * 1024 * 1024) {
-            throw new FileStorageException("File exceeded limit");
-        }
+        validatePdfBytes(content, contentType, objectName);
 
         try (InputStream inputStream = new ByteArrayInputStream(content)) {
             checkExists(filesBucket);
@@ -56,7 +57,7 @@ public class MinioFileStorageService {
                     PutObjectArgs.builder()
                             .bucket(filesBucket)
                             .object(objectName)
-                            .contentType(contentType == null || contentType.isBlank() ? "application/pdf" : contentType)
+                            .contentType(normalizeContentType(contentType))
                             .stream(inputStream, content.length, -1)
                             .build()
             );
@@ -65,9 +66,30 @@ public class MinioFileStorageService {
         }
     }
 
-    private void validateFileSize(MultipartFile file) {
+    private void validatePdfUpload(MultipartFile file, String objectName) {
+        validateObjectName(objectName);
+        if (file == null || file.isEmpty()) {
+            throw new FileStorageException("Arquivo PDF invalido ou vazio.");
+        }
         if (file.getSize() > (long) maxFileSizeMb * 1024 * 1024) {
-            throw new FileStorageException("File exceeded limit");
+            throw new FileStorageException("Arquivo PDF excede o tamanho maximo permitido.");
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || originalFilename.isBlank() || !originalFilename.toLowerCase(Locale.ROOT).endsWith(".pdf")) {
+            throw new FileStorageException("Arquivo PDF deve possuir extensao .pdf.");
+        }
+
+        String contentType = normalizeContentType(file.getContentType());
+        if (!PDF_CONTENT_TYPE.equals(contentType) && !OCTET_STREAM_CONTENT_TYPE.equals(contentType)) {
+            throw new FileStorageException("Tipo de arquivo invalido. Envie um PDF.");
+        }
+
+        try {
+            byte[] content = file.getBytes();
+            validatePdfSignature(content);
+        } catch (IOException ex) {
+            throw new FileStorageException("Nao foi possivel validar o arquivo PDF enviado.");
         }
     }
 
@@ -78,7 +100,7 @@ public class MinioFileStorageService {
                     PutObjectArgs.builder()
                             .bucket(bucket)
                             .object(objectName)
-                            .contentType(file.getContentType())
+                            .contentType(normalizeContentType(file.getContentType()))
                             .stream(inputStream, file.getSize(), -1)
                             .build()
             );
@@ -162,6 +184,48 @@ public class MinioFileStorageService {
         } catch (Exception ex) {
             return internalUrl;
         }
+    }
+
+    private void validatePdfBytes(byte[] content, String contentType, String objectName) {
+        validateObjectName(objectName);
+        if (content == null || content.length == 0) {
+            throw new FileStorageException("Arquivo PDF invalido ou vazio.");
+        }
+        if (content.length > (long) maxFileSizeMb * 1024 * 1024) {
+            throw new FileStorageException("Arquivo PDF excede o tamanho maximo permitido.");
+        }
+
+        String normalizedContentType = normalizeContentType(contentType);
+        if (!PDF_CONTENT_TYPE.equals(normalizedContentType) && !OCTET_STREAM_CONTENT_TYPE.equals(normalizedContentType)) {
+            throw new FileStorageException("Tipo de arquivo invalido. Envie um PDF.");
+        }
+
+        validatePdfSignature(content);
+    }
+
+    private void validatePdfSignature(byte[] content) {
+        if (content.length < PDF_SIGNATURE.length) {
+            throw new FileStorageException("Conteudo do arquivo nao corresponde a um PDF valido.");
+        }
+
+        for (int index = 0; index < PDF_SIGNATURE.length; index++) {
+            if (content[index] != PDF_SIGNATURE[index]) {
+                throw new FileStorageException("Conteudo do arquivo nao corresponde a um PDF valido.");
+            }
+        }
+    }
+
+    private void validateObjectName(String objectName) {
+        if (objectName == null || objectName.isBlank() || objectName.contains("/") || objectName.contains("\\")) {
+            throw new FileStorageException("Identificador de arquivo invalido para upload.");
+        }
+    }
+
+    private String normalizeContentType(String contentType) {
+        if (contentType == null || contentType.isBlank()) {
+            return PDF_CONTENT_TYPE;
+        }
+        return contentType.trim().toLowerCase(Locale.ROOT);
     }
 
     private void checkExists(String bucket) throws ErrorResponseException, InsufficientDataException, InternalException, InvalidKeyException, InvalidResponseException, IOException, NoSuchAlgorithmException, ServerException, XmlParserException {

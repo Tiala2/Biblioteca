@@ -1,48 +1,76 @@
-import { useMemo, useState } from "react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 import type { AlertDeliveryAdmin } from "../types";
 
 type AlertAuditPanelProps = {
   deliveries: AlertDeliveryAdmin[];
+  totalDeliveries: number;
+  currentPage: number;
+  totalPages: number;
+  search: string;
+  statusFilter: "ALL" | AlertDeliveryAdmin["status"];
+  alertTypeFilter: "ALL" | AlertDeliveryAdmin["alertType"];
+  loading: boolean;
+  onSearchChange: (value: string) => void;
+  onStatusFilterChange: (value: "ALL" | AlertDeliveryAdmin["status"]) => void;
+  onAlertTypeFilterChange: (value: "ALL" | AlertDeliveryAdmin["alertType"]) => void;
+  onPageChange: (page: number) => void;
 };
 
-export function AlertAuditPanel({ deliveries }: AlertAuditPanelProps) {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const pageSize = 6;
-  const normalizedSearch = search.trim().toLowerCase();
-  const filteredDeliveries = useMemo(() => {
-    if (!normalizedSearch) return deliveries;
-    return deliveries.filter((delivery) =>
-      `${delivery.email} ${delivery.alertType} ${delivery.status} ${delivery.channel} ${delivery.message}`.toLowerCase().includes(normalizedSearch)
-    );
-  }, [deliveries, normalizedSearch]);
-  const totalPages = Math.max(1, Math.ceil(filteredDeliveries.length / pageSize));
-  const visibleDeliveries = filteredDeliveries.slice(page * pageSize, page * pageSize + pageSize);
-
+export function AlertAuditPanel({
+  deliveries,
+  totalDeliveries,
+  currentPage,
+  totalPages,
+  search,
+  statusFilter,
+  alertTypeFilter,
+  loading,
+  onSearchChange,
+  onStatusFilterChange,
+  onAlertTypeFilterChange,
+  onPageChange,
+}: AlertAuditPanelProps) {
   return (
     <article id="admin-alerts" className="card admin-panel">
       <div className="section-head">
         <h3>Auditoria de alertas</h3>
-        <span className="kpi">{filteredDeliveries.length}</span>
+        <span className="kpi">{loading ? "..." : totalDeliveries}</span>
       </div>
-      <p className="section-sub">
-        Acompanhe entregas de alertas por e-mail e o resultado de cada envio.
-      </p>
-      <input
-        value={search}
-        onChange={(event) => {
-          setSearch(event.target.value);
-          setPage(0);
-        }}
-        placeholder="Filtrar alertas por email, tipo ou status"
-      />
+      <p className="section-sub">Acompanhe entregas de alertas por e-mail e o resultado de cada envio.</p>
+      <div className="filters-grid admin-filters-grid">
+        <input value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="Buscar por email, tipo, canal ou mensagem" />
+        <label className="field-stack">
+          <span>Status</span>
+          <select value={statusFilter} onChange={(event) => onStatusFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["status"])}>
+            <option value="ALL">Todos</option>
+            <option value="SENT">Enviados</option>
+            <option value="FAILED">Falhos</option>
+            <option value="SKIPPED">Ignorados</option>
+          </select>
+        </label>
+        <label className="field-stack">
+          <span>Tipo</span>
+          <select value={alertTypeFilter} onChange={(event) => onAlertTypeFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["alertType"])}>
+            <option value="ALL">Todos</option>
+            <option value="GOAL_EXPIRING">Meta expirando</option>
+            <option value="PACE_WARNING">Ritmo em risco</option>
+            <option value="NO_STREAK">Sem sequencia</option>
+          </select>
+        </label>
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : deliveries.length}</strong>
+          <span>na pagina atual</span>
+        </div>
+      </div>
+      {loading && <p className="section-sub">Carregando alertas...</p>}
       <ul className="stacked-list">
-        {visibleDeliveries.map((delivery) => (
+        {deliveries.map((delivery) => (
           <li key={delivery.id} className="stacked-list-item">
             <div>
               <strong>{delivery.email}</strong>
-              <p className="section-sub">{delivery.alertType} | {delivery.channel} | {delivery.status}</p>
+              <p className="section-sub">
+                {delivery.alertType} | {delivery.channel} | {delivery.status}
+              </p>
               <p>{delivery.message}</p>
               <small>Registrado em {formatDateTimeBr(delivery.createdAt)}</small>
             </div>
@@ -50,18 +78,23 @@ export function AlertAuditPanel({ deliveries }: AlertAuditPanelProps) {
           </li>
         ))}
       </ul>
-      {filteredDeliveries.length === 0 && <p className="section-sub">Nenhum alerta encontrado para esse filtro.</p>}
-      {filteredDeliveries.length > pageSize && (
-        <div className="pagination-row">
-          <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
-            Anterior
-          </button>
-          <span className="section-sub">Pagina {page + 1} de {totalPages}</span>
-          <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
-            Proxima
-          </button>
-        </div>
-      )}
+      {!loading && deliveries.length === 0 && <p className="section-sub">Nenhum alerta encontrado para esse filtro.</p>}
+      <div className="pagination-row">
+        <button type="button" className="btn-muted" disabled={currentPage <= 0 || loading} onClick={() => onPageChange(currentPage - 1)}>
+          Anterior
+        </button>
+        <span className="section-sub">
+          Pagina {currentPage + 1} de {Math.max(totalPages, 1)}
+        </span>
+        <button
+          type="button"
+          className="btn-muted"
+          disabled={loading || currentPage + 1 >= Math.max(totalPages, 1)}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          Proxima
+        </button>
+      </div>
     </article>
   );
 }

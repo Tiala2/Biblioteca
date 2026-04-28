@@ -1,6 +1,6 @@
 # Relatorio Do Projeto - Library
 
-Data de referencia: 2026-04-04
+Data de referencia: 2026-04-28
 
 ## 1. Resumo Executivo
 
@@ -15,6 +15,16 @@ Complementos finais de aderencia ao template:
 - compressao HTTP para payloads textuais
 - procedimento documentado de backup e restauracao
 - checklist final RF/RNF/casos de teste
+- painel administrativo modularizado em subrotas
+- contratos de erro, paginacao e respostas de sucesso padronizados
+- rate limit em login e recuperacao de senha
+- rastreamento por `traceId` com mascaramento de senha, token e authorization nos logs
+- expiracao de JWT tratada no front com limpeza automatica de sessao local
+- fallback global no front para evitar tela branca em erro inesperado
+- aviso global no front quando a API local fica indisponivel
+- auditoria operacional padronizada para mutacoes administrativas
+- CORS validado com bloqueio de origem nao permitida
+- degradacao segura em notificacoes, recuperacao de senha, PDF externo e Open Library
 
 ## 2. Problema E Solucao
 
@@ -141,6 +151,15 @@ As seguintes melhorias foram implementadas para fortalecer produto e manutencao:
 8. organizacao de exploracao rapida do sistema
 9. consolidacao da documentacao final
 10. padronizacao de navegacao e fluxo entre telas
+11. modularizacao do painel administrativo por dominio
+12. endurecimento de seguranca e contratos HTTP
+13. tratamento resiliente para dependencias externas
+14. ampliacao de testes unitarios, integracao critica e E2E
+15. sessao do front sincronizada com expiracao do JWT
+16. validacao negativa de CORS para origem nao permitida
+17. protecao de UX com boundary global de erro no frontend
+18. sinalizacao operacional de indisponibilidade da API no frontend
+19. checklist de seguranca pre-deploy e logs `ADMIN_AUDIT`
 
 Documento de apoio:
 
@@ -153,7 +172,8 @@ Documento de apoio:
 
 ### Backend
 
-- `test + integrationTest`: PASS
+- `./gradlew.bat test --no-daemon`: PASS
+- `./gradlew.bat integrationTest --no-daemon`: PASS
 - `scripts/e2e-smoke.ps1`: PASS
 - `scripts/route-checklist-exec.ps1`: PASS
 - checklist de rotas: `56 PASS / 0 FAIL`
@@ -162,8 +182,8 @@ Documento de apoio:
 ### Frontend
 
 - `npm run build`: PASS
-- `npm run test`: PASS
-- `npm run test:e2e`: PASS
+- `npm run test`: `32 passed`
+- `npm run test:e2e`: `13 passed`
 
 ### Fluxos E2E validados
 
@@ -175,6 +195,11 @@ Documento de apoio:
 - leitura com salvamento de progresso
 - atualizacao de meta
 - CRUD de categoria no admin
+- CRUD de livro no admin
+- invalidacao e reativacao de usuario pelo admin
+- subrotas administrativas especificas
+- reviews com criacao, edicao e remocao
+- badges e recuperacao de senha
 
 ## 8. Pontos Fortes Do Projeto
 
@@ -183,8 +208,10 @@ Documento de apoio:
 - autenticacao por JWT e controle por perfil
 - backend com boa divisao de responsabilidades
 - frontend organizado por modulos
+- painel admin separado em secoes e subrotas
 - validacao automatizada real
 - documentacao de apoio para execucao e manutencao
+- comportamento resiliente quando servicos externos falham
 - possibilidade de evolucao futura sem necessidade de reescrever a base
 
 ## 9. Execucao Do Sistema
@@ -235,3 +262,4 @@ Resumo final do estado atual:
 - ha validacao automatizada
 - a arquitetura suporta evolucao futura
 - as melhorias recentes aumentaram a maturidade do projeto sem custo adicional
+- a rodada de 2026-04-28 confirmou frontend, rotas, testes unitarios e testes de integracao do backend em estado verde

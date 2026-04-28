@@ -1,5 +1,6 @@
 package com.unichristus.libraryapi.application.dto.response;
 
+import com.unichristus.libraryapi.domain.user.UserRole;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,5 +16,6 @@ public class UserResponse {
     private Boolean active;
     private Boolean leaderboardOptIn;
     private Boolean alertsOptIn;
+    private UserRole role;
     private List<BadgeResponse> badges;
 }
