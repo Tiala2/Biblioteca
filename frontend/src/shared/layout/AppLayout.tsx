@@ -57,10 +57,18 @@ export function AppLayout() {
             <NavLink to="/admin" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
               Painel Admin
             </NavLink>
-            <a className="nav-link admin-link" href="/admin#admin-books">Gerenciar Livros</a>
-            <a className="nav-link admin-link" href="/admin#admin-categories">Gerenciar Categorias</a>
-            <a className="nav-link admin-link" href="/admin#admin-badges">Gerenciar Badges</a>
-            <a className="nav-link admin-link" href="/admin#admin-metrics">Relatorios</a>
+            <NavLink to="/admin/catalog" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              Catalogo
+            </NavLink>
+            <NavLink to="/admin/engagement" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              Engajamento
+            </NavLink>
+            <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              Usuarios
+            </NavLink>
+            <NavLink to="/admin/alerts" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              Alertas
+            </NavLink>
             <p className="role-pill admin-pill">Admin</p>
           </div>
         )}

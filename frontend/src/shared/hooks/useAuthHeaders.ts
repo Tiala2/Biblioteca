@@ -6,6 +6,6 @@ export function useAuthHeaders() {
 
   return useMemo(
     () => (auth ? { Authorization: `Bearer ${auth.token}` } : undefined),
-    [auth?.token]
+    [auth]
   );
 }

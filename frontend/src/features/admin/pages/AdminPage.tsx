@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { AdminAlertsSection } from "../components/AdminAlertsSection";
 import { AdminCatalogSection } from "../components/AdminCatalogSection";
@@ -35,9 +36,9 @@ type AdminPageProps = {
 
 export function AdminPage({ visibleSections = ["catalog", "engagement", "users", "alerts"] }: AdminPageProps) {
   const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const { pathname } = useLocation();
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
 
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [categoryForm, setCategoryForm] = useState<CategoryForm>(EMPTY_CATEGORY);

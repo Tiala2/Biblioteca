@@ -74,7 +74,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const delay = expirationMs - Date.now();
     if (delay <= 0) {
       clearStoredAuth({ notify: true });
-      setAuth(null);
       return undefined;
     }
 

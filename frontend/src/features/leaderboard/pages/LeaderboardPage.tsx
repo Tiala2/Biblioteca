@@ -56,22 +56,32 @@ export function LeaderboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
 
-    const leaderboardRequest = api.get<LeaderboardEntry[]>(`/api/v1/users/leaderboard?limit=${limit}&metric=${metric}`);
-    const profileRequest = headers ? api.get<UserProfile>("/api/v1/users/me", { headers }) : Promise.resolve(null);
-
-    Promise.all([leaderboardRequest, profileRequest])
-      .then(([leaderboardResponse, profileResponse]) => {
+    const loadLeaderboard = async () => {
+      setLoading(true);
+      try {
+        const leaderboardRequest = api.get<LeaderboardEntry[]>(`/api/v1/users/leaderboard?limit=${limit}&metric=${metric}`);
+        const profileRequest = headers ? api.get<UserProfile>("/api/v1/users/me", { headers }) : Promise.resolve(null);
+        const [leaderboardResponse, profileResponse] = await Promise.all([leaderboardRequest, profileRequest]);
+        if (cancelled) return;
         setEntries(leaderboardResponse.data);
         setLeaderboardOptIn(profileResponse?.data.leaderboardOptIn ?? null);
         setError("");
-      })
-      .catch(() => {
+      } catch {
+        if (cancelled) return;
         setEntries([]);
         setError("Nao foi possivel carregar o ranking.");
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadLeaderboard();
+
+    return () => {
+      cancelled = true;
+    };
   }, [headers, limit, metric]);
 
   const changeMetric = (nextMetric: LeaderboardMetric) => {

@@ -65,7 +65,7 @@ export function BooksPage() {
   const [favoriteLoadingBookId, setFavoriteLoadingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
+  const headers = useMemo(() => (auth ? { Authorization: `Bearer ${auth.token}` } : undefined), [auth]);
 
   const applied = useMemo(() => {
     return {
