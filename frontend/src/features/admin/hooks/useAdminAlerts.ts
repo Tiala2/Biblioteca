@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useState } from "react";
 import { api } from "@shared/api/http";
 import { buildQuery, toPageTotals } from "../lib/page";
 import type { AlertDeliveryAdmin, Page } from "../types";
@@ -19,7 +19,7 @@ export function useAdminAlerts({ headers }: UseAdminAlertsParams) {
 
   const deferredSearch = useDeferredValue(search);
 
-  const loadAlerts = async () => {
+  const loadAlerts = useCallback(async () => {
     if (!headers) return;
     setLoading(true);
     try {
@@ -39,12 +39,11 @@ export function useAdminAlerts({ headers }: UseAdminAlertsParams) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [alertTypeFilter, deferredSearch, headers, page, statusFilter]);
 
   useEffect(() => {
-    void loadAlerts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [headers?.Authorization, page, deferredSearch, statusFilter, alertTypeFilter]);
+    void Promise.resolve().then(loadAlerts);
+  }, [loadAlerts]);
 
   return {
     deliveries,
