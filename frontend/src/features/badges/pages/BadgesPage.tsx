@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -110,9 +111,9 @@ export function BadgesPage() {
         ]);
 
         setError("");
-      } catch {
+      } catch (error) {
         if (!active) return;
-        setError("Nao foi possivel carregar badges.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar badges."));
       } finally {
         if (active) setLoading(false);
       }

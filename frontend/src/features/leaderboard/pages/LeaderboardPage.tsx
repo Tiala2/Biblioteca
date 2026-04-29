@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { formatInteger } from "@shared/lib/formatters";
 import { StateCard } from "@shared/ui/feedback/StateCard";
@@ -68,10 +69,10 @@ export function LeaderboardPage() {
         setEntries(leaderboardResponse.data);
         setLeaderboardOptIn(profileResponse?.data.leaderboardOptIn ?? null);
         setError("");
-      } catch {
+      } catch (error) {
         if (cancelled) return;
         setEntries([]);
-        setError("Nao foi possivel carregar o ranking.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar o ranking."));
       } finally {
         if (!cancelled) setLoading(false);
       }

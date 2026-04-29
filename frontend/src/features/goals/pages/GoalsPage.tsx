@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
@@ -71,8 +72,8 @@ export function GoalsPage() {
       setAlerts(Array.isArray(alertsRes.data) ? alertsRes.data : []);
       setStreak(streakRes.data?.streakDays ?? 0);
       setError("");
-    } catch {
-      setError("Nao foi possivel carregar metas e alertas.");
+    } catch (error) {
+      setError(extractApiErrorMessage(error, "Nao foi possivel carregar metas e alertas."));
     } finally {
       setLoading(false);
     }
@@ -119,9 +120,10 @@ export function GoalsPage() {
 
       setError("");
       showToast("Meta atualizada com sucesso.", "success");
-    } catch {
-      setError("Falha ao atualizar meta.");
-      showToast("Nao foi possivel salvar a meta.", "error");
+    } catch (error) {
+      const message = extractApiErrorMessage(error, "Nao foi possivel salvar a meta.");
+      setError(message);
+      showToast(message, "error");
     }
   };
 

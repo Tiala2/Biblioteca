@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -105,9 +106,9 @@ export function ProfilePage() {
         setLeaderboardOptIn(Boolean(profileResponse.data.leaderboardOptIn));
         setAlertsOptIn(Boolean(profileResponse.data.alertsOptIn));
         setError("");
-      } catch {
+      } catch (error) {
         if (!active) return;
-        setError("Nao foi possivel carregar seu perfil.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar seu perfil."));
       } finally {
         if (active) setLoading(false);
       }
@@ -186,9 +187,10 @@ export function ProfilePage() {
       );
       setError("");
       showToast("Preferencias atualizadas com sucesso.", "success");
-    } catch {
-      setError("Nao foi possivel salvar suas preferencias.");
-      showToast("Nao foi possivel salvar suas preferencias.", "error");
+    } catch (error) {
+      const message = extractApiErrorMessage(error, "Nao foi possivel salvar suas preferencias.");
+      setError(message);
+      showToast(message, "error");
     } finally {
       setSaving(false);
     }

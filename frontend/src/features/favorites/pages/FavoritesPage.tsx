@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { BookCover } from "@shared/ui/books/BookCover";
@@ -32,9 +33,9 @@ export function FavoritesPage() {
       const response = await api.get<Favorite[]>("/api/v1/users/me/favorites", { headers });
       setFavorites(response.data);
       setError("");
-    } catch {
+    } catch (error) {
       setFavorites([]);
-      setError("Nao foi possivel carregar favoritos.");
+      setError(extractApiErrorMessage(error, "Nao foi possivel carregar favoritos."));
     } finally {
       setLoading(false);
     }
@@ -52,8 +53,8 @@ export function FavoritesPage() {
       await api.delete(`/api/v1/users/me/favorites/${bookId}`, { headers });
       await loadFavorites();
       showToast("Favorito removido com sucesso.", "success");
-    } catch {
-      showToast("Falha ao remover favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Falha ao remover favorito."), "error");
     } finally {
       setDeletingBookId(null);
     }

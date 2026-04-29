@@ -4,6 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -131,10 +132,10 @@ export function BooksPage() {
         setBooks(response.data.content);
         setTotalPages(response.data.page.totalPages);
         setError("");
-      } catch {
+      } catch (error) {
         setBooks([]);
         setTotalPages(0);
-        setError("Nao foi possivel carregar livros no momento.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar livros no momento."));
       } finally {
         setLoading(false);
       }
@@ -248,8 +249,8 @@ export function BooksPage() {
         setFavoriteBookIds((previous) => new Set(previous).add(bookId));
         showToast("Livro adicionado aos favoritos.", "success");
       }
-    } catch {
-      showToast("Nao foi possivel atualizar favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Nao foi possivel atualizar favorito."), "error");
     } finally {
       setFavoriteLoadingBookId(null);
     }

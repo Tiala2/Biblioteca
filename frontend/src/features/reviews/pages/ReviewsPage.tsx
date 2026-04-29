@@ -84,10 +84,10 @@ export function ReviewsPage() {
           : readableBookIds[0] ?? "";
       setBookId((previous) => (previous && readableBookIds.includes(previous) ? previous : preferredBookId));
       setError("");
-    } catch {
+    } catch (error) {
       setItems([]);
       setEligibleBookIds([]);
-      setError("Nao foi possivel carregar reviews.");
+      setError(extractApiErrorMessage(error, "Nao foi possivel carregar reviews."));
     } finally {
       setLoading(false);
     }
