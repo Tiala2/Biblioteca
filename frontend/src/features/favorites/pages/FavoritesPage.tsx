@@ -4,6 +4,7 @@ import { api } from "@shared/api/http";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { BookCover } from "@shared/ui/books/BookCover";
+import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type Favorite = {
   bookId: string;
@@ -115,7 +116,15 @@ export function FavoritesPage() {
       </div>
 
       {!loading && favorites.length === 0 && (
-        <p className="section-sub">Voce ainda nao adicionou livros aos favoritos.</p>
+        <StateCard
+          title="Nenhum favorito salvo"
+          message="Explore o catalogo e marque os livros que voce quer retomar com rapidez."
+          action={
+            <Link to="/books" className="btn-link">
+              Explorar catalogo
+            </Link>
+          }
+        />
       )}
     </section>
   );

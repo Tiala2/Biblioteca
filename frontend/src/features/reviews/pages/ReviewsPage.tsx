@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors";
 import { useAuth } from "@features/auth/context/AuthContext";
@@ -208,7 +208,18 @@ export function ReviewsPage() {
               </option>
             ))}
           </select>
-          {!hasEligibleBooks && <p className="section-sub">Comece uma leitura em `/books` para liberar a criacao de reviews.</p>}
+          {!hasEligibleBooks && (
+            <div>
+              <p className="section-sub">
+                Comece uma leitura no catalogo para liberar a criacao de reviews.
+              </p>
+              <div className="card-actions">
+                <Link to="/books" className="btn-muted btn-link">
+                  Explorar catalogo
+                </Link>
+              </div>
+            </div>
+          )}
           <label>Nota (1 a 5)</label>
           <input type="number" min={1} max={5} value={rating} onChange={(event) => setRating(Number(event.target.value))} disabled={!hasEligibleBooks} />
           <label>Comentario</label>
@@ -307,6 +318,20 @@ export function ReviewsPage() {
             Proxima
           </button>
         </div>
+
+        {!loading && !error && items.length === 0 && (
+          <div>
+            <h3>Nenhuma review registrada</h3>
+            <p className="section-sub">
+              Suas avaliacoes aparecerao aqui depois que voce iniciar uma leitura e registrar sua primeira percepcao.
+            </p>
+            <div className="card-actions">
+              <Link to="/books" className="btn-muted btn-link">
+                Ver livros
+              </Link>
+            </div>
+          </div>
+        )}
       </article>
     </section>
   );

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
+import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type Badge = {
   id: string;
@@ -197,7 +198,17 @@ export function BadgesPage() {
         </button>
       </div>
 
-      {!loading && badges.length === 0 && <p className="section-sub">Nenhum badge conquistado ainda.</p>}
+      {!loading && badges.length === 0 && (
+        <StateCard
+          title="Nenhum badge conquistado ainda"
+          message="Continue lendo, salvando progresso e concluindo metas para liberar suas primeiras conquistas."
+          action={
+            <Link to="/books" className="btn-link">
+              Continuar lendo
+            </Link>
+          }
+        />
+      )}
     </section>
   );
 }
