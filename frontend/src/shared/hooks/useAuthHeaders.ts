@@ -3,9 +3,10 @@ import { useAuth } from "@features/auth/context/AuthContext";
 
 export function useAuthHeaders() {
   const { auth } = useAuth();
+  const token = auth?.token;
 
   return useMemo(
-    () => (auth ? { Authorization: `Bearer ${auth.token}` } : undefined),
-    [auth]
+    () => (token ? { Authorization: `Bearer ${token}` } : undefined),
+    [token]
   );
 }

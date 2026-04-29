@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 import { readReaderCache, writeReaderCache } from "../lib/readerCache";
@@ -26,7 +26,7 @@ import type {
 
 export function ReadingExperiencePage() {
   const { bookId } = useParams<{ bookId: string }>();
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
 
   const [book, setBook] = useState<BookDetail | null>(null);
@@ -43,11 +43,6 @@ export function ReadingExperiencePage() {
   const [externalReaderFallbackUrl, setExternalReaderFallbackUrl] = useState<string | null>(null);
   const [externalReaderLoading, setExternalReaderLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const headers = useMemo(
-    () => (auth ? { Authorization: `Bearer ${auth.token}` } : undefined),
-    [auth]
-  );
 
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
   const isExternalReading = Boolean(book && !book.hasPdf);

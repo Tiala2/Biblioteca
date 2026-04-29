@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
@@ -17,16 +17,14 @@ type Favorite = {
 };
 
 export function FavoritesPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(false);
   const [deletingBookId, setDeletingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
-
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     if (!headers) return;
     setLoading(true);
     try {
@@ -39,12 +37,11 @@ export function FavoritesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers]);
 
   useEffect(() => {
     void loadFavorites();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.token]);
+  }, [loadFavorites]);
 
   const removeFavorite = async (bookId: string) => {
     if (!headers) return;

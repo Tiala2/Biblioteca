@@ -1,9 +1,9 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 
 type Review = {
@@ -30,7 +30,7 @@ function parsePage(value: string | null): number {
 }
 
 export function ReviewsPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = useMemo(() => parsePage(searchParams.get("page")), [searchParams]);
@@ -52,7 +52,6 @@ export function ReviewsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
   const preselectedBookId = searchParams.get("bookId") ?? "";
   const bookTitleById = useMemo(
     () => Object.fromEntries(bookOptions.map((option) => [option.id, option.title])),
@@ -64,7 +63,7 @@ export function ReviewsPage() {
   );
   const hasEligibleBooks = eligibleBooks.length > 0;
 
-  const loadPage = async () => {
+  const loadPage = useCallback(async () => {
     if (!headers) return;
     setLoading(true);
     try {
@@ -91,12 +90,11 @@ export function ReviewsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers, page, preselectedBookId]);
 
   useEffect(() => {
     void loadPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.token, page, preselectedBookId]);
+  }, [loadPage]);
 
   const resolveBookLabel = (review: Review) => {
     return bookTitleById[review.bookId] ?? review.bookId;

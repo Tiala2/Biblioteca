@@ -1,9 +1,9 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -40,7 +40,7 @@ function normalizeGoal(value: GoalResponse | "" | null | undefined): GoalRespons
 }
 
 export function GoalsPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [targetPages, setTargetPages] = useState(120);
   const [goal, setGoal] = useState<GoalResponse | null>(null);
@@ -51,9 +51,8 @@ export function GoalsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const period = useMemo(() => parsePeriod(searchParams.get("period")), [searchParams]);
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
 
-  const loadAll = async (selectedPeriod: Period) => {
+  const loadAll = useCallback(async (selectedPeriod: Period) => {
     if (!headers) return;
     try {
       setLoading(true);
@@ -77,12 +76,11 @@ export function GoalsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers]);
 
   useEffect(() => {
     void loadAll(period);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, auth?.token]);
+  }, [loadAll, period]);
 
   const onPeriodChange = (nextPeriod: Period) => {
     const params = new URLSearchParams(searchParams);

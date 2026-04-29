@@ -1,10 +1,10 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -47,8 +47,8 @@ function parsePage(value: string | null): number {
 }
 
 export function BooksPage() {
-  const { auth } = useAuth();
   const { showToast } = useToast();
+  const headers = useAuthHeaders();
   const [books, setBooks] = useState<Book[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -66,8 +66,6 @@ export function BooksPage() {
   const [favoriteLoadingBookId, setFavoriteLoadingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const headers = useMemo(() => (auth ? { Authorization: `Bearer ${auth.token}` } : undefined), [auth]);
-
   const applied = useMemo(() => {
     return {
       query: searchParams.get("q") ?? "",
