@@ -39,6 +39,16 @@ jobs:
       - name: Integration tests
         run: ./gradlew integrationTest --no-daemon
 
+      - name: Upload backend test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: |
+            backend/out/reports/tests/
+            backend/out/test-results/
+          if-no-files-found: ignore
+
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
@@ -63,7 +73,15 @@ jobs:
         run: npm run lint
 
       - name: Unit tests
-        run: npm run test
+        run: npm run test:ci
 
       - name: Build
         run: npm run build
+
+      - name: Upload frontend test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-reports
+          path: frontend/test-results/
+          if-no-files-found: ignore
