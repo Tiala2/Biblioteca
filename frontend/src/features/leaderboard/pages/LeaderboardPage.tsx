@@ -175,7 +175,7 @@ export function LeaderboardPage() {
         </div>
       </article>
 
-      {error && <p className="error">{error}</p>}
+      {error && <StateCard title="Falha ao carregar ranking" message={error} variant="error" />}
 
       {!error && (
         <div className="stats-grid">
@@ -232,7 +232,7 @@ export function LeaderboardPage() {
         ))}
       </div>
 
-      {!loading && entries.length === 0 && (
+      {!loading && !error && entries.length === 0 && (
         <StateCard
           title="Nenhum participante elegivel nesta semana"
           message="Ative seu opt-in no perfil e continue lendo para aparecer na proxima atualizacao do ranking."

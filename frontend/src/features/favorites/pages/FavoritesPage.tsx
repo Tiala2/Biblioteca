@@ -67,8 +67,14 @@ export function FavoritesPage() {
         <span className="kpi">{favorites.length} itens</span>
       </div>
 
-      {loading && <p className="section-sub">Carregando favoritos...</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && (
+        <StateCard
+          title="Favoritos em carregamento"
+          message="Estamos buscando sua biblioteca pessoal para voce retomar a leitura."
+          variant="loading"
+        />
+      )}
+      {!loading && error && <StateCard title="Falha ao carregar favoritos" message={error} variant="error" />}
 
       {!loading && favorites.length > 0 && (
         <article className="card">
@@ -115,7 +121,7 @@ export function FavoritesPage() {
         ))}
       </div>
 
-      {!loading && favorites.length === 0 && (
+      {!loading && !error && favorites.length === 0 && (
         <StateCard
           title="Nenhum favorito salvo"
           message="Explore o catalogo e marque os livros que voce quer retomar com rapidez."

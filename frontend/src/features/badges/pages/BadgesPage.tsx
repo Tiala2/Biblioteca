@@ -144,8 +144,14 @@ export function BadgesPage() {
         <span className="kpi">{badges.length} na pagina</span>
       </div>
 
-      {loading && <p className="section-sub">Carregando badges...</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && (
+        <StateCard
+          title="Badges em carregamento"
+          message="Estamos atualizando suas conquistas e o progresso das proximas trilhas."
+          variant="loading"
+        />
+      )}
+      {!loading && error && <StateCard title="Falha ao carregar badges" message={error} variant="error" />}
 
       <article className="card">
         <div className="section-head">
@@ -207,7 +213,7 @@ export function BadgesPage() {
         </button>
       </div>
 
-      {!loading && badges.length === 0 && (
+      {!loading && !error && badges.length === 0 && (
         <StateCard
           title="Nenhum badge conquistado ainda"
           message="Continue lendo, salvando progresso e concluindo metas para liberar suas primeiras conquistas."
