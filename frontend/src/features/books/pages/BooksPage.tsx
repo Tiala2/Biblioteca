@@ -378,6 +378,7 @@ export function BooksPage() {
               <button
                 type="button"
                 className={favoriteBookIds.has(book.id) ? "favorite-toggle active" : "favorite-toggle"}
+                aria-pressed={favoriteBookIds.has(book.id)}
                 onClick={() => toggleFavorite(book.id)}
                 disabled={favoriteLoadingBookId === book.id}
               >
@@ -393,14 +394,22 @@ export function BooksPage() {
       </div>}
 
       <div className="pagination-row">
-        <button className="btn-muted" disabled={applied.page <= 0 || loading} onClick={() => goToPage(applied.page - 1)}>
+        <button
+          type="button"
+          className="btn-muted"
+          aria-label="Ir para a pagina anterior do catalogo"
+          disabled={applied.page <= 0 || loading}
+          onClick={() => goToPage(applied.page - 1)}
+        >
           Anterior
         </button>
         <span className="section-sub">
           Pagina {applied.page + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
+          type="button"
           className="btn-muted"
+          aria-label="Ir para a proxima pagina do catalogo"
           disabled={loading || applied.page + 1 >= Math.max(totalPages, 1)}
           onClick={() => goToPage(applied.page + 1)}
         >

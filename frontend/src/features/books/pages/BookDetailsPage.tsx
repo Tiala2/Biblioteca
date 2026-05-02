@@ -201,6 +201,7 @@ export function BookDetailsPage() {
           <button
             type="button"
             className={isFavorite ? "favorite-toggle active" : "favorite-toggle"}
+            aria-pressed={isFavorite}
             onClick={toggleFavorite}
             disabled={!headers || favoriteLoading}
           >

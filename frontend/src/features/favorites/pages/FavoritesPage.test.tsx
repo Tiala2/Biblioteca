@@ -62,7 +62,7 @@ describe("FavoritesPage", () => {
     expect(await screen.findByRole("heading", { name: "Livro Favorito" })).toBeInTheDocument();
     expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Remover" }));
+    await user.click(screen.getByRole("button", { name: "Remover Livro Favorito dos favoritos" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.delete)).toHaveBeenCalledWith(

@@ -302,14 +302,22 @@ export function ReviewsPage() {
         </div>
 
         <div className="pagination-row">
-          <button className="btn-muted" disabled={page <= 0 || loading} onClick={() => goToPage(page - 1)}>
+          <button
+            type="button"
+            className="btn-muted"
+            aria-label="Ir para a pagina anterior de reviews"
+            disabled={page <= 0 || loading}
+            onClick={() => goToPage(page - 1)}
+          >
             Anterior
           </button>
           <span className="section-sub">
             Pagina {page + 1} de {Math.max(totalPages, 1)}
           </span>
           <button
+            type="button"
             className="btn-muted"
+            aria-label="Ir para a proxima pagina de reviews"
             disabled={loading || page + 1 >= Math.max(totalPages, 1)}
             onClick={() => goToPage(page + 1)}
           >
