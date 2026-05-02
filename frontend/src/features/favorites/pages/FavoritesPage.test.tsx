@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { AxiosError } from "axios";
 import { MemoryRouter } from "react-router-dom";
 import { FavoritesPage } from "./FavoritesPage";
 
@@ -71,5 +72,19 @@ describe("FavoritesPage", () => {
       )
     );
     expect(showToast).toHaveBeenCalledWith("Favorito removido com sucesso.", "success");
+  });
+
+  it("deve exibir erro amigavel quando a API de favoritos estiver indisponivel", async () => {
+    vi.mocked(api.get).mockRejectedValue(new AxiosError("Network Error") as never);
+
+    render(
+      <MemoryRouter>
+        <FavoritesPage />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: "Falha ao carregar favoritos" })).toBeInTheDocument();
+    expect(screen.getByText("Falha de conexao com o servidor.")).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Nenhum favorito salvo" })).not.toBeInTheDocument();
   });
 });

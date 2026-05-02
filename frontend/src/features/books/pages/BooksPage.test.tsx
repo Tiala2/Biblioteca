@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { AxiosError } from "axios";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { BooksPage } from "./BooksPage";
 
@@ -167,5 +168,25 @@ describe("BooksPage", () => {
         })
       )
     );
+  });
+
+  it("deve exibir erro amigavel quando a API do catalogo estiver indisponivel", async () => {
+    const mockedGet = vi.mocked(api.get);
+    mockedGet
+      .mockResolvedValueOnce({ data: [] } as never)
+      .mockResolvedValueOnce({ data: [] } as never)
+      .mockRejectedValueOnce(new AxiosError("Network Error") as never)
+      .mockResolvedValue({ data: [] } as never);
+
+    render(
+      <MemoryRouter initialEntries={["/books"]}>
+        <Routes>
+          <Route path="/books" element={<BooksPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: "Falha ao carregar catalogo" })).toBeInTheDocument();
+    expect(screen.getByText("Falha de conexao com o servidor.")).toBeInTheDocument();
   });
 });

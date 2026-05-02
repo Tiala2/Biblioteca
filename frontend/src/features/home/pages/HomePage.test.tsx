@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { AxiosError } from "axios";
 import { MemoryRouter } from "react-router-dom";
 import { HomePage } from "./HomePage";
 
@@ -94,5 +95,19 @@ describe("HomePage", () => {
     expect(screen.getAllByText("Livro Recomendado").length).toBeGreaterThan(0);
     expect(screen.getByText("Classicos")).toBeInTheDocument();
     expect(screen.getByText("Livro Avaliado")).toBeInTheDocument();
+  });
+
+  it("deve exibir fallback quando a API estiver indisponivel", async () => {
+    vi.mocked(api.get).mockRejectedValue(new AxiosError("Network Error") as never);
+
+    render(
+      <MemoryRouter>
+        <HomePage />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: "Nao foi possivel carregar o painel" })).toBeInTheDocument();
+    expect(screen.getByText("Falha de conexao com o servidor.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ir para o catalogo" })).toBeInTheDocument();
   });
 });
