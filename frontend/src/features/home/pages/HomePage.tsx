@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BookOpen, Flame, LibraryBig, Sparkles, Target, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -145,19 +146,24 @@ export function HomePage() {
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        <div className="section-head">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--home">
+        <div className="aura-hero__content">
           <div>
+            <p className="eyebrow aura-eyebrow">Library Aura</p>
             <h2>Bem-vinda, {auth?.name}</h2>
             <p>
-              Seu painel reune leitura atual, metas, recomendacoes e sinais de engajamento em um unico lugar.
+              Um espaco de leitura com ritmo, conquistas e proximas jornadas prontas para voce escolher.
             </p>
           </div>
-          <span className="kpi">{home.readingProgress.streakDays} dia(s) de streak</span>
+          <div className="aura-hero__signal">
+            <Flame aria-hidden="true" />
+            <strong>{home.readingProgress.streakDays}</strong>
+            <span>dia(s) de streak</span>
+          </div>
         </div>
 
-        <div className="card-actions">
+        <div className="card-actions aura-actions">
           <Link to="/profile" className="btn-link">
             Abrir perfil
           </Link>
@@ -173,32 +179,36 @@ export function HomePage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Resumo da conta</h3>
+          <h3><Sparkles aria-hidden="true" /> Resumo da conta</h3>
           <span className="kpi">{home.userSummary.totalPagesRead} pags lidas</span>
         </div>
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           <div className="stat-box">
+            <BookOpen aria-hidden="true" />
             <strong>{home.userSummary.totalInProgress}</strong>
             <span>leituras em andamento</span>
           </div>
           <div className="stat-box">
+            <Trophy aria-hidden="true" />
             <strong>{home.userSummary.totalFinished}</strong>
             <span>livros concluidos</span>
           </div>
           <div className="stat-box">
+            <Target aria-hidden="true" />
             <strong>{home.readingProgress.pagesReadThisWeek}</strong>
             <span>pags nesta semana</span>
           </div>
           <div className="stat-box">
+            <Flame aria-hidden="true" />
             <strong>{home.readingProgress.sessionsThisWeek}</strong>
             <span>sessoes de leitura</span>
           </div>
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
           <h3>Leitura atual</h3>
           <span className="kpi">
@@ -217,7 +227,7 @@ export function HomePage() {
                 </p>
               </div>
             </div>
-            <div className="progress-track" aria-hidden="true">
+            <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${currentReading.progress}%` }} />
             </div>
             <div className="card-actions">
@@ -234,7 +244,7 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Meta atual</h3>
           <span className="kpi">
@@ -249,7 +259,7 @@ export function HomePage() {
             <p className="section-sub">
               Restam {home.readingProgress.goal.remainingPages} paginas | Status: {home.readingProgress.goal.status}
             </p>
-            <div className="progress-track" aria-hidden="true">
+            <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
           </>
@@ -258,13 +268,13 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>Recomendacoes</h3>
+          <h3><LibraryBig aria-hidden="true" /> Recomendacoes</h3>
           <span className="kpi">{home.recommendations.length} destaque(s)</span>
         </div>
         {home.recommendations.length > 0 ? (
-          <ul className="stacked-list">
+          <ul className="stacked-list aura-book-list">
             {home.recommendations.slice(0, 4).map((book) => (
               <li key={book.id} className="stacked-list-item">
                 <BookCover title={book.title} coverUrl={book.coverUrl} size="small" />
@@ -286,7 +296,7 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Colecoes em destaque</h3>
           <span className="kpi">{home.collections.length} colecao(oes)</span>
@@ -309,7 +319,7 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Avaliacoes recentes</h3>
           <span className="kpi">{home.recentReviews.length} item(ns)</span>

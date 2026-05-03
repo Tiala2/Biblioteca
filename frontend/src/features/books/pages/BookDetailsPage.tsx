@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { BookMarked, MessageCircle, Sparkles, Star, WandSparkles } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -173,20 +174,27 @@ export function BookDetailsPage() {
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        {book && <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />}
-        <div className="section-head">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-book-detail-hero">
+        <div className="aura-book-detail-hero__cover">
+          {book && <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />}
+        </div>
+        <div className="aura-hero__content">
           <div>
+            <p className="eyebrow aura-eyebrow">Livro em foco</p>
             <h2>{book?.title ?? "Detalhes do livro"}</h2>
             <p>
-              Consulte dados do catalogo, sinais de engajamento e seu contexto pessoal antes de mergulhar na leitura.
+              Uma pagina para sentir o livro antes de abrir: contexto, recepcao, tags e proximos passos.
             </p>
           </div>
-          <span className="kpi">{book?.hasPdf ? "PDF local" : "Leitura com progresso"}</span>
+          <div className="aura-hero__signal">
+            <BookMarked aria-hidden="true" />
+            <strong>{book?.hasPdf ? "PDF" : "Guia"}</strong>
+            <span>{book?.hasPdf ? "local" : "com progresso"}</span>
+          </div>
         </div>
         {error && <p className="error">{error}</p>}
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           {metadata.map((item) => (
             <div key={item.label} className="stat-box">
               <strong>{item.value}</strong>
@@ -213,9 +221,9 @@ export function BookDetailsPage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Recepcao do catalogo</h3>
+          <h3><Star aria-hidden="true" /> Recepcao do catalogo</h3>
           <span className="kpi">
             {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} review(s)
           </span>
@@ -235,9 +243,9 @@ export function BookDetailsPage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Seu contexto</h3>
+          <h3><Sparkles aria-hidden="true" /> Seu contexto</h3>
           <span className="kpi">{myReview ? "Com review" : "Sem review"}</span>
         </div>
         {myReview ? (
@@ -251,9 +259,9 @@ export function BookDetailsPage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
-          <h3>Proximos passos</h3>
+          <h3><WandSparkles aria-hidden="true" /> Proximos passos</h3>
           <span className="kpi">{isFavorite ? "Favorito ativo" : "Exploracao"}</span>
         </div>
         <ul className="stacked-list">
@@ -278,9 +286,9 @@ export function BookDetailsPage() {
         </ul>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>O que a comunidade achou</h3>
+          <h3><MessageCircle aria-hidden="true" /> O que a comunidade achou</h3>
           <span className="kpi">{communityReviews.length} destaque(s)</span>
         </div>
         {communityReviews.length > 0 ? (
@@ -301,7 +309,7 @@ export function BookDetailsPage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Continuar explorando</h3>
           <span className="kpi">{recommendations.length} sugestao(oes)</span>

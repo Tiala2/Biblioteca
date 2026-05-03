@@ -337,6 +337,20 @@ body[data-theme="night"] .admin-pill {
   animation: content-in 170ms ease-out;
 }
 
+.aura-page {
+  position: relative;
+}
+
+.aura-page::before {
+  content: "";
+  display: block;
+  height: 3px;
+  width: min(260px, 54vw);
+  margin: 0 0 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-coral), var(--primary-b), var(--primary-a));
+}
+
 .section-head {
   display: flex;
   align-items: end;
@@ -349,6 +363,18 @@ body[data-theme="night"] .admin-pill {
 small,
 label {
   color: var(--text-soft);
+}
+
+.section-head h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-head h3 svg {
+  width: 20px;
+  height: 20px;
+  color: color-mix(in srgb, var(--primary-b) 74%, var(--text-main));
 }
 
 .stats-grid {
@@ -366,9 +392,21 @@ label {
   background: color-mix(in srgb, var(--card-bg) 86%, transparent);
 }
 
+.stat-box svg {
+  width: 20px;
+  height: 20px;
+  color: color-mix(in srgb, var(--primary-b) 72%, var(--text-main));
+}
+
 .stat-box strong {
   font-size: 1.4rem;
   font-family: var(--font-display);
+}
+
+.aura-stats .stat-box {
+  min-height: 118px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--card-bg) 92%, transparent), color-mix(in srgb, var(--primary-b) 7%, transparent));
 }
 
 .stacked-list {
@@ -629,6 +667,159 @@ label {
   background:
     linear-gradient(120deg, color-mix(in srgb, var(--primary-a) 92%, #111827), color-mix(in srgb, var(--primary-b) 86%, #111827));
   box-shadow: var(--shadow-strong);
+}
+
+.aura-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 1.1rem;
+  min-height: 230px;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  background:
+    linear-gradient(120deg, rgba(199, 95, 58, 0.18), transparent 42%),
+    linear-gradient(135deg, color-mix(in srgb, var(--primary-a) 88%, #111827), color-mix(in srgb, var(--primary-b) 82%, #111827));
+}
+
+.aura-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--accent-coral), var(--gold), var(--primary-b), var(--primary-a));
+}
+
+.aura-hero__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.aura-hero h2 {
+  max-width: 780px;
+  font-size: clamp(1.75rem, 4vw, 3.6rem);
+  line-height: 0.98;
+}
+
+.aura-hero p {
+  max-width: 700px;
+  margin-top: 0.7rem;
+  font-size: 1.03rem;
+}
+
+.aura-eyebrow {
+  color: color-mix(in srgb, var(--gold) 82%, white);
+}
+
+.aura-hero__signal {
+  min-width: 132px;
+  width: fit-content;
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  padding: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.aura-hero > .aura-hero__signal {
+  justify-self: end;
+}
+
+.aura-hero__signal svg {
+  width: 24px;
+  height: 24px;
+}
+
+.aura-hero__signal strong {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+}
+
+.aura-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.aura-actions .btn-link {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.aura-panel {
+  border-color: color-mix(in srgb, var(--primary-b) 18%, var(--card-border));
+}
+
+.aura-panel--focus {
+  background:
+    linear-gradient(150deg, color-mix(in srgb, var(--card-bg) 90%, transparent), color-mix(in srgb, var(--gold) 8%, transparent));
+}
+
+.aura-panel--wide {
+  grid-column: span 2;
+}
+
+.aura-progress {
+  height: 12px;
+}
+
+.aura-progress .progress-fill {
+  background: linear-gradient(90deg, var(--accent-coral), var(--gold), var(--primary-b));
+}
+
+.aura-book-list .stacked-list-item {
+  align-items: stretch;
+}
+
+.aura-filter-panel {
+  margin-bottom: 1rem;
+}
+
+.aura-catalog-grid {
+  align-items: stretch;
+}
+
+.aura-book-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  align-content: start;
+}
+
+.aura-book-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-b), var(--gold), var(--accent-coral));
+}
+
+.aura-book-card h3 {
+  margin-top: 0.25rem;
+}
+
+.aura-book-card .book-cover {
+  box-shadow: 0 14px 24px rgba(15, 23, 42, 0.18);
+}
+
+.aura-book-detail-hero {
+  grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
+  align-items: center;
+}
+
+.aura-book-detail-hero__cover {
+  position: relative;
+  z-index: 1;
+}
+
+.aura-book-detail-hero__cover .book-cover {
+  margin: 0;
+  max-width: 220px;
+  box-shadow: 0 22px 34px rgba(15, 23, 42, 0.28);
 }
 
 .hero h2,
@@ -1238,6 +1429,23 @@ body[data-theme="day"] .login-form {
     padding: 1rem;
   }
 
+  .aura-hero__content,
+  .aura-book-detail-hero {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .aura-hero__signal {
+    width: 100%;
+    justify-items: start;
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
+  }
+
+  .aura-panel--wide {
+    grid-column: auto;
+  }
+
   .book-cover--large {
     max-width: 180px;
   }
@@ -1312,6 +1520,15 @@ body[data-theme="day"] .login-form {
 
   .hero h2 {
     font-size: 1.5rem;
+  }
+
+  .aura-hero h2 {
+    font-size: 2rem;
+    line-height: 1.05;
+  }
+
+  .aura-hero p {
+    font-size: 0.98rem;
   }
 
   .topbar .brand-block h2 {

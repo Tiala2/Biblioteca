@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { Filter, Search, Sparkles } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
@@ -255,16 +256,25 @@ export function BooksPage() {
   };
 
   return (
-    <section>
-      <div className="section-head">
+    <section className="aura-page">
+      <div className="card hero aura-hero aura-hero--catalog">
         <div>
+          <p className="eyebrow aura-eyebrow">Vitrine viva</p>
           <h2>Escolha sua proxima jornada</h2>
-          <p className="section-sub">Busque livros do acervo local e importado em tempo real.</p>
+          <p>Explore livros locais e descobertas importadas com filtros rapidos, favoritos e leitura guiada.</p>
         </div>
-        <span className="kpi">{books.length} nesta pagina</span>
+        <div className="aura-hero__signal">
+          <Sparkles aria-hidden="true" />
+          <strong>{books.length}</strong>
+          <span>nesta pagina</span>
+        </div>
       </div>
 
-      <article className="card">
+      <article className="card aura-panel aura-filter-panel">
+        <div className="section-head">
+          <h3><Filter aria-hidden="true" /> Afinar descoberta</h3>
+          <span className="kpi">{applied.sort.replace("_", " ")}</span>
+        </div>
         <form className="filters-grid" onSubmit={onSearch}>
           <input
             aria-label="Pesquisar livros por titulo ou autor"
@@ -325,7 +335,10 @@ export function BooksPage() {
             Apenas com PDF
           </label>
           <div className="filter-actions">
-            <button type="submit">Pesquisar</button>
+            <button type="submit">
+              <Search aria-hidden="true" />
+              Pesquisar
+            </button>
             <button type="button" className="btn-muted" onClick={clearFilters}>
               Limpar
             </button>
@@ -342,9 +355,9 @@ export function BooksPage() {
       )}
       {!loading && error && <StateCard title="Falha ao carregar catalogo" message={error} variant="error" />}
 
-      {!loading && !error && <div className="grid">
+      {!loading && !error && <div className="grid aura-catalog-grid">
         {books.map((book) => (
-          <article key={book.id} className="card">
+          <article key={book.id} className="card aura-book-card">
             <BookCover title={book.title} coverUrl={book.coverUrl} size="medium" />
             <div className="book-card-badges">
               {book.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
