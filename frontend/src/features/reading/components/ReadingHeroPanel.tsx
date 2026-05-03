@@ -80,6 +80,7 @@ export function ReadingHeroPanel({
         <button
           type="button"
           className={isFavorite ? "favorite-toggle active" : "favorite-toggle"}
+          aria-pressed={isFavorite}
           onClick={onToggleFavorite}
           disabled={favoriteLoading}
         >

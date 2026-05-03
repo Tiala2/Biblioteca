@@ -51,6 +51,7 @@ export function QuizPanel({
                     key={option}
                     type="button"
                     className={getQuizOptionClassName(quiz, option, selectedOptions, revealed)}
+                    aria-pressed={selectedOptions[quiz.id] === option}
                     onClick={() => onSelectOption(quiz.id, option)}
                   >
                     {option}

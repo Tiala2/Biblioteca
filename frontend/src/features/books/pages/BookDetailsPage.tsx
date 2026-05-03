@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -96,13 +97,13 @@ export function BookDetailsPage() {
         );
         setRecommendations(recommendationResponse.data.filter((item) => item.id !== bookId).slice(0, 3));
         setError("");
-      } catch {
+      } catch (error) {
         if (!active) return;
         setBook(null);
         setMyReview(null);
         setCommunityReviews([]);
         setRecommendations([]);
-        setError("Nao foi possivel carregar os detalhes do livro.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar os detalhes do livro."));
       } finally {
         if (active) setLoading(false);
       }
@@ -144,8 +145,8 @@ export function BookDetailsPage() {
         setIsFavorite(true);
         showToast("Livro adicionado aos favoritos.", "success");
       }
-    } catch {
-      showToast("Nao foi possivel atualizar favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Nao foi possivel atualizar favorito."), "error");
     } finally {
       setFavoriteLoading(false);
     }
@@ -200,6 +201,7 @@ export function BookDetailsPage() {
           <button
             type="button"
             className={isFavorite ? "favorite-toggle active" : "favorite-toggle"}
+            aria-pressed={isFavorite}
             onClick={toggleFavorite}
             disabled={!headers || favoriteLoading}
           >

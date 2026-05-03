@@ -1,8 +1,9 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { extractApiErrorMessage } from "@shared/api/errors";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -39,7 +40,7 @@ function normalizeGoal(value: GoalResponse | "" | null | undefined): GoalRespons
 }
 
 export function GoalsPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [targetPages, setTargetPages] = useState(120);
   const [goal, setGoal] = useState<GoalResponse | null>(null);
@@ -50,9 +51,8 @@ export function GoalsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const period = useMemo(() => parsePeriod(searchParams.get("period")), [searchParams]);
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
 
-  const loadAll = async (selectedPeriod: Period) => {
+  const loadAll = useCallback(async (selectedPeriod: Period) => {
     if (!headers) return;
     try {
       setLoading(true);
@@ -71,17 +71,16 @@ export function GoalsPage() {
       setAlerts(Array.isArray(alertsRes.data) ? alertsRes.data : []);
       setStreak(streakRes.data?.streakDays ?? 0);
       setError("");
-    } catch {
-      setError("Nao foi possivel carregar metas e alertas.");
+    } catch (error) {
+      setError(extractApiErrorMessage(error, "Nao foi possivel carregar metas e alertas."));
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers]);
 
   useEffect(() => {
     void loadAll(period);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, auth?.token]);
+  }, [loadAll, period]);
 
   const onPeriodChange = (nextPeriod: Period) => {
     const params = new URLSearchParams(searchParams);
@@ -119,9 +118,10 @@ export function GoalsPage() {
 
       setError("");
       showToast("Meta atualizada com sucesso.", "success");
-    } catch {
-      setError("Falha ao atualizar meta.");
-      showToast("Nao foi possivel salvar a meta.", "error");
+    } catch (error) {
+      const message = extractApiErrorMessage(error, "Nao foi possivel salvar a meta.");
+      setError(message);
+      showToast(message, "error");
     }
   };
 
@@ -150,7 +150,7 @@ export function GoalsPage() {
           <h3>Configurar meta</h3>
           <span className="kpi">{period === "WEEKLY" ? "Semanal" : "Mensal"}</span>
         </div>
-        <form onSubmit={onSubmit}>
+        <form id="goal-form" onSubmit={onSubmit}>
           <label>Periodo</label>
           <select value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
             <option value="WEEKLY">Semanal</option>
@@ -185,7 +185,20 @@ export function GoalsPage() {
             </div>
           </>
         ) : (
-          <p className="section-sub">Sem meta ativa.</p>
+          <>
+            <p className="section-sub">
+              Voce ainda nao tem meta ativa para este periodo. Defina uma quantidade de paginas e salve para acompanhar
+              ritmo, alertas e progresso.
+            </p>
+            <div className="card-actions">
+              <Link to="/books" className="btn-muted btn-link">
+                Escolher livro
+              </Link>
+              <button type="submit" form="goal-form">
+                Criar meta
+              </button>
+            </div>
+          </>
         )}
       </article>
 
@@ -194,7 +207,11 @@ export function GoalsPage() {
           <h3>Alertas</h3>
           <span className="kpi">{alerts.length} aviso(s)</span>
         </div>
-        {alerts.length === 0 && <p className="section-sub">Sem alertas no momento.</p>}
+        {alerts.length === 0 && (
+          <p className="section-sub">
+            Sem alertas no momento. Quando a meta precisar de ajuste, os avisos vao aparecer aqui.
+          </p>
+        )}
         {alerts.length > 0 && (
           <ul className="stacked-list">
             {alerts.map((alert) => (

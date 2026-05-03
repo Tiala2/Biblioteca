@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { formatInteger } from "@shared/lib/formatters";
 import { StateCard } from "@shared/ui/feedback/StateCard";
@@ -56,22 +57,32 @@ export function LeaderboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
 
-    const leaderboardRequest = api.get<LeaderboardEntry[]>(`/api/v1/users/leaderboard?limit=${limit}&metric=${metric}`);
-    const profileRequest = headers ? api.get<UserProfile>("/api/v1/users/me", { headers }) : Promise.resolve(null);
-
-    Promise.all([leaderboardRequest, profileRequest])
-      .then(([leaderboardResponse, profileResponse]) => {
+    const loadLeaderboard = async () => {
+      setLoading(true);
+      try {
+        const leaderboardRequest = api.get<LeaderboardEntry[]>(`/api/v1/users/leaderboard?limit=${limit}&metric=${metric}`);
+        const profileRequest = headers ? api.get<UserProfile>("/api/v1/users/me", { headers }) : Promise.resolve(null);
+        const [leaderboardResponse, profileResponse] = await Promise.all([leaderboardRequest, profileRequest]);
+        if (cancelled) return;
         setEntries(leaderboardResponse.data);
         setLeaderboardOptIn(profileResponse?.data.leaderboardOptIn ?? null);
         setError("");
-      })
-      .catch(() => {
+      } catch (error) {
+        if (cancelled) return;
         setEntries([]);
-        setError("Nao foi possivel carregar o ranking.");
-      })
-      .finally(() => setLoading(false));
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar o ranking."));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadLeaderboard();
+
+    return () => {
+      cancelled = true;
+    };
   }, [headers, limit, metric]);
 
   const changeMetric = (nextMetric: LeaderboardMetric) => {
@@ -164,7 +175,7 @@ export function LeaderboardPage() {
         </div>
       </article>
 
-      {error && <p className="error">{error}</p>}
+      {error && <StateCard title="Falha ao carregar ranking" message={error} variant="error" />}
 
       {!error && (
         <div className="stats-grid">
@@ -221,7 +232,7 @@ export function LeaderboardPage() {
         ))}
       </div>
 
-      {!loading && entries.length === 0 && (
+      {!loading && !error && entries.length === 0 && (
         <StateCard
           title="Nenhum participante elegivel nesta semana"
           message="Ative seu opt-in no perfil e continue lendo para aparecer na proxima atualizacao do ranking."

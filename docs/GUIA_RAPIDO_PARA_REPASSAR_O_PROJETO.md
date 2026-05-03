@@ -1014,6 +1014,7 @@ Assets padrao/base do projeto.
 - `MATRIZ_RASTREABILIDADE.md`: liga requisitos, telas e endpoints
 - `UAT_CHECKLIST.md`: checklist de validacao de uso
 - `EVIDENCIAS_FRONT.md`: evidencias de execucao do frontend
+- `EVOLUCAO_SEM_RETRABALHO.md`: guia para criar features, endpoints, testes e migrations sem quebrar o template
 - `openapi-lock.json`: snapshot da especificacao da API
 
 ## 18. `scripts/` da raiz

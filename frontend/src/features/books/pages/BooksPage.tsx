@@ -1,9 +1,10 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -46,8 +47,8 @@ function parsePage(value: string | null): number {
 }
 
 export function BooksPage() {
-  const { auth } = useAuth();
   const { showToast } = useToast();
+  const headers = useAuthHeaders();
   const [books, setBooks] = useState<Book[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -65,8 +66,6 @@ export function BooksPage() {
   const [favoriteLoadingBookId, setFavoriteLoadingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
-
   const applied = useMemo(() => {
     return {
       query: searchParams.get("q") ?? "",
@@ -131,10 +130,10 @@ export function BooksPage() {
         setBooks(response.data.content);
         setTotalPages(response.data.page.totalPages);
         setError("");
-      } catch {
+      } catch (error) {
         setBooks([]);
         setTotalPages(0);
-        setError("Nao foi possivel carregar livros no momento.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar livros no momento."));
       } finally {
         setLoading(false);
       }
@@ -248,8 +247,8 @@ export function BooksPage() {
         setFavoriteBookIds((previous) => new Set(previous).add(bookId));
         showToast("Livro adicionado aos favoritos.", "success");
       }
-    } catch {
-      showToast("Nao foi possivel atualizar favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Nao foi possivel atualizar favorito."), "error");
     } finally {
       setFavoriteLoadingBookId(null);
     }
@@ -379,6 +378,7 @@ export function BooksPage() {
               <button
                 type="button"
                 className={favoriteBookIds.has(book.id) ? "favorite-toggle active" : "favorite-toggle"}
+                aria-pressed={favoriteBookIds.has(book.id)}
                 onClick={() => toggleFavorite(book.id)}
                 disabled={favoriteLoadingBookId === book.id}
               >
@@ -394,14 +394,22 @@ export function BooksPage() {
       </div>}
 
       <div className="pagination-row">
-        <button className="btn-muted" disabled={applied.page <= 0 || loading} onClick={() => goToPage(applied.page - 1)}>
+        <button
+          type="button"
+          className="btn-muted"
+          aria-label="Ir para a pagina anterior do catalogo"
+          disabled={applied.page <= 0 || loading}
+          onClick={() => goToPage(applied.page - 1)}
+        >
           Anterior
         </button>
         <span className="section-sub">
           Pagina {applied.page + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
+          type="button"
           className="btn-muted"
+          aria-label="Ir para a proxima pagina do catalogo"
           disabled={loading || applied.page + 1 >= Math.max(totalPages, 1)}
           onClick={() => goToPage(applied.page + 1)}
         >

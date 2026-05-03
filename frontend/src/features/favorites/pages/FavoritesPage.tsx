@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { extractApiErrorMessage } from "@shared/api/errors";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { BookCover } from "@shared/ui/books/BookCover";
+import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type Favorite = {
   bookId: string;
@@ -15,34 +17,31 @@ type Favorite = {
 };
 
 export function FavoritesPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(false);
   const [deletingBookId, setDeletingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
-
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     if (!headers) return;
     setLoading(true);
     try {
       const response = await api.get<Favorite[]>("/api/v1/users/me/favorites", { headers });
       setFavorites(response.data);
       setError("");
-    } catch {
+    } catch (error) {
       setFavorites([]);
-      setError("Nao foi possivel carregar favoritos.");
+      setError(extractApiErrorMessage(error, "Nao foi possivel carregar favoritos."));
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers]);
 
   useEffect(() => {
     void loadFavorites();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.token]);
+  }, [loadFavorites]);
 
   const removeFavorite = async (bookId: string) => {
     if (!headers) return;
@@ -51,8 +50,8 @@ export function FavoritesPage() {
       await api.delete(`/api/v1/users/me/favorites/${bookId}`, { headers });
       await loadFavorites();
       showToast("Favorito removido com sucesso.", "success");
-    } catch {
-      showToast("Falha ao remover favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Falha ao remover favorito."), "error");
     } finally {
       setDeletingBookId(null);
     }
@@ -68,8 +67,14 @@ export function FavoritesPage() {
         <span className="kpi">{favorites.length} itens</span>
       </div>
 
-      {loading && <p className="section-sub">Carregando favoritos...</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && (
+        <StateCard
+          title="Favoritos em carregamento"
+          message="Estamos buscando sua biblioteca pessoal para voce retomar a leitura."
+          variant="loading"
+        />
+      )}
+      {!loading && error && <StateCard title="Falha ao carregar favoritos" message={error} variant="error" />}
 
       {!loading && favorites.length > 0 && (
         <article className="card">
@@ -103,7 +108,9 @@ export function FavoritesPage() {
                 Ler agora
               </Link>
               <button
+                type="button"
                 className="btn-muted"
+                aria-label={`Remover ${item.bookTitle} dos favoritos`}
                 onClick={() => removeFavorite(item.bookId)}
                 disabled={deletingBookId === item.bookId}
               >
@@ -114,8 +121,16 @@ export function FavoritesPage() {
         ))}
       </div>
 
-      {!loading && favorites.length === 0 && (
-        <p className="section-sub">Voce ainda nao adicionou livros aos favoritos.</p>
+      {!loading && !error && favorites.length === 0 && (
+        <StateCard
+          title="Nenhum favorito salvo"
+          message="Explore o catalogo e marque os livros que voce quer retomar com rapidez."
+          action={
+            <Link to="/books" className="btn-link">
+              Explorar catalogo
+            </Link>
+          }
+        />
       )}
     </section>
   );

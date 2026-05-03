@@ -1,9 +1,9 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 
 type Review = {
@@ -30,7 +30,7 @@ function parsePage(value: string | null): number {
 }
 
 export function ReviewsPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = useMemo(() => parsePage(searchParams.get("page")), [searchParams]);
@@ -52,7 +52,6 @@ export function ReviewsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
   const preselectedBookId = searchParams.get("bookId") ?? "";
   const bookTitleById = useMemo(
     () => Object.fromEntries(bookOptions.map((option) => [option.id, option.title])),
@@ -64,7 +63,7 @@ export function ReviewsPage() {
   );
   const hasEligibleBooks = eligibleBooks.length > 0;
 
-  const loadPage = async () => {
+  const loadPage = useCallback(async () => {
     if (!headers) return;
     setLoading(true);
     try {
@@ -84,19 +83,18 @@ export function ReviewsPage() {
           : readableBookIds[0] ?? "";
       setBookId((previous) => (previous && readableBookIds.includes(previous) ? previous : preferredBookId));
       setError("");
-    } catch {
+    } catch (error) {
       setItems([]);
       setEligibleBookIds([]);
-      setError("Nao foi possivel carregar reviews.");
+      setError(extractApiErrorMessage(error, "Nao foi possivel carregar reviews."));
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers, page, preselectedBookId]);
 
   useEffect(() => {
     void loadPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.token, page, preselectedBookId]);
+  }, [loadPage]);
 
   const resolveBookLabel = (review: Review) => {
     return bookTitleById[review.bookId] ?? review.bookId;
@@ -208,7 +206,18 @@ export function ReviewsPage() {
               </option>
             ))}
           </select>
-          {!hasEligibleBooks && <p className="section-sub">Comece uma leitura em `/books` para liberar a criacao de reviews.</p>}
+          {!hasEligibleBooks && (
+            <div>
+              <p className="section-sub">
+                Comece uma leitura no catalogo para liberar a criacao de reviews.
+              </p>
+              <div className="card-actions">
+                <Link to="/books" className="btn-muted btn-link">
+                  Explorar catalogo
+                </Link>
+              </div>
+            </div>
+          )}
           <label>Nota (1 a 5)</label>
           <input type="number" min={1} max={5} value={rating} onChange={(event) => setRating(Number(event.target.value))} disabled={!hasEligibleBooks} />
           <label>Comentario</label>
@@ -293,20 +302,42 @@ export function ReviewsPage() {
         </div>
 
         <div className="pagination-row">
-          <button className="btn-muted" disabled={page <= 0 || loading} onClick={() => goToPage(page - 1)}>
+          <button
+            type="button"
+            className="btn-muted"
+            aria-label="Ir para a pagina anterior de reviews"
+            disabled={page <= 0 || loading}
+            onClick={() => goToPage(page - 1)}
+          >
             Anterior
           </button>
           <span className="section-sub">
             Pagina {page + 1} de {Math.max(totalPages, 1)}
           </span>
           <button
+            type="button"
             className="btn-muted"
+            aria-label="Ir para a proxima pagina de reviews"
             disabled={loading || page + 1 >= Math.max(totalPages, 1)}
             onClick={() => goToPage(page + 1)}
           >
             Proxima
           </button>
         </div>
+
+        {!loading && !error && items.length === 0 && (
+          <div>
+            <h3>Nenhuma review registrada</h3>
+            <p className="section-sub">
+              Suas avaliacoes aparecerao aqui depois que voce iniciar uma leitura e registrar sua primeira percepcao.
+            </p>
+            <div className="card-actions">
+              <Link to="/books" className="btn-muted btn-link">
+                Ver livros
+              </Link>
+            </div>
+          </div>
+        )}
       </article>
     </section>
   );

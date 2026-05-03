@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@shared/api/http";
 import type { Badge, Book, Category, Collection, FavoriteAdmin, Metrics, Page, Tag } from "../types";
 
@@ -18,8 +18,20 @@ export function useAdminStaticData({ headers }: UseAdminStaticDataParams) {
   const [uploadBookId, setUploadBookId] = useState("");
   const [coverBookId, setCoverBookId] = useState("");
   const [coverBookUrl, setCoverBookUrl] = useState("");
+  const uploadBookIdRef = useRef("");
+  const coverBookIdRef = useRef("");
 
-  const loadStaticData = async () => {
+  const updateUploadBookId = useCallback((value: string) => {
+    uploadBookIdRef.current = value;
+    setUploadBookId(value);
+  }, []);
+
+  const updateCoverBookId = useCallback((value: string) => {
+    coverBookIdRef.current = value;
+    setCoverBookId(value);
+  }, []);
+
+  const loadStaticData = useCallback(async () => {
     if (!headers) return;
     const failedSections: string[] = [];
     const [m, c, t, b, col, bd, f] = await Promise.allSettled([
@@ -44,10 +56,14 @@ export function useAdminStaticData({ headers }: UseAdminStaticDataParams) {
     if (b.status === "fulfilled") {
       const nextBooks = b.value.data.content;
       setBooks(nextBooks);
-      if (!uploadBookId && nextBooks[0]) setUploadBookId(nextBooks[0].id);
-      if (!coverBookId && nextBooks[0]) {
-        setCoverBookId(nextBooks[0].id);
-        setCoverBookUrl(nextBooks[0].coverUrl ?? "");
+      if (nextBooks[0]) {
+        if (!uploadBookIdRef.current) {
+          updateUploadBookId(nextBooks[0].id);
+        }
+        if (!coverBookIdRef.current) {
+          updateCoverBookId(nextBooks[0].id);
+          setCoverBookUrl(nextBooks[0].coverUrl ?? "");
+        }
       }
     } else {
       failedSections.push("livros");
@@ -63,12 +79,11 @@ export function useAdminStaticData({ headers }: UseAdminStaticDataParams) {
     else failedSections.push("favoritos");
 
     setError(failedSections.length ? `Falha ao carregar: ${failedSections.join(", ")}.` : "");
-  };
+  }, [headers, updateCoverBookId, updateUploadBookId]);
 
   useEffect(() => {
-    void loadStaticData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [headers?.Authorization]);
+    void Promise.resolve().then(loadStaticData);
+  }, [loadStaticData]);
 
   return {
     metrics,
@@ -80,9 +95,9 @@ export function useAdminStaticData({ headers }: UseAdminStaticDataParams) {
     favorites,
     error,
     uploadBookId,
-    setUploadBookId,
+    setUploadBookId: updateUploadBookId,
     coverBookId,
-    setCoverBookId,
+    setCoverBookId: updateCoverBookId,
     coverBookUrl,
     setCoverBookUrl,
     reload: loadStaticData,

@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useState } from "react";
 import { api } from "@shared/api/http";
 import { buildQuery, toPageTotals } from "../lib/page";
 import type { Page, UserAdmin } from "../types";
@@ -19,7 +19,7 @@ export function useAdminUsers({ headers }: UseAdminUsersParams) {
 
   const deferredSearch = useDeferredValue(search);
 
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     if (!headers) return;
     setLoading(true);
     try {
@@ -39,12 +39,11 @@ export function useAdminUsers({ headers }: UseAdminUsersParams) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeFilter, deferredSearch, headers, page, roleFilter]);
 
   useEffect(() => {
-    void loadUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [headers?.Authorization, page, deferredSearch, activeFilter, roleFilter]);
+    void Promise.resolve().then(loadUsers);
+  }, [loadUsers]);
 
   return {
     users,

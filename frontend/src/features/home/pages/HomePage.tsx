@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -87,16 +89,15 @@ const EMPTY_HOME: HomeResponse = {
 
 export function HomePage() {
   const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const [home, setHome] = useState<HomeResponse>(EMPTY_HOME);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!auth?.token) {
+    if (!headers) {
       return;
     }
-
-    const headers = { Authorization: `Bearer ${auth.token}` };
 
     const loadHome = async () => {
       setLoading(true);
@@ -104,16 +105,16 @@ export function HomePage() {
         const response = await api.get<HomeResponse>("/api/v1/home/resume", { headers });
         setHome(response.data);
         setError("");
-      } catch {
+      } catch (error) {
         setHome(EMPTY_HOME);
-        setError("Nao foi possivel carregar o painel inicial.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar o painel inicial."));
       } finally {
         setLoading(false);
       }
     };
 
     void loadHome();
-  }, [auth?.token]);
+  }, [headers]);
 
   const currentReading = home.readings[0];
   const progressPercent = Math.max(0, Math.min(100, Number(home.readingProgress.goal?.progressPercent ?? 0)));

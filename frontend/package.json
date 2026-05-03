@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=./test-results/vitest-junit.xml",
     "test:watch": "vitest",
     "test:e2e": "playwright test --config=playwright.config.ts"
   },

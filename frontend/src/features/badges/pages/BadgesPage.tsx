@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
+import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type Badge = {
   id: string;
@@ -109,9 +111,9 @@ export function BadgesPage() {
         ]);
 
         setError("");
-      } catch {
+      } catch (error) {
         if (!active) return;
-        setError("Nao foi possivel carregar badges.");
+        setError(extractApiErrorMessage(error, "Nao foi possivel carregar badges."));
       } finally {
         if (active) setLoading(false);
       }
@@ -142,8 +144,14 @@ export function BadgesPage() {
         <span className="kpi">{badges.length} na pagina</span>
       </div>
 
-      {loading && <p className="section-sub">Carregando badges...</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && (
+        <StateCard
+          title="Badges em carregamento"
+          message="Estamos atualizando suas conquistas e o progresso das proximas trilhas."
+          variant="loading"
+        />
+      )}
+      {!loading && error && <StateCard title="Falha ao carregar badges" message={error} variant="error" />}
 
       <article className="card">
         <div className="section-head">
@@ -182,14 +190,22 @@ export function BadgesPage() {
       </div>
 
       <div className="pagination-row">
-        <button className="btn-muted" disabled={page <= 0 || loading} onClick={() => goToPage(page - 1)}>
+        <button
+          type="button"
+          className="btn-muted"
+          aria-label="Ir para a pagina anterior de badges"
+          disabled={page <= 0 || loading}
+          onClick={() => goToPage(page - 1)}
+        >
           Anterior
         </button>
         <span className="section-sub">
           Pagina {page + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
+          type="button"
           className="btn-muted"
+          aria-label="Ir para a proxima pagina de badges"
           disabled={loading || page + 1 >= Math.max(totalPages, 1)}
           onClick={() => goToPage(page + 1)}
         >
@@ -197,7 +213,17 @@ export function BadgesPage() {
         </button>
       </div>
 
-      {!loading && badges.length === 0 && <p className="section-sub">Nenhum badge conquistado ainda.</p>}
+      {!loading && !error && badges.length === 0 && (
+        <StateCard
+          title="Nenhum badge conquistado ainda"
+          message="Continue lendo, salvando progresso e concluindo metas para liberar suas primeiras conquistas."
+          action={
+            <Link to="/books" className="btn-link">
+              Continuar lendo
+            </Link>
+          }
+        />
+      )}
     </section>
   );
 }

@@ -24,6 +24,12 @@ docker compose ps
 
 ## 3) Rodar testes automatizados
 
+Validar que o roteiro de pre-entrega ainda chama as etapas esperadas:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\test-pre-delivery-check.ps1
+```
+
 ```powershell
 ./gradlew.bat test integrationTest
 ```
