@@ -1010,7 +1010,7 @@ Assets padrao/base do projeto.
 - `CHECKLIST_OPERACIONAL.md`: checklist final de validacao
 - `DOCUMENTACAO_FINAL.md`: consolidado final do projeto
 - `RECUPERACAO_SENHA_EMAIL.md`: fluxo de recuperacao de senha
-- `ROUTE_COVERAGE_REPORT.md`: cobertura de rotas
+- `generated/ROUTE_COVERAGE_REPORT.md`: cobertura de rotas gerada pelo checklist
 - `MATRIZ_RASTREABILIDADE.md`: liga requisitos, telas e endpoints
 - `UAT_CHECKLIST.md`: checklist de validacao de uso
 - `EVIDENCIAS_FRONT.md`: evidencias de execucao do frontend

@@ -1,6 +1,6 @@
 # Checklist UAT - Library API
 
-Data base de execucao: 28/04/2026
+Data base de execucao: 02/05/2026
 
 ## Escopo
 
@@ -38,10 +38,10 @@ Este checklist cobre validacao funcional (RF) e nao funcional (RNF) do projeto.
 
 - Backend `.\gradlew.bat test --no-daemon`: PASS
 - Backend `.\gradlew.bat integrationTest --no-daemon`: PASS
-- Frontend `npm run test`: 32 passed
+- Frontend `npm run test`: 46 passed
 - Frontend `npm run build`: PASS
-- Frontend `npm run test:e2e`: 13 passed
-- Checklist de rotas: 56 PASS / 0 FAIL
+- Frontend `npm run test:e2e`: 13 passed na ultima execucao completa
+- Checklist de rotas: 56 PASS / 0 FAIL em 02/05/2026
 
 ## Criterio de aceite
 

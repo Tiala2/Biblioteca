@@ -1,6 +1,6 @@
 # Checklist Operacional
 
-Data de referencia: 2026-04-28
+Data de referencia: 2026-05-02
 
 ## 1) Subir ambiente
 

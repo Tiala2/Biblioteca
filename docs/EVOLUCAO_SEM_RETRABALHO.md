@@ -30,7 +30,7 @@ Padroes esperados:
 Depois de criar ou alterar rota, atualize:
 
 - `docs/FRONT_ROUTES_MAP.md`
-- `docs/ROUTE_COVERAGE_REPORT.md`, se a cobertura mudar
+- `docs/generated/ROUTE_COVERAGE_REPORT.md`, se a cobertura mudar
 - testes unitarios da pagina e do roteamento quando houver protecao de acesso
 
 ## Novos endpoints no backend

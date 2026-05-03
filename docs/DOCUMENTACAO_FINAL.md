@@ -1,6 +1,6 @@
 # Documentacao Final - Library API
 
-Data de referencia: 2026-04-28
+Data de referencia: 2026-05-02
 
 ## 1. Escopo do projeto
 
@@ -76,10 +76,10 @@ Resultados mais recentes:
 - Backend `./gradlew.bat test --no-daemon`: **BUILD SUCCESSFUL**
 - Backend `./gradlew.bat integrationTest --no-daemon`: **BUILD SUCCESSFUL**
 - Frontend `npm run build`: **PASS**
-- Frontend `npm run test`: **32 passed**
-- Frontend `npm run test:e2e`: **13 passed**
+- Frontend `npm run test`: **46 passed**
+- Frontend `npm run test:e2e`: **13 passed** na ultima execucao completa
 - Smoke API (`scripts/e2e-smoke.ps1`): **PASS**
-- Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0**
+- Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0** em 2026-05-02
 
 Cobertura de integracao inclui:
 
