@@ -1,3 +1,21 @@
+import {
+  BarChart3,
+  Bell,
+  BookOpen,
+  Bookmark,
+  Gauge,
+  Home,
+  LibraryBig,
+  LogOut,
+  Medal,
+  MoonStar,
+  PenLine,
+  Settings2,
+  Sparkles,
+  Target,
+  User,
+  Users,
+} from "lucide-react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useTheme } from "@shared/ui/theme/ThemeContext";
@@ -26,27 +44,35 @@ export function AppLayout() {
 
         <nav className="sidebar-nav" aria-label="Navegacao usuario">
           <NavLink to="/" end className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <Home aria-hidden="true" />
             Inicio
           </NavLink>
           <NavLink to="/profile" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <User aria-hidden="true" />
             Perfil
           </NavLink>
           <NavLink to="/books" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <BookOpen aria-hidden="true" />
             Livros
           </NavLink>
           <NavLink to="/favorites" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <Bookmark aria-hidden="true" />
             Favoritos
           </NavLink>
           <NavLink to="/reviews" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <PenLine aria-hidden="true" />
             Reviews
           </NavLink>
           <NavLink to="/goals" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <Target aria-hidden="true" />
             Metas
           </NavLink>
           <NavLink to="/badges" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <Medal aria-hidden="true" />
             Badges
           </NavLink>
           <NavLink to="/leaderboard" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
+            <BarChart3 aria-hidden="true" />
             Ranking
           </NavLink>
         </nav>
@@ -55,18 +81,23 @@ export function AppLayout() {
           <div className="admin-zone">
             <p className="eyebrow">Area Admin</p>
             <NavLink to="/admin" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              <Gauge aria-hidden="true" />
               Painel Admin
             </NavLink>
             <NavLink to="/admin/catalog" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              <LibraryBig aria-hidden="true" />
               Catalogo
             </NavLink>
             <NavLink to="/admin/engagement" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              <Sparkles aria-hidden="true" />
               Engajamento
             </NavLink>
             <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              <Users aria-hidden="true" />
               Usuarios
             </NavLink>
             <NavLink to="/admin/alerts" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
+              <Bell aria-hidden="true" />
               Alertas
             </NavLink>
             <p className="role-pill admin-pill">Admin</p>
@@ -75,9 +106,10 @@ export function AppLayout() {
 
         <div className="sidebar-user">
           <p className="user-name">{auth?.name}</p>
-            <button type="button" onClick={onLogout} aria-label="Encerrar sessao">
-              Sair
-            </button>
+          <button type="button" onClick={onLogout} aria-label="Encerrar sessao">
+            <LogOut aria-hidden="true" />
+            Sair
+          </button>
         </div>
       </aside>
 
@@ -97,6 +129,7 @@ export function AppLayout() {
               onClick={cycleMode}
               aria-label={`Alternar tema. Modo atual: ${mode}`}
             >
+              {mode === "auto" ? <Settings2 aria-hidden="true" /> : <MoonStar aria-hidden="true" />}
               {mode === "auto" ? "Auto" : mode === "night" ? "Noite" : "Dia"}
             </button>
           </div>
