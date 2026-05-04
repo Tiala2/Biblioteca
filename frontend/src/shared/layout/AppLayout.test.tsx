@@ -50,15 +50,15 @@ describe("AppLayout", () => {
     };
   });
 
-  it("nao exibe navegacao admin para usuario comum", () => {
+  it("não exibe navegação admin para usuário comum", () => {
     renderLayout();
 
     expect(screen.getByText("conteudo-inicio")).toBeInTheDocument();
     expect(screen.getByText("Usuario Teste")).toBeInTheDocument();
-    expect(screen.queryByText("Area Admin")).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Painel Admin" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Catalogo" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Área Admin")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Painel administrativo" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Catálogo" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Usuários" })).not.toBeInTheDocument();
   });
 
   it("exibe subrotas admin para usuario administrador", () => {
@@ -70,11 +70,11 @@ describe("AppLayout", () => {
     renderLayout("/admin");
 
     expect(screen.getByText("conteudo-admin")).toBeInTheDocument();
-    expect(screen.getByText("Area Admin")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Painel Admin" })).toHaveAttribute("href", "/admin");
-    expect(screen.getByRole("link", { name: "Catalogo" })).toHaveAttribute("href", "/admin/catalog");
+    expect(screen.getByText("Área Admin")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Painel administrativo" })).toHaveAttribute("href", "/admin");
+    expect(screen.getByRole("link", { name: "Catálogo" })).toHaveAttribute("href", "/admin/catalog");
     expect(screen.getByRole("link", { name: "Engajamento" })).toHaveAttribute("href", "/admin/engagement");
-    expect(screen.getByRole("link", { name: "Usuarios" })).toHaveAttribute("href", "/admin/users");
+    expect(screen.getByRole("link", { name: "Usuários" })).toHaveAttribute("href", "/admin/users");
     expect(screen.getByRole("link", { name: "Alertas" })).toHaveAttribute("href", "/admin/alerts");
   });
 
@@ -82,7 +82,7 @@ describe("AppLayout", () => {
     const user = userEvent.setup();
     renderLayout();
 
-    await user.click(screen.getByRole("button", { name: "Encerrar sessao" }));
+    await user.click(screen.getByRole("button", { name: "Encerrar sessão" }));
 
     expect(logoutMock).toHaveBeenCalledTimes(1);
     expect(screen.getByText("pagina-login")).toBeInTheDocument();

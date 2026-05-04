@@ -40,11 +40,12 @@ export function CategoryPanel({
     <article id="admin-categories" className="card admin-panel">
       <h3>{form.id ? "Editar categoria" : "Nova categoria"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <input value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
+        <input aria-label="Nome da categoria" value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
         <input
+          aria-label="Descrição da categoria"
           value={form.description}
           onChange={(event) => onFormChange((prev) => ({ ...prev, description: event.target.value }))}
-          placeholder="Descricao"
+          placeholder="Descrição"
         />
         <button type="submit" disabled={busyKey === "category-create" || busyKey === `category-save-${form.id}`}>
           {form.id ? "Salvar categoria" : "Criar categoria"}
@@ -59,13 +60,13 @@ export function CategoryPanel({
         <h4>Lista de categorias</h4>
         <span className="kpi">{filteredCategories.length}</span>
       </div>
-      <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar categorias" />
+      <input aria-label="Filtrar categorias" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar categorias" />
       <ul className="stacked-list">
         {visibleCategories.map((category) => (
           <li key={category.id} className="stacked-list-item">
             <div>
               <strong>{category.name}</strong>
-              <p className="section-sub">{category.description || "Sem descricao"}</p>
+              <p className="section-sub">{category.description || "Sem descrição"}</p>
             </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(category)}>
@@ -84,9 +85,9 @@ export function CategoryPanel({
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Pagina {page + 1} de {totalPages}</span>
+          <span className="section-sub">Página {page + 1} de {totalPages}</span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
-            Proxima
+            Próxima
           </button>
         </div>
       )}

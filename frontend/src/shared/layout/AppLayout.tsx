@@ -33,19 +33,19 @@ export function AppLayout() {
   return (
     <div className="app-shell narrative-shell">
       <a className="skip-link" href="#main-content">
-        Ir para o conteudo principal
+        Ir para o conteúdo principal
       </a>
       <aside className="sidebar card">
         <div className="brand-block">
           <p className="eyebrow">Library Journey</p>
-          <h1>Library</h1>
-          <p className="subtitle">Experiencia narrativa inteligente</p>
+          <h1>Biblioteca</h1>
+          <p className="subtitle">Experiência narrativa inteligente</p>
         </div>
 
-        <nav className="sidebar-nav" aria-label="Navegacao usuario">
+        <nav className="sidebar-nav" aria-label="Navegação do usuário">
           <NavLink to="/" end className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             <Home aria-hidden="true" />
-            Inicio
+            Início
           </NavLink>
           <NavLink to="/profile" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             <User aria-hidden="true" />
@@ -61,7 +61,7 @@ export function AppLayout() {
           </NavLink>
           <NavLink to="/reviews" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             <PenLine aria-hidden="true" />
-            Reviews
+            Avaliações
           </NavLink>
           <NavLink to="/goals" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             <Target aria-hidden="true" />
@@ -69,7 +69,7 @@ export function AppLayout() {
           </NavLink>
           <NavLink to="/badges" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             <Medal aria-hidden="true" />
-            Badges
+            Conquistas
           </NavLink>
           <NavLink to="/leaderboard" className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}>
             <BarChart3 aria-hidden="true" />
@@ -79,14 +79,14 @@ export function AppLayout() {
 
         {auth?.roles.includes("ROLE_ADMIN") && (
           <div className="admin-zone">
-            <p className="eyebrow">Area Admin</p>
+            <p className="eyebrow">Área Admin</p>
             <NavLink to="/admin" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
               <Gauge aria-hidden="true" />
-              Painel Admin
+              Painel administrativo
             </NavLink>
             <NavLink to="/admin/catalog" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
               <LibraryBig aria-hidden="true" />
-              Catalogo
+              Catálogo
             </NavLink>
             <NavLink to="/admin/engagement" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
               <Sparkles aria-hidden="true" />
@@ -94,19 +94,19 @@ export function AppLayout() {
             </NavLink>
             <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
               <Users aria-hidden="true" />
-              Usuarios
+              Usuários
             </NavLink>
             <NavLink to="/admin/alerts" className={({ isActive }) => (isActive ? "nav-link admin-link active" : "nav-link admin-link")}>
               <Bell aria-hidden="true" />
               Alertas
             </NavLink>
-            <p className="role-pill admin-pill">Admin</p>
+            <p className="role-pill admin-pill">Administrador</p>
           </div>
         )}
 
         <div className="sidebar-user">
           <p className="user-name">{auth?.name}</p>
-          <button type="button" onClick={onLogout} aria-label="Encerrar sessao">
+          <button type="button" onClick={onLogout} aria-label="Encerrar sessão">
             <LogOut aria-hidden="true" />
             Sair
           </button>
@@ -116,7 +116,7 @@ export function AppLayout() {
       <section className="main-column">
         <header className="topbar card">
           <div className="brand-block">
-            <h2>Biblioteca Digital com Experiencia Narrativa Inteligente</h2>
+            <h2>Biblioteca Digital com Experiência Narrativa Inteligente</h2>
             <p className="subtitle">Leitura com estado da trama, metas e conquistas.</p>
           </div>
           <div className="user-box">

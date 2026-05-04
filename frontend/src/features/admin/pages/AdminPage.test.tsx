@@ -177,11 +177,11 @@ describe("AdminPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Painel admin" })).toBeInTheDocument();
 
-    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestao de usuarios" }).length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0));
 
     expect(screen.getByRole("heading", { name: "Acervo e descoberta" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Gamificacao e comunidade" })).toBeInTheDocument();
-    expect(screen.getAllByRole("heading", { name: "Gestao de usuarios" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
     expect(screen.getAllByText("Spring em pratica").length).toBeGreaterThan(0);
@@ -207,8 +207,8 @@ describe("AdminPage", () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestao de usuarios" }).length).toBeGreaterThan(0));
-    fireEvent.change(screen.getByPlaceholderText("Buscar usuarios por nome ou email"), { target: { value: "joao" } });
+    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0));
+    fireEvent.change(screen.getByPlaceholderText("Buscar usuários por nome ou email"), { target: { value: "joao" } });
 
     await waitFor(() =>
       expect(vi.mocked(api.get)).toHaveBeenLastCalledWith(
@@ -254,10 +254,10 @@ describe("AdminPage", () => {
     await screen.findByText("Admin Teste");
     await user.click(screen.getByRole("button", { name: "Editar" }));
 
-    const nameInput = screen.getByPlaceholderText("Nome do usuario");
+    const nameInput = screen.getByPlaceholderText("Nome do usuário");
     await user.clear(nameInput);
     await user.type(nameInput, "Admin Ajustado");
-    await user.click(screen.getByRole("button", { name: "Salvar usuario" }));
+    await user.click(screen.getByRole("button", { name: "Salvar usuário" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.put)).toHaveBeenCalledWith(
@@ -274,6 +274,6 @@ describe("AdminPage", () => {
     );
 
     await waitFor(() => expect(screen.getByText("Admin Ajustado")).toBeInTheDocument());
-    expect(showToast).toHaveBeenCalledWith("Usuario atualizado com sucesso.", "success");
+    expect(showToast).toHaveBeenCalledWith("Usuário atualizado com sucesso.", "success");
   });
 });

@@ -21,7 +21,7 @@ describe("BadgesPage", () => {
     vi.mocked(api.get).mockReset();
   });
 
-  it("deve carregar badges e progresso das proximas conquistas", async () => {
+  it("deve carregar conquistas e progresso das próximas conquistas", async () => {
     vi.mocked(api.get)
       .mockResolvedValueOnce({
         data: {

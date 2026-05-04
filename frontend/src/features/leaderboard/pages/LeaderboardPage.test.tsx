@@ -22,7 +22,7 @@ vi.mock("@shared/api/http", () => {
 import { api } from "@shared/api/http";
 
 describe("LeaderboardPage", () => {
-  it("deve carregar ranking semanal por paginas", async () => {
+  it("deve carregar ranking semanal por páginas", async () => {
     vi.mocked(api.get)
       .mockResolvedValueOnce({
         data: [
@@ -44,7 +44,7 @@ describe("LeaderboardPage", () => {
 
     expect(await screen.findAllByRole("heading", { name: "Ana" })).not.toHaveLength(0);
     expect(screen.getAllByRole("heading", { name: "Bruno" })).not.toHaveLength(0);
-    expect(screen.getAllByText("120 pagina(s)")).not.toHaveLength(0);
+    expect(screen.getAllByText("120 página(s)")).not.toHaveLength(0);
     expect(screen.getByText("Opt-in ativo")).toBeInTheDocument();
   });
 
@@ -73,7 +73,7 @@ describe("LeaderboardPage", () => {
     );
 
     expect(await screen.findAllByRole("heading", { name: "Ana" })).not.toHaveLength(0);
-    await user.click(screen.getByRole("tab", { name: "Livros concluidos" }));
+    await user.click(screen.getByRole("tab", { name: "Livros concluídos" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.get)).toHaveBeenCalledWith("/api/v1/users/leaderboard?limit=10&metric=BOOKS")

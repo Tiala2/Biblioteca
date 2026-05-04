@@ -111,7 +111,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
       <nav className="admin-quick-nav" aria-label="Atalhos do painel administrativo">
         <NavLink to="/admin/catalog" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <LibraryBig aria-hidden="true" />
-          Catalogo
+          Catálogo
         </NavLink>
         <NavLink to="/admin/engagement" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <Sparkles aria-hidden="true" />
@@ -119,7 +119,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         </NavLink>
         <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <UsersRound aria-hidden="true" />
-          Usuarios
+          Usuários
         </NavLink>
         <NavLink to="/admin/alerts" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <Bell aria-hidden="true" />
@@ -127,7 +127,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         </NavLink>
         <NavLink to="/admin" end className={({ isActive }) => (isActive ? "active" : undefined)}>
           <Gauge aria-hidden="true" />
-          Visao geral
+          Visão geral
         </NavLink>
       </nav>
 
@@ -181,7 +181,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onEditCollection={actions.fillCollectionFormFromCollection}
         onResetCollection={() => setCollectionForm(EMPTY_COLLECTION)}
         onDeleteCollection={(collectionId) =>
-          void actions.removeItem(`collection-delete-${collectionId}`, `/api/admin/collections/${collectionId}`, "Colecao removida com sucesso.", "Falha ao deletar colecao.")
+          void actions.removeItem(`collection-delete-${collectionId}`, `/api/admin/collections/${collectionId}`, "Coleção removida com sucesso.", "Falha ao deletar coleção.")
         }
       />
       )}
@@ -196,7 +196,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onFormChange={setBadgeForm}
         onEdit={actions.fillBadgeFormFromBadge}
         onReset={() => setBadgeForm(EMPTY_BADGE)}
-        onDelete={(badgeId) => void actions.removeItem(`badge-delete-${badgeId}`, `/api/admin/badges/${badgeId}`, "Badge removido com sucesso.", "Falha ao deletar badge.")}
+        onDelete={(badgeId) => void actions.removeItem(`badge-delete-${badgeId}`, `/api/admin/badges/${badgeId}`, "Conquista removida com sucesso.", "Falha ao deletar conquista.")}
       />
       )}
 
@@ -218,7 +218,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
           onEdit={actions.fillUserFormFromUser}
           onReset={() => setUserForm(EMPTY_USER)}
           onInvalidate={(userId) =>
-            void actions.removeItem(`user-invalidate-${userId}`, `/api/admin/users/${userId}`, "Usuario invalidado com sucesso.", "Falha ao invalidar usuario.", userAdmin.reload)
+            void actions.removeItem(`user-invalidate-${userId}`, `/api/admin/users/${userId}`, "Usuário invalidado com sucesso.", "Falha ao invalidar usuário.", userAdmin.reload)
           }
           onReactivate={(userId) => void actions.reactivateUser(userId)}
           onSearchChange={userAdmin.setSearch}

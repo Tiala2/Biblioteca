@@ -21,11 +21,11 @@ function getRegisterErrorMessage(error: unknown): string {
     return "Falha ao cadastrar. Tente novamente.";
   }
   if (error.response?.status === 409) {
-    return "Este email ja esta cadastrado.";
+    return "Este email já está cadastrado.";
   }
   const fieldErrors = extractFieldErrorMessages(error);
   if (fieldErrors.length > 0) {
-    return `Dados invalidos: ${fieldErrors.join(" | ")}`;
+    return `Dados inválidos: ${fieldErrors.join(" | ")}`;
   }
   return extractApiErrorMessage(error, "Falha ao cadastrar. Verifique os dados informados.");
 }
@@ -43,7 +43,7 @@ export function RegisterPage() {
     setLoading(true);
     try {
       await api.post("/api/v1/users", form);
-      showToast("Conta criada com sucesso. Faca login para continuar.", "success");
+      showToast("Conta criada com sucesso. Faça login para continuar.", "success");
       navigate("/login");
     } catch (err: unknown) {
       const message = getRegisterErrorMessage(err);
@@ -63,8 +63,8 @@ export function RegisterPage() {
             <BookOpen size={28} strokeWidth={2.2} />
             <span>Library</span>
           </div>
-          <h2 className="login-title">Criar Conta</h2>
-          <p className="login-subtitle">Biblioteca Publica Digital</p>
+          <h2 className="login-title">Criar conta</h2>
+          <p className="login-subtitle">Biblioteca Pública Digital</p>
 
           <label htmlFor="register-name">Nome</label>
           <div className="login-input-wrap ds-input-wrap">
@@ -101,7 +101,7 @@ export function RegisterPage() {
               id="register-password"
               className="login-input ds-input"
               type="password"
-              placeholder="Minimo 6 caracteres"
+              placeholder="Mínimo de 6 caracteres"
               value={form.password}
               onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
               required
@@ -116,7 +116,7 @@ export function RegisterPage() {
           </button>
 
           <p className="login-footnote">
-            Ja tem conta? <Link className="login-link login-link-cta" to="/login">Entrar</Link>
+            Já tem conta? <Link className="login-link login-link-cta" to="/login">Entrar</Link>
           </p>
         </form>
       </section>

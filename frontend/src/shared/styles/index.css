@@ -5,6 +5,17 @@
   --font-display: "Space Grotesk", "Manrope", sans-serif;
   --radius: 8px;
   --radius-lg: 8px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.35rem;
+  --space-6: 2rem;
+  --z-base: 1;
+  --z-sticky: 20;
+  --z-banner: 3200;
+  --z-toast: 3000;
+  --z-skip-link: 5000;
 
   --bg-main: #f6f7f4;
   --bg-grad-a: #edf2e6;
@@ -131,7 +142,7 @@ p {
   position: absolute;
   left: -9999px;
   top: 0.5rem;
-  z-index: 5000;
+  z-index: var(--z-skip-link);
   background: var(--card-bg);
   color: var(--text-main);
   border: 2px solid var(--primary-b);
@@ -488,7 +499,7 @@ label {
 .admin-quick-nav {
   position: sticky;
   top: 0.75rem;
-  z-index: 20;
+  z-index: var(--z-sticky);
   display: flex;
   gap: 0.55rem;
   flex-wrap: wrap;
@@ -1459,7 +1470,7 @@ body[data-theme="day"] .login-form {
   position: fixed;
   right: 1rem;
   bottom: 1rem;
-  z-index: 3000;
+  z-index: var(--z-toast);
   display: grid;
   gap: 0.55rem;
   width: min(360px, calc(100vw - 2rem));
@@ -1496,7 +1507,7 @@ body[data-theme="day"] .login-form {
   position: fixed;
   top: 0.75rem;
   left: 50%;
-  z-index: 3200;
+  z-index: var(--z-banner);
   width: min(560px, calc(100vw - 1.5rem));
   transform: translateX(-50%);
   border: 1px solid #efb8b2;

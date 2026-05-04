@@ -192,8 +192,8 @@ export function useAdminActions({
     await runAction(
       badgeForm.id ? `badge-save-${badgeForm.id}` : "badge-create",
       () => (badgeForm.id ? api.put(`/api/admin/badges/${badgeForm.id}`, badgeForm, { headers }) : api.post("/api/admin/badges", badgeForm, { headers })),
-      badgeForm.id ? "Badge atualizado com sucesso." : "Badge criado com sucesso.",
-      badgeForm.id ? "Falha ao atualizar badge." : "Falha ao criar badge."
+      badgeForm.id ? "Conquista atualizada com sucesso." : "Conquista criada com sucesso.",
+      badgeForm.id ? "Falha ao atualizar conquista." : "Falha ao criar conquista."
     );
     setBadgeForm(emptyBadge);
   };
@@ -215,7 +215,7 @@ export function useAdminActions({
           },
           { headers }
         ),
-      "Usuario atualizado com sucesso.",
+      "Usuário atualizado com sucesso.",
       "Falha ao atualizar usuario.",
       reloadUsers
     );
@@ -232,7 +232,7 @@ export function useAdminActions({
     await runAction(
       `user-reactivate-${userId}`,
       () => api.patch(`/api/admin/users/${userId}/reactivate`, undefined, { headers }),
-      "Usuario reativado com sucesso.",
+      "Usuário reativado com sucesso.",
       "Falha ao reativar usuario.",
       reloadUsers
     );

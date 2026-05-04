@@ -34,16 +34,16 @@ function parseLimit(value: string | null): number {
 function metricCopy(metric: LeaderboardMetric) {
   if (metric === "BOOKS") {
     return {
-      title: "Livros concluidos",
+      title: "Livros concluídos",
       subtitle: "Ranking semanal por livros finalizados com opt-in ativo.",
       valueLabel: "livro(s)",
     };
   }
 
   return {
-    title: "Paginas lidas",
-    subtitle: "Ranking semanal da comunidade por paginas lidas com opt-in ativo.",
-    valueLabel: "pagina(s)",
+      title: "Páginas lidas",
+      subtitle: "Ranking semanal da comunidade por páginas lidas com opt-in ativo.",
+      valueLabel: "página(s)",
   };
 }
 
@@ -73,7 +73,7 @@ export function LeaderboardPage() {
       } catch (error) {
         if (cancelled) return;
         setEntries([]);
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar o ranking."));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar o ranking."));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -108,8 +108,8 @@ export function LeaderboardPage() {
   if (loading) {
     return (
       <StateCard
-        title="Ranking em atualizacao"
-        message="Estamos montando a classificacao da comunidade com base nas leituras mais recentes."
+        title="Ranking em atualização"
+        message="Estamos montando a classificação da comunidade com base nas leituras mais recentes."
         variant="loading"
       />
     );
@@ -137,18 +137,18 @@ export function LeaderboardPage() {
         </div>
         <p className="section-sub">
           {leaderboardOptIn
-            ? "Seu progresso ja pode entrar no ranking semanal."
-            : "Ative a participacao no seu perfil para aparecer no ranking."}
+            ? "Seu progresso já pode entrar no ranking semanal."
+            : "Ative a participação no seu perfil para aparecer no ranking."}
         </p>
         <div className="card-actions">
           <Link to="/profile" className="btn-link">
-            Ajustar preferencias
+            Ajustar preferências
           </Link>
         </div>
       </article>
 
       <article className="card tabs-card aura-panel aura-panel--wide">
-        <div className="tabs-row" role="tablist" aria-label="Metricas do ranking">
+        <div className="tabs-row" role="tablist" aria-label="Métricas do ranking">
           <button
             type="button"
             role="tab"
@@ -156,7 +156,7 @@ export function LeaderboardPage() {
             className={metric === "PAGES" ? "tab active" : "tab"}
             onClick={() => changeMetric("PAGES")}
           >
-            Paginas lidas
+            Páginas lidas
           </button>
           <button
             type="button"
@@ -165,7 +165,7 @@ export function LeaderboardPage() {
             className={metric === "BOOKS" ? "tab active" : "tab"}
             onClick={() => changeMetric("BOOKS")}
           >
-            Livros concluidos
+            Livros concluídos
           </button>
         </div>
         <div className="card-actions">
@@ -187,8 +187,8 @@ export function LeaderboardPage() {
         <div className="stats-grid aura-stats">
           <div className="stat-box">
             <Crown aria-hidden="true" />
-            <strong>{topEntry ? topEntry.name : "Sem lider"}</strong>
-            <span>lider atual</span>
+            <strong>{topEntry ? topEntry.name : "Sem líder"}</strong>
+            <span>líder atual</span>
           </div>
           <div className="stat-box">
             <BarChart3 aria-hidden="true" />
@@ -198,7 +198,7 @@ export function LeaderboardPage() {
           <div className="stat-box">
             <UsersRound aria-hidden="true" />
             <strong>{formatInteger(entries.length)}</strong>
-            <span>participantes elegiveis</span>
+            <span>participantes elegíveis</span>
           </div>
           <div className="stat-box">
             <Medal aria-hidden="true" />
@@ -211,13 +211,13 @@ export function LeaderboardPage() {
       {!error && podium.length > 0 && (
         <article className="card aura-panel aura-panel--wide">
           <div className="section-head">
-            <h3><Trophy aria-hidden="true" /> Podio da semana</h3>
+            <h3><Trophy aria-hidden="true" /> Pódio da semana</h3>
             <span className="kpi">{copy.title}</span>
           </div>
           <div className="grid aura-podium-grid">
             {podium.map((entry, index) => (
               <article key={entry.userId} className="card aura-podium-card">
-                <p className="eyebrow">Posicao {index + 1}</p>
+                <p className="eyebrow">Posição {index + 1}</p>
                 <h3>{entry.name}</h3>
                 <p className="section-sub">{copy.title}</p>
                 <strong>
@@ -244,11 +244,11 @@ export function LeaderboardPage() {
 
       {!loading && !error && entries.length === 0 && (
         <StateCard
-          title="Nenhum participante elegivel nesta semana"
-          message="Ative seu opt-in no perfil e continue lendo para aparecer na proxima atualizacao do ranking."
+          title="Nenhum participante elegível nesta semana"
+          message="Ative seu opt-in no perfil e continue lendo para aparecer na próxima atualização do ranking."
           action={
             <Link to="/profile" className="btn-link">
-              Ajustar preferencias
+              Ajustar preferências
             </Link>
           }
         />

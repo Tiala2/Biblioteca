@@ -73,7 +73,7 @@ export function GoalsPage() {
       setStreak(streakRes.data?.streakDays ?? 0);
       setError("");
     } catch (error) {
-      setError(extractApiErrorMessage(error, "Nao foi possivel carregar metas e alertas."));
+      setError(extractApiErrorMessage(error, "Não foi possível carregar metas e alertas."));
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ export function GoalsPage() {
       setError("");
       showToast("Meta atualizada com sucesso.", "success");
     } catch (error) {
-      const message = extractApiErrorMessage(error, "Nao foi possivel salvar a meta.");
+      const message = extractApiErrorMessage(error, "Não foi possível salvar a meta.");
       setError(message);
       showToast(message, "error");
     }
@@ -145,7 +145,7 @@ export function GoalsPage() {
           <div>
             <p className="eyebrow aura-eyebrow">Ritual de leitura</p>
             <h2>Transforme leitura em constancia</h2>
-            <p>Defina uma meta que parece possivel hoje e acompanhe o ritmo sem pressao.</p>
+            <p>Defina uma meta que parece possível hoje e acompanhe o ritmo sem pressão.</p>
           </div>
           <div className="aura-hero__signal">
             <Flame aria-hidden="true" />
@@ -167,7 +167,7 @@ export function GoalsPage() {
             <option value="MONTHLY">Mensal</option>
           </select>
 
-          <label>Paginas alvo</label>
+          <label>Páginas alvo</label>
           <input
             type="number"
             min={1}
@@ -186,8 +186,8 @@ export function GoalsPage() {
         {goal ? (
           <>
             <p>Status: {goal.status}</p>
-            <p>Leitura acumulada: {goal.progressPages} paginas de {goal.targetPages} planejadas.</p>
-            <p>Restante: {goal.remainingPages} paginas</p>
+            <p>Leitura acumulada: {goal.progressPages} páginas de {goal.targetPages} planejadas.</p>
+            <p>Restante: {goal.remainingPages} páginas</p>
             <p>Expira em: {goal.expiresInDays} dia(s)</p>
             <p>Ritmo: {goal.paceWarning ? "Ajuste necessario" : "Bom ritmo"}</p>
             <div className="progress-track aura-progress" aria-hidden="true">
@@ -197,7 +197,7 @@ export function GoalsPage() {
         ) : (
           <>
             <p className="section-sub">
-              Voce ainda nao tem meta ativa para este periodo. Defina uma quantidade de paginas e salve para acompanhar
+              Você ainda não tem meta ativa para este período. Defina uma quantidade de páginas e salve para acompanhar
               ritmo, alertas e progresso.
             </p>
             <div className="card-actions">

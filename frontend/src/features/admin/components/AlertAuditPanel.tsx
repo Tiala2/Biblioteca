@@ -38,7 +38,7 @@ export function AlertAuditPanel({
       </div>
       <p className="section-sub">Acompanhe entregas de alertas por e-mail e o resultado de cada envio.</p>
       <div className="filters-grid admin-filters-grid">
-        <input value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="Buscar por email, tipo, canal ou mensagem" />
+        <input aria-label="Buscar alertas por email, tipo, canal ou mensagem" value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="Buscar por email, tipo, canal ou mensagem" />
         <label className="field-stack">
           <span>Status</span>
           <select value={statusFilter} onChange={(event) => onStatusFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["status"])}>
@@ -54,12 +54,12 @@ export function AlertAuditPanel({
             <option value="ALL">Todos</option>
             <option value="GOAL_EXPIRING">Meta expirando</option>
             <option value="PACE_WARNING">Ritmo em risco</option>
-            <option value="NO_STREAK">Sem sequencia</option>
+            <option value="NO_STREAK">Sem sequência</option>
           </select>
         </label>
         <div className="stat-box admin-list-stat">
           <strong>{loading ? "..." : deliveries.length}</strong>
-          <span>na pagina atual</span>
+          <span>na página atual</span>
         </div>
       </div>
       {loading && <p className="section-sub">Carregando alertas...</p>}
@@ -84,7 +84,7 @@ export function AlertAuditPanel({
           Anterior
         </button>
         <span className="section-sub">
-          Pagina {currentPage + 1} de {Math.max(totalPages, 1)}
+          Página {currentPage + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
           type="button"
@@ -92,7 +92,7 @@ export function AlertAuditPanel({
           disabled={loading || currentPage + 1 >= Math.max(totalPages, 1)}
           onClick={() => onPageChange(currentPage + 1)}
         >
-          Proxima
+          Próxima
         </button>
       </div>
     </article>

@@ -36,8 +36,8 @@ export function ExternalReaderPanel({
           <span className="external-source-pill">{sourceLabel}</span>
         </div>
         <p className="section-sub">
-          Este livro e acessado em fonte externa. Leia no provedor oficial e volte aqui para registrar a pagina atual,
-          mantendo metas, ranking, historico e favoritos no mesmo fluxo.
+          Este livro é acessado em fonte externa. Leia no provedor oficial e volte aqui para registrar a página atual,
+          mantendo metas, ranking, histórico e favoritos no mesmo fluxo.
         </p>
         <div className="external-reading-steps" aria-label="Como usar leitura externa">
           <div className="external-step">
@@ -50,7 +50,7 @@ export function ExternalReaderPanel({
           </div>
           <div className="external-step">
             <strong>3</strong>
-            <span>Volte e salve a pagina lida aqui.</span>
+            <span>Volte e salve a página lida aqui.</span>
           </div>
         </div>
         {externalReaderFallbackUrl ? (
@@ -59,7 +59,7 @@ export function ExternalReaderPanel({
               {externalSourceActionLabel}
             </a>
             <button type="button" className="btn-muted" onClick={onSyncReading} disabled={saving}>
-              {saving ? "Salvando..." : "Salvar pagina atual"}
+              {saving ? "Salvando..." : "Salvar página atual"}
             </button>
           </div>
         ) : null}
@@ -78,7 +78,7 @@ export function ExternalReaderPanel({
       ) : null}
       {!externalReaderLoading && !externalReaderEmbedUrl ? (
         <p className="section-sub">
-          Nao encontramos uma versao incorporavel deste livro. Use o link oficial para continuar a leitura fora da plataforma.
+          Não encontramos uma versão incorporável deste livro. Use o link oficial para continuar a leitura fora da plataforma.
         </p>
       ) : null}
       {externalReaderFallbackUrl ? (

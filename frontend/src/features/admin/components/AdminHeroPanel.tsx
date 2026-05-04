@@ -11,14 +11,14 @@ export function AdminHeroPanel({ metrics, error }: AdminHeroPanelProps) {
     <article id="admin-metrics" className="card hero aura-hero admin-hero">
       <div className="aura-hero__content">
         <div>
-          <p className="eyebrow aura-eyebrow">Central de operacao</p>
+          <p className="eyebrow aura-eyebrow">Central de operação</p>
           <h2>Painel admin</h2>
-          <p>Controle acervo, engajamento, usuarios e auditoria com visao rapida do estado da plataforma.</p>
+          <p>Controle acervo, engajamento, usuários e auditoria com visão rápida do estado da plataforma.</p>
         </div>
         <div className="aura-hero__signal">
           <LibraryBig aria-hidden="true" />
           <strong>Admin</strong>
-          <span>operacao</span>
+          <span>operação</span>
         </div>
       </div>
       {metrics ? (
@@ -26,7 +26,7 @@ export function AdminHeroPanel({ metrics, error }: AdminHeroPanelProps) {
           <div className="stat-box">
             <UsersRound aria-hidden="true" />
             <strong>{metrics.totalUsers}</strong>
-            <span>usuarios</span>
+            <span>usuários</span>
           </div>
           <div className="stat-box">
             <BookOpen aria-hidden="true" />
@@ -36,7 +36,7 @@ export function AdminHeroPanel({ metrics, error }: AdminHeroPanelProps) {
           <div className="stat-box">
             <MessageSquareText aria-hidden="true" />
             <strong>{metrics.totalReviews}</strong>
-            <span>reviews</span>
+            <span>avaliações</span>
           </div>
           <div className="stat-box">
             <Heart aria-hidden="true" />
@@ -46,7 +46,7 @@ export function AdminHeroPanel({ metrics, error }: AdminHeroPanelProps) {
           <div className="stat-box">
             <LibraryBig aria-hidden="true" />
             <strong>{metrics.totalCollections}</strong>
-            <span>colecoes</span>
+            <span>coleções</span>
           </div>
           <div className="stat-box">
             <Tags aria-hidden="true" />

@@ -76,7 +76,7 @@ export function BadgesPage() {
         setProgressCards([
           {
             code: "FIRST_BOOK_FINISHED",
-            name: "Primeiro livro concluido",
+            name: "Primeiro livro concluído",
             current: Math.min(stats.userSummary.totalFinished, 1),
             target: 1,
             unit: "livro",
@@ -104,17 +104,17 @@ export function BadgesPage() {
           },
           {
             code: "TOTAL_PAGES_1000",
-            name: "Mil paginas lidas",
+            name: "Mil páginas lidas",
             current: Math.min(stats.userSummary.totalPagesRead, 1000),
             target: 1000,
-            unit: "paginas",
+            unit: "páginas",
           },
         ]);
 
         setError("");
       } catch (error) {
         if (!active) return;
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar badges."));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar conquistas."));
       } finally {
         if (active) setLoading(false);
       }
@@ -139,29 +139,29 @@ export function BadgesPage() {
     <section className="aura-page">
       <div className="card hero aura-hero aura-hero--badges">
         <div>
-          <p className="eyebrow aura-eyebrow">Colecao de momentos</p>
+          <p className="eyebrow aura-eyebrow">Coleção de momentos</p>
           <h2>Conquistas da sua jornada</h2>
-          <p>Cada badge marca um habito que ganhou forma. Continue lendo para desbloquear novos sinais da sua evolucao.</p>
+          <p>Cada conquista marca um hábito que ganhou forma. Continue lendo para desbloquear novos sinais da sua evolução.</p>
         </div>
         <div className="aura-hero__signal">
           <Trophy aria-hidden="true" />
           <strong>{badges.length}</strong>
-          <span>na pagina</span>
+          <span>na página</span>
         </div>
       </div>
 
       {loading && (
         <StateCard
-          title="Badges em carregamento"
-          message="Estamos atualizando suas conquistas e o progresso das proximas trilhas."
+          title="Conquistas em carregamento"
+          message="Estamos atualizando suas conquistas e o progresso das próximas trilhas."
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Falha ao carregar badges" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Falha ao carregar conquistas" message={error} variant="error" />}
 
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3><Sparkles aria-hidden="true" /> Progresso das proximas conquistas</h3>
+          <h3><Sparkles aria-hidden="true" /> Progresso das próximas conquistas</h3>
           <span className="kpi">{progressCards.length} trilha(s)</span>
         </div>
         <div className="grid">
@@ -176,7 +176,7 @@ export function BadgesPage() {
                 <div className="progress-track aura-progress" aria-hidden="true">
                   <div className="progress-fill" style={{ width: `${percent}%` }} />
                 </div>
-                <small>{percent}% concluido</small>
+                <small>{percent}% concluído</small>
               </article>
             );
           })}
@@ -189,7 +189,7 @@ export function BadgesPage() {
             <Medal aria-hidden="true" />
             <h3>{badge.name}</h3>
             <p>{badge.description}</p>
-            <small>Codigo: {badge.code}</small>
+            <small>Código: {badge.code}</small>
             <br />
             <small>Conquistado em: {new Date(badge.awardedAt).toLocaleString()}</small>
           </article>
@@ -200,29 +200,29 @@ export function BadgesPage() {
         <button
           type="button"
           className="btn-muted"
-          aria-label="Ir para a pagina anterior de badges"
+          aria-label="Ir para a página anterior de conquistas"
           disabled={page <= 0 || loading}
           onClick={() => goToPage(page - 1)}
         >
           Anterior
         </button>
         <span className="section-sub">
-          Pagina {page + 1} de {Math.max(totalPages, 1)}
+          Página {page + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
           type="button"
           className="btn-muted"
-          aria-label="Ir para a proxima pagina de badges"
+          aria-label="Ir para a próxima página de conquistas"
           disabled={loading || page + 1 >= Math.max(totalPages, 1)}
           onClick={() => goToPage(page + 1)}
         >
-          Proxima
+          Próxima
         </button>
       </div>
 
       {!loading && !error && badges.length === 0 && (
         <StateCard
-          title="Nenhum badge conquistado ainda"
+          title="Nenhuma conquista desbloqueada ainda"
           message="Continue lendo, salvando progresso e concluindo metas para liberar suas primeiras conquistas."
           action={
             <Link to="/books" className="btn-link">

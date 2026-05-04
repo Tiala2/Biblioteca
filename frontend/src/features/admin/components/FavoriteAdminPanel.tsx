@@ -42,7 +42,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
           <li key={`${favorite.bookId}-${favorite.createdAt ?? "sem-data"}`} className="stacked-list-item">
             <div>
               <strong>{favorite.bookTitle}</strong>
-              <p className="section-sub">{favorite.bookIsbn || "ISBN nao informado"}</p>
+              <p className="section-sub">{favorite.bookIsbn || "ISBN não informado"}</p>
               <p className="section-sub">Origem {favorite.source ?? "desconhecida"} | Favoritado em {formatDateTimeBr(favorite.createdAt)}</p>
             </div>
             <span className="import-badge">{favorite.source ?? "LOCAL"}</span>
@@ -55,9 +55,9 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Pagina {page + 1} de {totalPages}</span>
+          <span className="section-sub">Página {page + 1} de {totalPages}</span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
-            Proxima
+            Próxima
           </button>
         </div>
       )}

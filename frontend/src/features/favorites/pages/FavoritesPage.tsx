@@ -34,7 +34,7 @@ export function FavoritesPage() {
       setError("");
     } catch (error) {
       setFavorites([]);
-      setError(extractApiErrorMessage(error, "Nao foi possivel carregar favoritos."));
+      setError(extractApiErrorMessage(error, "Não foi possível carregar favoritos."));
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export function FavoritesPage() {
         <div>
           <p className="eyebrow aura-eyebrow">Estante afetiva</p>
           <h2>Seus capitulos preferidos continuam aqui</h2>
-          <p>Retome os livros que marcaram sua jornada e mantenha perto o que ainda merece outra pagina.</p>
+          <p>Retome os livros que marcaram sua jornada e mantenha perto o que ainda merece outra página.</p>
         </div>
         <div className="aura-hero__signal">
           <Heart aria-hidden="true" />
@@ -76,7 +76,7 @@ export function FavoritesPage() {
       {loading && (
         <StateCard
           title="Favoritos em carregamento"
-          message="Estamos buscando sua biblioteca pessoal para voce retomar a leitura."
+          message="Estamos buscando sua biblioteca pessoal para você retomar a leitura."
           variant="loading"
         />
       )}
@@ -130,10 +130,10 @@ export function FavoritesPage() {
       {!loading && !error && favorites.length === 0 && (
         <StateCard
           title="Nenhum favorito salvo"
-          message="Explore o catalogo e marque os livros que voce quer retomar com rapidez."
+          message="Explore o catálogo e marque os livros que você quer retomar com rapidez."
           action={
             <Link to="/books" className="btn-link">
-              Explorar catalogo
+              Explorar catálogo
             </Link>
           }
         />

@@ -47,7 +47,7 @@ export function ReadingExperiencePage() {
 
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
   const isExternalReading = Boolean(book && !book.hasPdf);
-  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "PDF local" : "Catalogo";
+  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "PDF local" : "Catálogo";
   const derivedProgress = Math.round((currentPage / totalPages) * 100);
   const progressPercent = Math.max(0, Math.min(100, readingSnapshot?.progress ?? derivedProgress));
   const pagesRemaining = Math.max(totalPages - currentPage, 0);
@@ -88,7 +88,7 @@ export function ReadingExperiencePage() {
         if (!isActive) return;
         setBook(null);
         setReadingSnapshot(null);
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar os detalhes da leitura."));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar os detalhes da leitura."));
       } finally {
         if (isActive) setLoading(false);
       }
@@ -131,7 +131,7 @@ export function ReadingExperiencePage() {
         setError("");
       })
       .catch((error) =>
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar o estado narrativo para essa pagina."))
+        setError(extractApiErrorMessage(error, "Não foi possível carregar o estado narrativo para essa página."))
       );
   }, [bookId, headers, currentPage, book]);
 
@@ -247,7 +247,7 @@ export function ReadingExperiencePage() {
       setError("");
       showToast("Progresso de leitura salvo.", "success");
     } catch (error) {
-      const message = extractApiErrorMessage(error, "Nao foi possivel salvar o progresso.");
+      const message = extractApiErrorMessage(error, "Não foi possível salvar o progresso.");
       setError(message);
       showToast(message, "error");
     } finally {
@@ -270,7 +270,7 @@ export function ReadingExperiencePage() {
         showToast("Livro adicionado aos favoritos.", "success");
       }
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Nao foi possivel atualizar favorito."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
     } finally {
       setFavoriteLoading(false);
     }
@@ -288,12 +288,12 @@ export function ReadingExperiencePage() {
   if (!bookId) {
     return (
       <StateCard
-        title="Livro nao informado"
+        title="Livro não informado"
         message="Selecione um livro valido para abrir a experiencia de leitura."
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Voltar ao catalogo
+            Voltar ao catálogo
           </Link>
         }
       />
@@ -314,11 +314,11 @@ export function ReadingExperiencePage() {
     return (
       <StateCard
         title="Leitura indisponivel"
-        message={error || "Nao foi possivel carregar os detalhes da leitura."}
+        message={error || "Não foi possível carregar os detalhes da leitura."}
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Voltar ao catalogo
+            Voltar ao catálogo
           </Link>
         }
       />
@@ -330,16 +330,16 @@ export function ReadingExperiencePage() {
       <article className="card hero aura-hero aura-reading-intro">
         <div className="aura-hero__content">
           <div>
-            <p className="eyebrow aura-eyebrow">Modo imersao</p>
+            <p className="eyebrow aura-eyebrow">Modo imersão</p>
             <h2>Sua leitura, no seu ritmo</h2>
             <p>
-              Ajuste a pagina, acompanhe a fase narrativa e transforme cada sessao em progresso real.
+              Ajuste a página, acompanhe a fase narrativa e transforme cada sessão em progresso real.
             </p>
           </div>
           <div className="aura-hero__signal">
             <BookOpenCheck aria-hidden="true" />
             <strong>{progressPercent}%</strong>
-            <span>concluido</span>
+            <span>concluído</span>
           </div>
         </div>
       </article>

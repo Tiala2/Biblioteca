@@ -24,7 +24,7 @@ describe("ErrorBoundary", () => {
     );
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
-    expect(screen.getByText("Nao foi possivel carregar esta tela")).toBeInTheDocument();
+    expect(screen.getByText("Não foi possível carregar esta tela")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Recarregar" })).toBeInTheDocument();
   });
 });

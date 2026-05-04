@@ -108,7 +108,7 @@ export function HomePage() {
         setError("");
       } catch (error) {
         setHome(EMPTY_HOME);
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar o painel inicial."));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar o painel inicial."));
       } finally {
         setLoading(false);
       }
@@ -133,12 +133,12 @@ export function HomePage() {
   if (error) {
     return (
       <StateCard
-        title="Nao foi possivel carregar o painel"
+        title="Não foi possível carregar o painel"
         message={error}
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Ir para o catalogo
+            Ir para o catálogo
           </Link>
         }
       />
@@ -153,7 +153,7 @@ export function HomePage() {
             <p className="eyebrow aura-eyebrow">Library Aura</p>
             <h2>Bem-vinda, {auth?.name}</h2>
             <p>
-              Um espaco de leitura com ritmo, conquistas e proximas jornadas prontas para voce escolher.
+              Um espaço de leitura com ritmo, conquistas e próximas jornadas prontas para você escolher.
             </p>
           </div>
           <div className="aura-hero__signal">
@@ -168,7 +168,7 @@ export function HomePage() {
             Abrir perfil
           </Link>
           <Link to="/books" className="btn-link">
-            Explorar catalogo
+            Explorar catálogo
           </Link>
           <Link to="/goals" className="btn-link">
             Ver metas
@@ -193,7 +193,7 @@ export function HomePage() {
           <div className="stat-box">
             <Trophy aria-hidden="true" />
             <strong>{home.userSummary.totalFinished}</strong>
-            <span>livros concluidos</span>
+            <span>livros concluídos</span>
           </div>
           <div className="stat-box">
             <Target aria-hidden="true" />
@@ -212,7 +212,7 @@ export function HomePage() {
         <div className="section-head">
           <h3>Leitura atual</h3>
           <span className="kpi">
-            {currentReading ? `${currentReading.progress}% concluido` : "Sem leitura ativa"}
+            {currentReading ? `${currentReading.progress}% concluído` : "Sem leitura ativa"}
           </span>
         </div>
         {currentReading ? (
@@ -223,7 +223,7 @@ export function HomePage() {
                 <p><strong>{currentReading.book.title}</strong></p>
                 {currentReading.book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
                 <p className="section-sub">
-                  Pagina atual: {currentReading.currentPage} | Status: {currentReading.status}
+                  Página atual: {currentReading.currentPage} | Status: {currentReading.status}
                 </p>
               </div>
             </div>
@@ -254,10 +254,10 @@ export function HomePage() {
         {home.readingProgress.goal ? (
           <>
             <p>
-              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} paginas concluida(s)
+              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} páginas concluída(s)
             </p>
             <p className="section-sub">
-              Restam {home.readingProgress.goal.remainingPages} paginas | Status: {home.readingProgress.goal.status}
+              Restam {home.readingProgress.goal.remainingPages} páginas | Status: {home.readingProgress.goal.status}
             </p>
             <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -299,7 +299,7 @@ export function HomePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Colecoes em destaque</h3>
-          <span className="kpi">{home.collections.length} colecao(oes)</span>
+          <span className="kpi">{home.collections.length} coleção(ões)</span>
         </div>
         {home.collections.length > 0 ? (
           <ul className="stacked-list">
@@ -315,7 +315,7 @@ export function HomePage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Nenhuma colecao disponivel para mostrar agora.</p>
+          <p className="section-sub">Nenhuma coleção disponível para mostrar agora.</p>
         )}
       </article>
 
@@ -336,7 +336,7 @@ export function HomePage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Suas proximas avaliacoes aparecerao aqui.</p>
+          <p className="section-sub">Suas próximas avaliações aparecerão aqui.</p>
         )}
       </article>
     </section>

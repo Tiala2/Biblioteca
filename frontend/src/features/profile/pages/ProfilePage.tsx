@@ -107,7 +107,7 @@ export function ProfilePage() {
         setError("");
       } catch (error) {
         if (!active) return;
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar seu perfil."));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar seu perfil."));
       } finally {
         if (active) setLoading(false);
       }
@@ -124,7 +124,7 @@ export function ProfilePage() {
     return readings.slice(0, 5).map((reading) => ({
       id: reading.id,
       title: reading.book.title,
-      subtitle: `Pagina ${reading.currentPage} - ${reading.progress}% - ${reading.status}`,
+      subtitle: `Página ${reading.currentPage} - ${reading.progress}% - ${reading.status}`,
       date: reading.lastReadedAt ?? reading.finishedAt ?? null,
       link: `/books/${reading.book.id}`,
       cta: "Abrir detalhes",
@@ -185,9 +185,9 @@ export function ProfilePage() {
           : previous
       );
       setError("");
-      showToast("Preferencias atualizadas com sucesso.", "success");
+      showToast("Preferências atualizadas com sucesso.", "success");
     } catch (error) {
-      const message = extractApiErrorMessage(error, "Nao foi possivel salvar suas preferencias.");
+      const message = extractApiErrorMessage(error, "Não foi possível salvar suas preferências.");
       setError(message);
       showToast(message, "error");
     } finally {
@@ -199,7 +199,7 @@ export function ProfilePage() {
     return (
       <StateCard
         title="Perfil em preparacao"
-        message="Estamos carregando seu historico, badges e preferencias para montar sua visao pessoal."
+        message="Estamos carregando seu histórico, conquistas e preferências para montar sua visão pessoal."
         variant="loading"
       />
     );
@@ -211,15 +211,15 @@ export function ProfilePage() {
         <div className="aura-hero__content">
           <div>
             <p className="eyebrow aura-eyebrow">Identidade leitora</p>
-            <h2>Perfil e historico de leitura</h2>
+            <h2>Perfil e histórico de leitura</h2>
             <p>
-              Seus numeros, escolhas e registros recentes em uma visao que mostra como seu habito esta crescendo.
+              Seus números, escolhas e registros recentes em uma visão que mostra como seu hábito está crescendo.
             </p>
           </div>
           <div className="aura-hero__signal">
             <UserRound aria-hidden="true" />
             <strong>{profileInsights.totalBadges}</strong>
-            <span>badge(s)</span>
+            <span>conquista(s)</span>
           </div>
         </div>
         {error && <p className="error">{error}</p>}
@@ -227,12 +227,12 @@ export function ProfilePage() {
           <div className="stat-box">
             <BookOpen aria-hidden="true" />
             <strong>{formatInteger(home?.userSummary.totalPagesRead)}</strong>
-            <span>paginas lidas</span>
+            <span>páginas lidas</span>
           </div>
           <div className="stat-box">
             <Sparkles aria-hidden="true" />
             <strong>{formatInteger(home?.userSummary.totalFinished)}</strong>
-            <span>livros concluidos</span>
+            <span>livros concluídos</span>
           </div>
           <div className="stat-box">
             <BarChart3 aria-hidden="true" />
@@ -259,15 +259,15 @@ export function ProfilePage() {
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.pagesThisWeek)}</strong>
-            <span>paginas nesta semana</span>
+            <span>páginas nesta semana</span>
           </div>
           <div className="stat-box">
             <strong>{formatDecimal(profileInsights.averagePagesPerSession)}</strong>
-            <span>media por sessao</span>
+            <span>média por sessão</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.totalBadges)}</strong>
-            <span>badges acumuladas</span>
+            <span>conquistas acumuladas</span>
           </div>
         </div>
       </article>
@@ -275,7 +275,7 @@ export function ProfilePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3><Settings2 aria-hidden="true" /> Conta</h3>
-          <span className="kpi">{profile?.badges.length ?? 0} badge(s)</span>
+          <span className="kpi">{profile?.badges.length ?? 0} conquista(s)</span>
         </div>
         <div className="stacked-list">
           <div className="stacked-list-item">
@@ -297,25 +297,25 @@ export function ProfilePage() {
             Receber alertas internos de leitura
           </label>
           <button type="submit" disabled={saving}>
-            {saving ? "Salvando..." : "Salvar preferencias"}
+            {saving ? "Salvando..." : "Salvar preferências"}
           </button>
         </form>
       </article>
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3>Acoes rapidas</h3>
+          <h3>Ações rápidas</h3>
           <span className="kpi">Atalhos</span>
         </div>
         <div className="quick-links-grid">
           <Link to="/books" className="btn-muted btn-link">
-            Explorar catalogo
+            Explorar catálogo
           </Link>
           <Link to="/goals" className="btn-muted btn-link">
             Revisar metas
           </Link>
           <Link to="/reviews" className="btn-muted btn-link">
-            Gerenciar reviews
+            Gerenciar avaliações
           </Link>
           <Link to="/leaderboard" className="btn-muted btn-link">
             Abrir ranking
@@ -325,13 +325,13 @@ export function ProfilePage() {
 
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>Historico recente</h3>
+          <h3>Histórico recente</h3>
           <span className="kpi">{filteredTimeline.length} registro(s)</span>
         </div>
-        <select aria-label="Filtrar historico de leitura" value={readingFilter} onChange={(event) => setReadingFilter(event.target.value as "ALL" | "IN_PROGRESS" | "FINISHED")}>
+        <select aria-label="Filtrar histórico de leitura" value={readingFilter} onChange={(event) => setReadingFilter(event.target.value as "ALL" | "IN_PROGRESS" | "FINISHED")}>
           <option value="ALL">Todas as leituras</option>
           <option value="IN_PROGRESS">Em andamento</option>
-          <option value="FINISHED">Concluidas</option>
+          <option value="FINISHED">Concluídas</option>
         </select>
         {filteredTimeline.length > 0 ? (
           <ul className="stacked-list">
@@ -349,13 +349,13 @@ export function ProfilePage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Seu historico aparecera aqui assim que voce registrar leituras.</p>
+          <p className="section-sub">Seu histórico aparecerá aqui assim que você registrar leituras.</p>
         )}
       </article>
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3>Badges recentes</h3>
+          <h3>Conquistas recentes</h3>
           <span className="kpi">{profileInsights.recentBadges.length} destaque(s)</span>
         </div>
         {profileInsights.recentBadges.length > 0 ? (
@@ -368,23 +368,23 @@ export function ProfilePage() {
                   <small>{formatDateTimeBr(badge.awardedAt)}</small>
                 </div>
                 <Link to="/badges" className="btn-muted btn-link">
-                  Abrir badges
+                  Abrir conquistas
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Seus proximos badges vao aparecer aqui conforme o habito de leitura evoluir.</p>
+          <p className="section-sub">Suas próximas conquistas vão aparecer aqui conforme o hábito de leitura evoluir.</p>
         )}
       </article>
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3>Reviews recentes</h3>
-          <span className="kpi">{filteredReviews.length} review(s)</span>
+          <h3>Avaliações recentes</h3>
+          <span className="kpi">{filteredReviews.length} avaliação(ões)</span>
         </div>
-        <select aria-label="Filtrar reviews por nota" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as "ALL" | "HIGH" | "LOW")}>
-          <option value="ALL">Todas as reviews</option>
+        <select aria-label="Filtrar avaliações por nota" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as "ALL" | "HIGH" | "LOW")}>
+          <option value="ALL">Todas as avaliações</option>
           <option value="HIGH">Notas 4 e 5</option>
           <option value="LOW">Notas 1 a 3</option>
         </select>
@@ -398,13 +398,13 @@ export function ProfilePage() {
                   <small>{formatDateTimeBr(review.updatedAt)}</small>
                 </div>
                 <Link to="/reviews" className="btn-muted btn-link">
-                  Abrir reviews
+                  Abrir avaliações
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Nenhuma review encontrada para esse filtro.</p>
+          <p className="section-sub">Nenhuma avaliação encontrada para esse filtro.</p>
         )}
       </article>
     </section>

@@ -106,8 +106,8 @@ describe("HomePage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Nao foi possivel carregar o painel" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Não foi possível carregar o painel" })).toBeInTheDocument();
     expect(screen.getByText("Falha de conexao com o servidor.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Ir para o catalogo" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ir para o catálogo" })).toBeInTheDocument();
   });
 });

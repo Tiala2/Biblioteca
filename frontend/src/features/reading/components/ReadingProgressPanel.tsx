@@ -30,7 +30,7 @@ export function ReadingProgressPanel({
         <div>
           <h3>Painel de progresso</h3>
           <p className="section-sub">
-            Ajuste a pagina atual e registre o que foi lido para refletir metas, ranking e badges.
+            Ajuste a página atual e registre o que foi lido para refletir metas, ranking e conquistas.
           </p>
         </div>
         <span className="kpi">Fase: {phaseLabel}</span>
@@ -38,15 +38,15 @@ export function ReadingProgressPanel({
 
       {!hasPdf ? (
         <p className="section-sub">
-          Mesmo sem PDF local, voce pode informar manualmente a pagina atual. Assim o livro continua contando em metas,
-          historico e engajamento.
+          Mesmo sem PDF local, você pode informar manualmente a página atual. Assim o livro continua contando em metas,
+          histórico e engajamento.
         </p>
       ) : null}
 
       <div className="stats-grid">
         <div className="stat-box">
           <strong>{readingSnapshot?.currentPage ?? currentPage}</strong>
-          <span>ultima pagina salva</span>
+          <span>última página salva</span>
         </div>
         <div className="stat-box">
           <strong>{formatDateLabel(readingSnapshot?.lastReadedAt)}</strong>
@@ -68,7 +68,7 @@ export function ReadingProgressPanel({
 
       <div className="reading-control-row">
         <div>
-          <label htmlFor="reading-range">Selecione a pagina lida</label>
+          <label htmlFor="reading-range">Selecione a página lida</label>
           <input
             id="reading-range"
             type="range"
@@ -80,7 +80,7 @@ export function ReadingProgressPanel({
         </div>
 
         <div className="reading-page-box">
-          <label htmlFor="reading-page-input">Pagina</label>
+          <label htmlFor="reading-page-input">Página</label>
           <input
             id="reading-page-input"
             type="number"
@@ -107,7 +107,7 @@ export function ReadingProgressPanel({
         </button>
       </div>
 
-      <p className="section-sub">Beat atual: {insight?.beatTitle ?? "Sem beat definido para a pagina selecionada."}</p>
+      <p className="section-sub">Beat atual: {insight?.beatTitle ?? "Sem beat definido para a página selecionada."}</p>
     </article>
   );
 }

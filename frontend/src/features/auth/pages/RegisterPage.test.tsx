@@ -50,7 +50,7 @@ describe("RegisterPage", () => {
         password: "Senha@123",
       })
     );
-    expect(showToast).toHaveBeenCalledWith("Conta criada com sucesso. Faca login para continuar.", "success");
+    expect(showToast).toHaveBeenCalledWith("Conta criada com sucesso. Faça login para continuar.", "success");
     expect(await screen.findByText("login-page")).toBeInTheDocument();
   });
 });

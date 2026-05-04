@@ -78,7 +78,7 @@ export function QuizPanel({
           ))}
         </div>
       ) : (
-        <p className="section-sub">Nenhum quiz para a pagina selecionada.</p>
+        <p className="section-sub">Nenhum quiz para a página selecionada.</p>
       )}
     </article>
   );

@@ -134,7 +134,7 @@ export function BooksPage() {
       } catch (error) {
         setBooks([]);
         setTotalPages(0);
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar livros no momento."));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar livros no momento."));
       } finally {
         setLoading(false);
       }
@@ -249,7 +249,7 @@ export function BooksPage() {
         showToast("Livro adicionado aos favoritos.", "success");
       }
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Nao foi possivel atualizar favorito."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
     } finally {
       setFavoriteLoadingBookId(null);
     }
@@ -260,13 +260,13 @@ export function BooksPage() {
       <div className="card hero aura-hero aura-hero--catalog">
         <div>
           <p className="eyebrow aura-eyebrow">Vitrine viva</p>
-          <h2>Escolha sua proxima jornada</h2>
+          <h2>Escolha sua próxima jornada</h2>
           <p>Explore livros locais e descobertas importadas com filtros rapidos, favoritos e leitura guiada.</p>
         </div>
         <div className="aura-hero__signal">
           <Sparkles aria-hidden="true" />
           <strong>{books.length}</strong>
-          <span>nesta pagina</span>
+          <span>nesta página</span>
         </div>
       </div>
 
@@ -305,23 +305,23 @@ export function BooksPage() {
             ))}
           </select>
           <input
-            aria-label="Quantidade minima de paginas"
+            aria-label="Quantidade mínima de páginas"
             type="number"
             min={1}
-            placeholder="Min paginas"
+            placeholder="Mín. páginas"
             value={minPagesInput}
             onChange={(event) => setMinPagesInput(event.target.value)}
           />
           <input
-            aria-label="Quantidade maxima de paginas"
+            aria-label="Quantidade máxima de páginas"
             type="number"
             min={1}
-            placeholder="Max paginas"
+            placeholder="Máx. páginas"
             value={maxPagesInput}
             onChange={(event) => setMaxPagesInput(event.target.value)}
           />
-          <select aria-label="Ordenacao do catalogo" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
-            <option value="BEST_RATED">Melhor avaliacao</option>
+          <select aria-label="Ordenação do catálogo" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
+            <option value="BEST_RATED">Melhor avaliação</option>
             <option value="NEW_RELEASES">Lancamentos</option>
             <option value="TRENDING_WEEK">Tendencia semanal</option>
             <option value="TRENDING_MONTH">Tendencia mensal</option>
@@ -348,12 +348,12 @@ export function BooksPage() {
 
       {loading && (
         <StateCard
-          title="Catalogo em carregamento"
-          message="Estamos reunindo livros, filtros e destaques para sua proxima leitura."
+          title="Catálogo em carregamento"
+          message="Estamos reunindo livros, filtros e destaques para sua próxima leitura."
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Falha ao carregar catalogo" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Falha ao carregar catálogo" message={error} variant="error" />}
 
       {!loading && !error && <div className="grid aura-catalog-grid">
         {books.map((book) => (
@@ -369,8 +369,8 @@ export function BooksPage() {
                 {book.title}
               </Link>
             </h3>
-            <p>{book.author || "Autor nao informado"}</p>
-            <p>{book.numberOfPages} paginas</p>
+            <p>{book.author || "Autor não informado"}</p>
+            <p>{book.numberOfPages} páginas</p>
             <small>
               {book.hasPdf
                 ? "PDF disponivel"
@@ -410,30 +410,30 @@ export function BooksPage() {
         <button
           type="button"
           className="btn-muted"
-          aria-label="Ir para a pagina anterior do catalogo"
+          aria-label="Ir para a página anterior do catálogo"
           disabled={applied.page <= 0 || loading}
           onClick={() => goToPage(applied.page - 1)}
         >
           Anterior
         </button>
         <span className="section-sub">
-          Pagina {applied.page + 1} de {Math.max(totalPages, 1)}
+          Página {applied.page + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
           type="button"
           className="btn-muted"
-          aria-label="Ir para a proxima pagina do catalogo"
+          aria-label="Ir para a próxima página do catálogo"
           disabled={loading || applied.page + 1 >= Math.max(totalPages, 1)}
           onClick={() => goToPage(applied.page + 1)}
         >
-          Proxima
+          Próxima
         </button>
       </div>
 
       {!loading && !error && books.length === 0 && (
         <StateCard
           title="Nenhum livro encontrado"
-          message="Ajuste os filtros ou limpe a busca para explorar outras combinacoes do catalogo."
+          message="Ajuste os filtros ou limpe a busca para explorar outras combinações do catálogo."
           action={
             <button type="button" className="btn-muted" onClick={clearFilters}>
               Limpar filtros

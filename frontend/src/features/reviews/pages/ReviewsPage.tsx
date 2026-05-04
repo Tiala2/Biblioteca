@@ -87,7 +87,7 @@ export function ReviewsPage() {
     } catch (error) {
       setItems([]);
       setEligibleBookIds([]);
-      setError(extractApiErrorMessage(error, "Nao foi possivel carregar reviews."));
+      setError(extractApiErrorMessage(error, "Não foi possível carregar avaliações."));
     } finally {
       setLoading(false);
     }
@@ -117,7 +117,7 @@ export function ReviewsPage() {
       );
       setComment("");
       await loadPage();
-      showToast("Review criada com sucesso.", "success");
+      showToast("Avaliação criada com sucesso.", "success");
     } catch (error) {
       const errorCode = extractApiErrorCode(error);
       const message =
@@ -156,7 +156,7 @@ export function ReviewsPage() {
       );
       await loadPage();
       cancelEditing();
-      showToast("Review atualizada com sucesso.", "success");
+      showToast("Avaliação atualizada com sucesso.", "success");
     } catch (error) {
       showToast(extractApiErrorMessage(error, "Falha ao atualizar review."), "error");
     } finally {
@@ -173,7 +173,7 @@ export function ReviewsPage() {
         cancelEditing();
       }
       await loadPage();
-      showToast("Review removida com sucesso.", "success");
+      showToast("Avaliação removida com sucesso.", "success");
     } catch (error) {
       showToast(extractApiErrorMessage(error, "Falha ao remover review."), "error");
     } finally {
@@ -193,25 +193,25 @@ export function ReviewsPage() {
       <article className="card hero aura-hero aura-hero--reviews">
         <div className="aura-hero__content">
           <div>
-            <p className="eyebrow aura-eyebrow">Diario de percepcoes</p>
-            <h2>Suas percepcoes importam</h2>
-            <p>Registre o que ficou da leitura, ajuste sua opiniao e transforme cada livro em memoria organizada.</p>
+            <p className="eyebrow aura-eyebrow">Diário de percepções</p>
+            <h2>Suas percepções importam</h2>
+            <p>Registre o que ficou da leitura, ajuste sua opinião e transforme cada livro em memória organizada.</p>
           </div>
           <div className="aura-hero__signal">
             <MessageSquareQuote aria-hidden="true" />
             <strong>{items.length}</strong>
-            <span>review(s)</span>
+            <span>avaliação(ões)</span>
           </div>
         </div>
       </article>
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3><PencilLine aria-hidden="true" /> Nova review</h3>
-          <span className="kpi">{eligibleBooks.length} livro(s) elegivel(is)</span>
+          <h3><PencilLine aria-hidden="true" /> Nova avaliação</h3>
+          <span className="kpi">{eligibleBooks.length} livro(s) elegível(is)</span>
         </div>
         <p className="section-sub">
-          Para manter o contexto da leitura, a plataforma libera reviews apenas para livros que voce ja iniciou.
+          Para manter o contexto da leitura, a plataforma libera avaliações apenas para livros que você já iniciou.
         </p>
         <form onSubmit={onCreate}>
           <label>Livro</label>
@@ -225,21 +225,21 @@ export function ReviewsPage() {
           {!hasEligibleBooks && (
             <div>
               <p className="section-sub">
-                Comece uma leitura no catalogo para liberar a criacao de reviews.
+                Comece uma leitura no catálogo para liberar a criação de avaliações.
               </p>
               <div className="card-actions">
                 <Link to="/books" className="btn-muted btn-link">
-                  Explorar catalogo
+                  Explorar catálogo
                 </Link>
               </div>
             </div>
           )}
           <label>Nota (1 a 5)</label>
           <input type="number" min={1} max={5} value={rating} onChange={(event) => setRating(Number(event.target.value))} disabled={!hasEligibleBooks} />
-          <label>Comentario</label>
+          <label>Comentário</label>
           <input value={comment} onChange={(event) => setComment(event.target.value)} disabled={!hasEligibleBooks} />
           <button type="submit" disabled={creating || !hasEligibleBooks}>
-            {creating ? "Salvando..." : "Salvar review"}
+            {creating ? "Salvando..." : "Salvar avaliação"}
           </button>
         </form>
       </article>
@@ -247,13 +247,13 @@ export function ReviewsPage() {
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <div>
-            <h3><ScrollText aria-hidden="true" /> Reviews registradas</h3>
-            <p className="section-sub">Crie, acompanhe, ajuste e remova suas avaliacoes de leitura.</p>
+            <h3><ScrollText aria-hidden="true" /> Avaliações registradas</h3>
+            <p className="section-sub">Crie, acompanhe, ajuste e remova suas avaliações de leitura.</p>
           </div>
-          <span className="kpi">Pagina {page + 1}</span>
+          <span className="kpi">Página {page + 1}</span>
         </div>
 
-        {loading && <p className="section-sub">Carregando reviews...</p>}
+        {loading && <p className="section-sub">Carregando avaliações...</p>}
         {error && <p className="error">{error}</p>}
 
         <div className="grid aura-review-grid">
@@ -273,7 +273,7 @@ export function ReviewsPage() {
                       value={editRating}
                       onChange={(event) => setEditRating(Number(event.target.value))}
                     />
-                    <label>Comentario</label>
+                    <label>Comentário</label>
                     <input value={editComment} onChange={(event) => setEditComment(event.target.value)} />
                   </>
                 ) : (
@@ -321,31 +321,31 @@ export function ReviewsPage() {
           <button
             type="button"
             className="btn-muted"
-            aria-label="Ir para a pagina anterior de reviews"
+            aria-label="Ir para a página anterior de avaliações"
             disabled={page <= 0 || loading}
             onClick={() => goToPage(page - 1)}
           >
             Anterior
           </button>
           <span className="section-sub">
-            Pagina {page + 1} de {Math.max(totalPages, 1)}
+            Página {page + 1} de {Math.max(totalPages, 1)}
           </span>
           <button
             type="button"
             className="btn-muted"
-            aria-label="Ir para a proxima pagina de reviews"
+            aria-label="Ir para a próxima página de avaliações"
             disabled={loading || page + 1 >= Math.max(totalPages, 1)}
             onClick={() => goToPage(page + 1)}
           >
-            Proxima
+            Próxima
           </button>
         </div>
 
         {!loading && !error && items.length === 0 && (
           <div>
-            <h3>Nenhuma review registrada</h3>
+            <h3>Nenhuma avaliação registrada</h3>
             <p className="section-sub">
-              Suas avaliacoes aparecerao aqui depois que voce iniciar uma leitura e registrar sua primeira percepcao.
+              Suas avaliações aparecerão aqui depois que você iniciar uma leitura e registrar sua primeira percepção.
             </p>
             <div className="card-actions">
               <Link to="/books" className="btn-muted btn-link">

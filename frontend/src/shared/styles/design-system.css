@@ -1,8 +1,8 @@
 ﻿:root {
-  --ds-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --ds-font-accent: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --ds-radius-md: 8px;
-  --ds-radius-lg: 8px;
+  --ds-font-family: var(--font-primary, "Manrope", sans-serif);
+  --ds-font-accent: var(--font-display, "Space Grotesk", "Manrope", sans-serif);
+  --ds-radius-md: var(--radius, 8px);
+  --ds-radius-lg: var(--radius-lg, 8px);
   --ds-galaxy-image:
     linear-gradient(135deg, #172033 0%, #10251f 52%, #263026 100%),
     linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
@@ -10,7 +10,7 @@
 
   --ds-surface-glass: rgba(20, 28, 43, 0.84);
   --ds-surface-border: rgba(218, 226, 239, 0.14);
-  --ds-surface-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+  --ds-surface-shadow: var(--shadow-soft, 0 18px 44px rgba(0, 0, 0, 0.32));
 
   --ds-text-on-dark: #ffffff;
   --ds-text-on-dark-soft: rgba(233, 233, 255, 0.86);
@@ -18,9 +18,9 @@
 
   --ds-input-bg: rgba(255, 255, 255, 0.08);
   --ds-input-border: rgba(255, 255, 255, 0.15);
-  --ds-input-focus: #5eead4;
+  --ds-input-focus: var(--primary-b, #5eead4);
 
-  --ds-gradient-primary: linear-gradient(90deg, #2457a7, #0f766e);
+  --ds-gradient-primary: linear-gradient(90deg, var(--primary-a, #2457a7), var(--primary-b, #0f766e));
   --ds-gradient-overlay: linear-gradient(rgba(17, 24, 39, 0.72), rgba(16, 37, 31, 0.86));
   --ds-shadow-button: 0 12px 26px rgba(15, 118, 110, 0.24);
 }

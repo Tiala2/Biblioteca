@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const syncSession = () => setAuth(readStoredAuth());
     const expireSession = () => {
       setAuth(null);
-      showToast("Sua sessao expirou. Faca login novamente.", "info");
+      showToast("Sua sessão expirou. Faça login novamente.", "info");
     };
 
     window.addEventListener("storage", syncSession);

@@ -46,16 +46,17 @@ export function CollectionPanel({
 
   return (
     <article id="admin-collections" className="card admin-panel">
-      <h3>{form.id ? "Editar colecao" : "Nova colecao"}</h3>
+      <h3>{form.id ? "Editar coleção" : "Nova coleção"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <input value={form.title} onChange={(event) => onFormChange((prev) => ({ ...prev, title: event.target.value }))} placeholder="Titulo" required />
+        <input aria-label="Título da coleção" value={form.title} onChange={(event) => onFormChange((prev) => ({ ...prev, title: event.target.value }))} placeholder="Título" required />
         <input
+          aria-label="Descrição da coleção"
           value={form.description}
           onChange={(event) => onFormChange((prev) => ({ ...prev, description: event.target.value }))}
-          placeholder="Descricao"
+          placeholder="Descrição"
         />
-        <input value={form.coverUrl} onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))} placeholder="URL da capa" />
-        <select multiple size={5} value={form.bookIds} onChange={(event) => onFormChange((prev) => ({ ...prev, bookIds: readSelectedValues(event) }))}>
+        <input aria-label="URL da capa da coleção" value={form.coverUrl} onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))} placeholder="URL da capa" />
+        <select aria-label="Livros da coleção" multiple size={5} value={form.bookIds} onChange={(event) => onFormChange((prev) => ({ ...prev, bookIds: readSelectedValues(event) }))}>
           {books.map((book) => (
             <option key={book.id} value={book.id}>
               {book.title}
@@ -63,7 +64,7 @@ export function CollectionPanel({
           ))}
         </select>
         <button type="submit" disabled={busyKey === "collection-create" || busyKey === `collection-save-${form.id}`}>
-          {form.id ? "Salvar colecao" : "Criar colecao"}
+          {form.id ? "Salvar coleção" : "Criar coleção"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -72,10 +73,10 @@ export function CollectionPanel({
         )}
       </form>
       <div className="section-head">
-        <h4>Lista de colecoes</h4>
+        <h4>Lista de coleções</h4>
         <span className="kpi">{filteredCollections.length}</span>
       </div>
-      <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar colecoes" />
+      <input aria-label="Filtrar coleções" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar coleções" />
       <ul className="stacked-list">
         {visibleCollections.map((collection) => (
           <li key={collection.id} className="stacked-list-item">
@@ -99,15 +100,15 @@ export function CollectionPanel({
           </li>
         ))}
       </ul>
-      {filteredCollections.length === 0 && <p className="section-sub">Nenhuma colecao encontrada para esse filtro.</p>}
+      {filteredCollections.length === 0 && <p className="section-sub">Nenhuma coleção encontrada para esse filtro.</p>}
       {filteredCollections.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Pagina {page + 1} de {totalPages}</span>
+          <span className="section-sub">Página {page + 1} de {totalPages}</span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
-            Proxima
+            Próxima
           </button>
         </div>
       )}

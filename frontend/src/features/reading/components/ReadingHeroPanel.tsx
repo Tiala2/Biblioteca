@@ -45,25 +45,25 @@ export function ReadingHeroPanel({
           <h2>{book.title}</h2>
           <p>
             {isExternalReading
-              ? "Leia na fonte externa e registre aqui a pagina atual para manter metas, ranking e continuidade da leitura."
+              ? "Leia na fonte externa e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
               : "Retome sua leitura, acompanhe a fase narrativa e salve o progresso sem sair da experiencia."}
           </p>
         </div>
-        <span className="kpi">{progressPercent}% concluido</span>
+        <span className="kpi">{progressPercent}% concluído</span>
       </div>
 
       <div className="stats-grid">
         <div className="stat-box">
           <strong>{currentPage}</strong>
-          <span>pagina atual</span>
+          <span>página atual</span>
         </div>
         <div className="stat-box">
           <strong>{totalPages}</strong>
-          <span>paginas totais</span>
+          <span>páginas totais</span>
         </div>
         <div className="stat-box">
           <strong>{pagesRemaining}</strong>
-          <span>paginas restantes</span>
+          <span>páginas restantes</span>
         </div>
         <div className="stat-box">
           <strong>{readingStatusLabel}</strong>
@@ -87,7 +87,7 @@ export function ReadingHeroPanel({
           {favoriteLoading ? "Salvando..." : isFavorite ? "Nos favoritos" : "Salvar nos favoritos"}
         </button>
         <Link to="/books" className="btn-link">
-          Voltar ao catalogo
+          Voltar ao catálogo
         </Link>
         {book.hasPdf && internalPdfUrl ? (
           <a className="btn-link" href={internalPdfUrl} target="_blank" rel="noreferrer">

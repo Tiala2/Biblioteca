@@ -6,7 +6,7 @@ export function ForbiddenPage() {
       <article className="card">
         <p className="eyebrow">Permissao</p>
         <h2>Acesso negado</h2>
-        <p className="section-sub">Seu perfil nao tem permissao para esta area.</p>
+        <p className="section-sub">Seu perfil não tem permissão para esta área.</p>
         <div className="card-actions">
           <Link className="btn-link" to="/">
             Voltar

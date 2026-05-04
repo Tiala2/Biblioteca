@@ -104,7 +104,7 @@ export function BookDetailsPage() {
         setMyReview(null);
         setCommunityReviews([]);
         setRecommendations([]);
-        setError(extractApiErrorMessage(error, "Nao foi possivel carregar os detalhes do livro."));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar os detalhes do livro."));
       } finally {
         if (active) setLoading(false);
       }
@@ -121,13 +121,13 @@ export function BookDetailsPage() {
     if (!book) return [];
 
     return [
-      { label: "Paginas", value: `${book.numberOfPages}` },
-      { label: "Autor", value: book.author || "Autor nao informado" },
-      { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Catalogo local" },
-      { label: "ISBN", value: book.isbn || "Nao informado" },
+      { label: "Páginas", value: `${book.numberOfPages}` },
+      { label: "Autor", value: book.author || "Autor não informado" },
+      { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Catálogo local" },
+      { label: "ISBN", value: book.isbn || "Não informado" },
       {
         label: "Publicacao",
-        value: book.publicationDate ? formatDateBr(book.publicationDate) : "Nao informada",
+        value: book.publicationDate ? formatDateBr(book.publicationDate) : "Não informada",
       },
     ];
   }, [book]);
@@ -147,7 +147,7 @@ export function BookDetailsPage() {
         showToast("Livro adicionado aos favoritos.", "success");
       }
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Nao foi possivel atualizar favorito."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
     } finally {
       setFavoriteLoading(false);
     }
@@ -156,8 +156,8 @@ export function BookDetailsPage() {
   if (!bookId) {
     return (
       <StateCard
-        title="Livro nao informado"
-        message="Abra um livro a partir do catalogo para visualizar os detalhes e os proximos passos."
+        title="Livro não informado"
+        message="Abra um livro a partir do catálogo para visualizar os detalhes e os próximos passos."
         variant="error"
       />
     );
@@ -184,7 +184,7 @@ export function BookDetailsPage() {
             <p className="eyebrow aura-eyebrow">Livro em foco</p>
             <h2>{book?.title ?? "Detalhes do livro"}</h2>
             <p>
-              Uma pagina para sentir o livro antes de abrir: contexto, recepcao, tags e proximos passos.
+              Uma página para sentir o livro antes de abrir: contexto, recepção, tags e próximos passos.
             </p>
           </div>
           <div className="aura-hero__signal">
@@ -223,13 +223,13 @@ export function BookDetailsPage() {
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3><Star aria-hidden="true" /> Recepcao do catalogo</h3>
+          <h3><Star aria-hidden="true" /> Recepção do catálogo</h3>
           <span className="kpi">
-            {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} review(s)
+            {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} avaliação(ões)
           </span>
         </div>
         <p className="section-sub">
-          Use essa leitura guiada para decidir se o livro entra na sua jornada atual ou fica para uma proxima meta.
+          Use essa leitura guiada para decidir se o livro entra na sua jornada atual ou fica para uma próxima meta.
         </p>
         <div className="stacked-list">
           <div className="stacked-list-item">
@@ -246,7 +246,7 @@ export function BookDetailsPage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3><Sparkles aria-hidden="true" /> Seu contexto</h3>
-          <span className="kpi">{myReview ? "Com review" : "Sem review"}</span>
+          <span className="kpi">{myReview ? "Com avaliação" : "Sem avaliação"}</span>
         </div>
         {myReview ? (
           <>
@@ -255,7 +255,7 @@ export function BookDetailsPage() {
             <small>Atualizado em: {formatDateTimeBr(myReview.updatedAt)}</small>
           </>
         ) : (
-          <p className="section-sub">Voce ainda nao avaliou este livro. Quando terminar, registre uma review para alimentar seu perfil.</p>
+          <p className="section-sub">Você ainda não avaliou este livro. Quando terminar, registre uma avaliação para alimentar seu perfil.</p>
         )}
       </article>
 
@@ -276,8 +276,8 @@ export function BookDetailsPage() {
           </li>
           <li className="stacked-list-item">
             <div>
-              <strong>{myReview ? "Atualizar review" : "Registrar review"}</strong>
-              <p className="section-sub">Use sua percepcao para enriquecer o catalogo social da plataforma.</p>
+              <strong>{myReview ? "Atualizar avaliação" : "Registrar avaliação"}</strong>
+              <p className="section-sub">Use sua percepção para enriquecer o catálogo social da plataforma.</p>
             </div>
             <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
               Abrir reviews
@@ -320,8 +320,8 @@ export function BookDetailsPage() {
               <li key={item.id} className="stacked-list-item">
                 <div>
                   <strong>{item.title}</strong>
-                  <p className="section-sub">{item.author || "Autor nao informado"}</p>
-                  <small>{formatDecimal(item.averageRating)} de media em {item.totalReviews ?? 0} review(s)</small>
+                  <p className="section-sub">{item.author || "Autor não informado"}</p>
+                  <small>{formatDecimal(item.averageRating)} de média em {item.totalReviews ?? 0} avaliação(ões)</small>
                 </div>
                 <Link to={`/books/${item.id}`} className="btn-muted btn-link">
                   Ver detalhes
@@ -330,7 +330,7 @@ export function BookDetailsPage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">As proximas sugestoes aparecerao aqui conforme o catalogo e seu uso evoluirem.</p>
+          <p className="section-sub">As próximas sugestões aparecerão aqui conforme o catálogo e seu uso evoluírem.</p>
         )}
       </article>
     </section>

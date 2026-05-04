@@ -50,6 +50,6 @@ describe("ForgotPasswordPage", () => {
     await user.click(screen.getByRole("button", { name: "Enviar link por email" }));
 
     expect(await screen.findByText("Muitas solicitacoes de recuperacao. Aguarde alguns minutos antes de tentar novamente.")).toBeInTheDocument();
-    expect(showToast).toHaveBeenCalledWith("Falha ao solicitar recuperacao de senha.", "error");
+    expect(showToast).toHaveBeenCalledWith("Falha ao solicitar recuperação de senha.", "error");
   });
 });

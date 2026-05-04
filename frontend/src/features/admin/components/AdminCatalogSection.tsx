@@ -116,7 +116,7 @@ export function AdminCatalogSection({
 }: AdminCatalogSectionProps) {
   return (
     <AdminSection
-      eyebrow="Catalogo"
+      eyebrow="Catálogo"
       title="Acervo e descoberta"
       description="Cadastre livros, organize categorias, tags e colecoes sem sair do mesmo fluxo."
       icon={<LibraryBig aria-hidden="true" />}

@@ -43,18 +43,18 @@ export function ForgotPasswordPage() {
       showToast("Solicitacao registrada. Verifique seu email.", "info");
     } catch (err: unknown) {
       if (!isAxiosError(err)) {
-        setError("Nao foi possivel enviar o email de recuperacao.");
+        setError("Não foi possível enviar o email de recuperação.");
       } else {
         const fieldErrors = extractFieldErrorMessages(err);
         if (fieldErrors.length > 0) {
-          setError(`Dados invalidos: ${fieldErrors.join(" | ")}`);
+          setError(`Dados inválidos: ${fieldErrors.join(" | ")}`);
         } else if (err.response?.status === 429) {
-          setError(extractApiErrorMessage(err, "Muitas solicitacoes de recuperacao. Aguarde alguns minutos antes de tentar novamente."));
+          setError(extractApiErrorMessage(err, "Muitas solicitações de recuperação. Aguarde alguns minutos antes de tentar novamente."));
         } else {
-          setError(extractApiErrorMessage(err, "Nao foi possivel enviar o email de recuperacao."));
+          setError(extractApiErrorMessage(err, "Não foi possível enviar o email de recuperação."));
         }
       }
-      showToast("Falha ao solicitar recuperacao de senha.", "error");
+      showToast("Falha ao solicitar recuperação de senha.", "error");
     } finally {
       setLoading(false);
     }
@@ -65,11 +65,11 @@ export function ForgotPasswordPage() {
     setError("");
 
     if (newPassword.length < 6) {
-      setError("A nova senha deve ter no minimo 6 caracteres.");
+      setError("A nova senha deve ter no mínimo 6 caracteres.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError("As senhas nao conferem.");
+      setError("As senhas não conferem.");
       return;
     }
 
@@ -83,13 +83,13 @@ export function ForgotPasswordPage() {
     } catch (err: unknown) {
       setTokenInvalid(true);
       if (!isAxiosError(err)) {
-        setError("Nao foi possivel redefinir a senha.");
+        setError("Não foi possível redefinir a senha.");
       } else {
         const fieldErrors = extractFieldErrorMessages(err);
         if (fieldErrors.length > 0) {
-          setError(`Dados invalidos: ${fieldErrors.join(" | ")}`);
+          setError(`Dados inválidos: ${fieldErrors.join(" | ")}`);
         } else {
-          setError(extractApiErrorMessage(err, "Link invalido ou expirado."));
+          setError(extractApiErrorMessage(err, "Link inválido ou expirado."));
         }
       }
       showToast("Falha ao redefinir senha.", "error");
@@ -107,8 +107,8 @@ export function ForgotPasswordPage() {
             <BookOpen size={28} strokeWidth={2.2} />
             <span>Library</span>
           </div>
-          <h2 className="login-title">{isResetFlow ? "Definir Nova Senha" : "Recuperar Senha"}</h2>
-          <p className="login-subtitle">{isResetFlow ? "Defina sua nova senha pelo link enviado no email" : "Recuperacao de senha"}</p>
+          <h2 className="login-title">{isResetFlow ? "Definir nova senha" : "Recuperar senha"}</h2>
+          <p className="login-subtitle">{isResetFlow ? "Defina sua nova senha pelo link enviado no email" : "Recuperação de senha"}</p>
 
           {!isResetFlow && (
             <>
@@ -132,7 +132,7 @@ export function ForgotPasswordPage() {
             <>
               {tokenInvalid && (
                 <p className="login-footnote">
-                  Link invalido ou expirado. Voce pode solicitar um novo link para continuar.
+                  Link inválido ou expirado. Você pode solicitar um novo link para continuar.
                 </p>
               )}
               <label htmlFor="reset-password">Nova senha</label>
@@ -142,7 +142,7 @@ export function ForgotPasswordPage() {
                   id="reset-password"
                   className="login-input ds-input"
                   type="password"
-                  placeholder="Minimo 6 caracteres"
+                  placeholder="Mínimo de 6 caracteres"
                   value={newPassword}
                   onChange={(event) => setNewPassword(event.target.value)}
                   required
@@ -171,13 +171,13 @@ export function ForgotPasswordPage() {
 
           {!isResetFlow && submitted && (
             <p className="login-footnote">
-              Se o email existir, voce recebera um link para redefinir a senha.
+              Se o email existir, você receberá um link para redefinir a senha.
             </p>
           )}
 
           {isResetFlow && resetDone && (
             <p className="login-footnote">
-              Senha redefinida. Voce sera redirecionado para login.
+              Senha redefinida. Você será redirecionado para o login.
             </p>
           )}
 
