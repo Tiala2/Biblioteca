@@ -38,7 +38,7 @@ export function ReadingHeroPanel({
   onToggleFavorite,
 }: ReadingHeroPanelProps) {
   return (
-    <article className="card hero">
+    <article className="card hero aura-hero aura-book-detail-hero aura-reading-focus">
       <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />
       <div className="section-head">
         <div>

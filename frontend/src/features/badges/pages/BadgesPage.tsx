@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Medal, Sparkles, Trophy } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -135,13 +136,18 @@ export function BadgesPage() {
   };
 
   return (
-    <section>
-      <div className="section-head">
+    <section className="aura-page">
+      <div className="card hero aura-hero aura-hero--badges">
         <div>
+          <p className="eyebrow aura-eyebrow">Colecao de momentos</p>
           <h2>Conquistas da sua jornada</h2>
-          <p className="section-sub">Colecione badges e acompanhe marcos da leitura.</p>
+          <p>Cada badge marca um habito que ganhou forma. Continue lendo para desbloquear novos sinais da sua evolucao.</p>
         </div>
-        <span className="kpi">{badges.length} na pagina</span>
+        <div className="aura-hero__signal">
+          <Trophy aria-hidden="true" />
+          <strong>{badges.length}</strong>
+          <span>na pagina</span>
+        </div>
       </div>
 
       {loading && (
@@ -153,21 +159,21 @@ export function BadgesPage() {
       )}
       {!loading && error && <StateCard title="Falha ao carregar badges" message={error} variant="error" />}
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>Progresso das proximas conquistas</h3>
+          <h3><Sparkles aria-hidden="true" /> Progresso das proximas conquistas</h3>
           <span className="kpi">{progressCards.length} trilha(s)</span>
         </div>
         <div className="grid">
           {progressCards.map((card) => {
             const percent = Math.max(0, Math.min(100, Math.round((card.current / card.target) * 100)));
             return (
-              <article key={card.code} className="card">
+              <article key={card.code} className="card aura-badge-progress-card">
                 <h3>{card.name}</h3>
                 <p className="section-sub">
                   {card.current} de {card.target} {card.unit}
                 </p>
-                <div className="progress-track" aria-hidden="true">
+                <div className="progress-track aura-progress" aria-hidden="true">
                   <div className="progress-fill" style={{ width: `${percent}%` }} />
                 </div>
                 <small>{percent}% concluido</small>
@@ -177,9 +183,10 @@ export function BadgesPage() {
         </div>
       </article>
 
-      <div className="grid">
+      <div className="grid aura-badge-grid">
         {badges.map((badge) => (
-          <article key={badge.id} className="card">
+          <article key={badge.id} className="card aura-badge-card">
+            <Medal aria-hidden="true" />
             <h3>{badge.name}</h3>
             <p>{badge.description}</p>
             <small>Codigo: {badge.code}</small>

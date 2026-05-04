@@ -675,7 +675,7 @@ label {
   display: grid;
   gap: 1.1rem;
   min-height: 230px;
-  padding: clamp(1.2rem, 3vw, 2rem);
+  padding: 2rem;
   background:
     linear-gradient(120deg, rgba(199, 95, 58, 0.18), transparent 42%),
     linear-gradient(135deg, color-mix(in srgb, var(--primary-a) 88%, #111827), color-mix(in srgb, var(--primary-b) 82%, #111827));
@@ -700,7 +700,7 @@ label {
 
 .aura-hero h2 {
   max-width: 780px;
-  font-size: clamp(1.75rem, 4vw, 3.6rem);
+  font-size: 3.2rem;
   line-height: 0.98;
 }
 
@@ -820,6 +820,48 @@ label {
   margin: 0;
   max-width: 220px;
   box-shadow: 0 22px 34px rgba(15, 23, 42, 0.28);
+}
+
+.aura-reading-intro {
+  min-height: 190px;
+}
+
+.aura-reading-focus {
+  align-items: start;
+}
+
+.aura-reading-focus > .book-cover {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: 220px;
+  box-shadow: 0 22px 34px rgba(15, 23, 42, 0.28);
+}
+
+.aura-badge-grid {
+  margin-top: 1rem;
+}
+
+.aura-badge-card,
+.aura-badge-progress-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.aura-badge-card::before,
+.aura-badge-progress-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--accent-coral), var(--primary-b));
+}
+
+.aura-badge-card > svg {
+  width: 30px;
+  height: 30px;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
 }
 
 .hero h2,
@@ -1427,6 +1469,15 @@ body[data-theme="day"] .login-form {
 
   .hero {
     padding: 1rem;
+  }
+
+  .aura-hero {
+    padding: 1.35rem;
+  }
+
+  .aura-hero h2 {
+    font-size: 2.35rem;
+    line-height: 1.02;
   }
 
   .aura-hero__content,

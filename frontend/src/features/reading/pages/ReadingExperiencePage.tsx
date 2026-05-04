@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { BookOpenCheck } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -325,7 +326,24 @@ export function ReadingExperiencePage() {
   }
 
   return (
-    <section className="grid">
+    <section className="grid aura-page aura-reading-page">
+      <article className="card hero aura-hero aura-reading-intro">
+        <div className="aura-hero__content">
+          <div>
+            <p className="eyebrow aura-eyebrow">Modo imersao</p>
+            <h2>Sua leitura, no seu ritmo</h2>
+            <p>
+              Ajuste a pagina, acompanhe a fase narrativa e transforme cada sessao em progresso real.
+            </p>
+          </div>
+          <div className="aura-hero__signal">
+            <BookOpenCheck aria-hidden="true" />
+            <strong>{progressPercent}%</strong>
+            <span>concluido</span>
+          </div>
+        </div>
+      </article>
+
       <ReadingHeroPanel
         book={book}
         currentPage={currentPage}

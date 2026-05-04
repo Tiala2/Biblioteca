@@ -1,9 +1,9 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { BarChart3, BookOpen, Medal, Settings2, Sparkles, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { formatDateTimeBr, formatDecimal, formatInteger } from "@shared/lib/formatters";
@@ -67,7 +67,6 @@ type HomeResponse = {
 type Paged<T> = { content: T[] };
 
 export function ProfilePage() {
-  const { auth } = useAuth();
   const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -207,39 +206,48 @@ export function ProfilePage() {
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        <div className="section-head">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--profile">
+        <div className="aura-hero__content">
           <div>
+            <p className="eyebrow aura-eyebrow">Identidade leitora</p>
             <h2>Perfil e historico de leitura</h2>
             <p>
-              Acompanhe seus numeros, sua linha do tempo e as preferencias que influenciam metas, alertas e ranking.
+              Seus numeros, escolhas e registros recentes em uma visao que mostra como seu habito esta crescendo.
             </p>
           </div>
-          <span className="kpi">{auth?.name ?? profile?.name}</span>
+          <div className="aura-hero__signal">
+            <UserRound aria-hidden="true" />
+            <strong>{profileInsights.totalBadges}</strong>
+            <span>badge(s)</span>
+          </div>
         </div>
         {error && <p className="error">{error}</p>}
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           <div className="stat-box">
+            <BookOpen aria-hidden="true" />
             <strong>{formatInteger(home?.userSummary.totalPagesRead)}</strong>
             <span>paginas lidas</span>
           </div>
           <div className="stat-box">
+            <Sparkles aria-hidden="true" />
             <strong>{formatInteger(home?.userSummary.totalFinished)}</strong>
             <span>livros concluidos</span>
           </div>
           <div className="stat-box">
+            <BarChart3 aria-hidden="true" />
             <strong>{formatInteger(home?.readingProgress.streakDays)}</strong>
             <span>dias de streak</span>
           </div>
           <div className="stat-box">
+            <Medal aria-hidden="true" />
             <strong>{formatInteger(home?.readingProgress.sessionsThisWeek)}</strong>
             <span>sessoes na semana</span>
           </div>
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Ritmo da semana</h3>
           <span className="kpi">Visao resumida</span>
@@ -264,9 +272,9 @@ export function ProfilePage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Conta</h3>
+          <h3><Settings2 aria-hidden="true" /> Conta</h3>
           <span className="kpi">{profile?.badges.length ?? 0} badge(s)</span>
         </div>
         <div className="stacked-list">
@@ -294,7 +302,7 @@ export function ProfilePage() {
         </form>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Acoes rapidas</h3>
           <span className="kpi">Atalhos</span>
@@ -315,7 +323,7 @@ export function ProfilePage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <h3>Historico recente</h3>
           <span className="kpi">{filteredTimeline.length} registro(s)</span>
@@ -345,7 +353,7 @@ export function ProfilePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Badges recentes</h3>
           <span className="kpi">{profileInsights.recentBadges.length} destaque(s)</span>
@@ -370,7 +378,7 @@ export function ProfilePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Reviews recentes</h3>
           <span className="kpi">{filteredReviews.length} review(s)</span>

@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { BellRing, Flame, Gauge, Target } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -138,16 +139,25 @@ export function GoalsPage() {
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        <h2>Transforme leitura em constancia</h2>
-        <p>Defina, acompanhe e conclua metas com um painel simples e claro.</p>
-        <p className="quote">Streak atual: {streak} dia(s) consecutivos</p>
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--goals">
+        <div className="aura-hero__content">
+          <div>
+            <p className="eyebrow aura-eyebrow">Ritual de leitura</p>
+            <h2>Transforme leitura em constancia</h2>
+            <p>Defina uma meta que parece possivel hoje e acompanhe o ritmo sem pressao.</p>
+          </div>
+          <div className="aura-hero__signal">
+            <Flame aria-hidden="true" />
+            <strong>{streak}</strong>
+            <span>dia(s) consecutivos</span>
+          </div>
+        </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Configurar meta</h3>
+          <h3><Target aria-hidden="true" /> Configurar meta</h3>
           <span className="kpi">{period === "WEEKLY" ? "Semanal" : "Mensal"}</span>
         </div>
         <form id="goal-form" onSubmit={onSubmit}>
@@ -168,9 +178,9 @@ export function GoalsPage() {
         </form>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
-          <h3>Resumo</h3>
+          <h3><Gauge aria-hidden="true" /> Resumo</h3>
           <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} pags` : "Sem meta ativa"}</span>
         </div>
         {goal ? (
@@ -180,7 +190,7 @@ export function GoalsPage() {
             <p>Restante: {goal.remainingPages} paginas</p>
             <p>Expira em: {goal.expiresInDays} dia(s)</p>
             <p>Ritmo: {goal.paceWarning ? "Ajuste necessario" : "Bom ritmo"}</p>
-            <div className="progress-track" aria-hidden="true">
+            <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
           </>
@@ -202,9 +212,9 @@ export function GoalsPage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Alertas</h3>
+          <h3><BellRing aria-hidden="true" /> Alertas</h3>
           <span className="kpi">{alerts.length} aviso(s)</span>
         </div>
         {alerts.length === 0 && (

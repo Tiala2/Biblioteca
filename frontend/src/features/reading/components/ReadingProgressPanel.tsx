@@ -25,7 +25,7 @@ export function ReadingProgressPanel({
   onJumpPages,
 }: ReadingProgressPanelProps) {
   return (
-    <article className="card">
+    <article className="card aura-panel aura-panel--focus">
       <div className="section-head">
         <div>
           <h3>Painel de progresso</h3>
@@ -62,7 +62,7 @@ export function ReadingProgressPanel({
         </div>
       </div>
 
-      <div className="progress-track" aria-hidden="true">
+      <div className="progress-track aura-progress" aria-hidden="true">
         <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
       </div>
 
