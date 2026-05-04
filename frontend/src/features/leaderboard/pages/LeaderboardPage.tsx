@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { BarChart3, Crown, Medal, Settings2, Trophy, UsersRound } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -115,18 +116,23 @@ export function LeaderboardPage() {
   }
 
   return (
-    <section>
-      <div className="section-head">
+    <section className="aura-page">
+      <div className="card hero aura-hero aura-hero--leaderboard">
         <div>
+          <p className="eyebrow aura-eyebrow">Energia da comunidade</p>
           <h2>Ranking semanal da comunidade</h2>
-          <p className="section-sub">{copy.subtitle}</p>
+          <p>{copy.subtitle}</p>
         </div>
-        <span className="kpi">{entries.length} participante(s)</span>
+        <div className="aura-hero__signal">
+          <Trophy aria-hidden="true" />
+          <strong>{entries.length}</strong>
+          <span>participante(s)</span>
+        </div>
       </div>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>Seu status no ranking</h3>
+          <h3><Settings2 aria-hidden="true" /> Seu status no ranking</h3>
           <span className="kpi">{leaderboardOptIn ? "Opt-in ativo" : "Opt-in desligado"}</span>
         </div>
         <p className="section-sub">
@@ -141,7 +147,7 @@ export function LeaderboardPage() {
         </div>
       </article>
 
-      <article className="card tabs-card">
+      <article className="card tabs-card aura-panel aura-panel--wide">
         <div className="tabs-row" role="tablist" aria-label="Metricas do ranking">
           <button
             type="button"
@@ -178,20 +184,24 @@ export function LeaderboardPage() {
       {error && <StateCard title="Falha ao carregar ranking" message={error} variant="error" />}
 
       {!error && (
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           <div className="stat-box">
+            <Crown aria-hidden="true" />
             <strong>{topEntry ? topEntry.name : "Sem lider"}</strong>
             <span>lider atual</span>
           </div>
           <div className="stat-box">
+            <BarChart3 aria-hidden="true" />
             <strong>{topEntry ? `${formatInteger(topEntry.value)} ${copy.valueLabel}` : "0"}</strong>
             <span>melhor marca</span>
           </div>
           <div className="stat-box">
+            <UsersRound aria-hidden="true" />
             <strong>{formatInteger(entries.length)}</strong>
             <span>participantes elegiveis</span>
           </div>
           <div className="stat-box">
+            <Medal aria-hidden="true" />
             <strong>{formatInteger(communityTotal)}</strong>
             <span>volume total da semana</span>
           </div>
@@ -199,14 +209,14 @@ export function LeaderboardPage() {
       )}
 
       {!error && podium.length > 0 && (
-        <article className="card">
+        <article className="card aura-panel aura-panel--wide">
           <div className="section-head">
-            <h3>Podio da semana</h3>
+            <h3><Trophy aria-hidden="true" /> Podio da semana</h3>
             <span className="kpi">{copy.title}</span>
           </div>
-          <div className="grid">
+          <div className="grid aura-podium-grid">
             {podium.map((entry, index) => (
-              <article key={entry.userId} className="card">
+              <article key={entry.userId} className="card aura-podium-card">
                 <p className="eyebrow">Posicao {index + 1}</p>
                 <h3>{entry.name}</h3>
                 <p className="section-sub">{copy.title}</p>
@@ -219,9 +229,9 @@ export function LeaderboardPage() {
         </article>
       )}
 
-      <div className="grid">
+      <div className="grid aura-leaderboard-grid">
         {entries.map((entry, index) => (
-          <article key={entry.userId} className="card">
+          <article key={entry.userId} className="card aura-leaderboard-card">
             <p className="eyebrow">#{index + 1}</p>
             <h3>{entry.name}</h3>
             <p className="section-sub">{copy.title}</p>

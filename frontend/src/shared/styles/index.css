@@ -864,6 +864,63 @@ label {
   margin-bottom: 0.5rem;
 }
 
+.aura-favorite-card,
+.aura-review-card,
+.aura-podium-card,
+.aura-leaderboard-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.aura-favorite-card::before,
+.aura-review-card::before,
+.aura-podium-card::before,
+.aura-leaderboard-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-b), var(--gold), var(--accent-coral));
+}
+
+.aura-review-grid,
+.aura-podium-grid,
+.aura-leaderboard-grid {
+  margin-top: 1rem;
+}
+
+.aura-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  color: #5b3400;
+  background: color-mix(in srgb, var(--gold) 42%, white);
+  font-weight: 800;
+}
+
+.aura-rating svg {
+  width: 15px;
+  height: 15px;
+}
+
+.aura-podium-card:nth-child(1) {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--gold) 18%, transparent), color-mix(in srgb, var(--card-bg) 94%, transparent));
+}
+
+.aura-podium-card:nth-child(2) {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--primary-b) 14%, transparent), color-mix(in srgb, var(--card-bg) 94%, transparent));
+}
+
+.aura-podium-card:nth-child(3) {
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--accent-coral) 13%, transparent), color-mix(in srgb, var(--card-bg) 94%, transparent));
+}
+
 .hero h2,
 .hero p,
 .hero .quote {
@@ -1092,7 +1149,9 @@ textarea:focus-visible {
 }
 
 .favorite-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
   font-size: 0.72rem;
@@ -1102,6 +1161,11 @@ textarea:focus-visible {
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--gold) 72%, white), color-mix(in srgb, #f59e0b 70%, white));
   box-shadow: 0 8px 18px color-mix(in srgb, var(--gold) 24%, transparent);
+}
+
+.favorite-badge svg {
+  width: 13px;
+  height: 13px;
 }
 
 .tabs-card {

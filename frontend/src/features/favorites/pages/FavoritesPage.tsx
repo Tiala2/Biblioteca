@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { BookMarked, Heart, Library, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -58,13 +59,18 @@ export function FavoritesPage() {
   };
 
   return (
-    <section>
-      <div className="section-head">
+    <section className="aura-page">
+      <div className="card hero aura-hero aura-hero--favorites">
         <div>
+          <p className="eyebrow aura-eyebrow">Estante afetiva</p>
           <h2>Seus capitulos preferidos continuam aqui</h2>
-          <p className="section-sub">Retome os livros que marcaram sua jornada.</p>
+          <p>Retome os livros que marcaram sua jornada e mantenha perto o que ainda merece outra pagina.</p>
         </div>
-        <span className="kpi">{favorites.length} itens</span>
+        <div className="aura-hero__signal">
+          <Heart aria-hidden="true" />
+          <strong>{favorites.length}</strong>
+          <span>favorito(s)</span>
+        </div>
       </div>
 
       {loading && (
@@ -77,24 +83,24 @@ export function FavoritesPage() {
       {!loading && error && <StateCard title="Falha ao carregar favoritos" message={error} variant="error" />}
 
       {!loading && favorites.length > 0 && (
-        <article className="card">
+        <article className="card aura-panel aura-panel--wide">
           <div className="section-head">
             <div>
-              <h3>Prontos para reabrir</h3>
+              <h3><Library aria-hidden="true" /> Prontos para reabrir</h3>
               <p className="section-sub">Escolha um favorito e volte direto para a experiencia de leitura.</p>
             </div>
-            <span className="kpi">Biblioteca pessoal</span>
+            <span className="kpi"><Sparkles aria-hidden="true" /> Biblioteca pessoal</span>
           </div>
         </article>
       )}
 
-      <div className="grid">
+      <div className="grid aura-book-grid">
         {favorites.map((item) => (
-          <article key={item.bookId} className="card">
+          <article key={item.bookId} className="card aura-book-card aura-favorite-card">
             <BookCover title={item.bookTitle} coverUrl={item.coverUrl} size="medium" />
             <div className="book-card-badges">
               {item.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
-              <span className="favorite-badge">FAVORITO</span>
+              <span className="favorite-badge"><BookMarked aria-hidden="true" /> FAVORITO</span>
             </div>
             <h3>{item.bookTitle}</h3>
             <p>ISBN: {item.bookIsbn}</p>

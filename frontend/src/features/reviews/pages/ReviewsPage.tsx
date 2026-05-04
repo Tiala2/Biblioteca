@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { MessageSquareQuote, PencilLine, ScrollText, Star } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors";
@@ -188,10 +189,25 @@ export function ReviewsPage() {
   };
 
   return (
-    <section className="grid">
-      <article className="card">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--reviews">
+        <div className="aura-hero__content">
+          <div>
+            <p className="eyebrow aura-eyebrow">Diario de percepcoes</p>
+            <h2>Suas percepcoes importam</h2>
+            <p>Registre o que ficou da leitura, ajuste sua opiniao e transforme cada livro em memoria organizada.</p>
+          </div>
+          <div className="aura-hero__signal">
+            <MessageSquareQuote aria-hidden="true" />
+            <strong>{items.length}</strong>
+            <span>review(s)</span>
+          </div>
+        </div>
+      </article>
+
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Nova review</h3>
+          <h3><PencilLine aria-hidden="true" /> Nova review</h3>
           <span className="kpi">{eligibleBooks.length} livro(s) elegivel(is)</span>
         </div>
         <p className="section-sub">
@@ -228,10 +244,10 @@ export function ReviewsPage() {
         </form>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <div>
-            <h2>Suas percepcoes importam</h2>
+            <h3><ScrollText aria-hidden="true" /> Reviews registradas</h3>
             <p className="section-sub">Crie, acompanhe, ajuste e remova suas avaliacoes de leitura.</p>
           </div>
           <span className="kpi">Pagina {page + 1}</span>
@@ -240,12 +256,12 @@ export function ReviewsPage() {
         {loading && <p className="section-sub">Carregando reviews...</p>}
         {error && <p className="error">{error}</p>}
 
-        <div className="grid">
+        <div className="grid aura-review-grid">
           {items.map((review) => {
             const isEditing = editingId === review.id;
 
             return (
-              <article key={review.id} className="card">
+              <article key={review.id} className="card aura-review-card">
                 <h3>{resolveBookLabel(review)}</h3>
                 {isEditing ? (
                   <>
@@ -262,7 +278,7 @@ export function ReviewsPage() {
                   </>
                 ) : (
                   <>
-                    <p>Nota: {review.rating}</p>
+                    <p className="aura-rating"><Star aria-hidden="true" /> Nota: {review.rating}</p>
                     <p>{review.comment}</p>
                   </>
                 )}
