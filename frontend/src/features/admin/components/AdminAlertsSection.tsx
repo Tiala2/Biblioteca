@@ -1,3 +1,4 @@
+import { BellRing } from "lucide-react";
 import { AlertAuditPanel } from "./AlertAuditPanel";
 import { AdminSection } from "./AdminSection";
 import type { AlertDeliveryAdmin } from "../types";
@@ -23,6 +24,7 @@ export function AdminAlertsSection(props: AdminAlertsSectionProps) {
       eyebrow="Auditoria"
       title="Alertas e rastreabilidade"
       description="Filtre entregas de alertas por texto, status e tipo sem depender de busca local limitada."
+      icon={<BellRing aria-hidden="true" />}
     >
       <AlertAuditPanel {...props} />
     </AdminSection>

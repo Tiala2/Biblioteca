@@ -1,3 +1,4 @@
+import { BookOpen, Heart, LibraryBig, MessageSquareText, Tags, UsersRound } from "lucide-react";
 import type { Metrics } from "../types";
 
 type AdminHeroPanelProps = {
@@ -7,34 +8,48 @@ type AdminHeroPanelProps = {
 
 export function AdminHeroPanel({ metrics, error }: AdminHeroPanelProps) {
   return (
-    <article id="admin-metrics" className="card hero admin-hero">
-      <div className="section-head">
-        <h2>Painel admin</h2>
-        <span className="kpi">ADMIN</span>
+    <article id="admin-metrics" className="card hero aura-hero admin-hero">
+      <div className="aura-hero__content">
+        <div>
+          <p className="eyebrow aura-eyebrow">Central de operacao</p>
+          <h2>Painel admin</h2>
+          <p>Controle acervo, engajamento, usuarios e auditoria com visao rapida do estado da plataforma.</p>
+        </div>
+        <div className="aura-hero__signal">
+          <LibraryBig aria-hidden="true" />
+          <strong>Admin</strong>
+          <span>operacao</span>
+        </div>
       </div>
       {metrics ? (
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats admin-hero__stats">
           <div className="stat-box">
+            <UsersRound aria-hidden="true" />
             <strong>{metrics.totalUsers}</strong>
             <span>usuarios</span>
           </div>
           <div className="stat-box">
+            <BookOpen aria-hidden="true" />
             <strong>{metrics.totalBooks}</strong>
             <span>livros</span>
           </div>
           <div className="stat-box">
+            <MessageSquareText aria-hidden="true" />
             <strong>{metrics.totalReviews}</strong>
             <span>reviews</span>
           </div>
           <div className="stat-box">
+            <Heart aria-hidden="true" />
             <strong>{metrics.totalFavorites}</strong>
             <span>favoritos</span>
           </div>
           <div className="stat-box">
+            <LibraryBig aria-hidden="true" />
             <strong>{metrics.totalCollections}</strong>
             <span>colecoes</span>
           </div>
           <div className="stat-box">
+            <Tags aria-hidden="true" />
             <strong>{metrics.totalTags}</strong>
             <span>tags</span>
           </div>

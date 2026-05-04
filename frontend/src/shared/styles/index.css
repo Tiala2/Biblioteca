@@ -476,13 +476,13 @@ label {
 }
 
 .admin-hero {
+  min-height: 260px;
+}
+
+.admin-hero__stats {
   position: relative;
-  overflow: hidden;
-  min-height: 210px;
-  padding: 1.35rem;
-  background:
-    linear-gradient(120deg, color-mix(in srgb, var(--admin) 14%, transparent), transparent),
-    color-mix(in srgb, var(--card-bg) 90%, transparent);
+  z-index: 1;
+  margin-top: 1.2rem;
 }
 
 .admin-quick-nav {
@@ -494,7 +494,7 @@ label {
   flex-wrap: wrap;
   padding: 0.7rem;
   border: 1px solid color-mix(in srgb, var(--card-border) 80%, transparent);
-  border-radius: var(--radius);
+  border-radius: 8px;
   background: color-mix(in srgb, var(--card-bg) 86%, transparent);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(18px);
@@ -503,6 +503,7 @@ label {
 .admin-quick-nav a {
   display: inline-flex;
   align-items: center;
+  gap: 0.4rem;
   min-height: 38px;
   padding: 0.45rem 0.75rem;
   border-radius: 8px;
@@ -513,35 +514,68 @@ label {
   font-weight: 800;
 }
 
+.admin-quick-nav a svg {
+  width: 17px;
+  height: 17px;
+  color: color-mix(in srgb, var(--primary-b) 76%, var(--text-main));
+}
+
 .admin-quick-nav a.active {
   background: linear-gradient(120deg, color-mix(in srgb, var(--admin) 34%, white), color-mix(in srgb, var(--primary-b) 25%, white));
   border-color: color-mix(in srgb, var(--admin) 55%, transparent);
   box-shadow: 0 12px 26px color-mix(in srgb, var(--admin) 22%, transparent);
 }
 
+.admin-quick-nav a.active svg {
+  color: var(--text-inv);
+}
+
 .admin-section {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: 0.9rem;
   padding: 1rem;
   border: 1px solid color-mix(in srgb, var(--card-border) 78%, transparent);
-  border-radius: var(--radius-lg);
+  border-radius: 8px;
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 78%, transparent), color-mix(in srgb, var(--primary-b) 5%, transparent)),
     color-mix(in srgb, var(--card-bg) 76%, transparent);
   box-shadow: var(--shadow-soft);
 }
 
+.admin-section::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--admin), var(--primary-b), var(--gold));
+}
+
 .admin-section__head {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 0.25rem;
   max-width: 760px;
 }
 
 .admin-section__head h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   font-size: 1.55rem;
 }
 
+.admin-section__head h2 svg {
+  width: 24px;
+  height: 24px;
+  color: color-mix(in srgb, var(--primary-b) 76%, var(--text-main));
+}
+
 .admin-section__grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -555,6 +589,8 @@ label {
 .admin-panel {
   min-width: 0;
   border-radius: 8px;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--card-bg) 94%, transparent), color-mix(in srgb, var(--admin) 5%, transparent));
 }
 
 .admin-panel--wide {
@@ -1561,6 +1597,15 @@ body[data-theme="day"] .login-form {
     grid-column: auto;
   }
 
+  .admin-section__grid,
+  .admin-section--wide .admin-section__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-panel--wide {
+    grid-row: auto;
+  }
+
   .book-cover--large {
     max-width: 180px;
   }
@@ -1596,6 +1641,30 @@ body[data-theme="day"] .login-form {
   .admin-zone .nav-link {
     justify-content: center;
     text-align: center;
+  }
+
+  .admin-page,
+  .admin-section,
+  .admin-panel,
+  .admin-form {
+    min-width: 0;
+  }
+
+  .admin-section {
+    padding: 0.8rem;
+  }
+
+  .admin-section__head h2 {
+    font-size: 1.35rem;
+  }
+
+  .admin-quick-nav {
+    position: static;
+  }
+
+  .admin-quick-nav a {
+    flex: 1 1 calc(50% - 0.5rem);
+    justify-content: center;
   }
 
   .pagination-row {

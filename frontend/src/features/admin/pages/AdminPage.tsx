@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Bell, Gauge, LibraryBig, Sparkles, UsersRound } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
@@ -109,18 +110,23 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
 
       <nav className="admin-quick-nav" aria-label="Atalhos do painel administrativo">
         <NavLink to="/admin/catalog" className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <LibraryBig aria-hidden="true" />
           Catalogo
         </NavLink>
         <NavLink to="/admin/engagement" className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <Sparkles aria-hidden="true" />
           Engajamento
         </NavLink>
         <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <UsersRound aria-hidden="true" />
           Usuarios
         </NavLink>
         <NavLink to="/admin/alerts" className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <Bell aria-hidden="true" />
           Auditoria
         </NavLink>
         <NavLink to="/admin" end className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <Gauge aria-hidden="true" />
           Visao geral
         </NavLink>
       </nav>

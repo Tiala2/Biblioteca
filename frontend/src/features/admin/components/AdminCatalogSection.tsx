@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { LibraryBig } from "lucide-react";
 import { AdminSection } from "./AdminSection";
 import { BookPanel } from "./BookPanel";
 import { CategoryPanel } from "./CategoryPanel";
@@ -118,6 +119,7 @@ export function AdminCatalogSection({
       eyebrow="Catalogo"
       title="Acervo e descoberta"
       description="Cadastre livros, organize categorias, tags e colecoes sem sair do mesmo fluxo."
+      icon={<LibraryBig aria-hidden="true" />}
       variant="wide"
     >
       <BookPanel

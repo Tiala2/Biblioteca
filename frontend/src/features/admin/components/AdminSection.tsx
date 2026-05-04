@@ -5,15 +5,16 @@ type AdminSectionProps = {
   title: string;
   description: string;
   children: ReactNode;
+  icon?: ReactNode;
   variant?: "compact" | "wide";
 };
 
-export function AdminSection({ eyebrow, title, description, children, variant = "compact" }: AdminSectionProps) {
+export function AdminSection({ eyebrow, title, description, children, icon, variant = "compact" }: AdminSectionProps) {
   return (
     <section className={`admin-section admin-section--${variant}`}>
       <div className="admin-section__head">
         <p className="eyebrow">{eyebrow}</p>
-        <h2>{title}</h2>
+        <h2>{icon}{title}</h2>
         <p className="section-sub">{description}</p>
       </div>
       <div className="admin-section__grid">{children}</div>
