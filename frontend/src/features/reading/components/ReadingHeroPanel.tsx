@@ -39,7 +39,7 @@ export function ReadingHeroPanel({
 }: ReadingHeroPanelProps) {
   return (
     <article className="card hero aura-hero aura-book-detail-hero aura-reading-focus">
-      <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />
+      <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="large" />
       <div className="section-head">
         <div>
           <h2>{book.title}</h2>

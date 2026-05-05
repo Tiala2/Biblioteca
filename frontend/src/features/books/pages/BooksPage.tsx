@@ -15,6 +15,7 @@ type Book = {
   id: string;
   title: string;
   author?: string | null;
+  isbn?: string | null;
   numberOfPages: number;
   hasPdf: boolean;
   source?: "LOCAL" | "OPEN";
@@ -358,7 +359,7 @@ export function BooksPage() {
       {!loading && !error && <div className="grid aura-catalog-grid">
         {books.map((book) => (
           <article key={book.id} className="card aura-book-card">
-            <BookCover title={book.title} coverUrl={book.coverUrl} size="medium" />
+            <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             <div className="book-card-badges">
               {book.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
               {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">SEM PDF</span>}

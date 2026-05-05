@@ -78,5 +78,16 @@ export type ReadingSyncResponse = {
 export type CachedReaderLookup = {
   embedUrl: string | null;
   fallbackUrl: string | null;
+  availableInsideApp?: boolean;
+  message?: string | null;
   cachedAt: number;
+};
+
+export type ExternalReaderLookup = {
+  bookId: string;
+  source: "LOCAL" | "OPEN" | string;
+  availableInsideApp: boolean;
+  embedUrl: string | null;
+  fallbackUrl: string | null;
+  message?: string | null;
 };

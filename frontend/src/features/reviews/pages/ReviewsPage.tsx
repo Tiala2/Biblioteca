@@ -5,6 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
+import { BookCover } from "@shared/ui/books/BookCover";
 import { useToast } from "@shared/ui/toast/ToastContext";
 
 type Review = {
@@ -16,7 +17,14 @@ type Review = {
   updatedAt: string;
 };
 
-type BookOption = { id: string; title: string };
+type BookOption = {
+  id: string;
+  title: string;
+  author?: string | null;
+  isbn?: string | null;
+  coverUrl?: string | null;
+  source?: "LOCAL" | "OPEN";
+};
 type Reading = {
   id: string;
   status: string;
@@ -28,6 +36,21 @@ function parsePage(value: string | null): number {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed < 0) return 0;
   return parsed;
+}
+
+function RatingStars({ value }: { value: number }) {
+  return (
+    <span className="review-stars" aria-label={`Nota ${value} de 5`}>
+      {Array.from({ length: 5 }, (_, index) => (
+        <Star
+          key={index}
+          aria-hidden="true"
+          className={index < value ? "review-star review-star--filled" : "review-star"}
+          fill="currentColor"
+        />
+      ))}
+    </span>
+  );
 }
 
 export function ReviewsPage() {
@@ -58,11 +81,16 @@ export function ReviewsPage() {
     () => Object.fromEntries(bookOptions.map((option) => [option.id, option.title])),
     [bookOptions]
   );
+  const bookById = useMemo(
+    () => Object.fromEntries(bookOptions.map((option) => [option.id, option])),
+    [bookOptions]
+  );
   const eligibleBooks = useMemo(
     () => bookOptions.filter((option) => eligibleBookIds.includes(option.id)),
     [bookOptions, eligibleBookIds]
   );
   const hasEligibleBooks = eligibleBooks.length > 0;
+  const selectedBook = bookById[bookId] ?? null;
 
   const loadPage = useCallback(async () => {
     if (!headers) return;
@@ -222,6 +250,18 @@ export function ReviewsPage() {
               </option>
             ))}
           </select>
+          {selectedBook ? (
+            <div className="review-book-preview">
+              <BookCover title={selectedBook.title} coverUrl={selectedBook.coverUrl} isbn={selectedBook.isbn} size="small" />
+              <div>
+                <strong>{selectedBook.title}</strong>
+                <small>
+                  {selectedBook.author ?? "Autor nao informado"}
+                  {selectedBook.source === "OPEN" ? " - Open Library" : ""}
+                </small>
+              </div>
+            </div>
+          ) : null}
           {!hasEligibleBooks && (
             <div>
               <p className="section-sub">
@@ -259,10 +299,22 @@ export function ReviewsPage() {
         <div className="grid aura-review-grid">
           {items.map((review) => {
             const isEditing = editingId === review.id;
+            const reviewBook = bookById[review.bookId];
 
             return (
               <article key={review.id} className="card aura-review-card">
-                <h3>{resolveBookLabel(review)}</h3>
+                <div className="inline-book-row review-book-row">
+                  <BookCover
+                    title={resolveBookLabel(review)}
+                    coverUrl={reviewBook?.coverUrl}
+                    isbn={reviewBook?.isbn}
+                    size="small"
+                  />
+                  <div>
+                    <h3>{resolveBookLabel(review)}</h3>
+                    <small>{reviewBook?.author ?? "Autor nao informado"}</small>
+                  </div>
+                </div>
                 {isEditing ? (
                   <>
                     <label>Nota</label>
@@ -278,7 +330,7 @@ export function ReviewsPage() {
                   </>
                 ) : (
                   <>
-                    <p className="aura-rating"><Star aria-hidden="true" /> Nota: {review.rating}</p>
+                    <p className="aura-rating"><RatingStars value={review.rating} /> Nota {review.rating}</p>
                     <p>{review.comment}</p>
                   </>
                 )}

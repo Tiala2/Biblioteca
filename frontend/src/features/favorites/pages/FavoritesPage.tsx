@@ -97,7 +97,7 @@ export function FavoritesPage() {
       <div className="grid aura-book-grid">
         {favorites.map((item) => (
           <article key={item.bookId} className="card aura-book-card aura-favorite-card">
-            <BookCover title={item.bookTitle} coverUrl={item.coverUrl} size="medium" />
+            <BookCover title={item.bookTitle} coverUrl={item.coverUrl} isbn={item.bookIsbn} size="medium" />
             <div className="book-card-badges">
               {item.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
               <span className="favorite-badge"><BookMarked aria-hidden="true" /> FAVORITO</span>

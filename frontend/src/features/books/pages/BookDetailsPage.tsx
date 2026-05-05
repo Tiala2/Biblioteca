@@ -177,7 +177,7 @@ export function BookDetailsPage() {
     <section className="grid aura-page">
       <article className="card hero aura-hero aura-book-detail-hero">
         <div className="aura-book-detail-hero__cover">
-          {book && <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />}
+          {book && <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="large" />}
         </div>
         <div className="aura-hero__content">
           <div>

@@ -22,6 +22,7 @@ import type {
   HomeReading,
   HomeResumeResponse,
   NarrativeInsight,
+  ExternalReaderLookup,
   ReadingSyncResponse,
 } from "../types";
 
@@ -152,57 +153,22 @@ export function ReadingExperiencePage() {
     }
 
     let isActive = true;
-    const controller = new AbortController();
 
     const loadOpenLibraryReader = async () => {
       setExternalReaderLoading(true);
       try {
-        const searchQuery = book.isbn?.trim() ? `isbn:${book.isbn.trim()}` : book.title;
-        const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(searchQuery)}&limit=5`;
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) throw new Error("open-library-unavailable");
-
-        const data = (await response.json()) as {
-          docs?: Array<{
-            key?: string;
-            ia?: string[] | string;
-            edition_key?: string[];
-            availability?: { identifier?: string };
-          }>;
-        };
-
-        const docs = data.docs ?? [];
-        const preferred =
-          docs.find((doc) => doc.availability?.identifier || doc.ia || doc.edition_key?.length) ?? docs[0];
-
-        const iaIdentifier =
-          preferred?.availability?.identifier ??
-          (Array.isArray(preferred?.ia) ? preferred?.ia[0] : preferred?.ia);
-
+        const response = await api.get<ExternalReaderLookup>(`/api/v1/books/${book.id}/external-reader`);
         if (!isActive) return;
 
-        if (iaIdentifier) {
-          const fallbackUrl = `https://openlibrary.org/search?q=${encodeURIComponent(book.title)}`;
-          writeReaderCache(book, {
-            embedUrl: `https://archive.org/embed/${iaIdentifier}`,
-            fallbackUrl,
-          });
-          setExternalReaderEmbedUrl(`https://archive.org/embed/${iaIdentifier}`);
-          setExternalReaderFallbackUrl(fallbackUrl);
-          return;
-        }
-
-        if (preferred?.key) {
-          writeReaderCache(book, {
-            embedUrl: null,
-            fallbackUrl: `https://openlibrary.org${preferred.key}`,
-          });
-          setExternalReaderFallbackUrl(`https://openlibrary.org${preferred.key}`);
-        } else {
-          const fallbackUrl = `https://openlibrary.org/search?q=${encodeURIComponent(book.title)}`;
-          writeReaderCache(book, { embedUrl: null, fallbackUrl });
-          setExternalReaderFallbackUrl(fallbackUrl);
-        }
+        const lookup = response.data;
+        writeReaderCache(book, {
+          embedUrl: lookup.embedUrl,
+          fallbackUrl: lookup.fallbackUrl,
+          availableInsideApp: lookup.availableInsideApp,
+          message: lookup.message,
+        });
+        setExternalReaderEmbedUrl(lookup.embedUrl);
+        setExternalReaderFallbackUrl(lookup.fallbackUrl);
       } catch {
         if (!isActive) return;
         const fallbackUrl = `https://openlibrary.org/search?q=${encodeURIComponent(book.title)}`;
@@ -217,7 +183,6 @@ export function ReadingExperiencePage() {
 
     return () => {
       isActive = false;
-      controller.abort();
     };
   }, [book]);
 

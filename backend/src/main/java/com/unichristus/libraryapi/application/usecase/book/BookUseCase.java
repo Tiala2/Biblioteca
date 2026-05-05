@@ -5,6 +5,7 @@ import com.unichristus.libraryapi.application.dto.request.BookCreateRequest;
 import com.unichristus.libraryapi.application.dto.request.BookUpdateRequest;
 import com.unichristus.libraryapi.application.dto.response.BookListResponse;
 import com.unichristus.libraryapi.application.dto.response.BookResponse;
+import com.unichristus.libraryapi.application.dto.response.ExternalReaderResponse;
 import com.unichristus.libraryapi.application.mapper.BookResponseMapper;
 import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.book.BookSearchHit;
@@ -339,6 +340,48 @@ public class BookUseCase {
     public void invalidateBook(UUID bookId) {
         Book book = bookService.findBookByIdOrThrow(bookId);
         bookService.invalidateBook(book);
+    }
+
+    public ExternalReaderResponse getExternalReader(UUID bookId) {
+        Book book = bookService.findBookByIdOrThrow(bookId);
+        if (book.isHasPdf()) {
+            return new ExternalReaderResponse(
+                    book.getId(),
+                    book.getSource().name(),
+                    false,
+                    null,
+                    null,
+                    "Este livro ja possui PDF local e deve ser lido pelo leitor interno."
+            );
+        }
+
+        try {
+            Optional<OpenLibraryClient.OpenLibraryReaderLookup> lookup = openLibraryClient.findReader(book.getTitle(), book.getIsbn());
+            if (lookup.isPresent()) {
+                OpenLibraryClient.OpenLibraryReaderLookup reader = lookup.get();
+                return new ExternalReaderResponse(
+                        book.getId(),
+                        book.getSource().name(),
+                        reader.availableInsideApp(),
+                        reader.embedUrl(),
+                        reader.fallbackUrl(),
+                        reader.availableInsideApp()
+                                ? "Leitor incorporavel encontrado."
+                                : "Nao encontramos uma versao incorporavel; use a fonte oficial."
+                );
+            }
+        } catch (Exception ex) {
+            log.warn("Nao foi possivel resolver leitor externo para bookId={}: {}", bookId, ex.getMessage());
+        }
+
+        return new ExternalReaderResponse(
+                book.getId(),
+                book.getSource().name(),
+                false,
+                null,
+                "https://openlibrary.org/search?q=" + java.net.URLEncoder.encode(book.getTitle(), java.nio.charset.StandardCharsets.UTF_8),
+                "Nao foi possivel consultar a fonte externa agora."
+        );
     }
 
     public List<BookListResponse> getRecommendations(UUID userId, int limit) {
