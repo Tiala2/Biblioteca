@@ -7,6 +7,7 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { formatDateTimeBr, formatDecimal, formatInteger } from "@shared/lib/formatters";
+import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type Badge = {
@@ -29,6 +30,7 @@ type UserProfile = {
 type HomeBook = {
   id: string;
   title: string;
+  isbn?: string | null;
   coverUrl?: string | null;
   source?: "LOCAL" | "OPEN";
 };
@@ -124,6 +126,7 @@ export function ProfilePage() {
     return readings.slice(0, 5).map((reading) => ({
       id: reading.id,
       title: reading.book.title,
+      book: reading.book,
       subtitle: `Página ${reading.currentPage} - ${reading.progress}% - ${reading.status}`,
       date: reading.lastReadedAt ?? reading.finishedAt ?? null,
       link: `/books/${reading.book.id}`,
@@ -337,6 +340,7 @@ export function ProfilePage() {
           <ul className="stacked-list">
             {filteredTimeline.map((item) => (
               <li key={item.id} className="stacked-list-item">
+                <BookCover title={item.book.title} coverUrl={item.book.coverUrl} isbn={item.book.isbn} size="small" />
                 <div>
                   <strong>{item.title}</strong>
                   <p className="section-sub">{item.subtitle}</p>

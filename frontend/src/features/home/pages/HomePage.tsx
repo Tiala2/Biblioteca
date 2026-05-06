@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookOpen, Flame, LibraryBig, Sparkles, Target, Trophy } from "lucide-react";
+import { BookOpen, Flame, LibraryBig, Sparkles, Star, Target, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -11,6 +11,7 @@ import { StateCard } from "@shared/ui/feedback/StateCard";
 type HomeBook = {
   id: string;
   title: string;
+  isbn?: string | null;
   coverUrl?: string | null;
   source?: "LOCAL" | "OPEN";
   favorite?: boolean;
@@ -51,6 +52,8 @@ type Collection = {
 
 type Review = {
   bookTitle: string;
+  bookIsbn?: string | null;
+  bookCoverUrl?: string | null;
   rating: number;
 };
 
@@ -87,6 +90,21 @@ const EMPTY_HOME: HomeResponse = {
   recommendations: [],
   recentReviews: [],
 };
+
+function RatingStars({ value }: { value: number }) {
+  return (
+    <span className="review-stars" aria-label={`Nota ${value} de 5`}>
+      {Array.from({ length: 5 }, (_, index) => (
+        <Star
+          key={index}
+          aria-hidden="true"
+          className={index < value ? "review-star review-star--filled" : "review-star"}
+          fill="currentColor"
+        />
+      ))}
+    </span>
+  );
+}
 
 export function HomePage() {
   const { auth } = useAuth();
@@ -218,7 +236,12 @@ export function HomePage() {
         {currentReading ? (
           <>
             <div className="inline-book-row">
-              <BookCover title={currentReading.book.title} coverUrl={currentReading.book.coverUrl} size="small" />
+              <BookCover
+                title={currentReading.book.title}
+                coverUrl={currentReading.book.coverUrl}
+                isbn={currentReading.book.isbn}
+                size="small"
+              />
               <div>
                 <p><strong>{currentReading.book.title}</strong></p>
                 {currentReading.book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
@@ -277,7 +300,7 @@ export function HomePage() {
           <ul className="stacked-list aura-book-list">
             {home.recommendations.slice(0, 4).map((book) => (
               <li key={book.id} className="stacked-list-item">
-                <BookCover title={book.title} coverUrl={book.coverUrl} size="small" />
+                <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
                 <div>
                   <strong>{book.title}</strong>
                   {book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
@@ -327,10 +350,11 @@ export function HomePage() {
         {home.recentReviews.length > 0 ? (
           <ul className="stacked-list">
             {home.recentReviews.slice(0, 4).map((review, index) => (
-              <li key={`${review.bookTitle}-${index}`} className="stacked-list-item">
+              <li key={`${review.bookTitle}-${index}`} className="stacked-list-item home-review-row">
+                <BookCover title={review.bookTitle} coverUrl={review.bookCoverUrl} isbn={review.bookIsbn} size="small" />
                 <div>
                   <strong>{review.bookTitle}</strong>
-                  <p className="section-sub">Nota registrada: {review.rating}/5</p>
+                  <p className="aura-rating"><RatingStars value={review.rating} /> Nota {review.rating}</p>
                 </div>
               </li>
             ))}

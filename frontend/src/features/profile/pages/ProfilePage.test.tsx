@@ -134,7 +134,7 @@ describe("ProfilePage", () => {
     expect(await screen.findByRole("heading", { name: "Perfil e histórico de leitura" })).toBeInTheDocument();
     expect(screen.getByText("320")).toBeInTheDocument();
     expect(screen.getByText("livros concluídos")).toBeInTheDocument();
-    expect(screen.getByText("Livro em andamento")).toBeInTheDocument();
+    expect(screen.getAllByText("Livro em andamento").length).toBeGreaterThan(0);
     expect(screen.getByText("Primeira Review")).toBeInTheDocument();
     expect(screen.getByText("Excelente leitura")).toBeInTheDocument();
   });

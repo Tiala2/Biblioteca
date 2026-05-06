@@ -94,7 +94,7 @@ describe("HomePage", () => {
     expect(screen.getAllByText("Livro Atual").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Livro Recomendado").length).toBeGreaterThan(0);
     expect(screen.getByText("Classicos")).toBeInTheDocument();
-    expect(screen.getByText("Livro Avaliado")).toBeInTheDocument();
+    expect(screen.getAllByText("Livro Avaliado").length).toBeGreaterThan(0);
   });
 
   it("deve exibir fallback quando a API estiver indisponivel", async () => {

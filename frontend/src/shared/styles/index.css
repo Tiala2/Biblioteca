@@ -1027,6 +1027,14 @@ label {
   align-items: stretch;
 }
 
+.home-review-row {
+  justify-content: flex-start;
+}
+
+.home-review-row .aura-rating {
+  margin: 0.3rem 0 0;
+}
+
 .aura-filter-panel {
   margin-bottom: 1rem;
 }

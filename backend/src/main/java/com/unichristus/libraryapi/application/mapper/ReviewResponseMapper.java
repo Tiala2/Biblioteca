@@ -25,6 +25,7 @@ public final class ReviewResponseMapper {
         if (review == null) return null;
         return new ReviewHomeResponse(
                 review.getBook().getTitle(),
+                review.getBook().getIsbn(),
                 review.getBook().getCoverUrl(),
                 review.getRating()
         );

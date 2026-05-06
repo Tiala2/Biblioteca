@@ -15,6 +15,7 @@ import java.util.UUID;
 public class BookHomeResponse {
     private UUID id;
     private String title;
+    private String isbn;
     private String coverUrl;
     private BookSource source;
     private boolean favorite;
