@@ -53,6 +53,41 @@ function RatingStars({ value }: { value: number }) {
   );
 }
 
+type RatingPickerProps = {
+  value: number;
+  onChange: (value: number) => void;
+  disabled?: boolean;
+  label: string;
+};
+
+function RatingPicker({ value, onChange, disabled = false, label }: RatingPickerProps) {
+  return (
+    <div className="rating-picker" role="radiogroup" aria-label={label}>
+      <input type="number" min={1} max={5} value={value} readOnly hidden aria-hidden="true" />
+      {Array.from({ length: 5 }, (_, index) => {
+        const nextValue = index + 1;
+        const selected = value === nextValue;
+
+        return (
+          <button
+            key={nextValue}
+            type="button"
+            className={nextValue <= value ? "rating-picker__star rating-picker__star--active" : "rating-picker__star"}
+            role="radio"
+            aria-checked={selected}
+            aria-label={`${nextValue} estrela${nextValue > 1 ? "s" : ""}`}
+            disabled={disabled}
+            onClick={() => onChange(nextValue)}
+          >
+            <Star aria-hidden="true" fill="currentColor" />
+          </button>
+        );
+      })}
+      <span className="rating-picker__value">{value}/5</span>
+    </div>
+  );
+}
+
 export function ReviewsPage() {
   const headers = useAuthHeaders();
   const { showToast } = useToast();
@@ -274,10 +309,17 @@ export function ReviewsPage() {
               </div>
             </div>
           )}
-          <label>Nota (1 a 5)</label>
-          <input type="number" min={1} max={5} value={rating} onChange={(event) => setRating(Number(event.target.value))} disabled={!hasEligibleBooks} />
+          <label>Nota</label>
+          <RatingPicker value={rating} onChange={setRating} disabled={!hasEligibleBooks} label="Nota da nova avaliacao" />
           <label>Comentário</label>
-          <input value={comment} onChange={(event) => setComment(event.target.value)} disabled={!hasEligibleBooks} />
+          <textarea
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            disabled={!hasEligibleBooks}
+            maxLength={600}
+            rows={4}
+          />
+          <small className="form-hint">{comment.length}/600 caracteres</small>
           <button type="submit" disabled={creating || !hasEligibleBooks}>
             {creating ? "Salvando..." : "Salvar avaliação"}
           </button>
@@ -318,15 +360,15 @@ export function ReviewsPage() {
                 {isEditing ? (
                   <>
                     <label>Nota</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={5}
-                      value={editRating}
-                      onChange={(event) => setEditRating(Number(event.target.value))}
-                    />
+                    <RatingPicker value={editRating} onChange={setEditRating} label="Nota da avaliacao em edicao" />
                     <label>Comentário</label>
-                    <input value={editComment} onChange={(event) => setEditComment(event.target.value)} />
+                    <textarea
+                      value={editComment}
+                      onChange={(event) => setEditComment(event.target.value)}
+                      maxLength={600}
+                      rows={4}
+                    />
+                    <small className="form-hint">{editComment.length}/600 caracteres</small>
                   </>
                 ) : (
                   <>

@@ -1270,6 +1270,47 @@ label {
   color: #7a4700;
 }
 
+.rating-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.22rem;
+  margin: 0.15rem 0 0.8rem;
+}
+
+.rating-picker__star {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--card-border));
+  background: color-mix(in srgb, var(--card-bg) 82%, transparent);
+  color: color-mix(in srgb, var(--muted) 52%, transparent);
+}
+
+.rating-picker__star svg {
+  width: 20px;
+  height: 20px;
+}
+
+.rating-picker__star--active {
+  color: #7a4700;
+  background: color-mix(in srgb, var(--gold) 34%, white);
+  border-color: color-mix(in srgb, var(--gold) 58%, var(--card-border));
+}
+
+.rating-picker__value,
+.form-hint {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.rating-picker__value {
+  margin-left: 0.35rem;
+  font-weight: 800;
+}
+
 .aura-podium-card:nth-child(1) {
   background:
     radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--gold) 22%, transparent), transparent 34%),

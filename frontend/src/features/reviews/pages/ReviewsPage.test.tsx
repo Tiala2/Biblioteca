@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { ReviewsPage } from "./ReviewsPage";
@@ -166,12 +166,11 @@ describe("ReviewsPage", () => {
 
     await screen.findByRole("heading", { name: "Livro Exibido" });
     await user.click(screen.getByRole("button", { name: "Editar" }));
-    const numberInputs = screen.getAllByRole("spinbutton");
     const textInputs = screen.getAllByRole("textbox");
     await user.clear(textInputs[textInputs.length - 1]);
     await user.type(textInputs[textInputs.length - 1], "Comentario atualizado");
-    await user.clear(numberInputs[numberInputs.length - 1]);
-    await user.type(numberInputs[numberInputs.length - 1], "4");
+    const editRatingPicker = screen.getByRole("radiogroup", { name: "Nota da avaliacao em edicao" });
+    await user.click(within(editRatingPicker).getByRole("radio", { name: "4 estrelas" }));
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 
     await waitFor(() =>
