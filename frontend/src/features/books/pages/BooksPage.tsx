@@ -108,6 +108,21 @@ export function BooksPage() {
 
     return filters;
   }, [applied, categories, tags]);
+  const catalogInsights = useMemo(() => {
+    const openCount = books.filter((book) => book.source === "OPEN").length;
+    const pdfCount = books.filter((book) => book.hasPdf).length;
+    const favoriteCount = books.filter((book) => favoriteBookIds.has(book.id)).length;
+    const totalPagesVisible = books.reduce((total, book) => total + Number(book.numberOfPages || 0), 0);
+
+    return {
+      averagePages: books.length > 0 ? Math.round(totalPagesVisible / books.length) : 0,
+      favoriteCount,
+      localCount: books.length - openCount,
+      openCount,
+      pdfCount,
+      totalPagesVisible,
+    };
+  }, [books, favoriteBookIds]);
 
   useEffect(() => {
     setQueryInput(applied.query);
@@ -412,6 +427,47 @@ export function BooksPage() {
         />
       )}
       {!loading && error && <StateCard title="Falha ao carregar catálogo" message={error} variant="error" />}
+
+      {!loading && !error && books.length > 0 && (
+        <article className="card aura-panel aura-panel--wide">
+          <div className="section-head">
+            <div>
+              <h3>Resumo da vitrine</h3>
+              <p className="section-sub">Uma leitura rapida do resultado atual antes de escolher o proximo livro.</p>
+            </div>
+            <span className="kpi">Pagina {applied.page + 1}</span>
+          </div>
+          <div className="catalog-insights">
+            <div className="stat-box">
+              <strong>{books.length}</strong>
+              <span>livros nesta pagina</span>
+            </div>
+            <div className="stat-box">
+              <strong>{catalogInsights.pdfCount}</strong>
+              <span>com PDF</span>
+            </div>
+            <div className="stat-box">
+              <strong>{catalogInsights.openCount}</strong>
+              <span>Open Library</span>
+            </div>
+            <div className="stat-box">
+              <strong>{catalogInsights.localCount}</strong>
+              <span>catalogo local</span>
+            </div>
+            <div className="stat-box">
+              <strong>{catalogInsights.favoriteCount}</strong>
+              <span>favoritos</span>
+            </div>
+            <div className="stat-box">
+              <strong>{catalogInsights.averagePages}</strong>
+              <span>media de paginas</span>
+            </div>
+          </div>
+          <p className="catalog-total-pages">
+            Total visivel: <strong>{catalogInsights.totalPagesVisible}</strong> paginas somadas nesta pagina.
+          </p>
+        </article>
+      )}
 
       {!loading && !error && <div className="grid aura-catalog-grid">
         {books.map((book) => (

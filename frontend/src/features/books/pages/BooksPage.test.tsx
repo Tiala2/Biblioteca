@@ -74,6 +74,15 @@ describe("BooksPage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Livro A" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Resumo da vitrine" })).toBeInTheDocument();
+    expect(screen.getByText("livros nesta pagina")).toBeInTheDocument();
+    expect(screen.getByText("com PDF")).toBeInTheDocument();
+    expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
+    expect(screen.getByText("catalogo local")).toBeInTheDocument();
+    expect(screen.getByText("favoritos")).toBeInTheDocument();
+    expect(screen.getByText("media de paginas")).toBeInTheDocument();
+    expect(screen.getByText(/Total visivel:/)).toBeInTheDocument();
+    expect(screen.getByText("320")).toBeInTheDocument();
     expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Livro B" })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Ler no app" })).toHaveLength(1);

@@ -1352,6 +1352,22 @@ label {
   margin: 0.85rem 0;
 }
 
+.catalog-insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0 0.45rem;
+}
+
+.catalog-total-pages {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.catalog-total-pages strong {
+  color: var(--text-main);
+}
+
 .book-detail-review-note,
 .book-detail-review-title {
   display: flex;
