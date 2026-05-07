@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 import type { AlertDeliveryAdmin } from "../types";
 
@@ -16,6 +17,12 @@ type AlertAuditPanelProps = {
   onPageChange: (page: number) => void;
 };
 
+function getAlertStatusLabel(status: AlertDeliveryAdmin["status"]) {
+  if (status === "SENT") return "ENVIADO";
+  if (status === "FAILED") return "FALHO";
+  return "IGNORADO";
+}
+
 export function AlertAuditPanel({
   deliveries,
   totalDeliveries,
@@ -30,6 +37,19 @@ export function AlertAuditPanel({
   onAlertTypeFilterChange,
   onPageChange,
 }: AlertAuditPanelProps) {
+  const alertInsights = useMemo(() => {
+    const sentCount = deliveries.filter((delivery) => delivery.status === "SENT").length;
+    const failedCount = deliveries.filter((delivery) => delivery.status === "FAILED").length;
+    const skippedCount = deliveries.filter((delivery) => delivery.status === "SKIPPED").length;
+    const latest = deliveries.reduce<AlertDeliveryAdmin | null>((current, delivery) => {
+      if (!delivery.createdAt) return current;
+      if (!current?.createdAt) return delivery;
+      return new Date(delivery.createdAt).getTime() > new Date(current.createdAt).getTime() ? delivery : current;
+    }, null);
+
+    return { failedCount, latest, sentCount, skippedCount };
+  }, [deliveries]);
+
   return (
     <article id="admin-alerts" className="card admin-panel">
       <div className="section-head">
@@ -37,8 +57,31 @@ export function AlertAuditPanel({
         <span className="kpi">{loading ? "..." : totalDeliveries}</span>
       </div>
       <p className="section-sub">Acompanhe entregas de alertas por e-mail e o resultado de cada envio.</p>
+      <div className="admin-alert-summary">
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : alertInsights.sentCount}</strong>
+          <span>enviados na página</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : alertInsights.failedCount}</strong>
+          <span>falhos na página</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : alertInsights.skippedCount}</strong>
+          <span>ignorados na página</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{alertInsights.latest ? formatDateTimeBr(alertInsights.latest.createdAt) : "-"}</strong>
+          <span>último registro</span>
+        </div>
+      </div>
       <div className="filters-grid admin-filters-grid">
-        <input aria-label="Buscar alertas por email, tipo, canal ou mensagem" value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="Buscar por email, tipo, canal ou mensagem" />
+        <input
+          aria-label="Buscar alertas por email, tipo, canal ou mensagem"
+          value={search}
+          onChange={(event) => onSearchChange(event.target.value)}
+          placeholder="Buscar por email, tipo, canal ou mensagem"
+        />
         <label className="field-stack">
           <span>Status</span>
           <select value={statusFilter} onChange={(event) => onStatusFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["status"])}>
@@ -67,14 +110,18 @@ export function AlertAuditPanel({
         {deliveries.map((delivery) => (
           <li key={delivery.id} className="stacked-list-item">
             <div>
-              <strong>{delivery.email}</strong>
+              <div className="admin-alert-title-row">
+                <strong>{delivery.email}</strong>
+                <span className={delivery.status === "SENT" ? "import-badge" : "status-pill status-pill--muted"}>
+                  {getAlertStatusLabel(delivery.status)}
+                </span>
+              </div>
               <p className="section-sub">
                 {delivery.alertType} | {delivery.channel} | {delivery.status}
               </p>
               <p>{delivery.message}</p>
               <small>Registrado em {formatDateTimeBr(delivery.createdAt)}</small>
             </div>
-            <span className={delivery.status === "SENT" ? "favorite-badge" : "import-badge"}>{delivery.status}</span>
           </li>
         ))}
       </ul>
