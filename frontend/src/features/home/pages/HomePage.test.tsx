@@ -72,6 +72,9 @@ describe("HomePage", () => {
             id: "book-2",
             title: "Livro Recomendado",
             coverUrl: null,
+            source: "OPEN",
+            favorite: true,
+            numberOfPages: 240,
             averageRating: 4.5,
           },
         ],
@@ -93,6 +96,12 @@ describe("HomePage", () => {
     expect(await screen.findByRole("heading", { name: "Bem-vinda, Leitora Teste" })).toBeInTheDocument();
     expect(screen.getAllByText("Livro Atual").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Livro Recomendado").length).toBeGreaterThan(0);
+    expect(screen.getByText("locais/PDF")).toBeInTheDocument();
+    expect(screen.getByText("Open Library")).toBeInTheDocument();
+    expect(screen.getByText("nota média")).toBeInTheDocument();
+    expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
+    expect(screen.getByText("FAVORITO")).toBeInTheDocument();
+    expect(screen.getByText("Nota 4.5 | 240 páginas")).toBeInTheDocument();
     expect(screen.getByText("Classicos")).toBeInTheDocument();
     expect(screen.getAllByText("Livro Avaliado").length).toBeGreaterThan(0);
   });

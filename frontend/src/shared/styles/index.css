@@ -1042,6 +1042,20 @@ label {
   margin: 0.3rem 0 0;
 }
 
+.home-recommendation-insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0 0.75rem;
+}
+
+.home-recommendation-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .aura-filter-panel {
   margin-bottom: 1rem;
 }
@@ -2365,7 +2379,8 @@ body[data-theme="day"] .login-form {
   }
 
   .review-insights,
-  .favorite-insights {
+  .favorite-insights,
+  .home-recommendation-insights {
     grid-template-columns: 1fr;
   }
 

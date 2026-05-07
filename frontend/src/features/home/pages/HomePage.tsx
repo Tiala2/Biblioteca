@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen, Flame, LibraryBig, Sparkles, Star, Target, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
@@ -137,6 +137,17 @@ export function HomePage() {
 
   const currentReading = home.readings[0];
   const progressPercent = Math.max(0, Math.min(100, Number(home.readingProgress.goal?.progressPercent ?? 0)));
+  const recommendationInsights = useMemo(() => {
+    const openCount = home.recommendations.filter((book) => book.source === "OPEN").length;
+    const localCount = home.recommendations.length - openCount;
+    const ratedBooks = home.recommendations.filter((book) => typeof book.averageRating === "number");
+    const averageRating =
+      ratedBooks.length > 0
+        ? ratedBooks.reduce((total, book) => total + Number(book.averageRating ?? 0), 0) / ratedBooks.length
+        : 0;
+
+    return { averageRating, localCount, openCount };
+  }, [home.recommendations]);
 
   if (loading) {
     return (
@@ -297,23 +308,45 @@ export function HomePage() {
           <span className="kpi">{home.recommendations.length} destaque(s)</span>
         </div>
         {home.recommendations.length > 0 ? (
-          <ul className="stacked-list aura-book-list">
-            {home.recommendations.slice(0, 4).map((book) => (
-              <li key={book.id} className="stacked-list-item">
-                <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
-                <div>
-                  <strong>{book.title}</strong>
-                  {book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
-                  <p className="section-sub">
-                    Nota {Number(book.averageRating ?? 0).toFixed(1)}
-                  </p>
-                </div>
-                <Link to={`/books/${book.id}`} className="btn-muted btn-link">
-                  Ver detalhes
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="home-recommendation-insights">
+              <div className="stat-box">
+                <strong>{recommendationInsights.localCount}</strong>
+                <span>locais/PDF</span>
+              </div>
+              <div className="stat-box">
+                <strong>{recommendationInsights.openCount}</strong>
+                <span>Open Library</span>
+              </div>
+              <div className="stat-box">
+                <strong>{recommendationInsights.averageRating.toFixed(1)}</strong>
+                <span>nota média</span>
+              </div>
+            </div>
+            <ul className="stacked-list aura-book-list">
+              {home.recommendations.slice(0, 4).map((book) => (
+                <li key={book.id} className="stacked-list-item">
+                  <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
+                  <div>
+                    <div className="home-recommendation-title-row">
+                      <strong>{book.title}</strong>
+                      <span className={book.source === "OPEN" ? "import-badge" : "status-pill status-pill--muted"}>
+                        {book.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                      </span>
+                      {book.favorite && <span className="favorite-badge">FAVORITO</span>}
+                    </div>
+                    <p className="section-sub">
+                      Nota {Number(book.averageRating ?? 0).toFixed(1)}
+                      {book.numberOfPages ? ` | ${book.numberOfPages} páginas` : ""}
+                    </p>
+                  </div>
+                  <Link to={`/books/${book.id}`} className="btn-muted btn-link">
+                    Ver detalhes
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <p className="section-sub">As recomendacoes aparecerao aqui quando houver mais dados de uso.</p>
         )}
