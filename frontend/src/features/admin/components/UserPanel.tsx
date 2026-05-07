@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { useMemo } from "react";
 import type { UserAdmin, UserForm } from "../types";
 
 type UserPanelProps = {
@@ -49,6 +50,14 @@ export function UserPanel({
   onPageChange,
 }: UserPanelProps) {
   const isEditingCurrentUser = form.email.trim().toLowerCase() === currentUserEmail.toLowerCase();
+  const userInsights = useMemo(() => {
+    const activeCount = users.filter((user) => user.active).length;
+    const adminCount = users.filter((user) => user.role === "ADMIN").length;
+    const rankingCount = users.filter((user) => user.leaderboardOptIn).length;
+    const alertsCount = users.filter((user) => user.alertsOptIn).length;
+
+    return { activeCount, adminCount, alertsCount, rankingCount };
+  }, [users]);
 
   return (
     <article id="admin-users" className="card admin-panel admin-panel--wide">
@@ -118,14 +127,38 @@ export function UserPanel({
         </div>
       </form>
 
+      <div className="admin-user-summary">
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : userInsights.activeCount}</strong>
+          <span>ativos na página</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : userInsights.adminCount}</strong>
+          <span>admins na página</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : userInsights.rankingCount}</strong>
+          <span>no ranking</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{loading ? "..." : userInsights.alertsCount}</strong>
+          <span>com alertas</span>
+        </div>
+      </div>
+
       <div className="filters-grid admin-filters-grid">
-        <input aria-label="Buscar usuários por nome ou email" value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="Buscar usuários por nome ou email" />
+        <input
+          aria-label="Buscar usuários por nome ou email"
+          value={search}
+          onChange={(event) => onSearchChange(event.target.value)}
+          placeholder="Buscar usuários por nome ou email"
+        />
         <label className="field-stack">
           <span>Status</span>
           <select value={activeFilter} onChange={(event) => onActiveFilterChange(event.target.value as "ALL" | "ACTIVE" | "INACTIVE")}>
             <option value="ALL">Todos</option>
             <option value="ACTIVE">Ativos</option>
-            <option value="INACTIVE">Invalidos</option>
+            <option value="INACTIVE">Inválidos</option>
           </select>
         </label>
         <label className="field-stack">
@@ -150,16 +183,19 @@ export function UserPanel({
           return (
             <li key={user.id} className="stacked-list-item">
               <div>
-                <strong>{user.name}</strong>
+                <div className="admin-user-title-row">
+                  <strong>{user.name}</strong>
+                  <span className={user.role === "ADMIN" ? "import-badge" : "status-pill status-pill--muted"}>{user.role}</span>
+                  <span className={user.active ? "import-badge" : "status-pill status-pill--muted"}>
+                    {user.active ? "ATIVO" : "INVALIDADO"}
+                  </span>
+                </div>
                 <p className="section-sub">{user.email}</p>
                 <p className="section-sub">
-                  {user.active ? "Acesso ativo" : "Acesso invalidado"} | Papel {user.role === "ADMIN" ? "admin" : "usuário"} | Ranking{" "}
-                  {user.leaderboardOptIn ? "ativo" : "desligado"} | Alertas {user.alertsOptIn ? "ativos" : "desligados"}
+                  Ranking {user.leaderboardOptIn ? "ativo" : "desligado"} | Alertas {user.alertsOptIn ? "ativos" : "desligados"}
                 </p>
               </div>
               <div className="card-actions">
-                <span className={user.role === "ADMIN" ? "import-badge" : "favorite-badge"}>{user.role}</span>
-                <span className={user.active ? "import-badge" : "favorite-badge"}>{user.active ? "ATIVO" : "INVALIDADO"}</span>
                 <button type="button" className="btn-muted" onClick={() => onEdit(user)}>
                   Editar
                 </button>

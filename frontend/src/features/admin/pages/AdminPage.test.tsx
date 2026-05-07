@@ -187,6 +187,10 @@ describe("AdminPage", () => {
     expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
+    expect(screen.getByText("ativos na página")).toBeInTheDocument();
+    expect(screen.getByText("admins na página")).toBeInTheDocument();
+    expect(screen.getByText("no ranking")).toBeInTheDocument();
+    expect(screen.getByText("com alertas")).toBeInTheDocument();
     expect(screen.getAllByText("Spring em pratica").length).toBeGreaterThan(0);
     expect(screen.getByText("com descrição")).toBeInTheDocument();
     expect(screen.getByText("sem descrição")).toBeInTheDocument();
