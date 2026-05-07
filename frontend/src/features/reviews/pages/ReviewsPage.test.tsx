@@ -88,6 +88,10 @@ describe("ReviewsPage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Livro Exibido" })).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Livro Exibido" })[0]).toHaveAttribute("href", "/books/book-1");
+    expect(screen.getByText("MÃ©dia das notas")).toBeInTheDocument();
+    expect(screen.getByText("5,0")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ver livro" })).toHaveAttribute("href", "/books/book-1");
     expect(screen.queryByText("Livro: book-1")).not.toBeInTheDocument();
   });
 

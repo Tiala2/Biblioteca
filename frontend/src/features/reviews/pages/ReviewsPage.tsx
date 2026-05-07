@@ -126,6 +126,17 @@ export function ReviewsPage() {
   );
   const hasEligibleBooks = eligibleBooks.length > 0;
   const selectedBook = bookById[bookId] ?? null;
+  const reviewStats = useMemo(() => {
+    const total = items.length;
+    const average = total > 0 ? items.reduce((sum, item) => sum + item.rating, 0) / total : 0;
+    const highest = total > 0 ? Math.max(...items.map((item) => item.rating)) : 0;
+
+    return {
+      total,
+      average: average.toFixed(1).replace(".", ","),
+      highest,
+    };
+  }, [items]);
 
   const loadPage = useCallback(async () => {
     if (!headers) return;
@@ -289,7 +300,11 @@ export function ReviewsPage() {
             <div className="review-book-preview">
               <BookCover title={selectedBook.title} coverUrl={selectedBook.coverUrl} isbn={selectedBook.isbn} size="small" />
               <div>
-                <strong>{selectedBook.title}</strong>
+                <strong>
+                  <Link to={`/books/${selectedBook.id}`} className="btn-link">
+                    {selectedBook.title}
+                  </Link>
+                </strong>
                 <small>
                   {selectedBook.author ?? "Autor nao informado"}
                   {selectedBook.source === "OPEN" ? " - Open Library" : ""}
@@ -336,6 +351,21 @@ export function ReviewsPage() {
         </div>
 
         {loading && <p className="section-sub">Carregando avaliações...</p>}
+        <div className="review-insights">
+          <div className="stat-box">
+            <strong>{reviewStats.total}</strong>
+            <span>Nesta pÃ¡gina</span>
+          </div>
+          <div className="stat-box">
+            <strong>{reviewStats.average}</strong>
+            <span>MÃ©dia das notas</span>
+          </div>
+          <div className="stat-box">
+            <strong>{reviewStats.highest || "-"}</strong>
+            <span>Maior nota</span>
+          </div>
+        </div>
+
         {error && <p className="error">{error}</p>}
 
         <div className="grid aura-review-grid">
@@ -353,7 +383,11 @@ export function ReviewsPage() {
                     size="small"
                   />
                   <div>
-                    <h3>{resolveBookLabel(review)}</h3>
+                    <h3>
+                      <Link to={`/books/${review.bookId}`} className="btn-link">
+                        {resolveBookLabel(review)}
+                      </Link>
+                    </h3>
                     <small>{reviewBook?.author ?? "Autor nao informado"}</small>
                   </div>
                 </div>
@@ -397,6 +431,9 @@ export function ReviewsPage() {
                       Editar
                     </button>
                   )}
+                  <Link to={`/books/${review.bookId}`} className="btn-muted btn-link">
+                    Ver livro
+                  </Link>
                   <button
                     className="btn-muted"
                     onClick={() => onDelete(review.id)}
