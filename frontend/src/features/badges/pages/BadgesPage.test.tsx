@@ -56,5 +56,8 @@ describe("BadgesPage", () => {
     expect(screen.getByText("Registrou a primeira avaliacao")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Streak de 7 dias" })).toBeInTheDocument();
     expect(screen.getByText("5 de 7 dias")).toBeInTheDocument();
+    expect(screen.getByText("trilha(s) completas")).toBeInTheDocument();
+    expect(screen.getAllByText("Faltam 2 dias").length).toBeGreaterThan(0);
+    expect(screen.getByText("CONCLUIDA")).toBeInTheDocument();
   });
 });

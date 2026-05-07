@@ -1162,6 +1162,17 @@ label {
   margin-top: 1rem;
 }
 
+.badge-insights {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.55fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  margin: 0.85rem 0 1rem;
+}
+
+.badge-insights__next strong {
+  font-size: 1.1rem;
+}
+
 .aura-badge-card,
 .aura-badge-progress-card {
   position: relative;
@@ -2238,6 +2249,10 @@ body[data-theme="day"] .login-form {
   }
 
   .goal-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .badge-insights {
     grid-template-columns: 1fr;
   }
 

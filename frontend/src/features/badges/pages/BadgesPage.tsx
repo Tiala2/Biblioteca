@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Medal, Sparkles, Trophy } from "lucide-react";
+import { CheckCircle2, Medal, Sparkles, Trophy } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -53,6 +53,24 @@ export function BadgesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = useMemo(() => parsePage(searchParams.get("page")), [searchParams]);
   const size = 8;
+  const progressInsights = useMemo(() => {
+    const decorated = progressCards.map((card) => {
+      const percent = Math.max(0, Math.min(100, Math.round((card.current / card.target) * 100)));
+      return {
+        ...card,
+        missing: Math.max(0, card.target - card.current),
+        percent,
+      };
+    });
+    const nextUnlock = decorated
+      .filter((card) => card.missing > 0)
+      .sort((left, right) => right.percent - left.percent)[0] ?? null;
+
+    return {
+      completed: decorated.filter((card) => card.missing === 0).length,
+      nextUnlock,
+    };
+  }, [progressCards]);
 
   useEffect(() => {
     if (!headers) return;
@@ -164,9 +182,26 @@ export function BadgesPage() {
           <h3><Sparkles aria-hidden="true" /> Progresso das próximas conquistas</h3>
           <span className="kpi">{progressCards.length} trilha(s)</span>
         </div>
+        <div className="badge-insights">
+          <div className="stat-box">
+            <CheckCircle2 aria-hidden="true" />
+            <strong>{progressInsights.completed}</strong>
+            <span>trilha(s) completas</span>
+          </div>
+          <div className="stat-box badge-insights__next">
+            <Sparkles aria-hidden="true" />
+            <strong>{progressInsights.nextUnlock?.name ?? "Tudo em dia"}</strong>
+            <span>
+              {progressInsights.nextUnlock
+                ? `Faltam ${progressInsights.nextUnlock.missing} ${progressInsights.nextUnlock.unit}`
+                : "Nenhuma pendencia nas trilhas atuais"}
+            </span>
+          </div>
+        </div>
         <div className="grid">
           {progressCards.map((card) => {
             const percent = Math.max(0, Math.min(100, Math.round((card.current / card.target) * 100)));
+            const missing = Math.max(0, card.target - card.current);
             return (
               <article key={card.code} className="card aura-badge-progress-card">
                 <h3>{card.name}</h3>
@@ -177,6 +212,9 @@ export function BadgesPage() {
                   <div className="progress-fill" style={{ width: `${percent}%` }} />
                 </div>
                 <small>{percent}% concluído</small>
+                <span className={missing === 0 ? "favorite-badge" : "import-badge"}>
+                  {missing === 0 ? "CONCLUIDA" : `Faltam ${missing} ${card.unit}`}
+                </span>
               </article>
             );
           })}
