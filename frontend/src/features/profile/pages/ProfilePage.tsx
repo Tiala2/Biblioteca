@@ -138,15 +138,25 @@ export function ProfilePage() {
   const profileInsights = useMemo(() => {
     const totalSessions = home?.readingProgress.sessionsThisWeek ?? 0;
     const totalPagesThisWeek = home?.readingProgress.pagesReadThisWeek ?? 0;
+    const highReviews = reviews.filter((review) => review.rating >= 4).length;
+    const lowReviews = reviews.filter((review) => review.rating <= 3).length;
+    const averageRating =
+      reviews.length > 0 ? reviews.reduce((total, review) => total + review.rating, 0) / reviews.length : 0;
+    const latestReview =
+      [...reviews].sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0] ?? null;
 
     return {
       activeReadings: home?.userSummary.totalInProgress ?? 0,
       averagePagesPerSession: totalSessions > 0 ? totalPagesThisWeek / totalSessions : 0,
+      averageRating,
+      highReviews,
+      latestReview,
+      lowReviews,
       pagesThisWeek: totalPagesThisWeek,
       totalBadges: profile?.badges.length ?? 0,
       recentBadges: [...(profile?.badges ?? [])].slice(0, 3),
     };
-  }, [home, profile]);
+  }, [home, profile, reviews]);
 
   const filteredTimeline = useMemo(() => {
     return timeline.filter((item) => {
@@ -294,6 +304,24 @@ export function ProfilePage() {
             <strong>Email</strong>
             <span>{profile?.email}</span>
           </div>
+          <div className="stacked-list-item profile-preference-row">
+            <div>
+              <strong>Ranking semanal</strong>
+              <p className="section-sub">Define se suas leituras entram na classificacao publica.</p>
+            </div>
+            <span className={leaderboardOptIn ? "favorite-badge" : "import-badge"}>
+              {leaderboardOptIn ? "ATIVO" : "DESLIGADO"}
+            </span>
+          </div>
+          <div className="stacked-list-item profile-preference-row">
+            <div>
+              <strong>Alertas internos</strong>
+              <p className="section-sub">Controla lembretes de ritmo, metas e continuidade.</p>
+            </div>
+            <span className={alertsOptIn ? "favorite-badge" : "import-badge"}>
+              {alertsOptIn ? "ATIVO" : "DESLIGADO"}
+            </span>
+          </div>
         </div>
         <form onSubmit={onSavePreferences}>
           <label className="check-inline">
@@ -349,6 +377,14 @@ export function ProfilePage() {
                 <div>
                   <strong>{item.title}</strong>
                   <p className="section-sub">{item.subtitle}</p>
+                  <div className="book-card-badges">
+                    <span className={item.book.source === "OPEN" ? "import-badge" : "favorite-badge"}>
+                      {item.book.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                    </span>
+                    <span className={item.progress >= 100 ? "favorite-badge" : "import-badge"}>
+                      {item.progress >= 100 ? "CONCLUIDA" : "EM PROGRESSO"}
+                    </span>
+                  </div>
                   <div className="mini-progress" aria-label={`Progresso de ${item.book.title}: ${item.progress}%`}>
                     <span style={{ width: `${Math.max(0, Math.min(100, item.progress))}%` }} />
                   </div>
@@ -395,6 +431,25 @@ export function ProfilePage() {
           <h3>Avaliações recentes</h3>
           <span className="kpi">{filteredReviews.length} avaliação(ões)</span>
         </div>
+        <div className="profile-review-insights">
+          <div className="stat-box">
+            <strong>{formatDecimal(profileInsights.averageRating)}</strong>
+            <span>media das notas</span>
+          </div>
+          <div className="stat-box">
+            <strong>{formatInteger(profileInsights.highReviews)}</strong>
+            <span>notas 4 e 5</span>
+          </div>
+          <div className="stat-box">
+            <strong>{formatInteger(profileInsights.lowReviews)}</strong>
+            <span>notas 1 a 3</span>
+          </div>
+        </div>
+        {profileInsights.latestReview ? (
+          <p className="profile-review-latest">
+            Ultima avaliacao: <strong>{formatDateTimeBr(profileInsights.latestReview.updatedAt)}</strong>
+          </p>
+        ) : null}
         <select aria-label="Filtrar avaliações por nota" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as "ALL" | "HIGH" | "LOW")}>
           <option value="ALL">Todas as avaliações</option>
           <option value="HIGH">Notas 4 e 5</option>
