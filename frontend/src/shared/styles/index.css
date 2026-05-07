@@ -528,6 +528,13 @@ label {
   box-shadow: 0 12px 24px color-mix(in srgb, var(--primary-b) 9%, transparent);
 }
 
+.book-list-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
 .stacked-list-item strong,
 .stacked-list-item p,
 .stacked-list-item small,
@@ -2168,6 +2175,10 @@ body[data-theme="day"] .login-form {
   .stacked-list-item {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .book-list-row {
+    width: 100%;
   }
 
   .stacked-list-item .card-actions,

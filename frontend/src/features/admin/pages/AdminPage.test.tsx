@@ -276,4 +276,44 @@ describe("AdminPage", () => {
     await waitFor(() => expect(screen.getByText("Admin Ajustado")).toBeInTheDocument());
     expect(showToast).toHaveBeenCalledWith("Usuário atualizado com sucesso.", "success");
   });
+
+  it("deve preencher capa do livro usando o ISBN", async () => {
+    mockAdminRequests();
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/admin/catalog"]}>
+        <AdminPage visibleSections={["catalog"]} />
+      </MemoryRouter>
+    );
+
+    await screen.findByRole("heading", { name: "Acervo e descoberta" });
+
+    const isbnInput = screen.getByLabelText("ISBN do livro");
+    await user.type(isbnInput, "978-0-13-449416-6");
+    await user.click(screen.getByRole("button", { name: "Buscar capa por ISBN" }));
+
+    expect(screen.getByLabelText("URL da capa")).toHaveValue(
+      "https://covers.openlibrary.org/b/isbn/9780134494166-L.jpg?default=false"
+    );
+  });
+
+  it("deve preencher atualizacao de capa pelo ISBN do livro selecionado", async () => {
+    mockAdminRequests();
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/admin/catalog"]}>
+        <AdminPage visibleSections={["catalog"]} />
+      </MemoryRouter>
+    );
+
+    await screen.findByRole("heading", { name: "Acervo e descoberta" });
+    await user.clear(screen.getByLabelText("Nova URL da capa"));
+    await user.click(screen.getByRole("button", { name: "Usar ISBN do livro" }));
+
+    expect(screen.getByLabelText("Nova URL da capa")).toHaveValue(
+      "https://covers.openlibrary.org/b/isbn/123-L.jpg?default=false"
+    );
+  });
 });

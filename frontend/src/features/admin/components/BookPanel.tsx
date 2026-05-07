@@ -1,9 +1,20 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useMemo, useState } from "react";
+import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, BookForm, Category, ImportResult } from "../types";
 
 function readSelectedValues(event: ChangeEvent<HTMLSelectElement>) {
   return Array.from(event.currentTarget.selectedOptions, (option) => option.value);
+}
+
+function normalizeIsbn(isbn?: string | null) {
+  const normalized = isbn?.replace(/[^0-9Xx]/g, "");
+  return normalized ? normalized.toUpperCase() : "";
+}
+
+function buildOpenLibraryCoverUrl(isbn?: string | null) {
+  const cleanIsbn = normalizeIsbn(isbn);
+  return cleanIsbn ? `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg?default=false` : "";
 }
 
 type BookPanelProps = {
@@ -75,6 +86,9 @@ export function BookPanel({
   }, [books, normalizedSearch]);
   const totalPages = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
   const visibleBooks = filteredBooks.slice(page * pageSize, page * pageSize + pageSize);
+  const selectedCoverBook = books.find((book) => book.id === coverBookId) ?? null;
+  const formCoverUrlFromIsbn = buildOpenLibraryCoverUrl(form.isbn);
+  const selectedCoverUrlFromIsbn = buildOpenLibraryCoverUrl(selectedCoverBook?.isbn);
 
   return (
     <article id="admin-books" className="card admin-panel admin-panel--wide">
@@ -97,6 +111,14 @@ export function BookPanel({
           onChange={(event) => onFormChange((prev) => ({ ...prev, publicationDate: event.target.value }))}
         />
         <input aria-label="URL da capa" value={form.coverUrl} onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))} placeholder="URL da capa" />
+        <button
+          type="button"
+          className="btn-muted"
+          disabled={!formCoverUrlFromIsbn}
+          onClick={() => onFormChange((prev) => ({ ...prev, coverUrl: buildOpenLibraryCoverUrl(prev.isbn) }))}
+        >
+          Buscar capa por ISBN
+        </button>
         <select aria-label="Categorias do livro" multiple size={5} value={form.categoryIds} onChange={(event) => onFormChange((prev) => ({ ...prev, categoryIds: readSelectedValues(event) }))}>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
@@ -123,6 +145,9 @@ export function BookPanel({
           ))}
         </select>
         <input aria-label="Nova URL da capa" value={coverBookUrl} onChange={(event) => onCoverUrlChange(event.target.value)} placeholder="Nova capa" />
+        <button type="button" className="btn-muted" disabled={!selectedCoverUrlFromIsbn} onClick={() => onCoverUrlChange(selectedCoverUrlFromIsbn)}>
+          Usar ISBN do livro
+        </button>
         <button type="submit" disabled={busyKey === "book-cover"}>
           Atualizar capa
         </button>
@@ -165,11 +190,14 @@ export function BookPanel({
       <ul className="stacked-list">
         {visibleBooks.map((book) => (
           <li key={book.id} className="stacked-list-item">
-            <div>
-              <strong>{book.title}</strong>
+            <div className="book-list-row">
+              <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
+              <div>
+                <strong>{book.title}</strong>
               <p className="section-sub">
                 {book.author ?? "Autor não informado"} - {book.isbn}
-              </p>
+                </p>
+              </div>
             </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(book)}>
