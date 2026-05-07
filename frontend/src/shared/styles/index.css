@@ -1345,6 +1345,45 @@ label {
   font-family: var(--font-display);
 }
 
+.book-detail-insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0;
+}
+
+.book-detail-review-note,
+.book-detail-review-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.book-detail-review-note {
+  width: fit-content;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  color: #5b3400;
+  background: color-mix(in srgb, var(--gold) 42%, white);
+  font-weight: 800;
+}
+
+.book-detail-review-note svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+.book-detail-latest-review {
+  margin: 0 0 0.8rem;
+  color: var(--text-muted);
+}
+
+.book-detail-latest-review strong {
+  color: var(--text-main);
+}
+
 .taxonomy-panel {
   display: grid;
   gap: 0.8rem;

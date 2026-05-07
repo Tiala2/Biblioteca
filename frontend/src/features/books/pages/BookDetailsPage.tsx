@@ -7,7 +7,7 @@ import { BookCover } from "@shared/ui/books/BookCover";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
-import { formatDateBr, formatDateTimeBr, formatDecimal } from "@shared/lib/formatters";
+import { formatDateBr, formatDateTimeBr, formatDecimal, formatInteger } from "@shared/lib/formatters";
 
 type Category = { id: string; name: string };
 type Tag = { id: string; name: string };
@@ -137,6 +137,20 @@ export function BookDetailsPage() {
     ];
   }, [book]);
   const ratingStars = useMemo(() => buildRatingStars(book?.averageRating), [book?.averageRating]);
+  const detailInsights = useMemo(() => {
+    const communityAverage =
+      communityReviews.length > 0
+        ? communityReviews.reduce((total, review) => total + review.rating, 0) / communityReviews.length
+        : 0;
+    const latestCommunityReview = communityReviews[0] ?? null;
+
+    return {
+      categoryCount: book?.categories?.length ?? 0,
+      communityAverage,
+      latestCommunityReview,
+      tagCount: book?.tags?.length ?? 0,
+    };
+  }, [book, communityReviews]);
 
   const toggleFavorite = async () => {
     if (!headers || !bookId) return;
@@ -225,6 +239,20 @@ export function BookDetailsPage() {
             Ver reviews
           </Link>
         </div>
+        <div className="book-detail-insights">
+          <div className="stat-box">
+            <strong>{book?.source === "OPEN" ? "OPEN" : "LOCAL"}</strong>
+            <span>origem</span>
+          </div>
+          <div className="stat-box">
+            <strong>{book?.hasPdf ? "SIM" : "NAO"}</strong>
+            <span>pdf no app</span>
+          </div>
+          <div className="stat-box">
+            <strong>{isFavorite ? "SALVO" : "LIVRE"}</strong>
+            <span>favorito</span>
+          </div>
+        </div>
       </article>
 
       <article className="card aura-panel">
@@ -243,6 +271,20 @@ export function BookDetailsPage() {
         <p className="section-sub">
           Use essa leitura guiada para decidir se o livro entra na sua jornada atual ou fica para uma próxima meta.
         </p>
+        <div className="book-detail-insights">
+          <div className="stat-box">
+            <strong>{formatInteger(detailInsights.categoryCount)}</strong>
+            <span>categorias</span>
+          </div>
+          <div className="stat-box">
+            <strong>{formatInteger(detailInsights.tagCount)}</strong>
+            <span>tags</span>
+          </div>
+          <div className="stat-box">
+            <strong>{formatDecimal(detailInsights.communityAverage)}</strong>
+            <span>media dos destaques</span>
+          </div>
+        </div>
         <div className="taxonomy-panel">
           <div>
             <strong><Tags aria-hidden="true" /> Categorias</strong>
@@ -282,7 +324,10 @@ export function BookDetailsPage() {
         </div>
         {myReview ? (
           <>
-            <p>Nota registrada: {myReview.rating}</p>
+            <div className="book-detail-review-note">
+              <Star aria-hidden="true" />
+              <strong>Nota registrada: {myReview.rating}</strong>
+            </div>
             <p>{myReview.comment}</p>
             <small>Atualizado em: {formatDateTimeBr(myReview.updatedAt)}</small>
           </>
@@ -324,18 +369,27 @@ export function BookDetailsPage() {
           <span className="kpi">{communityReviews.length} destaque(s)</span>
         </div>
         {communityReviews.length > 0 ? (
-          <ul className="stacked-list">
-            {communityReviews.map((review, index) => (
-              <li key={review.id} className="stacked-list-item">
-                <div>
-                  <strong>Leitor {index + 1}</strong>
-                  <p className="section-sub">Nota: {review.rating}/5</p>
-                  <p>{review.comment || "Sem comentario adicional."}</p>
-                  <small>Atualizado em: {formatDateTimeBr(review.updatedAt)}</small>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <>
+            {detailInsights.latestCommunityReview ? (
+              <p className="book-detail-latest-review">
+                Destaque mais recente: <strong>{formatDateTimeBr(detailInsights.latestCommunityReview.updatedAt)}</strong>
+              </p>
+            ) : null}
+            <ul className="stacked-list">
+              {communityReviews.map((review, index) => (
+                <li key={review.id} className="stacked-list-item">
+                  <div>
+                    <div className="book-detail-review-title">
+                      <strong>Leitor {index + 1}</strong>
+                      <span className={review.rating >= 4 ? "favorite-badge" : "import-badge"}>Nota {review.rating}/5</span>
+                    </div>
+                    <p>{review.comment || "Sem comentario adicional."}</p>
+                    <small>Atualizado em: {formatDateTimeBr(review.updatedAt)}</small>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <p className="section-sub">As primeiras opinioes da comunidade aparecerao aqui quando surgirem novas reviews para este livro.</p>
         )}
