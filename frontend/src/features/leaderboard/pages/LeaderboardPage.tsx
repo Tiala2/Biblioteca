@@ -103,6 +103,7 @@ export function LeaderboardPage() {
   const copy = metricCopy(metric);
   const topEntry = entries[0] ?? null;
   const communityTotal = entries.reduce((total, entry) => total + entry.value, 0);
+  const averageValue = entries.length > 0 ? Math.round(communityTotal / entries.length) : 0;
   const podium = entries.slice(0, 3);
 
   if (loading) {
@@ -205,6 +206,11 @@ export function LeaderboardPage() {
             <strong>{formatInteger(communityTotal)}</strong>
             <span>volume total da semana</span>
           </div>
+          <div className="stat-box">
+            <BarChart3 aria-hidden="true" />
+            <strong>{formatInteger(averageValue)}</strong>
+            <span>media por participante</span>
+          </div>
         </div>
       )}
 
@@ -223,6 +229,12 @@ export function LeaderboardPage() {
                 <strong>
                   {formatInteger(entry.value)} {copy.valueLabel}
                 </strong>
+                <div className="leaderboard-share" aria-label={`Participacao de ${entry.name}`}>
+                  <span style={{ width: `${communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0}%` }} />
+                </div>
+                <small>
+                  {communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0}% do volume
+                </small>
               </article>
             ))}
           </div>
@@ -230,16 +242,28 @@ export function LeaderboardPage() {
       )}
 
       <div className="grid aura-leaderboard-grid">
-        {entries.map((entry, index) => (
-          <article key={entry.userId} className="card aura-leaderboard-card">
-            <p className="eyebrow">#{index + 1}</p>
-            <h3>{entry.name}</h3>
-            <p className="section-sub">{copy.title}</p>
-            <strong>
-              {formatInteger(entry.value)} {copy.valueLabel}
-            </strong>
-          </article>
-        ))}
+        {entries.map((entry, index) => {
+          const gapToLeader = topEntry ? Math.max(0, topEntry.value - entry.value) : 0;
+          const share = communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0;
+
+          return (
+            <article key={entry.userId} className="card aura-leaderboard-card">
+              <p className="eyebrow">#{index + 1}</p>
+              <h3>{entry.name}</h3>
+              <p className="section-sub">{copy.title}</p>
+              <strong>
+                {formatInteger(entry.value)} {copy.valueLabel}
+              </strong>
+              <div className="leaderboard-share" aria-label={`Participacao de ${entry.name}`}>
+                <span style={{ width: `${share}%` }} />
+              </div>
+              <small>{share}% do volume</small>
+              <span className={gapToLeader === 0 ? "favorite-badge" : "import-badge"}>
+                {gapToLeader === 0 ? "LIDER" : `Faltam ${formatInteger(gapToLeader)} ${copy.valueLabel}`}
+              </span>
+            </article>
+          );
+        })}
       </div>
 
       {!loading && !error && entries.length === 0 && (

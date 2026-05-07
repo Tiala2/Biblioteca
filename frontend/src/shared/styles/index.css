@@ -1477,6 +1477,22 @@ label {
   line-height: 1.12;
 }
 
+.leaderboard-share {
+  height: 9px;
+  margin: 0.5rem 0 0.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--card-border) 72%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 64%, transparent);
+}
+
+.leaderboard-share span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary-b), var(--accent-rose), var(--gold));
+}
+
 .hero h2,
 .hero p,
 .hero .quote {

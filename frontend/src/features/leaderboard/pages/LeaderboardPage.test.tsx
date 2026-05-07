@@ -46,6 +46,10 @@ describe("LeaderboardPage", () => {
     expect(screen.getAllByRole("heading", { name: "Bruno" })).not.toHaveLength(0);
     expect(screen.getAllByText("120 página(s)")).not.toHaveLength(0);
     expect(screen.getByText("Opt-in ativo")).toBeInTheDocument();
+    expect(screen.getByText("media por participante")).toBeInTheDocument();
+    expect(screen.getByText("LIDER")).toBeInTheDocument();
+    expect(screen.getByText(/Faltam 30 p.gina\(s\)/)).toBeInTheDocument();
+    expect(screen.getAllByText("57% do volume").length).toBeGreaterThan(0);
   });
 
   it("deve trocar a metrica ao clicar na aba de livros", async () => {
