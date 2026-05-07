@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Filter, Search, Sparkles } from "lucide-react";
+import { Filter, Search, Sparkles, X } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
@@ -24,6 +24,7 @@ type Book = {
 type Paged<T> = { content: T[]; page: { size: number; number: number; totalElements: number; totalPages: number } };
 type BookSort = "TRENDING_WEEK" | "TRENDING_MONTH" | "BEST_RATED" | "NEW_RELEASES";
 type Favorite = { bookId: string };
+type ActiveFilterKey = "query" | "author" | "categoryId" | "tagId" | "minPages" | "maxPages" | "sort" | "withPdf";
 
 const DEFAULT_SORT: BookSort = "BEST_RATED";
 const PAGE_SIZE = 12;
@@ -46,6 +47,16 @@ function parsePage(value: string | null): number {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed < 0) return 0;
   return parsed;
+}
+
+function formatSort(sort: BookSort): string {
+  const labels: Record<BookSort, string> = {
+    BEST_RATED: "Melhor avaliacao",
+    NEW_RELEASES: "Lancamentos",
+    TRENDING_WEEK: "Tendencia semanal",
+    TRENDING_MONTH: "Tendencia mensal",
+  };
+  return labels[sort];
 }
 
 export function BooksPage() {
@@ -81,6 +92,22 @@ export function BooksPage() {
       page: parsePage(searchParams.get("page")),
     };
   }, [searchParams]);
+  const activeFilters = useMemo(() => {
+    const filters: Array<{ key: ActiveFilterKey; label: string }> = [];
+    const selectedCategory = categories.find((category) => category.id === applied.categoryId);
+    const selectedTag = tags.find((tag) => tag.id === applied.tagId);
+
+    if (applied.query) filters.push({ key: "query", label: `Busca: ${applied.query}` });
+    if (applied.author) filters.push({ key: "author", label: `Autor: ${applied.author}` });
+    if (applied.categoryId) filters.push({ key: "categoryId", label: `Categoria: ${selectedCategory?.name ?? "selecionada"}` });
+    if (applied.tagId) filters.push({ key: "tagId", label: `Tag: ${selectedTag?.name ?? "selecionada"}` });
+    if (applied.minPages) filters.push({ key: "minPages", label: `Minimo: ${applied.minPages} paginas` });
+    if (applied.maxPages) filters.push({ key: "maxPages", label: `Maximo: ${applied.maxPages} paginas` });
+    if (applied.sort !== DEFAULT_SORT) filters.push({ key: "sort", label: `Ordem: ${formatSort(applied.sort)}` });
+    if (applied.onlyWithPdf) filters.push({ key: "withPdf", label: "Somente com PDF" });
+
+    return filters;
+  }, [applied, categories, tags]);
 
   useEffect(() => {
     setQueryInput(applied.query);
@@ -226,6 +253,17 @@ export function BooksPage() {
     setSearchParams({}, { replace: true });
   };
 
+  const removeFilter = (key: ActiveFilterKey) => {
+    if (key === "query") updateUrl({ query: "", page: 0 });
+    if (key === "author") updateUrl({ author: "", page: 0 });
+    if (key === "categoryId") updateUrl({ categoryId: "", page: 0 });
+    if (key === "tagId") updateUrl({ tagId: "", page: 0 });
+    if (key === "minPages") updateUrl({ minPages: "", page: 0 });
+    if (key === "maxPages") updateUrl({ maxPages: "", page: 0 });
+    if (key === "sort") updateUrl({ sort: DEFAULT_SORT, page: 0 });
+    if (key === "withPdf") updateUrl({ withPdf: false, page: 0 });
+  };
+
   const toggleFavorite = async (bookId: string) => {
     if (!headers) return;
 
@@ -274,7 +312,7 @@ export function BooksPage() {
       <article className="card aura-panel aura-filter-panel">
         <div className="section-head">
           <h3><Filter aria-hidden="true" /> Afinar descoberta</h3>
-          <span className="kpi">{applied.sort.replace("_", " ")}</span>
+          <span className="kpi">{formatSort(applied.sort)}</span>
         </div>
         <form className="filters-grid" onSubmit={onSearch}>
           <input
@@ -345,6 +383,25 @@ export function BooksPage() {
             </button>
           </div>
         </form>
+        {activeFilters.length > 0 && (
+          <div className="active-filters" aria-label="Filtros aplicados">
+            {activeFilters.map((filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                className="filter-chip"
+                aria-label={`Remover filtro ${filter.label}`}
+                onClick={() => removeFilter(filter.key)}
+              >
+                <span>{filter.label}</span>
+                <X aria-hidden="true" />
+              </button>
+            ))}
+            <button type="button" className="filter-chip filter-chip--clear" onClick={clearFilters}>
+              Limpar tudo
+            </button>
+          </div>
+        )}
       </article>
 
       {loading && (

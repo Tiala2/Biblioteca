@@ -1366,6 +1366,44 @@ label {
   gap: 0.6rem;
 }
 
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.filter-chip {
+  min-height: 38px;
+  padding: 0.35rem 0.55rem 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary-b) 24%, var(--card-border));
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--primary-b) 9%, var(--card-bg));
+  box-shadow: none;
+}
+
+.filter-chip:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary-b) 42%, var(--card-border));
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--primary-b) 10%, transparent);
+}
+
+.filter-chip span {
+  overflow-wrap: anywhere;
+}
+
+.filter-chip svg {
+  width: 15px;
+  height: 15px;
+}
+
+.filter-chip--clear {
+  padding-inline: 0.8rem;
+  color: var(--primary-a);
+  background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+}
+
 .admin-filters-grid {
   align-items: end;
   margin-top: 0.85rem;

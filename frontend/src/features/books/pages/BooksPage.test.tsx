@@ -170,6 +170,63 @@ describe("BooksPage", () => {
     );
   });
 
+  it("deve mostrar filtros aplicados e permitir remover um filtro", async () => {
+    const mockedGet = vi.mocked(api.get);
+    mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "cat-1", name: "Fantasia" },
+      ],
+    } as never);
+    mockedGet.mockResolvedValueOnce({
+      data: [
+        { id: "tag-1", name: "Aventura" },
+      ],
+    } as never);
+    mockedGet.mockResolvedValueOnce({
+      data: {
+        content: [{ id: "1", title: "Livro A", numberOfPages: 120, hasPdf: true, source: "LOCAL", coverUrl: null }],
+        page: { size: 12, number: 0, totalElements: 1, totalPages: 1 },
+      },
+    } as never);
+    mockedGet.mockResolvedValueOnce({
+      data: [],
+    } as never);
+    mockedGet.mockResolvedValue({
+      data: {
+        content: [],
+        page: { size: 12, number: 0, totalElements: 0, totalPages: 0 },
+      },
+    } as never);
+
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={["/books?q=Hobbit&withPdf=1&sort=NEW_RELEASES"]}>
+        <Routes>
+          <Route path="/books" element={<BooksPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText("Busca: Hobbit")).toBeInTheDocument();
+    expect(screen.getByText("Somente com PDF")).toBeInTheDocument();
+    expect(screen.getByText("Ordem: Lancamentos")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Remover filtro Busca: Hobbit" }));
+
+    await waitFor(() =>
+      expect(mockedGet).toHaveBeenCalledWith(
+        "/api/v1/books",
+        expect.objectContaining({
+          params: expect.objectContaining({
+            q: undefined,
+            includeWithoutPdf: false,
+            sort: "NEW_RELEASES",
+          }),
+        })
+      )
+    );
+  });
+
   it("deve exibir erro amigavel quando a API do catalogo estiver indisponivel", async () => {
     const mockedGet = vi.mocked(api.get);
     mockedGet
