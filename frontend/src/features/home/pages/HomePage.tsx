@@ -148,6 +148,15 @@ export function HomePage() {
 
     return { averageRating, localCount, openCount };
   }, [home.recommendations]);
+  const collectionInsights = useMemo(() => {
+    const totalBooks = home.collections.reduce((total, collection) => total + (collection.books?.length ?? 0), 0);
+    const largest = home.collections.reduce<Collection | null>((current, collection) => {
+      if (!current) return collection;
+      return (collection.books?.length ?? 0) > (current.books?.length ?? 0) ? collection : current;
+    }, null);
+
+    return { largest, totalBooks };
+  }, [home.collections]);
 
   if (loading) {
     return (
@@ -358,18 +367,49 @@ export function HomePage() {
           <span className="kpi">{home.collections.length} coleção(ões)</span>
         </div>
         {home.collections.length > 0 ? (
-          <ul className="stacked-list">
-            {home.collections.slice(0, 3).map((collection) => (
-              <li key={collection.id} className="stacked-list-item">
-                <div>
-                  <strong>{collection.title}</strong>
-                  <p className="section-sub">
-                    {collection.books?.length ?? 0} livro(s) relacionado(s)
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="home-collection-insights">
+              <div className="stat-box">
+                <strong>{home.collections.length}</strong>
+                <span>coleções</span>
+              </div>
+              <div className="stat-box">
+                <strong>{collectionInsights.totalBooks}</strong>
+                <span>livros reunidos</span>
+              </div>
+              <div className="stat-box">
+                <strong>{collectionInsights.largest?.title ?? "-"}</strong>
+                <span>maior coleção</span>
+              </div>
+            </div>
+            <ul className="stacked-list">
+              {home.collections.slice(0, 3).map((collection) => {
+                const firstBook = collection.books?.[0];
+                return (
+                  <li key={collection.id} className="stacked-list-item">
+                    <div className="book-list-row">
+                      <BookCover
+                        title={collection.title}
+                        coverUrl={firstBook?.coverUrl}
+                        isbn={firstBook?.isbn}
+                        size="small"
+                      />
+                      <div>
+                        <strong>{collection.title}</strong>
+                        <p className="section-sub">
+                          {collection.books?.length ?? 0} livro(s) relacionado(s)
+                        </p>
+                        {collection.description && <p className="section-sub">{collection.description}</p>}
+                        {(collection.books?.length ?? 0) > 0 && (
+                          <small>{collection.books?.slice(0, 2).map((book) => book.title).join(" | ")}</small>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         ) : (
           <p className="section-sub">Nenhuma coleção disponível para mostrar agora.</p>
         )}

@@ -1049,6 +1049,13 @@ label {
   margin: 0.85rem 0 0.75rem;
 }
 
+.home-collection-insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0 0.75rem;
+}
+
 .home-recommendation-title-row {
   display: flex;
   align-items: center;
@@ -2380,7 +2387,8 @@ body[data-theme="day"] .login-form {
 
   .review-insights,
   .favorite-insights,
-  .home-recommendation-insights {
+  .home-recommendation-insights,
+  .home-collection-insights {
     grid-template-columns: 1fr;
   }
 

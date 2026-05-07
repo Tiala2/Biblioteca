@@ -64,7 +64,11 @@ describe("HomePage", () => {
           {
             id: "collection-1",
             title: "Classicos",
-            books: [{ id: "book-1", title: "Livro Atual" }],
+            description: "Leituras essenciais",
+            books: [
+              { id: "book-1", title: "Livro Atual", isbn: "123", coverUrl: null },
+              { id: "book-3", title: "Livro Extra", isbn: "456", coverUrl: null },
+            ],
           },
         ],
         recommendations: [
@@ -102,7 +106,12 @@ describe("HomePage", () => {
     expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
     expect(screen.getByText("FAVORITO")).toBeInTheDocument();
     expect(screen.getByText("Nota 4.5 | 240 páginas")).toBeInTheDocument();
-    expect(screen.getByText("Classicos")).toBeInTheDocument();
+    expect(screen.getAllByText("Classicos").length).toBeGreaterThan(0);
+    expect(screen.getByText("coleções")).toBeInTheDocument();
+    expect(screen.getByText("livros reunidos")).toBeInTheDocument();
+    expect(screen.getByText("maior coleção")).toBeInTheDocument();
+    expect(screen.getByText("Leituras essenciais")).toBeInTheDocument();
+    expect(screen.getByText("Livro Atual | Livro Extra")).toBeInTheDocument();
     expect(screen.getAllByText("Livro Avaliado").length).toBeGreaterThan(0);
   });
 
