@@ -22,6 +22,19 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
     if (!normalizedSearch) return tags;
     return tags.filter((tag) => tag.name.toLowerCase().includes(normalizedSearch));
   }, [normalizedSearch, tags]);
+  const tagInsights = useMemo(() => {
+    const sortedByName = [...tags].sort((first, second) => first.name.localeCompare(second.name));
+    const longest = tags.reduce<Tag | null>((current, tag) => {
+      if (!current) return tag;
+      return tag.name.length > current.name.length ? tag : current;
+    }, null);
+
+    return {
+      firstAlphabetical: sortedByName[0]?.name ?? "-",
+      longest,
+      total: tags.length,
+    };
+  }, [tags]);
   const totalPages = Math.max(1, Math.ceil(filteredTags.length / pageSize));
   const visibleTags = filteredTags.slice(page * pageSize, page * pageSize + pageSize);
 
@@ -29,7 +42,13 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
     <article id="admin-tags" className="card admin-panel">
       <h3>{form.id ? "Editar tag" : "Nova tag"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <input aria-label="Nome da tag" value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
+        <input
+          aria-label="Nome da tag"
+          value={form.name}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))}
+          placeholder="Nome"
+          required
+        />
         <button type="submit" disabled={busyKey === "tag-create" || busyKey === `tag-save-${form.id}`}>
           {form.id ? "Salvar tag" : "Criar tag"}
         </button>
@@ -43,11 +62,36 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
         <h4>Lista de tags</h4>
         <span className="kpi">{filteredTags.length}</span>
       </div>
-      <input aria-label="Filtrar tags" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar tags" />
+      <div className="admin-taxonomy-summary">
+        <div className="stat-box admin-list-stat">
+          <strong>{tagInsights.total}</strong>
+          <span>tags cadastradas</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{tagInsights.firstAlphabetical}</strong>
+          <span>primeira A-Z</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{tagInsights.longest?.name ?? "-"}</strong>
+          <span>tag mais longa</span>
+        </div>
+      </div>
+      <input
+        aria-label="Filtrar tags"
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setPage(0);
+        }}
+        placeholder="Filtrar tags"
+      />
       <ul className="stacked-list">
         {visibleTags.map((tag) => (
           <li key={tag.id} className="stacked-list-item">
-            <strong>{tag.name}</strong>
+            <div className="admin-taxonomy-title-row">
+              <strong>{tag.name}</strong>
+              <span className="import-badge">{tag.name.length} caracteres</span>
+            </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(tag)}>
                 Editar

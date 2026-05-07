@@ -188,6 +188,12 @@ describe("AdminPage", () => {
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
     expect(screen.getAllByText("Spring em pratica").length).toBeGreaterThan(0);
+    expect(screen.getByText("com descrição")).toBeInTheDocument();
+    expect(screen.getByText("sem descrição")).toBeInTheDocument();
+    expect(screen.getByText("nome mais longo")).toBeInTheDocument();
+    expect(screen.getByText("tags cadastradas")).toBeInTheDocument();
+    expect(screen.getByText("primeira A-Z")).toBeInTheDocument();
+    expect(screen.getByText("tag mais longa")).toBeInTheDocument();
     expect(screen.getByText("coleções criadas")).toBeInTheDocument();
     expect(screen.getByText("livros vinculados")).toBeInTheDocument();
     expect(screen.getByText("maior coleção")).toBeInTheDocument();

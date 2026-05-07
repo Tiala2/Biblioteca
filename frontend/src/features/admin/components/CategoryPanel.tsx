@@ -33,6 +33,16 @@ export function CategoryPanel({
       `${category.name} ${category.description ?? ""}`.toLowerCase().includes(normalizedSearch)
     );
   }, [categories, normalizedSearch]);
+  const categoryInsights = useMemo(() => {
+    const withDescription = categories.filter((category) => Boolean(category.description?.trim())).length;
+    const withoutDescription = categories.length - withDescription;
+    const longestName = categories.reduce<Category | null>((current, category) => {
+      if (!current) return category;
+      return category.name.length > current.name.length ? category : current;
+    }, null);
+
+    return { longestName, withDescription, withoutDescription };
+  }, [categories]);
   const totalPages = Math.max(1, Math.ceil(filteredCategories.length / pageSize));
   const visibleCategories = filteredCategories.slice(page * pageSize, page * pageSize + pageSize);
 
@@ -40,7 +50,13 @@ export function CategoryPanel({
     <article id="admin-categories" className="card admin-panel">
       <h3>{form.id ? "Editar categoria" : "Nova categoria"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <input aria-label="Nome da categoria" value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
+        <input
+          aria-label="Nome da categoria"
+          value={form.name}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))}
+          placeholder="Nome"
+          required
+        />
         <input
           aria-label="Descrição da categoria"
           value={form.description}
@@ -60,12 +76,39 @@ export function CategoryPanel({
         <h4>Lista de categorias</h4>
         <span className="kpi">{filteredCategories.length}</span>
       </div>
-      <input aria-label="Filtrar categorias" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar categorias" />
+      <div className="admin-taxonomy-summary">
+        <div className="stat-box admin-list-stat">
+          <strong>{categoryInsights.withDescription}</strong>
+          <span>com descrição</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{categoryInsights.withoutDescription}</strong>
+          <span>sem descrição</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{categoryInsights.longestName?.name ?? "-"}</strong>
+          <span>nome mais longo</span>
+        </div>
+      </div>
+      <input
+        aria-label="Filtrar categorias"
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setPage(0);
+        }}
+        placeholder="Filtrar categorias"
+      />
       <ul className="stacked-list">
         {visibleCategories.map((category) => (
           <li key={category.id} className="stacked-list-item">
             <div>
-              <strong>{category.name}</strong>
+              <div className="admin-taxonomy-title-row">
+                <strong>{category.name}</strong>
+                <span className={category.description ? "import-badge" : "status-pill status-pill--muted"}>
+                  {category.description ? "DESCRITA" : "SEM DESCRIÇÃO"}
+                </span>
+              </div>
               <p className="section-sub">{category.description || "Sem descrição"}</p>
             </div>
             <div className="card-actions">

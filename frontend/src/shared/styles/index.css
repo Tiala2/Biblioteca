@@ -1641,7 +1641,21 @@ form {
   margin: 0.85rem 0 0.75rem;
 }
 
+.admin-taxonomy-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0 0.75rem;
+}
+
 .admin-badge-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-taxonomy-title-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -2344,6 +2358,10 @@ body[data-theme="day"] .login-form {
   }
 
   .admin-badge-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-taxonomy-summary {
     grid-template-columns: 1fr;
   }
 
