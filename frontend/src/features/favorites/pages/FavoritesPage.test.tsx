@@ -62,6 +62,10 @@ describe("FavoritesPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Livro Favorito" })).toBeInTheDocument();
     expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
+    expect(screen.getByText("favoritos salvos")).toBeInTheDocument();
+    expect(screen.getByText("Open Library")).toBeInTheDocument();
+    expect(screen.getByText("Mais recente:")).toBeInTheDocument();
+    expect(screen.getByText("Leitura externa com progresso manual")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Remover Livro Favorito dos favoritos" }));
 

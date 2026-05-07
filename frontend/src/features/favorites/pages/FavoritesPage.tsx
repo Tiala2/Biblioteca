@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BookMarked, Heart, Library, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
@@ -16,6 +16,11 @@ type Favorite = {
   source?: "LOCAL" | "OPEN";
   createdAt: string;
 };
+
+const getFavoriteSourceLabel = (source?: Favorite["source"]) => (source === "OPEN" ? "OPEN LIBRARY" : "LOCAL");
+
+const getFavoriteSourceDescription = (source?: Favorite["source"]) =>
+  source === "OPEN" ? "Leitura externa com progresso manual" : "Leitura local no app";
 
 export function FavoritesPage() {
   const headers = useAuthHeaders();
@@ -43,6 +48,17 @@ export function FavoritesPage() {
   useEffect(() => {
     void loadFavorites();
   }, [loadFavorites]);
+
+  const favoriteInsights = useMemo(() => {
+    const openCount = favorites.filter((item) => item.source === "OPEN").length;
+    const localCount = favorites.length - openCount;
+    const latest = favorites.reduce<Favorite | null>((current, item) => {
+      if (!current) return item;
+      return new Date(item.createdAt).getTime() > new Date(current.createdAt).getTime() ? item : current;
+    }, null);
+
+    return { latest, localCount, openCount };
+  }, [favorites]);
 
   const removeFavorite = async (bookId: string) => {
     if (!headers) return;
@@ -91,6 +107,28 @@ export function FavoritesPage() {
             </div>
             <span className="kpi"><Sparkles aria-hidden="true" /> Biblioteca pessoal</span>
           </div>
+          <div className="favorite-insights">
+            <div className="stat-box">
+              <Heart aria-hidden="true" />
+              <strong>{favorites.length}</strong>
+              <span>favoritos salvos</span>
+            </div>
+            <div className="stat-box">
+              <Library aria-hidden="true" />
+              <strong>{favoriteInsights.localCount}</strong>
+              <span>PDF/local</span>
+            </div>
+            <div className="stat-box">
+              <Sparkles aria-hidden="true" />
+              <strong>{favoriteInsights.openCount}</strong>
+              <span>Open Library</span>
+            </div>
+          </div>
+          {favoriteInsights.latest && (
+            <p className="favorite-latest">
+              Mais recente: <strong>{favoriteInsights.latest.bookTitle}</strong>
+            </p>
+          )}
         </article>
       )}
 
@@ -99,12 +137,12 @@ export function FavoritesPage() {
           <article key={item.bookId} className="card aura-book-card aura-favorite-card">
             <BookCover title={item.bookTitle} coverUrl={item.coverUrl} isbn={item.bookIsbn} size="medium" />
             <div className="book-card-badges">
-              {item.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
+              <span className="import-badge">{getFavoriteSourceLabel(item.source)}</span>
               <span className="favorite-badge"><BookMarked aria-hidden="true" /> FAVORITO</span>
             </div>
             <h3>{item.bookTitle}</h3>
             <p>ISBN: {item.bookIsbn}</p>
-            {item.source === "OPEN" && <small>Leitura externa com progresso manual</small>}
+            <small>{getFavoriteSourceDescription(item.source)}</small>
             <small>Favoritado em: {new Date(item.createdAt).toLocaleString()}</small>
             <div className="card-actions">
               <Link to={`/books/${item.bookId}`} className="btn-muted btn-link">
