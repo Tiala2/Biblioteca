@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BellRing, Flame, Gauge, Target } from "lucide-react";
+import { BellRing, CalendarClock, Flame, Gauge, Target } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -129,6 +129,16 @@ export function GoalsPage() {
   const progressPercent = Math.max(0, Math.min(100, Number(goal?.progressPercent ?? 0)));
   const suggestedDailyPages = goal && goal.expiresInDays > 0 ? Math.ceil(goal.remainingPages / goal.expiresInDays) : goal?.remainingPages ?? 0;
   const paceLabel = goal?.paceWarning ? "Ajuste necessario" : "Bom ritmo";
+  const goalInsights = useMemo(() => {
+    const highPriorityAlerts = alerts.filter((alert) => ["HIGH", "ERROR", "CRITICAL", "WARNING"].includes(alert.severity)).length;
+    const nextMilestone = goal ? Math.min(goal.targetPages, Math.ceil(goal.progressPages / 25) * 25 + 25) : 0;
+    const pagesToMilestone = goal ? Math.max(0, nextMilestone - goal.progressPages) : 0;
+
+    return {
+      highPriorityAlerts,
+      pagesToMilestone,
+    };
+  }, [alerts, goal]);
 
   if (loading) {
     return (
@@ -204,12 +214,38 @@ export function GoalsPage() {
                 <strong>{suggestedDailyPages}</strong>
                 <span>paginas por dia</span>
               </div>
+              <div className="stat-box">
+                <strong>{alerts.length}</strong>
+                <span>alertas ativos</span>
+              </div>
+              <div className="stat-box">
+                <strong>{streak}</strong>
+                <span>dias de sequencia</span>
+              </div>
             </div>
             <div className="goal-status-row">
               <span className={goal.paceWarning ? "import-badge" : "favorite-badge"}>{paceLabel}</span>
+              <span className={goalInsights.highPriorityAlerts > 0 ? "import-badge" : "favorite-badge"}>
+                {goalInsights.highPriorityAlerts > 0 ? `${goalInsights.highPriorityAlerts} alerta(s) prioritario(s)` : "Sem alerta prioritario"}
+              </span>
               <span className="section-sub">Status: {goal.status}</span>
             </div>
             <p>Leitura acumulada: {goal.progressPages} páginas de {goal.targetPages} planejadas.</p>
+            <div className="goal-plan-note">
+              <CalendarClock aria-hidden="true" />
+              <div>
+                <strong>
+                  {goalInsights.pagesToMilestone > 0
+                    ? `Faltam ${goalInsights.pagesToMilestone} paginas para o proximo marco`
+                    : "Marco atual alcancado"}
+                </strong>
+                <small>
+                  {goal.expiresInDays > 0
+                    ? `${goal.expiresInDays} dia(s) restantes neste periodo`
+                    : "Periodo encerrando, revise sua proxima meta"}
+                </small>
+              </div>
+            </div>
             <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
@@ -247,7 +283,10 @@ export function GoalsPage() {
             {alerts.map((alert) => (
               <li key={alert.id} className="stacked-list-item">
                 <div>
-                  <strong>{alert.severity}</strong>
+                  <div className="goal-alert-title">
+                    <strong>{alert.severity}</strong>
+                    <span className="import-badge">{alert.type}</span>
+                  </div>
                   <p className="section-sub">{alert.message}</p>
                 </div>
                 {alert.suggestedDailyPages ? (

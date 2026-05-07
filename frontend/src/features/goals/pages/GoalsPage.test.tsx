@@ -94,7 +94,13 @@ describe("GoalsPage", () => {
     expect(screen.getByText("Bom ritmo de leitura.")).toBeInTheDocument();
     expect(screen.getByText("50%")).toBeInTheDocument();
     expect(screen.getByText("paginas por dia")).toBeInTheDocument();
+    expect(screen.getByText("alertas ativos")).toBeInTheDocument();
+    expect(screen.getByText("dias de sequencia")).toBeInTheDocument();
     expect(screen.getByText("Bom ritmo")).toBeInTheDocument();
+    expect(screen.getByText("Sem alerta prioritario")).toBeInTheDocument();
+    expect(screen.getByText("Faltam 40 paginas para o proximo marco")).toBeInTheDocument();
+    expect(screen.getByText("12 dia(s) restantes neste periodo")).toBeInTheDocument();
+    expect(screen.getByText("PACE")).toBeInTheDocument();
 
     const targetInput = screen.getByDisplayValue("120");
     await user.clear(targetInput);
