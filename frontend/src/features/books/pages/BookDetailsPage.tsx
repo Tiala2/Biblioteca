@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BookMarked, MessageCircle, Sparkles, Star, WandSparkles } from "lucide-react";
+import { BookMarked, MessageCircle, Sparkles, Star, Tags, WandSparkles } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -48,6 +48,11 @@ type RecommendationBook = {
 type Paged<T> = {
   content: T[];
 };
+
+function buildRatingStars(rating?: number | null) {
+  const filled = Math.max(0, Math.min(5, Math.round(rating ?? 0)));
+  return Array.from({ length: 5 }, (_, index) => index < filled);
+}
 
 export function BookDetailsPage() {
   const { bookId } = useParams<{ bookId: string }>();
@@ -131,6 +136,7 @@ export function BookDetailsPage() {
       },
     ];
   }, [book]);
+  const ratingStars = useMemo(() => buildRatingStars(book?.averageRating), [book?.averageRating]);
 
   const toggleFavorite = async () => {
     if (!headers || !bookId) return;
@@ -228,17 +234,43 @@ export function BookDetailsPage() {
             {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} avaliação(ões)
           </span>
         </div>
+        <div className="rating-summary" aria-label={`Nota media ${formatDecimal(book?.averageRating)} de 5`}>
+          {ratingStars.map((filled, index) => (
+            <Star key={index} aria-hidden="true" className={filled ? "filled" : undefined} />
+          ))}
+          <strong>{formatDecimal(book?.averageRating)}</strong>
+        </div>
         <p className="section-sub">
           Use essa leitura guiada para decidir se o livro entra na sua jornada atual ou fica para uma próxima meta.
         </p>
-        <div className="stacked-list">
-          <div className="stacked-list-item">
-            <strong>Categorias</strong>
-            <span>{book?.categories?.length ? book.categories.map((item) => item.name).join(", ") : "Sem categorias"}</span>
+        <div className="taxonomy-panel">
+          <div>
+            <strong><Tags aria-hidden="true" /> Categorias</strong>
+            {book?.categories?.length ? (
+              <div className="taxonomy-chip-row">
+                {book.categories.map((item) => (
+                  <Link key={item.id} className="taxonomy-chip" to={`/books?categoryId=${item.id}`}>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="section-sub">Sem categorias</p>
+            )}
           </div>
-          <div className="stacked-list-item">
-            <strong>Tags</strong>
-            <span>{book?.tags?.length ? book.tags.map((item) => item.name).join(", ") : "Sem tags"}</span>
+          <div>
+            <strong><Tags aria-hidden="true" /> Tags</strong>
+            {book?.tags?.length ? (
+              <div className="taxonomy-chip-row">
+                {book.tags.map((item) => (
+                  <Link key={item.id} className="taxonomy-chip taxonomy-chip--tag" to={`/books?tagId=${item.id}`}>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="section-sub">Sem tags</p>
+            )}
           </div>
         </div>
       </article>

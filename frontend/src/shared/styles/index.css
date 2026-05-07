@@ -1236,6 +1236,86 @@ label {
   height: 15px;
 }
 
+.rating-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  width: fit-content;
+  margin: 0.75rem 0;
+  padding: 0.42rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--card-border));
+  color: color-mix(in srgb, var(--text-main) 86%, var(--gold));
+  background: color-mix(in srgb, var(--gold) 11%, var(--card-bg));
+}
+
+.rating-summary svg {
+  width: 17px;
+  height: 17px;
+  color: color-mix(in srgb, var(--text-soft) 60%, var(--card-border));
+  fill: transparent;
+}
+
+.rating-summary svg.filled {
+  color: var(--gold);
+  fill: currentColor;
+}
+
+.rating-summary strong {
+  margin-left: 0.25rem;
+  font-family: var(--font-display);
+}
+
+.taxonomy-panel {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.9rem;
+}
+
+.taxonomy-panel strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.taxonomy-panel strong svg {
+  width: 16px;
+  height: 16px;
+  color: var(--primary-b);
+}
+
+.taxonomy-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+
+.taxonomy-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary-b) 26%, var(--card-border));
+  color: var(--primary-a);
+  background: color-mix(in srgb, var(--primary-b) 10%, var(--card-bg));
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.taxonomy-chip:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary-b) 44%, var(--card-border));
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--primary-b) 10%, transparent);
+}
+
+.taxonomy-chip--tag {
+  border-color: color-mix(in srgb, var(--accent-rose) 24%, var(--card-border));
+  color: color-mix(in srgb, var(--accent-rose) 72%, var(--text-main));
+  background: color-mix(in srgb, var(--accent-rose) 9%, var(--card-bg));
+}
+
 .review-book-preview,
 .review-book-row {
   padding: 0.65rem;
