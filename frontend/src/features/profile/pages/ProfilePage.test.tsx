@@ -85,6 +85,8 @@ function mockProfileRequests() {
           book: {
             id: "book-1",
             title: "Livro em andamento",
+            isbn: "9780000000001",
+            coverUrl: null,
           },
           status: "IN_PROGRESS",
           currentPage: 45,
@@ -135,8 +137,10 @@ describe("ProfilePage", () => {
     expect(screen.getByText("320")).toBeInTheDocument();
     expect(screen.getByText("livros concluídos")).toBeInTheDocument();
     expect(screen.getAllByText("Livro em andamento").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText("Progresso de Livro em andamento: 30%")).toBeInTheDocument();
     expect(screen.getByText("Primeira Review")).toBeInTheDocument();
-    expect(screen.getByText("Excelente leitura")).toBeInTheDocument();
+    expect(screen.getByText("Nota 5 - Excelente leitura")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Ver livro" })[0]).toHaveAttribute("href", "/books/book-1");
   });
 
   it("deve salvar preferencias do usuario", async () => {

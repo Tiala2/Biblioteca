@@ -1327,6 +1327,23 @@ label {
   background: color-mix(in srgb, var(--accent-rose) 9%, var(--card-bg));
 }
 
+.mini-progress {
+  width: min(220px, 100%);
+  height: 8px;
+  margin: 0.38rem 0;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--card-border) 72%, transparent);
+  background: color-mix(in srgb, var(--card-bg) 62%, transparent);
+}
+
+.mini-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary-b), var(--gold));
+}
+
 .review-book-preview,
 .review-book-row {
   padding: 0.65rem;

@@ -127,6 +127,7 @@ export function ProfilePage() {
       id: reading.id,
       title: reading.book.title,
       book: reading.book,
+      progress: reading.progress,
       subtitle: `Página ${reading.currentPage} - ${reading.progress}% - ${reading.status}`,
       date: reading.lastReadedAt ?? reading.finishedAt ?? null,
       link: `/books/${reading.book.id}`,
@@ -161,6 +162,10 @@ export function ProfilePage() {
       return true;
     });
   }, [reviewFilter, reviews]);
+  const readingBookById = useMemo(
+    () => Object.fromEntries(readings.map((reading) => [reading.book.id, reading.book])),
+    [readings]
+  );
 
   const onSavePreferences = async (event: FormEvent) => {
     event.preventDefault();
@@ -344,6 +349,9 @@ export function ProfilePage() {
                 <div>
                   <strong>{item.title}</strong>
                   <p className="section-sub">{item.subtitle}</p>
+                  <div className="mini-progress" aria-label={`Progresso de ${item.book.title}: ${item.progress}%`}>
+                    <span style={{ width: `${Math.max(0, Math.min(100, item.progress))}%` }} />
+                  </div>
                   <small>{formatDateTimeBr(item.date)}</small>
                 </div>
                 <Link to={item.link} className="btn-muted btn-link">
@@ -394,18 +402,30 @@ export function ProfilePage() {
         </select>
         {filteredReviews.length > 0 ? (
           <ul className="stacked-list">
-            {filteredReviews.slice(0, 5).map((review) => (
-              <li key={review.id} className="stacked-list-item">
-                <div>
-                  <strong>Nota {review.rating}</strong>
-                  <p className="section-sub">{review.comment}</p>
-                  <small>{formatDateTimeBr(review.updatedAt)}</small>
-                </div>
-                <Link to="/reviews" className="btn-muted btn-link">
-                  Abrir avaliações
-                </Link>
-              </li>
-            ))}
+            {filteredReviews.slice(0, 5).map((review) => {
+              const reviewBook = readingBookById[review.bookId];
+
+              return (
+                <li key={review.id} className="stacked-list-item">
+                  <div className="book-list-row">
+                    <BookCover title={reviewBook?.title ?? "Livro avaliado"} coverUrl={reviewBook?.coverUrl} isbn={reviewBook?.isbn} size="small" />
+                    <div>
+                      <strong>{reviewBook?.title ?? "Livro avaliado"}</strong>
+                      <p className="section-sub">Nota {review.rating} - {review.comment}</p>
+                      <small>{formatDateTimeBr(review.updatedAt)}</small>
+                    </div>
+                  </div>
+                  <div className="card-actions">
+                    <Link to={`/books/${review.bookId}`} className="btn-muted btn-link">
+                      Ver livro
+                    </Link>
+                    <Link to="/reviews" className="btn-muted btn-link">
+                      Abrir avaliações
+                    </Link>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="section-sub">Nenhuma avaliação encontrada para esse filtro.</p>
