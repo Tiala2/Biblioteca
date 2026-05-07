@@ -191,6 +191,10 @@ describe("AdminPage", () => {
     expect(screen.getByText("coleções criadas")).toBeInTheDocument();
     expect(screen.getByText("livros vinculados")).toBeInTheDocument();
     expect(screen.getByText("maior coleção")).toBeInTheDocument();
+    expect(screen.getByText("conquistas ativas")).toBeInTheDocument();
+    expect(screen.getByText("inativas")).toBeInTheDocument();
+    expect(screen.getByText("critério mais usado")).toBeInTheDocument();
+    expect(screen.getByText("ATIVA")).toBeInTheDocument();
     expect(screen.getByText("locais/PDF")).toBeInTheDocument();
     expect(screen.getByText("último favorito")).toBeInTheDocument();
     expect(screen.getByText("OPEN")).toBeInTheDocument();

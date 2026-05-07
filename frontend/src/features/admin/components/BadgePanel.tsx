@@ -13,6 +13,15 @@ type BadgePanelProps = {
   onDelete: (badgeId: string) => void;
 };
 
+function getMostUsedCriteria(badges: Badge[]) {
+  const counts = badges.reduce<Record<string, number>>((accumulator, badge) => {
+    accumulator[badge.criteriaType] = (accumulator[badge.criteriaType] ?? 0) + 1;
+    return accumulator;
+  }, {});
+
+  return Object.entries(counts).sort(([, first], [, second]) => second - first)[0]?.[0] ?? "-";
+}
+
 export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEdit, onReset, onDelete }: BadgePanelProps) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -24,6 +33,16 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
       `${badge.name} ${badge.code} ${badge.criteriaType} ${badge.criteriaValue ?? ""}`.toLowerCase().includes(normalizedSearch)
     );
   }, [badges, normalizedSearch]);
+  const badgeInsights = useMemo(() => {
+    const activeCount = badges.filter((badge) => badge.active).length;
+    const inactiveCount = badges.length - activeCount;
+
+    return {
+      activeCount,
+      inactiveCount,
+      mostUsedCriteria: getMostUsedCriteria(badges),
+    };
+  }, [badges]);
   const totalPages = Math.max(1, Math.ceil(filteredBadges.length / pageSize));
   const visibleBadges = filteredBadges.slice(page * pageSize, page * pageSize + pageSize);
 
@@ -31,21 +50,35 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
     <article id="admin-badges" className="card admin-panel">
       <h3>{form.id ? "Editar conquista" : "Nova conquista"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <select aria-label="Código da conquista" value={form.code} onChange={(event) => onFormChange((prev) => ({ ...prev, code: event.target.value as BadgeCode }))}>
+        <select
+          aria-label="Código da conquista"
+          value={form.code}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, code: event.target.value as BadgeCode }))}
+        >
           {BADGE_CODES.map((code) => (
             <option key={code} value={code}>
               {code}
             </option>
           ))}
         </select>
-        <input aria-label="Nome da conquista" value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
+        <input
+          aria-label="Nome da conquista"
+          value={form.name}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))}
+          placeholder="Nome"
+          required
+        />
         <input
           aria-label="Descrição da conquista"
           value={form.description}
           onChange={(event) => onFormChange((prev) => ({ ...prev, description: event.target.value }))}
           placeholder="Descrição"
         />
-        <select aria-label="Critério da conquista" value={form.criteriaType} onChange={(event) => onFormChange((prev) => ({ ...prev, criteriaType: event.target.value as BadgeCriteria }))}>
+        <select
+          aria-label="Critério da conquista"
+          value={form.criteriaType}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, criteriaType: event.target.value as BadgeCriteria }))}
+        >
           {BADGE_CRITERIA.map((criteria) => (
             <option key={criteria} value={criteria}>
               {criteria}
@@ -74,15 +107,43 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
         <h4>Lista de conquistas</h4>
         <span className="kpi">{filteredBadges.length}</span>
       </div>
-      <input aria-label="Filtrar conquistas" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar conquistas" />
+      <div className="admin-badge-summary">
+        <div className="stat-box admin-list-stat">
+          <strong>{badgeInsights.activeCount}</strong>
+          <span>conquistas ativas</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{badgeInsights.inactiveCount}</strong>
+          <span>inativas</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{badgeInsights.mostUsedCriteria}</strong>
+          <span>critério mais usado</span>
+        </div>
+      </div>
+      <input
+        aria-label="Filtrar conquistas"
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setPage(0);
+        }}
+        placeholder="Filtrar conquistas"
+      />
       <ul className="stacked-list">
         {visibleBadges.map((badge) => (
           <li key={badge.id} className="stacked-list-item">
             <div>
-              <strong>{badge.name}</strong>
+              <div className="admin-badge-title-row">
+                <strong>{badge.name}</strong>
+                <span className={badge.active ? "import-badge" : "status-pill status-pill--muted"}>
+                  {badge.active ? "ATIVA" : "INATIVA"}
+                </span>
+              </div>
               <p className="section-sub">
                 {badge.code} | {badge.criteriaType} | {badge.criteriaValue ?? "sem valor"}
               </p>
+              {badge.description && <small>{badge.description}</small>}
             </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(badge)}>

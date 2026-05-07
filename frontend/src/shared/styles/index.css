@@ -1634,6 +1634,38 @@ form {
   margin: 0.85rem 0 0.75rem;
 }
 
+.admin-badge-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0 0.75rem;
+}
+
+.admin-badge-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--card-border) 80%, transparent);
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.status-pill--muted {
+  background: color-mix(in srgb, var(--card-bg) 80%, transparent);
+}
+
 .filter-actions {
   display: inline-flex;
   align-items: center;
@@ -2308,6 +2340,10 @@ body[data-theme="day"] .login-form {
   }
 
   .admin-collection-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-badge-summary {
     grid-template-columns: 1fr;
   }
 
