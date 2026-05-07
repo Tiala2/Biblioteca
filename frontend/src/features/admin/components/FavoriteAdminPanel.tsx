@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
+import { BookCover } from "@shared/ui/books/BookCover";
 import type { FavoriteAdmin } from "../types";
 
 type FavoriteAdminPanelProps = {
@@ -17,6 +18,17 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
       `${favorite.bookTitle} ${favorite.bookIsbn ?? ""} ${favorite.source ?? ""}`.toLowerCase().includes(normalizedSearch)
     );
   }, [favorites, normalizedSearch]);
+  const favoriteInsights = useMemo(() => {
+    const openCount = favorites.filter((favorite) => favorite.source === "OPEN").length;
+    const localCount = favorites.length - openCount;
+    const latest = favorites.reduce<FavoriteAdmin | null>((current, favorite) => {
+      if (!favorite.createdAt) return current;
+      if (!current?.createdAt) return favorite;
+      return new Date(favorite.createdAt).getTime() > new Date(current.createdAt).getTime() ? favorite : current;
+    }, null);
+
+    return { latest, localCount, openCount };
+  }, [favorites]);
   const totalPages = Math.max(1, Math.ceil(filteredFavorites.length / pageSize));
   const visibleFavorites = filteredFavorites.slice(page * pageSize, page * pageSize + pageSize);
 
@@ -29,6 +41,20 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
       <p className="section-sub">
         Visao consolidada dos livros mais salvos na plataforma.
       </p>
+      <div className="admin-favorite-summary">
+        <div className="stat-box admin-list-stat">
+          <strong>{favoriteInsights.localCount}</strong>
+          <span>locais/PDF</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{favoriteInsights.openCount}</strong>
+          <span>Open Library</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{favoriteInsights.latest ? formatDateTimeBr(favoriteInsights.latest.createdAt) : "-"}</strong>
+          <span>último favorito</span>
+        </div>
+      </div>
       <input
         value={search}
         onChange={(event) => {
@@ -40,10 +66,15 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
       <ul className="stacked-list">
         {visibleFavorites.map((favorite) => (
           <li key={`${favorite.bookId}-${favorite.createdAt ?? "sem-data"}`} className="stacked-list-item">
-            <div>
-              <strong>{favorite.bookTitle}</strong>
-              <p className="section-sub">{favorite.bookIsbn || "ISBN não informado"}</p>
-              <p className="section-sub">Origem {favorite.source ?? "desconhecida"} | Favoritado em {formatDateTimeBr(favorite.createdAt)}</p>
+            <div className="book-list-row">
+              <BookCover title={favorite.bookTitle} coverUrl={favorite.coverUrl} isbn={favorite.bookIsbn} size="small" />
+              <div>
+                <strong>{favorite.bookTitle}</strong>
+                <p className="section-sub">{favorite.bookIsbn || "ISBN não informado"}</p>
+                <p className="section-sub">
+                  Origem {favorite.source ?? "LOCAL"} | Favoritado em {formatDateTimeBr(favorite.createdAt)}
+                </p>
+              </div>
             </div>
             <span className="import-badge">{favorite.source ?? "LOCAL"}</span>
           </li>

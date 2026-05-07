@@ -106,6 +106,8 @@ function mockAdminRequests() {
             bookId: "book-1",
             bookTitle: "Spring em pratica",
             bookIsbn: "123",
+            coverUrl: "https://example.com/capa.jpg",
+            source: "OPEN",
             createdAt: "2026-04-24T12:00:00",
           },
         ],
@@ -185,6 +187,9 @@ describe("AdminPage", () => {
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
     expect(screen.getAllByText("Spring em pratica").length).toBeGreaterThan(0);
+    expect(screen.getByText("locais/PDF")).toBeInTheDocument();
+    expect(screen.getByText("último favorito")).toBeInTheDocument();
+    expect(screen.getByText("OPEN")).toBeInTheDocument();
   });
 
   it("deve enviar filtro de busca de usuarios para o backend", async () => {

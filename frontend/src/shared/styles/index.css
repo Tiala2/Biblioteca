@@ -1620,6 +1620,13 @@ form {
   min-height: 100%;
 }
 
+.admin-favorite-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.85rem 0 0.75rem;
+}
+
 .filter-actions {
   display: inline-flex;
   align-items: center;
@@ -2286,6 +2293,10 @@ body[data-theme="day"] .login-form {
   }
 
   .badge-insights {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-favorite-summary {
     grid-template-columns: 1fr;
   }
 
