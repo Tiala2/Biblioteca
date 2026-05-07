@@ -130,11 +130,19 @@ export function ReviewsPage() {
     const total = items.length;
     const average = total > 0 ? items.reduce((sum, item) => sum + item.rating, 0) / total : 0;
     const highest = total > 0 ? Math.max(...items.map((item) => item.rating)) : 0;
+    const withComment = items.filter((item) => item.comment.trim().length > 0).length;
+    const latestUpdated =
+      items
+        .map((item) => new Date(item.updatedAt).getTime())
+        .filter(Number.isFinite)
+        .sort((left, right) => right - left)[0] ?? null;
 
     return {
       total,
       average: average.toFixed(1).replace(".", ","),
       highest,
+      withComment,
+      latestUpdatedLabel: latestUpdated ? new Date(latestUpdated).toLocaleDateString() : "-",
     };
   }, [items]);
 
@@ -309,6 +317,12 @@ export function ReviewsPage() {
                   {selectedBook.author ?? "Autor nao informado"}
                   {selectedBook.source === "OPEN" ? " - Open Library" : ""}
                 </small>
+                <div className="review-book-badges">
+                  <span className={selectedBook.source === "OPEN" ? "import-badge" : "favorite-badge"}>
+                    {selectedBook.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                  </span>
+                  <span className="import-badge">Elegivel para review</span>
+                </div>
               </div>
             </div>
           ) : null}
@@ -364,6 +378,14 @@ export function ReviewsPage() {
             <strong>{reviewStats.highest || "-"}</strong>
             <span>Maior nota</span>
           </div>
+          <div className="stat-box">
+            <strong>{reviewStats.withComment}</strong>
+            <span>Com comentario</span>
+          </div>
+          <div className="stat-box">
+            <strong>{reviewStats.latestUpdatedLabel}</strong>
+            <span>Ultima atualizacao</span>
+          </div>
         </div>
 
         {error && <p className="error">{error}</p>}
@@ -389,6 +411,14 @@ export function ReviewsPage() {
                       </Link>
                     </h3>
                     <small>{reviewBook?.author ?? "Autor nao informado"}</small>
+                    <div className="review-book-badges">
+                      <span className={reviewBook?.source === "OPEN" ? "import-badge" : "favorite-badge"}>
+                        {reviewBook?.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                      </span>
+                      <span className="import-badge">
+                        {review.comment.trim().length > 0 ? `${review.comment.trim().length} caracteres` : "Sem comentario"}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 {isEditing ? (

@@ -65,7 +65,7 @@ describe("ReviewsPage", () => {
       } as never)
       .mockResolvedValueOnce({
         data: {
-          content: [{ id: "book-1", title: "Livro Exibido" }],
+          content: [{ id: "book-1", title: "Livro Exibido", author: "Autora Teste", source: "OPEN" }],
           page: { size: 100, number: 0, totalElements: 1, totalPages: 1 },
         },
       } as never)
@@ -91,6 +91,10 @@ describe("ReviewsPage", () => {
     expect(screen.getAllByRole("link", { name: "Livro Exibido" })[0]).toHaveAttribute("href", "/books/book-1");
     expect(screen.getByText("MÃ©dia das notas")).toBeInTheDocument();
     expect(screen.getByText("5,0")).toBeInTheDocument();
+    expect(screen.getByText("Com comentario")).toBeInTheDocument();
+    expect(screen.getByText("Ultima atualizacao")).toBeInTheDocument();
+    expect(screen.getAllByText("OPEN LIBRARY")).toHaveLength(2);
+    expect(screen.getByText("9 caracteres")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ver livro" })).toHaveAttribute("href", "/books/book-1");
     expect(screen.queryByText("Livro: book-1")).not.toBeInTheDocument();
   });
