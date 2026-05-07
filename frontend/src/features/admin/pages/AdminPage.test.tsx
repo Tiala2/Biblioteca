@@ -79,7 +79,8 @@ function mockAdminRequests() {
             id: "col-1",
             title: "Favoritos do semestre",
             description: "Colecao teste",
-            books: [{ id: "book-1", title: "Spring em pratica" }],
+            coverUrl: "https://example.com/colecao.jpg",
+            books: [{ id: "book-1", title: "Spring em pratica", isbn: "123", coverUrl: "https://example.com/capa.jpg" }],
           },
         ],
       },
@@ -187,6 +188,9 @@ describe("AdminPage", () => {
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
     expect(screen.getAllByText("Spring em pratica").length).toBeGreaterThan(0);
+    expect(screen.getByText("coleções criadas")).toBeInTheDocument();
+    expect(screen.getByText("livros vinculados")).toBeInTheDocument();
+    expect(screen.getByText("maior coleção")).toBeInTheDocument();
     expect(screen.getByText("locais/PDF")).toBeInTheDocument();
     expect(screen.getByText("último favorito")).toBeInTheDocument();
     expect(screen.getByText("OPEN")).toBeInTheDocument();

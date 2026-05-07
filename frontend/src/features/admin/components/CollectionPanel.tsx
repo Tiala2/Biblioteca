@@ -1,5 +1,6 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useMemo, useState } from "react";
+import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, Collection, CollectionForm } from "../types";
 
 function readSelectedValues(event: ChangeEvent<HTMLSelectElement>) {
@@ -41,6 +42,15 @@ export function CollectionPanel({
         .includes(normalizedSearch)
     );
   }, [collections, normalizedSearch]);
+  const collectionInsights = useMemo(() => {
+    const linkedBooks = collections.reduce((total, collection) => total + (collection.books?.length ?? 0), 0);
+    const largest = collections.reduce<Collection | null>((current, collection) => {
+      if (!current) return collection;
+      return (collection.books?.length ?? 0) > (current.books?.length ?? 0) ? collection : current;
+    }, null);
+
+    return { largest, linkedBooks };
+  }, [collections]);
   const totalPages = Math.max(1, Math.ceil(filteredCollections.length / pageSize));
   const visibleCollections = filteredCollections.slice(page * pageSize, page * pageSize + pageSize);
 
@@ -48,15 +58,32 @@ export function CollectionPanel({
     <article id="admin-collections" className="card admin-panel">
       <h3>{form.id ? "Editar coleção" : "Nova coleção"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <input aria-label="Título da coleção" value={form.title} onChange={(event) => onFormChange((prev) => ({ ...prev, title: event.target.value }))} placeholder="Título" required />
+        <input
+          aria-label="Título da coleção"
+          value={form.title}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, title: event.target.value }))}
+          placeholder="Título"
+          required
+        />
         <input
           aria-label="Descrição da coleção"
           value={form.description}
           onChange={(event) => onFormChange((prev) => ({ ...prev, description: event.target.value }))}
           placeholder="Descrição"
         />
-        <input aria-label="URL da capa da coleção" value={form.coverUrl} onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))} placeholder="URL da capa" />
-        <select aria-label="Livros da coleção" multiple size={5} value={form.bookIds} onChange={(event) => onFormChange((prev) => ({ ...prev, bookIds: readSelectedValues(event) }))}>
+        <input
+          aria-label="URL da capa da coleção"
+          value={form.coverUrl}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))}
+          placeholder="URL da capa"
+        />
+        <select
+          aria-label="Livros da coleção"
+          multiple
+          size={5}
+          value={form.bookIds}
+          onChange={(event) => onFormChange((prev) => ({ ...prev, bookIds: readSelectedValues(event) }))}
+        >
           {books.map((book) => (
             <option key={book.id} value={book.id}>
               {book.title}
@@ -76,13 +103,47 @@ export function CollectionPanel({
         <h4>Lista de coleções</h4>
         <span className="kpi">{filteredCollections.length}</span>
       </div>
-      <input aria-label="Filtrar coleções" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar coleções" />
+      <div className="admin-collection-summary">
+        <div className="stat-box admin-list-stat">
+          <strong>{collections.length}</strong>
+          <span>coleções criadas</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{collectionInsights.linkedBooks}</strong>
+          <span>livros vinculados</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{collectionInsights.largest?.title ?? "-"}</strong>
+          <span>maior coleção</span>
+        </div>
+      </div>
+      <input
+        aria-label="Filtrar coleções"
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setPage(0);
+        }}
+        placeholder="Filtrar coleções"
+      />
       <ul className="stacked-list">
         {visibleCollections.map((collection) => (
           <li key={collection.id} className="stacked-list-item">
-            <div>
-              <strong>{collection.title}</strong>
-              <p className="section-sub">{collection.books?.length ?? 0} livro(s)</p>
+            <div className="book-list-row">
+              <BookCover
+                title={collection.title}
+                coverUrl={collection.coverUrl ?? collection.books?.[0]?.coverUrl}
+                isbn={collection.books?.[0]?.isbn}
+                size="small"
+              />
+              <div>
+                <strong>{collection.title}</strong>
+                <p className="section-sub">{collection.books?.length ?? 0} livro(s)</p>
+                {collection.description && <p className="section-sub">{collection.description}</p>}
+                {(collection.books?.length ?? 0) > 0 && (
+                  <small>{collection.books?.slice(0, 2).map((book) => book.title).join(" | ")}</small>
+                )}
+              </div>
             </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(collection)}>
