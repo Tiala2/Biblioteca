@@ -92,6 +92,9 @@ describe("GoalsPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Transforme leitura em constancia" })).toBeInTheDocument();
     expect(screen.getByText("Bom ritmo de leitura.")).toBeInTheDocument();
+    expect(screen.getByText("50%")).toBeInTheDocument();
+    expect(screen.getByText("paginas por dia")).toBeInTheDocument();
+    expect(screen.getByText("Bom ritmo")).toBeInTheDocument();
 
     const targetInput = screen.getByDisplayValue("120");
     await user.clear(targetInput);

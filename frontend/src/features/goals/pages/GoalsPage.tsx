@@ -127,6 +127,8 @@ export function GoalsPage() {
   };
 
   const progressPercent = Math.max(0, Math.min(100, Number(goal?.progressPercent ?? 0)));
+  const suggestedDailyPages = goal && goal.expiresInDays > 0 ? Math.ceil(goal.remainingPages / goal.expiresInDays) : goal?.remainingPages ?? 0;
+  const paceLabel = goal?.paceWarning ? "Ajuste necessario" : "Bom ritmo";
 
   if (loading) {
     return (
@@ -185,11 +187,29 @@ export function GoalsPage() {
         </div>
         {goal ? (
           <>
-            <p>Status: {goal.status}</p>
+            <div className="goal-summary-grid">
+              <div className="stat-box">
+                <strong>{Math.round(progressPercent)}%</strong>
+                <span>progresso</span>
+              </div>
+              <div className="stat-box">
+                <strong>{goal.remainingPages}</strong>
+                <span>paginas restantes</span>
+              </div>
+              <div className="stat-box">
+                <strong>{goal.expiresInDays}</strong>
+                <span>dias restantes</span>
+              </div>
+              <div className="stat-box">
+                <strong>{suggestedDailyPages}</strong>
+                <span>paginas por dia</span>
+              </div>
+            </div>
+            <div className="goal-status-row">
+              <span className={goal.paceWarning ? "import-badge" : "favorite-badge"}>{paceLabel}</span>
+              <span className="section-sub">Status: {goal.status}</span>
+            </div>
             <p>Leitura acumulada: {goal.progressPages} páginas de {goal.targetPages} planejadas.</p>
-            <p>Restante: {goal.remainingPages} páginas</p>
-            <p>Expira em: {goal.expiresInDays} dia(s)</p>
-            <p>Ritmo: {goal.paceWarning ? "Ajuste necessario" : "Bom ritmo"}</p>
             <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>

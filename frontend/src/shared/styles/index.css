@@ -1344,6 +1344,21 @@ label {
   background: linear-gradient(90deg, var(--primary-b), var(--gold));
 }
 
+.goal-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.9rem 0;
+}
+
+.goal-status-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0.7rem 0;
+}
+
 .review-book-preview,
 .review-book-row {
   padding: 0.65rem;
@@ -2219,6 +2234,10 @@ body[data-theme="day"] .login-form {
   }
 
   .review-insights {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-summary-grid {
     grid-template-columns: 1fr;
   }
 
