@@ -1,6 +1,6 @@
 # Checklist De Seguranca Pre-Deploy
 
-Data de referencia: 2026-04-28
+Data de referencia: 2026-05-02
 
 ## Identidade e acesso
 

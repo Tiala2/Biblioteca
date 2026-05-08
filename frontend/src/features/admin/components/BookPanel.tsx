@@ -1,9 +1,20 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useMemo, useState } from "react";
+import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, BookForm, Category, ImportResult } from "../types";
 
 function readSelectedValues(event: ChangeEvent<HTMLSelectElement>) {
   return Array.from(event.currentTarget.selectedOptions, (option) => option.value);
+}
+
+function normalizeIsbn(isbn?: string | null) {
+  const normalized = isbn?.replace(/[^0-9Xx]/g, "");
+  return normalized ? normalized.toUpperCase() : "";
+}
+
+function buildOpenLibraryCoverUrl(isbn?: string | null) {
+  const cleanIsbn = normalizeIsbn(isbn);
+  return cleanIsbn ? `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg?default=false` : "";
 }
 
 type BookPanelProps = {
@@ -75,27 +86,40 @@ export function BookPanel({
   }, [books, normalizedSearch]);
   const totalPages = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
   const visibleBooks = filteredBooks.slice(page * pageSize, page * pageSize + pageSize);
+  const selectedCoverBook = books.find((book) => book.id === coverBookId) ?? null;
+  const formCoverUrlFromIsbn = buildOpenLibraryCoverUrl(form.isbn);
+  const selectedCoverUrlFromIsbn = buildOpenLibraryCoverUrl(selectedCoverBook?.isbn);
 
   return (
     <article id="admin-books" className="card admin-panel admin-panel--wide">
       <h3>{form.id ? "Editar livro" : "Novo livro"}</h3>
       <form className="admin-form" onSubmit={onSubmitBook}>
-        <input value={form.title} onChange={(event) => onFormChange((prev) => ({ ...prev, title: event.target.value }))} placeholder="Titulo" required />
-        <input value={form.author} onChange={(event) => onFormChange((prev) => ({ ...prev, author: event.target.value }))} placeholder="Autor" required />
-        <input value={form.isbn} onChange={(event) => onFormChange((prev) => ({ ...prev, isbn: event.target.value }))} placeholder="ISBN" required />
+        <input aria-label="Título do livro" value={form.title} onChange={(event) => onFormChange((prev) => ({ ...prev, title: event.target.value }))} placeholder="Título" required />
+        <input aria-label="Autor do livro" value={form.author} onChange={(event) => onFormChange((prev) => ({ ...prev, author: event.target.value }))} placeholder="Autor" required />
+        <input aria-label="ISBN do livro" value={form.isbn} onChange={(event) => onFormChange((prev) => ({ ...prev, isbn: event.target.value }))} placeholder="ISBN" required />
         <input
+          aria-label="Número de páginas"
           type="number"
           min={1}
           value={form.numberOfPages}
           onChange={(event) => onFormChange((prev) => ({ ...prev, numberOfPages: Number(event.target.value) }))}
         />
         <input
+          aria-label="Data de publicação"
           type="date"
           value={form.publicationDate}
           onChange={(event) => onFormChange((prev) => ({ ...prev, publicationDate: event.target.value }))}
         />
-        <input value={form.coverUrl} onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))} placeholder="URL da capa" />
-        <select multiple size={5} value={form.categoryIds} onChange={(event) => onFormChange((prev) => ({ ...prev, categoryIds: readSelectedValues(event) }))}>
+        <input aria-label="URL da capa" value={form.coverUrl} onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))} placeholder="URL da capa" />
+        <button
+          type="button"
+          className="btn-muted"
+          disabled={!formCoverUrlFromIsbn}
+          onClick={() => onFormChange((prev) => ({ ...prev, coverUrl: buildOpenLibraryCoverUrl(prev.isbn) }))}
+        >
+          Buscar capa por ISBN
+        </button>
+        <select aria-label="Categorias do livro" multiple size={5} value={form.categoryIds} onChange={(event) => onFormChange((prev) => ({ ...prev, categoryIds: readSelectedValues(event) }))}>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -113,37 +137,40 @@ export function BookPanel({
       </form>
 
       <form className="admin-form" onSubmit={onSubmitCover}>
-        <select value={coverBookId} onChange={(event) => onCoverBookChange(event.target.value)}>
+        <select aria-label="Livro para atualizar capa" value={coverBookId} onChange={(event) => onCoverBookChange(event.target.value)}>
           {books.map((book) => (
             <option key={book.id} value={book.id}>
               {book.title}
             </option>
           ))}
         </select>
-        <input value={coverBookUrl} onChange={(event) => onCoverUrlChange(event.target.value)} placeholder="Nova capa" />
+        <input aria-label="Nova URL da capa" value={coverBookUrl} onChange={(event) => onCoverUrlChange(event.target.value)} placeholder="Nova capa" />
+        <button type="button" className="btn-muted" disabled={!selectedCoverUrlFromIsbn} onClick={() => onCoverUrlChange(selectedCoverUrlFromIsbn)}>
+          Usar ISBN do livro
+        </button>
         <button type="submit" disabled={busyKey === "book-cover"}>
           Atualizar capa
         </button>
       </form>
 
       <form className="admin-form" onSubmit={onSubmitUpload}>
-        <select value={uploadBookId} onChange={(event) => onUploadBookChange(event.target.value)}>
+        <select aria-label="Livro para enviar PDF" value={uploadBookId} onChange={(event) => onUploadBookChange(event.target.value)}>
           {books.map((book) => (
             <option key={book.id} value={book.id}>
               {book.title}
             </option>
           ))}
         </select>
-        <input type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
+        <input aria-label="Arquivo PDF do livro" type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
         <button type="submit" disabled={busyKey === "book-upload"}>
           Enviar PDF
         </button>
       </form>
 
       <form className="admin-form" onSubmit={onSubmitImport}>
-        <input value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Busca Open Library" />
-        <input type="number" min={1} value={importPages} onChange={(event) => onImportPagesChange(Number(event.target.value))} />
-        <input type="number" min={1} value={importPageSize} onChange={(event) => onImportPageSizeChange(Number(event.target.value))} />
+        <input aria-label="Busca na Open Library" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Busca Open Library" />
+        <input aria-label="Quantidade de páginas para importar" type="number" min={1} value={importPages} onChange={(event) => onImportPagesChange(Number(event.target.value))} />
+        <input aria-label="Tamanho da página de importação" type="number" min={1} value={importPageSize} onChange={(event) => onImportPageSizeChange(Number(event.target.value))} />
         <button type="submit" disabled={busyKey === "book-import"}>
           Importar
         </button>
@@ -163,11 +190,14 @@ export function BookPanel({
       <ul className="stacked-list">
         {visibleBooks.map((book) => (
           <li key={book.id} className="stacked-list-item">
-            <div>
-              <strong>{book.title}</strong>
+            <div className="book-list-row">
+              <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
+              <div>
+                <strong>{book.title}</strong>
               <p className="section-sub">
-                {book.author ?? "Autor nao informado"} - {book.isbn}
-              </p>
+                {book.author ?? "Autor não informado"} - {book.isbn}
+                </p>
+              </div>
             </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(book)}>
@@ -186,9 +216,9 @@ export function BookPanel({
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Pagina {page + 1} de {totalPages}</span>
+          <span className="section-sub">Página {page + 1} de {totalPages}</span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
-            Proxima
+            Próxima
           </button>
         </div>
       )}

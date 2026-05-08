@@ -85,6 +85,8 @@ function mockProfileRequests() {
           book: {
             id: "book-1",
             title: "Livro em andamento",
+            isbn: "9780000000001",
+            coverUrl: null,
           },
           status: "IN_PROGRESS",
           currentPage: 45,
@@ -131,12 +133,14 @@ describe("ProfilePage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Perfil e historico de leitura" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Perfil e histórico de leitura" })).toBeInTheDocument();
     expect(screen.getByText("320")).toBeInTheDocument();
-    expect(screen.getByText("livros concluidos")).toBeInTheDocument();
-    expect(screen.getByText("Livro em andamento")).toBeInTheDocument();
+    expect(screen.getByText("livros concluídos")).toBeInTheDocument();
+    expect(screen.getAllByText("Livro em andamento").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText("Progresso de Livro em andamento: 30%")).toBeInTheDocument();
     expect(screen.getByText("Primeira Review")).toBeInTheDocument();
-    expect(screen.getByText("Excelente leitura")).toBeInTheDocument();
+    expect(screen.getByText("Nota 5 - Excelente leitura")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Ver livro" })[0]).toHaveAttribute("href", "/books/book-1");
   });
 
   it("deve salvar preferencias do usuario", async () => {
@@ -151,14 +155,14 @@ describe("ProfilePage", () => {
       </MemoryRouter>
     );
 
-    await screen.findByRole("heading", { name: "Perfil e historico de leitura" });
+    await screen.findByRole("heading", { name: "Perfil e histórico de leitura" });
 
     const rankingCheckbox = screen.getByRole("checkbox", { name: "Participar do ranking semanal" });
     expect(rankingCheckbox).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Receber alertas internos de leitura" })).not.toBeChecked();
 
     await user.click(rankingCheckbox);
-    await user.click(screen.getByRole("button", { name: "Salvar preferencias" }));
+    await user.click(screen.getByRole("button", { name: "Salvar preferências" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.put)).toHaveBeenCalledWith(
@@ -177,6 +181,6 @@ describe("ProfilePage", () => {
       )
     );
 
-    expect(showToast).toHaveBeenCalledWith("Preferencias atualizadas com sucesso.", "success");
+    expect(showToast).toHaveBeenCalledWith("Preferências atualizadas com sucesso.", "success");
   });
 });

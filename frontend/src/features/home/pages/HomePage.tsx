@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
+import { BookOpen, Flame, LibraryBig, Sparkles, Star, Target, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type HomeBook = {
   id: string;
   title: string;
+  isbn?: string | null;
   coverUrl?: string | null;
   source?: "LOCAL" | "OPEN";
   favorite?: boolean;
@@ -48,6 +52,8 @@ type Collection = {
 
 type Review = {
   bookTitle: string;
+  bookIsbn?: string | null;
+  bookCoverUrl?: string | null;
   rating: number;
 };
 
@@ -85,18 +91,32 @@ const EMPTY_HOME: HomeResponse = {
   recentReviews: [],
 };
 
+function RatingStars({ value }: { value: number }) {
+  return (
+    <span className="review-stars" aria-label={`Nota ${value} de 5`}>
+      {Array.from({ length: 5 }, (_, index) => (
+        <Star
+          key={index}
+          aria-hidden="true"
+          className={index < value ? "review-star review-star--filled" : "review-star"}
+          fill="currentColor"
+        />
+      ))}
+    </span>
+  );
+}
+
 export function HomePage() {
   const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const [home, setHome] = useState<HomeResponse>(EMPTY_HOME);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!auth?.token) {
+    if (!headers) {
       return;
     }
-
-    const headers = { Authorization: `Bearer ${auth.token}` };
 
     const loadHome = async () => {
       setLoading(true);
@@ -104,16 +124,16 @@ export function HomePage() {
         const response = await api.get<HomeResponse>("/api/v1/home/resume", { headers });
         setHome(response.data);
         setError("");
-      } catch {
+      } catch (error) {
         setHome(EMPTY_HOME);
-        setError("Nao foi possivel carregar o painel inicial.");
+        setError(extractApiErrorMessage(error, "Não foi possível carregar o painel inicial."));
       } finally {
         setLoading(false);
       }
     };
 
     void loadHome();
-  }, [auth?.token]);
+  }, [headers]);
 
   const currentReading = home.readings[0];
   const progressPercent = Math.max(0, Math.min(100, Number(home.readingProgress.goal?.progressPercent ?? 0)));
@@ -131,12 +151,12 @@ export function HomePage() {
   if (error) {
     return (
       <StateCard
-        title="Nao foi possivel carregar o painel"
+        title="Não foi possível carregar o painel"
         message={error}
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Ir para o catalogo
+            Ir para o catálogo
           </Link>
         }
       />
@@ -144,24 +164,29 @@ export function HomePage() {
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        <div className="section-head">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--home">
+        <div className="aura-hero__content">
           <div>
+            <p className="eyebrow aura-eyebrow">Library Aura</p>
             <h2>Bem-vinda, {auth?.name}</h2>
             <p>
-              Seu painel reune leitura atual, metas, recomendacoes e sinais de engajamento em um unico lugar.
+              Um espaço de leitura com ritmo, conquistas e próximas jornadas prontas para você escolher.
             </p>
           </div>
-          <span className="kpi">{home.readingProgress.streakDays} dia(s) de streak</span>
+          <div className="aura-hero__signal">
+            <Flame aria-hidden="true" />
+            <strong>{home.readingProgress.streakDays}</strong>
+            <span>dia(s) de streak</span>
+          </div>
         </div>
 
-        <div className="card-actions">
+        <div className="card-actions aura-actions">
           <Link to="/profile" className="btn-link">
             Abrir perfil
           </Link>
           <Link to="/books" className="btn-link">
-            Explorar catalogo
+            Explorar catálogo
           </Link>
           <Link to="/goals" className="btn-link">
             Ver metas
@@ -172,51 +197,60 @@ export function HomePage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Resumo da conta</h3>
+          <h3><Sparkles aria-hidden="true" /> Resumo da conta</h3>
           <span className="kpi">{home.userSummary.totalPagesRead} pags lidas</span>
         </div>
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           <div className="stat-box">
+            <BookOpen aria-hidden="true" />
             <strong>{home.userSummary.totalInProgress}</strong>
             <span>leituras em andamento</span>
           </div>
           <div className="stat-box">
+            <Trophy aria-hidden="true" />
             <strong>{home.userSummary.totalFinished}</strong>
-            <span>livros concluidos</span>
+            <span>livros concluídos</span>
           </div>
           <div className="stat-box">
+            <Target aria-hidden="true" />
             <strong>{home.readingProgress.pagesReadThisWeek}</strong>
             <span>pags nesta semana</span>
           </div>
           <div className="stat-box">
+            <Flame aria-hidden="true" />
             <strong>{home.readingProgress.sessionsThisWeek}</strong>
             <span>sessoes de leitura</span>
           </div>
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
           <h3>Leitura atual</h3>
           <span className="kpi">
-            {currentReading ? `${currentReading.progress}% concluido` : "Sem leitura ativa"}
+            {currentReading ? `${currentReading.progress}% concluído` : "Sem leitura ativa"}
           </span>
         </div>
         {currentReading ? (
           <>
             <div className="inline-book-row">
-              <BookCover title={currentReading.book.title} coverUrl={currentReading.book.coverUrl} size="small" />
+              <BookCover
+                title={currentReading.book.title}
+                coverUrl={currentReading.book.coverUrl}
+                isbn={currentReading.book.isbn}
+                size="small"
+              />
               <div>
                 <p><strong>{currentReading.book.title}</strong></p>
                 {currentReading.book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
                 <p className="section-sub">
-                  Pagina atual: {currentReading.currentPage} | Status: {currentReading.status}
+                  Página atual: {currentReading.currentPage} | Status: {currentReading.status}
                 </p>
               </div>
             </div>
-            <div className="progress-track" aria-hidden="true">
+            <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${currentReading.progress}%` }} />
             </div>
             <div className="card-actions">
@@ -233,7 +267,7 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Meta atual</h3>
           <span className="kpi">
@@ -243,12 +277,12 @@ export function HomePage() {
         {home.readingProgress.goal ? (
           <>
             <p>
-              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} paginas concluida(s)
+              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} páginas concluída(s)
             </p>
             <p className="section-sub">
-              Restam {home.readingProgress.goal.remainingPages} paginas | Status: {home.readingProgress.goal.status}
+              Restam {home.readingProgress.goal.remainingPages} páginas | Status: {home.readingProgress.goal.status}
             </p>
-            <div className="progress-track" aria-hidden="true">
+            <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
           </>
@@ -257,16 +291,16 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>Recomendacoes</h3>
+          <h3><LibraryBig aria-hidden="true" /> Recomendacoes</h3>
           <span className="kpi">{home.recommendations.length} destaque(s)</span>
         </div>
         {home.recommendations.length > 0 ? (
-          <ul className="stacked-list">
+          <ul className="stacked-list aura-book-list">
             {home.recommendations.slice(0, 4).map((book) => (
               <li key={book.id} className="stacked-list-item">
-                <BookCover title={book.title} coverUrl={book.coverUrl} size="small" />
+                <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
                 <div>
                   <strong>{book.title}</strong>
                   {book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
@@ -285,10 +319,10 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Colecoes em destaque</h3>
-          <span className="kpi">{home.collections.length} colecao(oes)</span>
+          <span className="kpi">{home.collections.length} coleção(ões)</span>
         </div>
         {home.collections.length > 0 ? (
           <ul className="stacked-list">
@@ -304,11 +338,11 @@ export function HomePage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Nenhuma colecao disponivel para mostrar agora.</p>
+          <p className="section-sub">Nenhuma coleção disponível para mostrar agora.</p>
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Avaliacoes recentes</h3>
           <span className="kpi">{home.recentReviews.length} item(ns)</span>
@@ -316,16 +350,17 @@ export function HomePage() {
         {home.recentReviews.length > 0 ? (
           <ul className="stacked-list">
             {home.recentReviews.slice(0, 4).map((review, index) => (
-              <li key={`${review.bookTitle}-${index}`} className="stacked-list-item">
+              <li key={`${review.bookTitle}-${index}`} className="stacked-list-item home-review-row">
+                <BookCover title={review.bookTitle} coverUrl={review.bookCoverUrl} isbn={review.bookIsbn} size="small" />
                 <div>
                   <strong>{review.bookTitle}</strong>
-                  <p className="section-sub">Nota registrada: {review.rating}/5</p>
+                  <p className="aura-rating"><RatingStars value={review.rating} /> Nota {review.rating}</p>
                 </div>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Suas proximas avaliacoes aparecerao aqui.</p>
+          <p className="section-sub">Suas próximas avaliações aparecerão aqui.</p>
         )}
       </article>
     </section>

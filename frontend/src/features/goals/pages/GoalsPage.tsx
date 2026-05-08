@@ -1,8 +1,10 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { BellRing, Flame, Gauge, Target } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { extractApiErrorMessage } from "@shared/api/errors";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -39,7 +41,7 @@ function normalizeGoal(value: GoalResponse | "" | null | undefined): GoalRespons
 }
 
 export function GoalsPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [targetPages, setTargetPages] = useState(120);
   const [goal, setGoal] = useState<GoalResponse | null>(null);
@@ -50,9 +52,8 @@ export function GoalsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const period = useMemo(() => parsePeriod(searchParams.get("period")), [searchParams]);
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
 
-  const loadAll = async (selectedPeriod: Period) => {
+  const loadAll = useCallback(async (selectedPeriod: Period) => {
     if (!headers) return;
     try {
       setLoading(true);
@@ -71,17 +72,16 @@ export function GoalsPage() {
       setAlerts(Array.isArray(alertsRes.data) ? alertsRes.data : []);
       setStreak(streakRes.data?.streakDays ?? 0);
       setError("");
-    } catch {
-      setError("Nao foi possivel carregar metas e alertas.");
+    } catch (error) {
+      setError(extractApiErrorMessage(error, "Não foi possível carregar metas e alertas."));
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers]);
 
   useEffect(() => {
     void loadAll(period);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, auth?.token]);
+  }, [loadAll, period]);
 
   const onPeriodChange = (nextPeriod: Period) => {
     const params = new URLSearchParams(searchParams);
@@ -119,13 +119,16 @@ export function GoalsPage() {
 
       setError("");
       showToast("Meta atualizada com sucesso.", "success");
-    } catch {
-      setError("Falha ao atualizar meta.");
-      showToast("Nao foi possivel salvar a meta.", "error");
+    } catch (error) {
+      const message = extractApiErrorMessage(error, "Não foi possível salvar a meta.");
+      setError(message);
+      showToast(message, "error");
     }
   };
 
   const progressPercent = Math.max(0, Math.min(100, Number(goal?.progressPercent ?? 0)));
+  const suggestedDailyPages = goal && goal.expiresInDays > 0 ? Math.ceil(goal.remainingPages / goal.expiresInDays) : goal?.remainingPages ?? 0;
+  const paceLabel = goal?.paceWarning ? "Ajuste necessario" : "Bom ritmo";
 
   if (loading) {
     return (
@@ -138,26 +141,35 @@ export function GoalsPage() {
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        <h2>Transforme leitura em constancia</h2>
-        <p>Defina, acompanhe e conclua metas com um painel simples e claro.</p>
-        <p className="quote">Streak atual: {streak} dia(s) consecutivos</p>
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--goals">
+        <div className="aura-hero__content">
+          <div>
+            <p className="eyebrow aura-eyebrow">Ritual de leitura</p>
+            <h2>Transforme leitura em constancia</h2>
+            <p>Defina uma meta que parece possível hoje e acompanhe o ritmo sem pressão.</p>
+          </div>
+          <div className="aura-hero__signal">
+            <Flame aria-hidden="true" />
+            <strong>{streak}</strong>
+            <span>dia(s) consecutivos</span>
+          </div>
+        </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Configurar meta</h3>
+          <h3><Target aria-hidden="true" /> Configurar meta</h3>
           <span className="kpi">{period === "WEEKLY" ? "Semanal" : "Mensal"}</span>
         </div>
-        <form onSubmit={onSubmit}>
+        <form id="goal-form" onSubmit={onSubmit}>
           <label>Periodo</label>
           <select value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
             <option value="WEEKLY">Semanal</option>
             <option value="MONTHLY">Mensal</option>
           </select>
 
-          <label>Paginas alvo</label>
+          <label>Páginas alvo</label>
           <input
             type="number"
             min={1}
@@ -168,33 +180,68 @@ export function GoalsPage() {
         </form>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
-          <h3>Resumo</h3>
+          <h3><Gauge aria-hidden="true" /> Resumo</h3>
           <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} pags` : "Sem meta ativa"}</span>
         </div>
         {goal ? (
           <>
-            <p>Status: {goal.status}</p>
-            <p>Leitura acumulada: {goal.progressPages} paginas de {goal.targetPages} planejadas.</p>
-            <p>Restante: {goal.remainingPages} paginas</p>
-            <p>Expira em: {goal.expiresInDays} dia(s)</p>
-            <p>Ritmo: {goal.paceWarning ? "Ajuste necessario" : "Bom ritmo"}</p>
-            <div className="progress-track" aria-hidden="true">
+            <div className="goal-summary-grid">
+              <div className="stat-box">
+                <strong>{Math.round(progressPercent)}%</strong>
+                <span>progresso</span>
+              </div>
+              <div className="stat-box">
+                <strong>{goal.remainingPages}</strong>
+                <span>paginas restantes</span>
+              </div>
+              <div className="stat-box">
+                <strong>{goal.expiresInDays}</strong>
+                <span>dias restantes</span>
+              </div>
+              <div className="stat-box">
+                <strong>{suggestedDailyPages}</strong>
+                <span>paginas por dia</span>
+              </div>
+            </div>
+            <div className="goal-status-row">
+              <span className={goal.paceWarning ? "import-badge" : "favorite-badge"}>{paceLabel}</span>
+              <span className="section-sub">Status: {goal.status}</span>
+            </div>
+            <p>Leitura acumulada: {goal.progressPages} páginas de {goal.targetPages} planejadas.</p>
+            <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
           </>
         ) : (
-          <p className="section-sub">Sem meta ativa.</p>
+          <>
+            <p className="section-sub">
+              Você ainda não tem meta ativa para este período. Defina uma quantidade de páginas e salve para acompanhar
+              ritmo, alertas e progresso.
+            </p>
+            <div className="card-actions">
+              <Link to="/books" className="btn-muted btn-link">
+                Escolher livro
+              </Link>
+              <button type="submit" form="goal-form">
+                Criar meta
+              </button>
+            </div>
+          </>
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Alertas</h3>
+          <h3><BellRing aria-hidden="true" /> Alertas</h3>
           <span className="kpi">{alerts.length} aviso(s)</span>
         </div>
-        {alerts.length === 0 && <p className="section-sub">Sem alertas no momento.</p>}
+        {alerts.length === 0 && (
+          <p className="section-sub">
+            Sem alertas no momento. Quando a meta precisar de ajuste, os avisos vao aparecer aqui.
+          </p>
+        )}
         {alerts.length > 0 && (
           <ul className="stacked-list">
             {alerts.map((alert) => (

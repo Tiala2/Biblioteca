@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { BookMarked, MessageCircle, Sparkles, Star, Tags, WandSparkles } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -46,6 +48,11 @@ type RecommendationBook = {
 type Paged<T> = {
   content: T[];
 };
+
+function buildRatingStars(rating?: number | null) {
+  const filled = Math.max(0, Math.min(5, Math.round(rating ?? 0)));
+  return Array.from({ length: 5 }, (_, index) => index < filled);
+}
 
 export function BookDetailsPage() {
   const { bookId } = useParams<{ bookId: string }>();
@@ -96,13 +103,13 @@ export function BookDetailsPage() {
         );
         setRecommendations(recommendationResponse.data.filter((item) => item.id !== bookId).slice(0, 3));
         setError("");
-      } catch {
+      } catch (error) {
         if (!active) return;
         setBook(null);
         setMyReview(null);
         setCommunityReviews([]);
         setRecommendations([]);
-        setError("Nao foi possivel carregar os detalhes do livro.");
+        setError(extractApiErrorMessage(error, "Não foi possível carregar os detalhes do livro."));
       } finally {
         if (active) setLoading(false);
       }
@@ -119,16 +126,17 @@ export function BookDetailsPage() {
     if (!book) return [];
 
     return [
-      { label: "Paginas", value: `${book.numberOfPages}` },
-      { label: "Autor", value: book.author || "Autor nao informado" },
-      { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Catalogo local" },
-      { label: "ISBN", value: book.isbn || "Nao informado" },
+      { label: "Páginas", value: `${book.numberOfPages}` },
+      { label: "Autor", value: book.author || "Autor não informado" },
+      { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Catálogo local" },
+      { label: "ISBN", value: book.isbn || "Não informado" },
       {
         label: "Publicacao",
-        value: book.publicationDate ? formatDateBr(book.publicationDate) : "Nao informada",
+        value: book.publicationDate ? formatDateBr(book.publicationDate) : "Não informada",
       },
     ];
   }, [book]);
+  const ratingStars = useMemo(() => buildRatingStars(book?.averageRating), [book?.averageRating]);
 
   const toggleFavorite = async () => {
     if (!headers || !bookId) return;
@@ -144,8 +152,8 @@ export function BookDetailsPage() {
         setIsFavorite(true);
         showToast("Livro adicionado aos favoritos.", "success");
       }
-    } catch {
-      showToast("Nao foi possivel atualizar favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
     } finally {
       setFavoriteLoading(false);
     }
@@ -154,8 +162,8 @@ export function BookDetailsPage() {
   if (!bookId) {
     return (
       <StateCard
-        title="Livro nao informado"
-        message="Abra um livro a partir do catalogo para visualizar os detalhes e os proximos passos."
+        title="Livro não informado"
+        message="Abra um livro a partir do catálogo para visualizar os detalhes e os próximos passos."
         variant="error"
       />
     );
@@ -172,20 +180,27 @@ export function BookDetailsPage() {
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        {book && <BookCover title={book.title} coverUrl={book.coverUrl} size="large" />}
-        <div className="section-head">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-book-detail-hero">
+        <div className="aura-book-detail-hero__cover">
+          {book && <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="large" />}
+        </div>
+        <div className="aura-hero__content">
           <div>
+            <p className="eyebrow aura-eyebrow">Livro em foco</p>
             <h2>{book?.title ?? "Detalhes do livro"}</h2>
             <p>
-              Consulte dados do catalogo, sinais de engajamento e seu contexto pessoal antes de mergulhar na leitura.
+              Uma página para sentir o livro antes de abrir: contexto, recepção, tags e próximos passos.
             </p>
           </div>
-          <span className="kpi">{book?.hasPdf ? "PDF local" : "Leitura com progresso"}</span>
+          <div className="aura-hero__signal">
+            <BookMarked aria-hidden="true" />
+            <strong>{book?.hasPdf ? "PDF" : "Guia"}</strong>
+            <span>{book?.hasPdf ? "local" : "com progresso"}</span>
+          </div>
         </div>
         {error && <p className="error">{error}</p>}
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           {metadata.map((item) => (
             <div key={item.label} className="stat-box">
               <strong>{item.value}</strong>
@@ -200,6 +215,7 @@ export function BookDetailsPage() {
           <button
             type="button"
             className={isFavorite ? "favorite-toggle active" : "favorite-toggle"}
+            aria-pressed={isFavorite}
             onClick={toggleFavorite}
             disabled={!headers || favoriteLoading}
           >
@@ -211,32 +227,58 @@ export function BookDetailsPage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Recepcao do catalogo</h3>
+          <h3><Star aria-hidden="true" /> Recepção do catálogo</h3>
           <span className="kpi">
-            {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} review(s)
+            {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} avaliação(ões)
           </span>
         </div>
+        <div className="rating-summary" aria-label={`Nota media ${formatDecimal(book?.averageRating)} de 5`}>
+          {ratingStars.map((filled, index) => (
+            <Star key={index} aria-hidden="true" className={filled ? "filled" : undefined} />
+          ))}
+          <strong>{formatDecimal(book?.averageRating)}</strong>
+        </div>
         <p className="section-sub">
-          Use essa leitura guiada para decidir se o livro entra na sua jornada atual ou fica para uma proxima meta.
+          Use essa leitura guiada para decidir se o livro entra na sua jornada atual ou fica para uma próxima meta.
         </p>
-        <div className="stacked-list">
-          <div className="stacked-list-item">
-            <strong>Categorias</strong>
-            <span>{book?.categories?.length ? book.categories.map((item) => item.name).join(", ") : "Sem categorias"}</span>
+        <div className="taxonomy-panel">
+          <div>
+            <strong><Tags aria-hidden="true" /> Categorias</strong>
+            {book?.categories?.length ? (
+              <div className="taxonomy-chip-row">
+                {book.categories.map((item) => (
+                  <Link key={item.id} className="taxonomy-chip" to={`/books?categoryId=${item.id}`}>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="section-sub">Sem categorias</p>
+            )}
           </div>
-          <div className="stacked-list-item">
-            <strong>Tags</strong>
-            <span>{book?.tags?.length ? book.tags.map((item) => item.name).join(", ") : "Sem tags"}</span>
+          <div>
+            <strong><Tags aria-hidden="true" /> Tags</strong>
+            {book?.tags?.length ? (
+              <div className="taxonomy-chip-row">
+                {book.tags.map((item) => (
+                  <Link key={item.id} className="taxonomy-chip taxonomy-chip--tag" to={`/books?tagId=${item.id}`}>
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="section-sub">Sem tags</p>
+            )}
           </div>
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Seu contexto</h3>
-          <span className="kpi">{myReview ? "Com review" : "Sem review"}</span>
+          <h3><Sparkles aria-hidden="true" /> Seu contexto</h3>
+          <span className="kpi">{myReview ? "Com avaliação" : "Sem avaliação"}</span>
         </div>
         {myReview ? (
           <>
@@ -245,13 +287,13 @@ export function BookDetailsPage() {
             <small>Atualizado em: {formatDateTimeBr(myReview.updatedAt)}</small>
           </>
         ) : (
-          <p className="section-sub">Voce ainda nao avaliou este livro. Quando terminar, registre uma review para alimentar seu perfil.</p>
+          <p className="section-sub">Você ainda não avaliou este livro. Quando terminar, registre uma avaliação para alimentar seu perfil.</p>
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
-          <h3>Proximos passos</h3>
+          <h3><WandSparkles aria-hidden="true" /> Proximos passos</h3>
           <span className="kpi">{isFavorite ? "Favorito ativo" : "Exploracao"}</span>
         </div>
         <ul className="stacked-list">
@@ -266,8 +308,8 @@ export function BookDetailsPage() {
           </li>
           <li className="stacked-list-item">
             <div>
-              <strong>{myReview ? "Atualizar review" : "Registrar review"}</strong>
-              <p className="section-sub">Use sua percepcao para enriquecer o catalogo social da plataforma.</p>
+              <strong>{myReview ? "Atualizar avaliação" : "Registrar avaliação"}</strong>
+              <p className="section-sub">Use sua percepção para enriquecer o catálogo social da plataforma.</p>
             </div>
             <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
               Abrir reviews
@@ -276,9 +318,9 @@ export function BookDetailsPage() {
         </ul>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>O que a comunidade achou</h3>
+          <h3><MessageCircle aria-hidden="true" /> O que a comunidade achou</h3>
           <span className="kpi">{communityReviews.length} destaque(s)</span>
         </div>
         {communityReviews.length > 0 ? (
@@ -299,7 +341,7 @@ export function BookDetailsPage() {
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Continuar explorando</h3>
           <span className="kpi">{recommendations.length} sugestao(oes)</span>
@@ -310,8 +352,8 @@ export function BookDetailsPage() {
               <li key={item.id} className="stacked-list-item">
                 <div>
                   <strong>{item.title}</strong>
-                  <p className="section-sub">{item.author || "Autor nao informado"}</p>
-                  <small>{formatDecimal(item.averageRating)} de media em {item.totalReviews ?? 0} review(s)</small>
+                  <p className="section-sub">{item.author || "Autor não informado"}</p>
+                  <small>{formatDecimal(item.averageRating)} de média em {item.totalReviews ?? 0} avaliação(ões)</small>
                 </div>
                 <Link to={`/books/${item.id}`} className="btn-muted btn-link">
                   Ver detalhes
@@ -320,7 +362,7 @@ export function BookDetailsPage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">As proximas sugestoes aparecerao aqui conforme o catalogo e seu uso evoluirem.</p>
+          <p className="section-sub">As próximas sugestões aparecerão aqui conforme o catálogo e seu uso evoluírem.</p>
         )}
       </article>
     </section>

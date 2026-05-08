@@ -11,9 +11,9 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 
 ## Documentacao principal
 
-- [Documentacao Final](C:\workspace\library-api-projeto\docs\DOCUMENTACAO_FINAL.md)
-- [Architecture Overview](C:\workspace\library-api-projeto\docs\ARCHITECTURE_OVERVIEW.md)
-- [Relatorio do Projeto](C:\workspace\library-api-projeto\docs\RELATORIO_PROJETO.md)
+- [Documentacao Final](docs/DOCUMENTACAO_FINAL.md)
+- [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md)
+- [Relatorio do Projeto](docs/RELATORIO_PROJETO.md)
 
 ## Subida rapida
 
@@ -39,3 +39,10 @@ cd C:\workspace\library-api-projeto
 ```
 
 Os scripts podem usar `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` definidos no `backend/.env`.
+
+Para uma checagem completa antes de entrega:
+
+```powershell
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\scripts\pre-delivery-check.ps1
+```

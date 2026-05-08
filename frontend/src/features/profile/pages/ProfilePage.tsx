@@ -1,11 +1,13 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { BarChart3, BookOpen, Medal, Settings2, Sparkles, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { formatDateTimeBr, formatDecimal, formatInteger } from "@shared/lib/formatters";
+import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type Badge = {
@@ -28,6 +30,7 @@ type UserProfile = {
 type HomeBook = {
   id: string;
   title: string;
+  isbn?: string | null;
   coverUrl?: string | null;
   source?: "LOCAL" | "OPEN";
 };
@@ -66,7 +69,6 @@ type HomeResponse = {
 type Paged<T> = { content: T[] };
 
 export function ProfilePage() {
-  const { auth } = useAuth();
   const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -105,9 +107,9 @@ export function ProfilePage() {
         setLeaderboardOptIn(Boolean(profileResponse.data.leaderboardOptIn));
         setAlertsOptIn(Boolean(profileResponse.data.alertsOptIn));
         setError("");
-      } catch {
+      } catch (error) {
         if (!active) return;
-        setError("Nao foi possivel carregar seu perfil.");
+        setError(extractApiErrorMessage(error, "Não foi possível carregar seu perfil."));
       } finally {
         if (active) setLoading(false);
       }
@@ -124,7 +126,9 @@ export function ProfilePage() {
     return readings.slice(0, 5).map((reading) => ({
       id: reading.id,
       title: reading.book.title,
-      subtitle: `Pagina ${reading.currentPage} - ${reading.progress}% - ${reading.status}`,
+      book: reading.book,
+      progress: reading.progress,
+      subtitle: `Página ${reading.currentPage} - ${reading.progress}% - ${reading.status}`,
       date: reading.lastReadedAt ?? reading.finishedAt ?? null,
       link: `/books/${reading.book.id}`,
       cta: "Abrir detalhes",
@@ -158,6 +162,10 @@ export function ProfilePage() {
       return true;
     });
   }, [reviewFilter, reviews]);
+  const readingBookById = useMemo(
+    () => Object.fromEntries(readings.map((reading) => [reading.book.id, reading.book])),
+    [readings]
+  );
 
   const onSavePreferences = async (event: FormEvent) => {
     event.preventDefault();
@@ -185,10 +193,11 @@ export function ProfilePage() {
           : previous
       );
       setError("");
-      showToast("Preferencias atualizadas com sucesso.", "success");
-    } catch {
-      setError("Nao foi possivel salvar suas preferencias.");
-      showToast("Nao foi possivel salvar suas preferencias.", "error");
+      showToast("Preferências atualizadas com sucesso.", "success");
+    } catch (error) {
+      const message = extractApiErrorMessage(error, "Não foi possível salvar suas preferências.");
+      setError(message);
+      showToast(message, "error");
     } finally {
       setSaving(false);
     }
@@ -198,46 +207,55 @@ export function ProfilePage() {
     return (
       <StateCard
         title="Perfil em preparacao"
-        message="Estamos carregando seu historico, badges e preferencias para montar sua visao pessoal."
+        message="Estamos carregando seu histórico, conquistas e preferências para montar sua visão pessoal."
         variant="loading"
       />
     );
   }
 
   return (
-    <section className="grid">
-      <article className="card hero">
-        <div className="section-head">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--profile">
+        <div className="aura-hero__content">
           <div>
-            <h2>Perfil e historico de leitura</h2>
+            <p className="eyebrow aura-eyebrow">Identidade leitora</p>
+            <h2>Perfil e histórico de leitura</h2>
             <p>
-              Acompanhe seus numeros, sua linha do tempo e as preferencias que influenciam metas, alertas e ranking.
+              Seus números, escolhas e registros recentes em uma visão que mostra como seu hábito está crescendo.
             </p>
           </div>
-          <span className="kpi">{auth?.name ?? profile?.name}</span>
+          <div className="aura-hero__signal">
+            <UserRound aria-hidden="true" />
+            <strong>{profileInsights.totalBadges}</strong>
+            <span>conquista(s)</span>
+          </div>
         </div>
         {error && <p className="error">{error}</p>}
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           <div className="stat-box">
+            <BookOpen aria-hidden="true" />
             <strong>{formatInteger(home?.userSummary.totalPagesRead)}</strong>
-            <span>paginas lidas</span>
+            <span>páginas lidas</span>
           </div>
           <div className="stat-box">
+            <Sparkles aria-hidden="true" />
             <strong>{formatInteger(home?.userSummary.totalFinished)}</strong>
-            <span>livros concluidos</span>
+            <span>livros concluídos</span>
           </div>
           <div className="stat-box">
+            <BarChart3 aria-hidden="true" />
             <strong>{formatInteger(home?.readingProgress.streakDays)}</strong>
             <span>dias de streak</span>
           </div>
           <div className="stat-box">
+            <Medal aria-hidden="true" />
             <strong>{formatInteger(home?.readingProgress.sessionsThisWeek)}</strong>
             <span>sessoes na semana</span>
           </div>
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
           <h3>Ritmo da semana</h3>
           <span className="kpi">Visao resumida</span>
@@ -249,23 +267,23 @@ export function ProfilePage() {
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.pagesThisWeek)}</strong>
-            <span>paginas nesta semana</span>
+            <span>páginas nesta semana</span>
           </div>
           <div className="stat-box">
             <strong>{formatDecimal(profileInsights.averagePagesPerSession)}</strong>
-            <span>media por sessao</span>
+            <span>média por sessão</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.totalBadges)}</strong>
-            <span>badges acumuladas</span>
+            <span>conquistas acumuladas</span>
           </div>
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Conta</h3>
-          <span className="kpi">{profile?.badges.length ?? 0} badge(s)</span>
+          <h3><Settings2 aria-hidden="true" /> Conta</h3>
+          <span className="kpi">{profile?.badges.length ?? 0} conquista(s)</span>
         </div>
         <div className="stacked-list">
           <div className="stacked-list-item">
@@ -287,25 +305,25 @@ export function ProfilePage() {
             Receber alertas internos de leitura
           </label>
           <button type="submit" disabled={saving}>
-            {saving ? "Salvando..." : "Salvar preferencias"}
+            {saving ? "Salvando..." : "Salvar preferências"}
           </button>
         </form>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Acoes rapidas</h3>
+          <h3>Ações rápidas</h3>
           <span className="kpi">Atalhos</span>
         </div>
         <div className="quick-links-grid">
           <Link to="/books" className="btn-muted btn-link">
-            Explorar catalogo
+            Explorar catálogo
           </Link>
           <Link to="/goals" className="btn-muted btn-link">
             Revisar metas
           </Link>
           <Link to="/reviews" className="btn-muted btn-link">
-            Gerenciar reviews
+            Gerenciar avaliações
           </Link>
           <Link to="/leaderboard" className="btn-muted btn-link">
             Abrir ranking
@@ -313,23 +331,27 @@ export function ProfilePage() {
         </div>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>Historico recente</h3>
+          <h3>Histórico recente</h3>
           <span className="kpi">{filteredTimeline.length} registro(s)</span>
         </div>
-        <select aria-label="Filtrar historico de leitura" value={readingFilter} onChange={(event) => setReadingFilter(event.target.value as "ALL" | "IN_PROGRESS" | "FINISHED")}>
+        <select aria-label="Filtrar histórico de leitura" value={readingFilter} onChange={(event) => setReadingFilter(event.target.value as "ALL" | "IN_PROGRESS" | "FINISHED")}>
           <option value="ALL">Todas as leituras</option>
           <option value="IN_PROGRESS">Em andamento</option>
-          <option value="FINISHED">Concluidas</option>
+          <option value="FINISHED">Concluídas</option>
         </select>
         {filteredTimeline.length > 0 ? (
           <ul className="stacked-list">
             {filteredTimeline.map((item) => (
               <li key={item.id} className="stacked-list-item">
+                <BookCover title={item.book.title} coverUrl={item.book.coverUrl} isbn={item.book.isbn} size="small" />
                 <div>
                   <strong>{item.title}</strong>
                   <p className="section-sub">{item.subtitle}</p>
+                  <div className="mini-progress" aria-label={`Progresso de ${item.book.title}: ${item.progress}%`}>
+                    <span style={{ width: `${Math.max(0, Math.min(100, item.progress))}%` }} />
+                  </div>
                   <small>{formatDateTimeBr(item.date)}</small>
                 </div>
                 <Link to={item.link} className="btn-muted btn-link">
@@ -339,13 +361,13 @@ export function ProfilePage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Seu historico aparecera aqui assim que voce registrar leituras.</p>
+          <p className="section-sub">Seu histórico aparecerá aqui assim que você registrar leituras.</p>
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Badges recentes</h3>
+          <h3>Conquistas recentes</h3>
           <span className="kpi">{profileInsights.recentBadges.length} destaque(s)</span>
         </div>
         {profileInsights.recentBadges.length > 0 ? (
@@ -358,43 +380,55 @@ export function ProfilePage() {
                   <small>{formatDateTimeBr(badge.awardedAt)}</small>
                 </div>
                 <Link to="/badges" className="btn-muted btn-link">
-                  Abrir badges
+                  Abrir conquistas
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Seus proximos badges vao aparecer aqui conforme o habito de leitura evoluir.</p>
+          <p className="section-sub">Suas próximas conquistas vão aparecer aqui conforme o hábito de leitura evoluir.</p>
         )}
       </article>
 
-      <article className="card">
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Reviews recentes</h3>
-          <span className="kpi">{filteredReviews.length} review(s)</span>
+          <h3>Avaliações recentes</h3>
+          <span className="kpi">{filteredReviews.length} avaliação(ões)</span>
         </div>
-        <select aria-label="Filtrar reviews por nota" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as "ALL" | "HIGH" | "LOW")}>
-          <option value="ALL">Todas as reviews</option>
+        <select aria-label="Filtrar avaliações por nota" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as "ALL" | "HIGH" | "LOW")}>
+          <option value="ALL">Todas as avaliações</option>
           <option value="HIGH">Notas 4 e 5</option>
           <option value="LOW">Notas 1 a 3</option>
         </select>
         {filteredReviews.length > 0 ? (
           <ul className="stacked-list">
-            {filteredReviews.slice(0, 5).map((review) => (
-              <li key={review.id} className="stacked-list-item">
-                <div>
-                  <strong>Nota {review.rating}</strong>
-                  <p className="section-sub">{review.comment}</p>
-                  <small>{formatDateTimeBr(review.updatedAt)}</small>
-                </div>
-                <Link to="/reviews" className="btn-muted btn-link">
-                  Abrir reviews
-                </Link>
-              </li>
-            ))}
+            {filteredReviews.slice(0, 5).map((review) => {
+              const reviewBook = readingBookById[review.bookId];
+
+              return (
+                <li key={review.id} className="stacked-list-item">
+                  <div className="book-list-row">
+                    <BookCover title={reviewBook?.title ?? "Livro avaliado"} coverUrl={reviewBook?.coverUrl} isbn={reviewBook?.isbn} size="small" />
+                    <div>
+                      <strong>{reviewBook?.title ?? "Livro avaliado"}</strong>
+                      <p className="section-sub">Nota {review.rating} - {review.comment}</p>
+                      <small>{formatDateTimeBr(review.updatedAt)}</small>
+                    </div>
+                  </div>
+                  <div className="card-actions">
+                    <Link to={`/books/${review.bookId}`} className="btn-muted btn-link">
+                      Ver livro
+                    </Link>
+                    <Link to="/reviews" className="btn-muted btn-link">
+                      Abrir avaliações
+                    </Link>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         ) : (
-          <p className="section-sub">Nenhuma review encontrada para esse filtro.</p>
+          <p className="section-sub">Nenhuma avaliação encontrada para esse filtro.</p>
         )}
       </article>
     </section>

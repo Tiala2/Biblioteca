@@ -106,6 +106,8 @@ function mockAdminRequests() {
             bookId: "book-1",
             bookTitle: "Spring em pratica",
             bookIsbn: "123",
+            coverUrl: "https://example.com/capa.jpg",
+            source: "OPEN",
             createdAt: "2026-04-24T12:00:00",
           },
         ],
@@ -177,14 +179,17 @@ describe("AdminPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Painel admin" })).toBeInTheDocument();
 
-    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestao de usuarios" }).length).toBeGreaterThan(0));
+    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0));
 
     expect(screen.getByRole("heading", { name: "Acervo e descoberta" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Gamificacao e comunidade" })).toBeInTheDocument();
-    expect(screen.getAllByRole("heading", { name: "Gestao de usuarios" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
     expect(screen.getAllByText("Spring em pratica").length).toBeGreaterThan(0);
+    expect(screen.getByText("locais/PDF")).toBeInTheDocument();
+    expect(screen.getByText("último favorito")).toBeInTheDocument();
+    expect(screen.getByText("OPEN")).toBeInTheDocument();
   });
 
   it("deve enviar filtro de busca de usuarios para o backend", async () => {
@@ -207,8 +212,8 @@ describe("AdminPage", () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestao de usuarios" }).length).toBeGreaterThan(0));
-    fireEvent.change(screen.getByPlaceholderText("Buscar usuarios por nome ou email"), { target: { value: "joao" } });
+    await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0));
+    fireEvent.change(screen.getByPlaceholderText("Buscar usuários por nome ou email"), { target: { value: "joao" } });
 
     await waitFor(() =>
       expect(vi.mocked(api.get)).toHaveBeenLastCalledWith(
@@ -254,10 +259,10 @@ describe("AdminPage", () => {
     await screen.findByText("Admin Teste");
     await user.click(screen.getByRole("button", { name: "Editar" }));
 
-    const nameInput = screen.getByPlaceholderText("Nome do usuario");
+    const nameInput = screen.getByPlaceholderText("Nome do usuário");
     await user.clear(nameInput);
     await user.type(nameInput, "Admin Ajustado");
-    await user.click(screen.getByRole("button", { name: "Salvar usuario" }));
+    await user.click(screen.getByRole("button", { name: "Salvar usuário" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.put)).toHaveBeenCalledWith(
@@ -274,6 +279,46 @@ describe("AdminPage", () => {
     );
 
     await waitFor(() => expect(screen.getByText("Admin Ajustado")).toBeInTheDocument());
-    expect(showToast).toHaveBeenCalledWith("Usuario atualizado com sucesso.", "success");
+    expect(showToast).toHaveBeenCalledWith("Usuário atualizado com sucesso.", "success");
+  });
+
+  it("deve preencher capa do livro usando o ISBN", async () => {
+    mockAdminRequests();
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/admin/catalog"]}>
+        <AdminPage visibleSections={["catalog"]} />
+      </MemoryRouter>
+    );
+
+    await screen.findByRole("heading", { name: "Acervo e descoberta" });
+
+    const isbnInput = screen.getByLabelText("ISBN do livro");
+    await user.type(isbnInput, "978-0-13-449416-6");
+    await user.click(screen.getByRole("button", { name: "Buscar capa por ISBN" }));
+
+    expect(screen.getByLabelText("URL da capa")).toHaveValue(
+      "https://covers.openlibrary.org/b/isbn/9780134494166-L.jpg?default=false"
+    );
+  });
+
+  it("deve preencher atualizacao de capa pelo ISBN do livro selecionado", async () => {
+    mockAdminRequests();
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/admin/catalog"]}>
+        <AdminPage visibleSections={["catalog"]} />
+      </MemoryRouter>
+    );
+
+    await screen.findByRole("heading", { name: "Acervo e descoberta" });
+    await user.clear(screen.getByLabelText("Nova URL da capa"));
+    await user.click(screen.getByRole("button", { name: "Usar ISBN do livro" }));
+
+    expect(screen.getByLabelText("Nova URL da capa")).toHaveValue(
+      "https://covers.openlibrary.org/b/isbn/123-L.jpg?default=false"
+    );
   });
 });

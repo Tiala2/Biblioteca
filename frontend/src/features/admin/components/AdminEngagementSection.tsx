@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { Sparkles } from "lucide-react";
 import { AdminSection } from "./AdminSection";
 import { BadgePanel } from "./BadgePanel";
 import { FavoriteAdminPanel } from "./FavoriteAdminPanel";
@@ -32,6 +33,7 @@ export function AdminEngagementSection({
       eyebrow="Engajamento"
       title="Gamificacao e comunidade"
       description="Acompanhe mecanismos de permanencia, reputacao social e uso real da plataforma."
+      icon={<Sparkles aria-hidden="true" />}
     >
       <BadgePanel
         form={form}

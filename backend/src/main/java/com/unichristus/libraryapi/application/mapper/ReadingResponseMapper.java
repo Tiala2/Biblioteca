@@ -18,6 +18,7 @@ public final class ReadingResponseMapper {
                 .book(new BookHomeResponse(
                         reading.getBook().getId(),
                         reading.getBook().getTitle(),
+                        reading.getBook().getIsbn(),
                         reading.getBook().getCoverUrl(),
                         reading.getBook().getSource(),
                         favorite))

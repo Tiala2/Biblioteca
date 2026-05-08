@@ -1,9 +1,11 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { Filter, Search, Sparkles, X } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import { useAuth } from "@features/auth/context/AuthContext";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -13,6 +15,7 @@ type Book = {
   id: string;
   title: string;
   author?: string | null;
+  isbn?: string | null;
   numberOfPages: number;
   hasPdf: boolean;
   source?: "LOCAL" | "OPEN";
@@ -21,6 +24,7 @@ type Book = {
 type Paged<T> = { content: T[]; page: { size: number; number: number; totalElements: number; totalPages: number } };
 type BookSort = "TRENDING_WEEK" | "TRENDING_MONTH" | "BEST_RATED" | "NEW_RELEASES";
 type Favorite = { bookId: string };
+type ActiveFilterKey = "query" | "author" | "categoryId" | "tagId" | "minPages" | "maxPages" | "sort" | "withPdf";
 
 const DEFAULT_SORT: BookSort = "BEST_RATED";
 const PAGE_SIZE = 12;
@@ -45,9 +49,19 @@ function parsePage(value: string | null): number {
   return parsed;
 }
 
+function formatSort(sort: BookSort): string {
+  const labels: Record<BookSort, string> = {
+    BEST_RATED: "Melhor avaliacao",
+    NEW_RELEASES: "Lancamentos",
+    TRENDING_WEEK: "Tendencia semanal",
+    TRENDING_MONTH: "Tendencia mensal",
+  };
+  return labels[sort];
+}
+
 export function BooksPage() {
-  const { auth } = useAuth();
   const { showToast } = useToast();
+  const headers = useAuthHeaders();
   const [books, setBooks] = useState<Book[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -65,8 +79,6 @@ export function BooksPage() {
   const [favoriteLoadingBookId, setFavoriteLoadingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
-
   const applied = useMemo(() => {
     return {
       query: searchParams.get("q") ?? "",
@@ -80,6 +92,22 @@ export function BooksPage() {
       page: parsePage(searchParams.get("page")),
     };
   }, [searchParams]);
+  const activeFilters = useMemo(() => {
+    const filters: Array<{ key: ActiveFilterKey; label: string }> = [];
+    const selectedCategory = categories.find((category) => category.id === applied.categoryId);
+    const selectedTag = tags.find((tag) => tag.id === applied.tagId);
+
+    if (applied.query) filters.push({ key: "query", label: `Busca: ${applied.query}` });
+    if (applied.author) filters.push({ key: "author", label: `Autor: ${applied.author}` });
+    if (applied.categoryId) filters.push({ key: "categoryId", label: `Categoria: ${selectedCategory?.name ?? "selecionada"}` });
+    if (applied.tagId) filters.push({ key: "tagId", label: `Tag: ${selectedTag?.name ?? "selecionada"}` });
+    if (applied.minPages) filters.push({ key: "minPages", label: `Minimo: ${applied.minPages} paginas` });
+    if (applied.maxPages) filters.push({ key: "maxPages", label: `Maximo: ${applied.maxPages} paginas` });
+    if (applied.sort !== DEFAULT_SORT) filters.push({ key: "sort", label: `Ordem: ${formatSort(applied.sort)}` });
+    if (applied.onlyWithPdf) filters.push({ key: "withPdf", label: "Somente com PDF" });
+
+    return filters;
+  }, [applied, categories, tags]);
 
   useEffect(() => {
     setQueryInput(applied.query);
@@ -131,10 +159,10 @@ export function BooksPage() {
         setBooks(response.data.content);
         setTotalPages(response.data.page.totalPages);
         setError("");
-      } catch {
+      } catch (error) {
         setBooks([]);
         setTotalPages(0);
-        setError("Nao foi possivel carregar livros no momento.");
+        setError(extractApiErrorMessage(error, "Não foi possível carregar livros no momento."));
       } finally {
         setLoading(false);
       }
@@ -225,6 +253,17 @@ export function BooksPage() {
     setSearchParams({}, { replace: true });
   };
 
+  const removeFilter = (key: ActiveFilterKey) => {
+    if (key === "query") updateUrl({ query: "", page: 0 });
+    if (key === "author") updateUrl({ author: "", page: 0 });
+    if (key === "categoryId") updateUrl({ categoryId: "", page: 0 });
+    if (key === "tagId") updateUrl({ tagId: "", page: 0 });
+    if (key === "minPages") updateUrl({ minPages: "", page: 0 });
+    if (key === "maxPages") updateUrl({ maxPages: "", page: 0 });
+    if (key === "sort") updateUrl({ sort: DEFAULT_SORT, page: 0 });
+    if (key === "withPdf") updateUrl({ withPdf: false, page: 0 });
+  };
+
   const toggleFavorite = async (bookId: string) => {
     if (!headers) return;
 
@@ -248,24 +287,33 @@ export function BooksPage() {
         setFavoriteBookIds((previous) => new Set(previous).add(bookId));
         showToast("Livro adicionado aos favoritos.", "success");
       }
-    } catch {
-      showToast("Nao foi possivel atualizar favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
     } finally {
       setFavoriteLoadingBookId(null);
     }
   };
 
   return (
-    <section>
-      <div className="section-head">
+    <section className="aura-page">
+      <div className="card hero aura-hero aura-hero--catalog">
         <div>
-          <h2>Escolha sua proxima jornada</h2>
-          <p className="section-sub">Busque livros do acervo local e importado em tempo real.</p>
+          <p className="eyebrow aura-eyebrow">Vitrine viva</p>
+          <h2>Escolha sua próxima jornada</h2>
+          <p>Explore livros locais e descobertas importadas com filtros rapidos, favoritos e leitura guiada.</p>
         </div>
-        <span className="kpi">{books.length} nesta pagina</span>
+        <div className="aura-hero__signal">
+          <Sparkles aria-hidden="true" />
+          <strong>{books.length}</strong>
+          <span>nesta página</span>
+        </div>
       </div>
 
-      <article className="card">
+      <article className="card aura-panel aura-filter-panel">
+        <div className="section-head">
+          <h3><Filter aria-hidden="true" /> Afinar descoberta</h3>
+          <span className="kpi">{formatSort(applied.sort)}</span>
+        </div>
         <form className="filters-grid" onSubmit={onSearch}>
           <input
             aria-label="Pesquisar livros por titulo ou autor"
@@ -296,23 +344,23 @@ export function BooksPage() {
             ))}
           </select>
           <input
-            aria-label="Quantidade minima de paginas"
+            aria-label="Quantidade mínima de páginas"
             type="number"
             min={1}
-            placeholder="Min paginas"
+            placeholder="Mín. páginas"
             value={minPagesInput}
             onChange={(event) => setMinPagesInput(event.target.value)}
           />
           <input
-            aria-label="Quantidade maxima de paginas"
+            aria-label="Quantidade máxima de páginas"
             type="number"
             min={1}
-            placeholder="Max paginas"
+            placeholder="Máx. páginas"
             value={maxPagesInput}
             onChange={(event) => setMaxPagesInput(event.target.value)}
           />
-          <select aria-label="Ordenacao do catalogo" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
-            <option value="BEST_RATED">Melhor avaliacao</option>
+          <select aria-label="Ordenação do catálogo" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
+            <option value="BEST_RATED">Melhor avaliação</option>
             <option value="NEW_RELEASES">Lancamentos</option>
             <option value="TRENDING_WEEK">Tendencia semanal</option>
             <option value="TRENDING_MONTH">Tendencia mensal</option>
@@ -326,27 +374,49 @@ export function BooksPage() {
             Apenas com PDF
           </label>
           <div className="filter-actions">
-            <button type="submit">Pesquisar</button>
+            <button type="submit">
+              <Search aria-hidden="true" />
+              Pesquisar
+            </button>
             <button type="button" className="btn-muted" onClick={clearFilters}>
               Limpar
             </button>
           </div>
         </form>
+        {activeFilters.length > 0 && (
+          <div className="active-filters" aria-label="Filtros aplicados">
+            {activeFilters.map((filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                className="filter-chip"
+                aria-label={`Remover filtro ${filter.label}`}
+                onClick={() => removeFilter(filter.key)}
+              >
+                <span>{filter.label}</span>
+                <X aria-hidden="true" />
+              </button>
+            ))}
+            <button type="button" className="filter-chip filter-chip--clear" onClick={clearFilters}>
+              Limpar tudo
+            </button>
+          </div>
+        )}
       </article>
 
       {loading && (
         <StateCard
-          title="Catalogo em carregamento"
-          message="Estamos reunindo livros, filtros e destaques para sua proxima leitura."
+          title="Catálogo em carregamento"
+          message="Estamos reunindo livros, filtros e destaques para sua próxima leitura."
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Falha ao carregar catalogo" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Falha ao carregar catálogo" message={error} variant="error" />}
 
-      {!loading && !error && <div className="grid">
+      {!loading && !error && <div className="grid aura-catalog-grid">
         {books.map((book) => (
-          <article key={book.id} className="card">
-            <BookCover title={book.title} coverUrl={book.coverUrl} size="medium" />
+          <article key={book.id} className="card aura-book-card">
+            <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             <div className="book-card-badges">
               {book.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
               {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">SEM PDF</span>}
@@ -357,8 +427,8 @@ export function BooksPage() {
                 {book.title}
               </Link>
             </h3>
-            <p>{book.author || "Autor nao informado"}</p>
-            <p>{book.numberOfPages} paginas</p>
+            <p>{book.author || "Autor não informado"}</p>
+            <p>{book.numberOfPages} páginas</p>
             <small>
               {book.hasPdf
                 ? "PDF disponivel"
@@ -379,6 +449,7 @@ export function BooksPage() {
               <button
                 type="button"
                 className={favoriteBookIds.has(book.id) ? "favorite-toggle active" : "favorite-toggle"}
+                aria-pressed={favoriteBookIds.has(book.id)}
                 onClick={() => toggleFavorite(book.id)}
                 disabled={favoriteLoadingBookId === book.id}
               >
@@ -394,25 +465,33 @@ export function BooksPage() {
       </div>}
 
       <div className="pagination-row">
-        <button className="btn-muted" disabled={applied.page <= 0 || loading} onClick={() => goToPage(applied.page - 1)}>
+        <button
+          type="button"
+          className="btn-muted"
+          aria-label="Ir para a página anterior do catálogo"
+          disabled={applied.page <= 0 || loading}
+          onClick={() => goToPage(applied.page - 1)}
+        >
           Anterior
         </button>
         <span className="section-sub">
-          Pagina {applied.page + 1} de {Math.max(totalPages, 1)}
+          Página {applied.page + 1} de {Math.max(totalPages, 1)}
         </span>
         <button
+          type="button"
           className="btn-muted"
+          aria-label="Ir para a próxima página do catálogo"
           disabled={loading || applied.page + 1 >= Math.max(totalPages, 1)}
           onClick={() => goToPage(applied.page + 1)}
         >
-          Proxima
+          Próxima
         </button>
       </div>
 
       {!loading && !error && books.length === 0 && (
         <StateCard
           title="Nenhum livro encontrado"
-          message="Ajuste os filtros ou limpe a busca para explorar outras combinacoes do catalogo."
+          message="Ajuste os filtros ou limpe a busca para explorar outras combinações do catálogo."
           action={
             <button type="button" className="btn-muted" onClick={clearFilters}>
               Limpar filtros

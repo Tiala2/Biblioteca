@@ -1,4 +1,5 @@
 import type { FormEvent } from "react";
+import { UsersRound } from "lucide-react";
 import { UserPanel } from "./UserPanel";
 import { AdminSection } from "./AdminSection";
 import type { UserAdmin, UserForm } from "../types";
@@ -31,8 +32,9 @@ export function AdminUsersSection(props: AdminUsersSectionProps) {
   return (
     <AdminSection
       eyebrow="Operacao"
-      title="Gestao de usuarios"
-      description="Edite dados basicos, aplique filtros reais do backend e controle acesso sem apagar historico de leitura, reviews e auditoria."
+      title="Gestão de usuários"
+      description="Edite dados básicos, aplique filtros reais do backend e controle acesso sem apagar histórico de leitura, avaliações e auditoria."
+      icon={<UsersRound aria-hidden="true" />}
       variant="wide"
     >
       <UserPanel {...props} />

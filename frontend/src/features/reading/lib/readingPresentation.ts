@@ -7,7 +7,7 @@ const PHASE_LABEL: Record<string, string> = {
 };
 
 const STATUS_LABEL: Record<string, string> = {
-  NOT_STARTED: "Nao iniciado",
+  NOT_STARTED: "Não iniciado",
   IN_PROGRESS: "Em andamento",
   FINISHED: "Concluido",
   DROPPED: "Interrompido",
@@ -20,12 +20,12 @@ export function clampPage(value: number, totalPages: number): number {
 }
 
 export function getPhaseLabel(phase?: string | null): string {
-  if (!phase) return "Nao definida";
+  if (!phase) return "Não definida";
   return PHASE_LABEL[phase] ?? phase;
 }
 
 export function formatStatusLabel(status?: string | null): string {
-  if (!status) return "Nao iniciado";
+  if (!status) return "Não iniciado";
   return STATUS_LABEL[status] ?? status;
 }
 

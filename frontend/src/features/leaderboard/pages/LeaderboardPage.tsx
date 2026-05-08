@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { BarChart3, Crown, Medal, Settings2, Trophy, UsersRound } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
+import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { formatInteger } from "@shared/lib/formatters";
 import { StateCard } from "@shared/ui/feedback/StateCard";
@@ -32,16 +34,16 @@ function parseLimit(value: string | null): number {
 function metricCopy(metric: LeaderboardMetric) {
   if (metric === "BOOKS") {
     return {
-      title: "Livros concluidos",
+      title: "Livros concluídos",
       subtitle: "Ranking semanal por livros finalizados com opt-in ativo.",
       valueLabel: "livro(s)",
     };
   }
 
   return {
-    title: "Paginas lidas",
-    subtitle: "Ranking semanal da comunidade por paginas lidas com opt-in ativo.",
-    valueLabel: "pagina(s)",
+      title: "Páginas lidas",
+      subtitle: "Ranking semanal da comunidade por páginas lidas com opt-in ativo.",
+      valueLabel: "página(s)",
   };
 }
 
@@ -56,22 +58,32 @@ export function LeaderboardPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
 
-    const leaderboardRequest = api.get<LeaderboardEntry[]>(`/api/v1/users/leaderboard?limit=${limit}&metric=${metric}`);
-    const profileRequest = headers ? api.get<UserProfile>("/api/v1/users/me", { headers }) : Promise.resolve(null);
-
-    Promise.all([leaderboardRequest, profileRequest])
-      .then(([leaderboardResponse, profileResponse]) => {
+    const loadLeaderboard = async () => {
+      setLoading(true);
+      try {
+        const leaderboardRequest = api.get<LeaderboardEntry[]>(`/api/v1/users/leaderboard?limit=${limit}&metric=${metric}`);
+        const profileRequest = headers ? api.get<UserProfile>("/api/v1/users/me", { headers }) : Promise.resolve(null);
+        const [leaderboardResponse, profileResponse] = await Promise.all([leaderboardRequest, profileRequest]);
+        if (cancelled) return;
         setEntries(leaderboardResponse.data);
         setLeaderboardOptIn(profileResponse?.data.leaderboardOptIn ?? null);
         setError("");
-      })
-      .catch(() => {
+      } catch (error) {
+        if (cancelled) return;
         setEntries([]);
-        setError("Nao foi possivel carregar o ranking.");
-      })
-      .finally(() => setLoading(false));
+        setError(extractApiErrorMessage(error, "Não foi possível carregar o ranking."));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadLeaderboard();
+
+    return () => {
+      cancelled = true;
+    };
   }, [headers, limit, metric]);
 
   const changeMetric = (nextMetric: LeaderboardMetric) => {
@@ -91,47 +103,53 @@ export function LeaderboardPage() {
   const copy = metricCopy(metric);
   const topEntry = entries[0] ?? null;
   const communityTotal = entries.reduce((total, entry) => total + entry.value, 0);
+  const averageValue = entries.length > 0 ? Math.round(communityTotal / entries.length) : 0;
   const podium = entries.slice(0, 3);
 
   if (loading) {
     return (
       <StateCard
-        title="Ranking em atualizacao"
-        message="Estamos montando a classificacao da comunidade com base nas leituras mais recentes."
+        title="Ranking em atualização"
+        message="Estamos montando a classificação da comunidade com base nas leituras mais recentes."
         variant="loading"
       />
     );
   }
 
   return (
-    <section>
-      <div className="section-head">
+    <section className="aura-page">
+      <div className="card hero aura-hero aura-hero--leaderboard">
         <div>
+          <p className="eyebrow aura-eyebrow">Energia da comunidade</p>
           <h2>Ranking semanal da comunidade</h2>
-          <p className="section-sub">{copy.subtitle}</p>
+          <p>{copy.subtitle}</p>
         </div>
-        <span className="kpi">{entries.length} participante(s)</span>
+        <div className="aura-hero__signal">
+          <Trophy aria-hidden="true" />
+          <strong>{entries.length}</strong>
+          <span>participante(s)</span>
+        </div>
       </div>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3>Seu status no ranking</h3>
+          <h3><Settings2 aria-hidden="true" /> Seu status no ranking</h3>
           <span className="kpi">{leaderboardOptIn ? "Opt-in ativo" : "Opt-in desligado"}</span>
         </div>
         <p className="section-sub">
           {leaderboardOptIn
-            ? "Seu progresso ja pode entrar no ranking semanal."
-            : "Ative a participacao no seu perfil para aparecer no ranking."}
+            ? "Seu progresso já pode entrar no ranking semanal."
+            : "Ative a participação no seu perfil para aparecer no ranking."}
         </p>
         <div className="card-actions">
           <Link to="/profile" className="btn-link">
-            Ajustar preferencias
+            Ajustar preferências
           </Link>
         </div>
       </article>
 
-      <article className="card tabs-card">
-        <div className="tabs-row" role="tablist" aria-label="Metricas do ranking">
+      <article className="card tabs-card aura-panel aura-panel--wide">
+        <div className="tabs-row" role="tablist" aria-label="Métricas do ranking">
           <button
             type="button"
             role="tab"
@@ -139,7 +157,7 @@ export function LeaderboardPage() {
             className={metric === "PAGES" ? "tab active" : "tab"}
             onClick={() => changeMetric("PAGES")}
           >
-            Paginas lidas
+            Páginas lidas
           </button>
           <button
             type="button"
@@ -148,7 +166,7 @@ export function LeaderboardPage() {
             className={metric === "BOOKS" ? "tab active" : "tab"}
             onClick={() => changeMetric("BOOKS")}
           >
-            Livros concluidos
+            Livros concluídos
           </button>
         </div>
         <div className="card-actions">
@@ -164,70 +182,97 @@ export function LeaderboardPage() {
         </div>
       </article>
 
-      {error && <p className="error">{error}</p>}
+      {error && <StateCard title="Falha ao carregar ranking" message={error} variant="error" />}
 
       {!error && (
-        <div className="stats-grid">
+        <div className="stats-grid aura-stats">
           <div className="stat-box">
-            <strong>{topEntry ? topEntry.name : "Sem lider"}</strong>
-            <span>lider atual</span>
+            <Crown aria-hidden="true" />
+            <strong>{topEntry ? topEntry.name : "Sem líder"}</strong>
+            <span>líder atual</span>
           </div>
           <div className="stat-box">
+            <BarChart3 aria-hidden="true" />
             <strong>{topEntry ? `${formatInteger(topEntry.value)} ${copy.valueLabel}` : "0"}</strong>
             <span>melhor marca</span>
           </div>
           <div className="stat-box">
+            <UsersRound aria-hidden="true" />
             <strong>{formatInteger(entries.length)}</strong>
-            <span>participantes elegiveis</span>
+            <span>participantes elegíveis</span>
           </div>
           <div className="stat-box">
+            <Medal aria-hidden="true" />
             <strong>{formatInteger(communityTotal)}</strong>
             <span>volume total da semana</span>
+          </div>
+          <div className="stat-box">
+            <BarChart3 aria-hidden="true" />
+            <strong>{formatInteger(averageValue)}</strong>
+            <span>media por participante</span>
           </div>
         </div>
       )}
 
       {!error && podium.length > 0 && (
-        <article className="card">
+        <article className="card aura-panel aura-panel--wide">
           <div className="section-head">
-            <h3>Podio da semana</h3>
+            <h3><Trophy aria-hidden="true" /> Pódio da semana</h3>
             <span className="kpi">{copy.title}</span>
           </div>
-          <div className="grid">
+          <div className="grid aura-podium-grid">
             {podium.map((entry, index) => (
-              <article key={entry.userId} className="card">
-                <p className="eyebrow">Posicao {index + 1}</p>
+              <article key={entry.userId} className="card aura-podium-card">
+                <p className="eyebrow">Posição {index + 1}</p>
                 <h3>{entry.name}</h3>
                 <p className="section-sub">{copy.title}</p>
                 <strong>
                   {formatInteger(entry.value)} {copy.valueLabel}
                 </strong>
+                <div className="leaderboard-share" aria-label={`Participacao de ${entry.name}`}>
+                  <span style={{ width: `${communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0}%` }} />
+                </div>
+                <small>
+                  {communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0}% do volume
+                </small>
               </article>
             ))}
           </div>
         </article>
       )}
 
-      <div className="grid">
-        {entries.map((entry, index) => (
-          <article key={entry.userId} className="card">
-            <p className="eyebrow">#{index + 1}</p>
-            <h3>{entry.name}</h3>
-            <p className="section-sub">{copy.title}</p>
-            <strong>
-              {formatInteger(entry.value)} {copy.valueLabel}
-            </strong>
-          </article>
-        ))}
+      <div className="grid aura-leaderboard-grid">
+        {entries.map((entry, index) => {
+          const gapToLeader = topEntry ? Math.max(0, topEntry.value - entry.value) : 0;
+          const share = communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0;
+
+          return (
+            <article key={entry.userId} className="card aura-leaderboard-card">
+              <p className="eyebrow">#{index + 1}</p>
+              <h3>{entry.name}</h3>
+              <p className="section-sub">{copy.title}</p>
+              <strong>
+                {formatInteger(entry.value)} {copy.valueLabel}
+              </strong>
+              <div className="leaderboard-share" aria-label={`Participacao de ${entry.name}`}>
+                <span style={{ width: `${share}%` }} />
+              </div>
+              <small>{share}% do volume</small>
+              <span className={gapToLeader === 0 ? "favorite-badge" : "import-badge"}>
+                {gapToLeader === 0 ? "LIDER" : `Faltam ${formatInteger(gapToLeader)} ${copy.valueLabel}`}
+              </span>
+            </article>
+          );
+        })}
       </div>
 
-      {!loading && entries.length === 0 && (
+      {!loading && !error && entries.length === 0 && (
         <StateCard
-          title="Nenhum participante elegivel nesta semana"
-          message="Ative seu opt-in no perfil e continue lendo para aparecer na proxima atualizacao do ranking."
+          title="Nenhum participante elegível nesta semana"
+          message="Ative seu opt-in no perfil e continue lendo para aparecer na próxima atualização do ranking."
           action={
             <Link to="/profile" className="btn-link">
-              Ajustar preferencias
+              Ajustar preferências
             </Link>
           }
         />

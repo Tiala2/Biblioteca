@@ -22,7 +22,7 @@ export function AchievementsPanel({ achievements }: AchievementsPanelProps) {
               <h4>{achievement.title}</h4>
               <p>{achievement.description}</p>
               <small>
-                {achievement.unlocked ? "Desbloqueado" : `Bloqueado ate pagina ${achievement.unlockPage ?? "?"}`}
+                {achievement.unlocked ? "Desbloqueado" : `Bloqueado até página ${achievement.unlockPage ?? "?"}`}
               </small>
             </article>
           ))}

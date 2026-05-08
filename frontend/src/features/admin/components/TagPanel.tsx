@@ -29,7 +29,7 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
     <article id="admin-tags" className="card admin-panel">
       <h3>{form.id ? "Editar tag" : "Nova tag"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <input value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
+        <input aria-label="Nome da tag" value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
         <button type="submit" disabled={busyKey === "tag-create" || busyKey === `tag-save-${form.id}`}>
           {form.id ? "Salvar tag" : "Criar tag"}
         </button>
@@ -43,7 +43,7 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
         <h4>Lista de tags</h4>
         <span className="kpi">{filteredTags.length}</span>
       </div>
-      <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar tags" />
+      <input aria-label="Filtrar tags" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar tags" />
       <ul className="stacked-list">
         {visibleTags.map((tag) => (
           <li key={tag.id} className="stacked-list-item">
@@ -65,9 +65,9 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Pagina {page + 1} de {totalPages}</span>
+          <span className="section-sub">Página {page + 1} de {totalPages}</span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
-            Proxima
+            Próxima
           </button>
         </div>
       )}

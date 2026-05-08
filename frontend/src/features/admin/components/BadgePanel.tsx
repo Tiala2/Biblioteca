@@ -29,22 +29,23 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
 
   return (
     <article id="admin-badges" className="card admin-panel">
-      <h3>{form.id ? "Editar badge" : "Novo badge"}</h3>
+      <h3>{form.id ? "Editar conquista" : "Nova conquista"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
-        <select value={form.code} onChange={(event) => onFormChange((prev) => ({ ...prev, code: event.target.value as BadgeCode }))}>
+        <select aria-label="Código da conquista" value={form.code} onChange={(event) => onFormChange((prev) => ({ ...prev, code: event.target.value as BadgeCode }))}>
           {BADGE_CODES.map((code) => (
             <option key={code} value={code}>
               {code}
             </option>
           ))}
         </select>
-        <input value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
+        <input aria-label="Nome da conquista" value={form.name} onChange={(event) => onFormChange((prev) => ({ ...prev, name: event.target.value }))} placeholder="Nome" required />
         <input
+          aria-label="Descrição da conquista"
           value={form.description}
           onChange={(event) => onFormChange((prev) => ({ ...prev, description: event.target.value }))}
-          placeholder="Descricao"
+          placeholder="Descrição"
         />
-        <select value={form.criteriaType} onChange={(event) => onFormChange((prev) => ({ ...prev, criteriaType: event.target.value as BadgeCriteria }))}>
+        <select aria-label="Critério da conquista" value={form.criteriaType} onChange={(event) => onFormChange((prev) => ({ ...prev, criteriaType: event.target.value as BadgeCriteria }))}>
           {BADGE_CRITERIA.map((criteria) => (
             <option key={criteria} value={criteria}>
               {criteria}
@@ -52,6 +53,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
           ))}
         </select>
         <input
+          aria-label="Valor do critério"
           value={form.criteriaValue}
           onChange={(event) => onFormChange((prev) => ({ ...prev, criteriaValue: event.target.value }))}
           placeholder="Valor"
@@ -60,7 +62,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
           <input type="checkbox" checked={form.active} onChange={(event) => onFormChange((prev) => ({ ...prev, active: event.target.checked }))} /> Ativo
         </label>
         <button type="submit" disabled={busyKey === "badge-create" || busyKey === `badge-save-${form.id}`}>
-          {form.id ? "Salvar badge" : "Criar badge"}
+          {form.id ? "Salvar conquista" : "Criar conquista"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -69,10 +71,10 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
         )}
       </form>
       <div className="section-head">
-        <h4>Lista de badges</h4>
+        <h4>Lista de conquistas</h4>
         <span className="kpi">{filteredBadges.length}</span>
       </div>
-      <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar badges" />
+      <input aria-label="Filtrar conquistas" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar conquistas" />
       <ul className="stacked-list">
         {visibleBadges.map((badge) => (
           <li key={badge.id} className="stacked-list-item">
@@ -93,15 +95,15 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
           </li>
         ))}
       </ul>
-      {filteredBadges.length === 0 && <p className="section-sub">Nenhum badge encontrado para esse filtro.</p>}
+      {filteredBadges.length === 0 && <p className="section-sub">Nenhuma conquista encontrada para esse filtro.</p>}
       {filteredBadges.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Pagina {page + 1} de {totalPages}</span>
+          <span className="section-sub">Página {page + 1} de {totalPages}</span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
-            Proxima
+            Próxima
           </button>
         </div>
       )}

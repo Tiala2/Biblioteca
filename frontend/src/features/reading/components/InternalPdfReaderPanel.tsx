@@ -31,7 +31,7 @@ export function InternalPdfReaderPanel({ bookTitle, internalPdfUrl }: InternalPd
         </>
       ) : (
         <p className="section-sub">
-          O PDF deste livro existe, mas a URL de leitura ainda nao esta disponivel. Tente novamente em instantes.
+          O PDF deste livro existe, mas a URL de leitura ainda não está disponível. Tente novamente em instantes.
         </p>
       )}
     </article>

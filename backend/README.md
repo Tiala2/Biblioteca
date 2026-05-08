@@ -8,6 +8,12 @@ Manter banco e arquivos sempre persistidos, evitando perda de dados e erros ao s
 - `docker-compose.prod.yml`: producao (sem Mailpit)
 - `docker-compose.yml`: atalho para desenvolvimento
 
+## Banco padrao de desenvolvimento
+- O banco compartilhado do projeto roda no Docker em `localhost:5437`.
+- Evite usar `localhost:5432`, porque essa porta costuma ser de um PostgreSQL instalado na maquina.
+- No perfil `dev`, a API bloqueia `jdbc:postgresql://localhost:5432/...` por seguranca para impedir que dados sejam salvos no banco errado.
+- Se for realmente necessario usar `5432`, defina `ALLOW_LOCAL_DB_5432=true` de forma consciente e temporaria.
+
 ## Regras para nao perder dados
 - Nao use `docker compose down -v`.
 - Nao use `docker volume prune`.

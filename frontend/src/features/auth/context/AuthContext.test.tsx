@@ -17,6 +17,6 @@ describe("AuthProvider", () => {
       window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
     });
 
-    expect(await screen.findByText("Sua sessao expirou. Faca login novamente.")).toBeInTheDocument();
+    expect(await screen.findByText("Sua sessão expirou. Faça login novamente.")).toBeInTheDocument();
   });
 });

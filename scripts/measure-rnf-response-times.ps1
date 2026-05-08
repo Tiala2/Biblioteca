@@ -1,7 +1,7 @@
 param(
   [string]$ApiBase = "http://localhost:8080",
   [int]$Iterations = 5,
-  [string]$OutputFile = "C:\workspace\library-api-projeto\docs\generated\response-time-report.json"
+  [string]$OutputFile = (Join-Path (Resolve-Path (Join-Path $PSScriptRoot "..")) "docs\generated\response-time-report.json")
 )
 
 $ErrorActionPreference = "Stop"

@@ -1,9 +1,11 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { MessageSquareQuote, PencilLine, ScrollText, Star } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
+import { BookCover } from "@shared/ui/books/BookCover";
 import { useToast } from "@shared/ui/toast/ToastContext";
 
 type Review = {
@@ -15,7 +17,14 @@ type Review = {
   updatedAt: string;
 };
 
-type BookOption = { id: string; title: string };
+type BookOption = {
+  id: string;
+  title: string;
+  author?: string | null;
+  isbn?: string | null;
+  coverUrl?: string | null;
+  source?: "LOCAL" | "OPEN";
+};
 type Reading = {
   id: string;
   status: string;
@@ -29,8 +38,58 @@ function parsePage(value: string | null): number {
   return parsed;
 }
 
+function RatingStars({ value }: { value: number }) {
+  return (
+    <span className="review-stars" aria-label={`Nota ${value} de 5`}>
+      {Array.from({ length: 5 }, (_, index) => (
+        <Star
+          key={index}
+          aria-hidden="true"
+          className={index < value ? "review-star review-star--filled" : "review-star"}
+          fill="currentColor"
+        />
+      ))}
+    </span>
+  );
+}
+
+type RatingPickerProps = {
+  value: number;
+  onChange: (value: number) => void;
+  disabled?: boolean;
+  label: string;
+};
+
+function RatingPicker({ value, onChange, disabled = false, label }: RatingPickerProps) {
+  return (
+    <div className="rating-picker" role="radiogroup" aria-label={label}>
+      <input type="number" min={1} max={5} value={value} readOnly hidden aria-hidden="true" />
+      {Array.from({ length: 5 }, (_, index) => {
+        const nextValue = index + 1;
+        const selected = value === nextValue;
+
+        return (
+          <button
+            key={nextValue}
+            type="button"
+            className={nextValue <= value ? "rating-picker__star rating-picker__star--active" : "rating-picker__star"}
+            role="radio"
+            aria-checked={selected}
+            aria-label={`${nextValue} estrela${nextValue > 1 ? "s" : ""}`}
+            disabled={disabled}
+            onClick={() => onChange(nextValue)}
+          >
+            <Star aria-hidden="true" fill="currentColor" />
+          </button>
+        );
+      })}
+      <span className="rating-picker__value">{value}/5</span>
+    </div>
+  );
+}
+
 export function ReviewsPage() {
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const page = useMemo(() => parsePage(searchParams.get("page")), [searchParams]);
@@ -52,10 +111,13 @@ export function ReviewsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  const headers = auth ? { Authorization: `Bearer ${auth.token}` } : undefined;
   const preselectedBookId = searchParams.get("bookId") ?? "";
   const bookTitleById = useMemo(
     () => Object.fromEntries(bookOptions.map((option) => [option.id, option.title])),
+    [bookOptions]
+  );
+  const bookById = useMemo(
+    () => Object.fromEntries(bookOptions.map((option) => [option.id, option])),
     [bookOptions]
   );
   const eligibleBooks = useMemo(
@@ -63,8 +125,20 @@ export function ReviewsPage() {
     [bookOptions, eligibleBookIds]
   );
   const hasEligibleBooks = eligibleBooks.length > 0;
+  const selectedBook = bookById[bookId] ?? null;
+  const reviewStats = useMemo(() => {
+    const total = items.length;
+    const average = total > 0 ? items.reduce((sum, item) => sum + item.rating, 0) / total : 0;
+    const highest = total > 0 ? Math.max(...items.map((item) => item.rating)) : 0;
 
-  const loadPage = async () => {
+    return {
+      total,
+      average: average.toFixed(1).replace(".", ","),
+      highest,
+    };
+  }, [items]);
+
+  const loadPage = useCallback(async () => {
     if (!headers) return;
     setLoading(true);
     try {
@@ -84,19 +158,18 @@ export function ReviewsPage() {
           : readableBookIds[0] ?? "";
       setBookId((previous) => (previous && readableBookIds.includes(previous) ? previous : preferredBookId));
       setError("");
-    } catch {
+    } catch (error) {
       setItems([]);
       setEligibleBookIds([]);
-      setError("Nao foi possivel carregar reviews.");
+      setError(extractApiErrorMessage(error, "Não foi possível carregar avaliações."));
     } finally {
       setLoading(false);
     }
-  };
+  }, [headers, page, preselectedBookId]);
 
   useEffect(() => {
     void loadPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.token, page, preselectedBookId]);
+  }, [loadPage]);
 
   const resolveBookLabel = (review: Review) => {
     return bookTitleById[review.bookId] ?? review.bookId;
@@ -118,7 +191,7 @@ export function ReviewsPage() {
       );
       setComment("");
       await loadPage();
-      showToast("Review criada com sucesso.", "success");
+      showToast("Avaliação criada com sucesso.", "success");
     } catch (error) {
       const errorCode = extractApiErrorCode(error);
       const message =
@@ -157,7 +230,7 @@ export function ReviewsPage() {
       );
       await loadPage();
       cancelEditing();
-      showToast("Review atualizada com sucesso.", "success");
+      showToast("Avaliação atualizada com sucesso.", "success");
     } catch (error) {
       showToast(extractApiErrorMessage(error, "Falha ao atualizar review."), "error");
     } finally {
@@ -174,7 +247,7 @@ export function ReviewsPage() {
         cancelEditing();
       }
       await loadPage();
-      showToast("Review removida com sucesso.", "success");
+      showToast("Avaliação removida com sucesso.", "success");
     } catch (error) {
       showToast(extractApiErrorMessage(error, "Falha ao remover review."), "error");
     } finally {
@@ -190,14 +263,29 @@ export function ReviewsPage() {
   };
 
   return (
-    <section className="grid">
-      <article className="card">
+    <section className="grid aura-page">
+      <article className="card hero aura-hero aura-hero--reviews">
+        <div className="aura-hero__content">
+          <div>
+            <p className="eyebrow aura-eyebrow">Diário de percepções</p>
+            <h2>Suas percepções importam</h2>
+            <p>Registre o que ficou da leitura, ajuste sua opinião e transforme cada livro em memória organizada.</p>
+          </div>
+          <div className="aura-hero__signal">
+            <MessageSquareQuote aria-hidden="true" />
+            <strong>{items.length}</strong>
+            <span>avaliação(ões)</span>
+          </div>
+        </div>
+      </article>
+
+      <article className="card aura-panel">
         <div className="section-head">
-          <h3>Nova review</h3>
-          <span className="kpi">{eligibleBooks.length} livro(s) elegivel(is)</span>
+          <h3><PencilLine aria-hidden="true" /> Nova avaliação</h3>
+          <span className="kpi">{eligibleBooks.length} livro(s) elegível(is)</span>
         </div>
         <p className="section-sub">
-          Para manter o contexto da leitura, a plataforma libera reviews apenas para livros que voce ja iniciou.
+          Para manter o contexto da leitura, a plataforma libera avaliações apenas para livros que você já iniciou.
         </p>
         <form onSubmit={onCreate}>
           <label>Livro</label>
@@ -208,52 +296,117 @@ export function ReviewsPage() {
               </option>
             ))}
           </select>
-          {!hasEligibleBooks && <p className="section-sub">Comece uma leitura em `/books` para liberar a criacao de reviews.</p>}
-          <label>Nota (1 a 5)</label>
-          <input type="number" min={1} max={5} value={rating} onChange={(event) => setRating(Number(event.target.value))} disabled={!hasEligibleBooks} />
-          <label>Comentario</label>
-          <input value={comment} onChange={(event) => setComment(event.target.value)} disabled={!hasEligibleBooks} />
+          {selectedBook ? (
+            <div className="review-book-preview">
+              <BookCover title={selectedBook.title} coverUrl={selectedBook.coverUrl} isbn={selectedBook.isbn} size="small" />
+              <div>
+                <strong>
+                  <Link to={`/books/${selectedBook.id}`} className="btn-link">
+                    {selectedBook.title}
+                  </Link>
+                </strong>
+                <small>
+                  {selectedBook.author ?? "Autor nao informado"}
+                  {selectedBook.source === "OPEN" ? " - Open Library" : ""}
+                </small>
+              </div>
+            </div>
+          ) : null}
+          {!hasEligibleBooks && (
+            <div>
+              <p className="section-sub">
+                Comece uma leitura no catálogo para liberar a criação de avaliações.
+              </p>
+              <div className="card-actions">
+                <Link to="/books" className="btn-muted btn-link">
+                  Explorar catálogo
+                </Link>
+              </div>
+            </div>
+          )}
+          <label>Nota</label>
+          <RatingPicker value={rating} onChange={setRating} disabled={!hasEligibleBooks} label="Nota da nova avaliacao" />
+          <label>Comentário</label>
+          <textarea
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            disabled={!hasEligibleBooks}
+            maxLength={600}
+            rows={4}
+          />
+          <small className="form-hint">{comment.length}/600 caracteres</small>
           <button type="submit" disabled={creating || !hasEligibleBooks}>
-            {creating ? "Salvando..." : "Salvar review"}
+            {creating ? "Salvando..." : "Salvar avaliação"}
           </button>
         </form>
       </article>
 
-      <article className="card">
+      <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <div>
-            <h2>Suas percepcoes importam</h2>
-            <p className="section-sub">Crie, acompanhe, ajuste e remova suas avaliacoes de leitura.</p>
+            <h3><ScrollText aria-hidden="true" /> Avaliações registradas</h3>
+            <p className="section-sub">Crie, acompanhe, ajuste e remova suas avaliações de leitura.</p>
           </div>
-          <span className="kpi">Pagina {page + 1}</span>
+          <span className="kpi">Página {page + 1}</span>
         </div>
 
-        {loading && <p className="section-sub">Carregando reviews...</p>}
+        {loading && <p className="section-sub">Carregando avaliações...</p>}
+        <div className="review-insights">
+          <div className="stat-box">
+            <strong>{reviewStats.total}</strong>
+            <span>Nesta pÃ¡gina</span>
+          </div>
+          <div className="stat-box">
+            <strong>{reviewStats.average}</strong>
+            <span>MÃ©dia das notas</span>
+          </div>
+          <div className="stat-box">
+            <strong>{reviewStats.highest || "-"}</strong>
+            <span>Maior nota</span>
+          </div>
+        </div>
+
         {error && <p className="error">{error}</p>}
 
-        <div className="grid">
+        <div className="grid aura-review-grid">
           {items.map((review) => {
             const isEditing = editingId === review.id;
+            const reviewBook = bookById[review.bookId];
 
             return (
-              <article key={review.id} className="card">
-                <h3>{resolveBookLabel(review)}</h3>
+              <article key={review.id} className="card aura-review-card">
+                <div className="inline-book-row review-book-row">
+                  <BookCover
+                    title={resolveBookLabel(review)}
+                    coverUrl={reviewBook?.coverUrl}
+                    isbn={reviewBook?.isbn}
+                    size="small"
+                  />
+                  <div>
+                    <h3>
+                      <Link to={`/books/${review.bookId}`} className="btn-link">
+                        {resolveBookLabel(review)}
+                      </Link>
+                    </h3>
+                    <small>{reviewBook?.author ?? "Autor nao informado"}</small>
+                  </div>
+                </div>
                 {isEditing ? (
                   <>
                     <label>Nota</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={5}
-                      value={editRating}
-                      onChange={(event) => setEditRating(Number(event.target.value))}
+                    <RatingPicker value={editRating} onChange={setEditRating} label="Nota da avaliacao em edicao" />
+                    <label>Comentário</label>
+                    <textarea
+                      value={editComment}
+                      onChange={(event) => setEditComment(event.target.value)}
+                      maxLength={600}
+                      rows={4}
                     />
-                    <label>Comentario</label>
-                    <input value={editComment} onChange={(event) => setEditComment(event.target.value)} />
+                    <small className="form-hint">{editComment.length}/600 caracteres</small>
                   </>
                 ) : (
                   <>
-                    <p>Nota: {review.rating}</p>
+                    <p className="aura-rating"><RatingStars value={review.rating} /> Nota {review.rating}</p>
                     <p>{review.comment}</p>
                   </>
                 )}
@@ -278,6 +431,9 @@ export function ReviewsPage() {
                       Editar
                     </button>
                   )}
+                  <Link to={`/books/${review.bookId}`} className="btn-muted btn-link">
+                    Ver livro
+                  </Link>
                   <button
                     className="btn-muted"
                     onClick={() => onDelete(review.id)}
@@ -293,20 +449,42 @@ export function ReviewsPage() {
         </div>
 
         <div className="pagination-row">
-          <button className="btn-muted" disabled={page <= 0 || loading} onClick={() => goToPage(page - 1)}>
+          <button
+            type="button"
+            className="btn-muted"
+            aria-label="Ir para a página anterior de avaliações"
+            disabled={page <= 0 || loading}
+            onClick={() => goToPage(page - 1)}
+          >
             Anterior
           </button>
           <span className="section-sub">
-            Pagina {page + 1} de {Math.max(totalPages, 1)}
+            Página {page + 1} de {Math.max(totalPages, 1)}
           </span>
           <button
+            type="button"
             className="btn-muted"
+            aria-label="Ir para a próxima página de avaliações"
             disabled={loading || page + 1 >= Math.max(totalPages, 1)}
             onClick={() => goToPage(page + 1)}
           >
-            Proxima
+            Próxima
           </button>
         </div>
+
+        {!loading && !error && items.length === 0 && (
+          <div>
+            <h3>Nenhuma avaliação registrada</h3>
+            <p className="section-sub">
+              Suas avaliações aparecerão aqui depois que você iniciar uma leitura e registrar sua primeira percepção.
+            </p>
+            <div className="card-actions">
+              <Link to="/books" className="btn-muted btn-link">
+                Ver livros
+              </Link>
+            </div>
+          </div>
+        )}
       </article>
     </section>
   );

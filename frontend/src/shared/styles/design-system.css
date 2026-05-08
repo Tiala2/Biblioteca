@@ -1,17 +1,19 @@
 ﻿:root {
-  --ds-font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --ds-font-accent: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  --ds-radius-md: 12px;
-  --ds-radius-lg: 18px;
+  --ds-font-family: var(--font-primary, "Manrope", sans-serif);
+  --ds-font-accent: var(--font-display, "Space Grotesk", "Manrope", sans-serif);
+  --ds-radius-md: var(--radius, 8px);
+  --ds-radius-lg: var(--radius-lg, 8px);
   --ds-galaxy-image:
-    radial-gradient(circle at 20% 20%, rgba(90, 170, 255, 0.35), transparent 45%),
-    radial-gradient(circle at 80% 10%, rgba(123, 92, 255, 0.28), transparent 42%),
-    radial-gradient(circle at 50% 85%, rgba(79, 172, 254, 0.22), transparent 46%),
-    linear-gradient(140deg, #10182f, #161d3f 45%, #0f1f3f);
+    radial-gradient(circle at 12% 16%, rgba(45, 212, 255, 0.28) 0 14rem, transparent 30rem),
+    radial-gradient(circle at 88% 12%, rgba(109, 93, 252, 0.34) 0 16rem, transparent 34rem),
+    radial-gradient(circle at 76% 86%, rgba(255, 95, 158, 0.18) 0 14rem, transparent 30rem),
+    linear-gradient(135deg, #111047 0%, #090b1f 52%, #062f3d 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
 
-  --ds-surface-glass: rgba(255, 255, 255, 0.08);
-  --ds-surface-border: rgba(255, 255, 255, 0.12);
-  --ds-surface-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --ds-surface-glass: rgba(12, 16, 38, 0.76);
+  --ds-surface-border: rgba(198, 216, 255, 0.2);
+  --ds-surface-shadow: 0 28px 70px rgba(0, 0, 0, 0.36), 0 0 44px rgba(45, 212, 255, 0.12);
 
   --ds-text-on-dark: #ffffff;
   --ds-text-on-dark-soft: rgba(233, 233, 255, 0.86);
@@ -19,11 +21,11 @@
 
   --ds-input-bg: rgba(255, 255, 255, 0.08);
   --ds-input-border: rgba(255, 255, 255, 0.15);
-  --ds-input-focus: #6c63ff;
+  --ds-input-focus: var(--primary-b, #5eead4);
 
-  --ds-gradient-primary: linear-gradient(90deg, #4facfe, #7b5cff);
-  --ds-gradient-overlay: linear-gradient(rgba(10, 15, 40, 0.6), rgba(20, 20, 60, 0.85));
-  --ds-shadow-button: 0 10px 25px rgba(120, 100, 255, 0.4);
+  --ds-gradient-primary: linear-gradient(90deg, #8b7cff, #2dd4ff);
+  --ds-gradient-overlay: linear-gradient(rgba(9, 11, 31, 0.55), rgba(6, 47, 61, 0.74));
+  --ds-shadow-button: 0 16px 34px rgba(45, 212, 255, 0.24), 0 0 26px rgba(139, 124, 255, 0.16);
 }
 
 body {
@@ -32,13 +34,15 @@ body {
 
 .ds-page-bg-galaxy {
   background-image: var(--ds-gradient-overlay), var(--ds-galaxy-image);
-  background-size: cover;
+  background-size: cover, auto, auto, auto, auto, 56px 56px, 56px 56px;
   background-position: center;
   background-repeat: no-repeat;
 }
 
 .ds-glass-card {
-  background: var(--ds-surface-glass);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+    var(--ds-surface-glass);
   border: 1px solid var(--ds-surface-border);
   box-shadow: var(--ds-surface-shadow);
   backdrop-filter: blur(16px);

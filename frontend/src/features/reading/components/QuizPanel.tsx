@@ -51,6 +51,7 @@ export function QuizPanel({
                     key={option}
                     type="button"
                     className={getQuizOptionClassName(quiz, option, selectedOptions, revealed)}
+                    aria-pressed={selectedOptions[quiz.id] === option}
                     onClick={() => onSelectOption(quiz.id, option)}
                   >
                     {option}
@@ -77,7 +78,7 @@ export function QuizPanel({
           ))}
         </div>
       ) : (
-        <p className="section-sub">Nenhum quiz para a pagina selecionada.</p>
+        <p className="section-sub">Nenhum quiz para a página selecionada.</p>
       )}
     </article>
   );

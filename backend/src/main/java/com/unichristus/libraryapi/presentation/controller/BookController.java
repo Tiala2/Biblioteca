@@ -1,7 +1,8 @@
 package com.unichristus.libraryapi.presentation.controller;
 
-import com.unichristus.libraryapi.application.dto.response.BookPdfResponse;
 import com.unichristus.libraryapi.application.dto.response.BookListResponse;
+import com.unichristus.libraryapi.application.dto.response.BookPdfResponse;
+import com.unichristus.libraryapi.application.dto.response.ExternalReaderResponse;
 import com.unichristus.libraryapi.application.usecase.book.BookPdfUseCase;
 import com.unichristus.libraryapi.application.usecase.book.BookUseCase;
 import com.unichristus.libraryapi.domain.book.BookSort;
@@ -69,6 +70,16 @@ public class BookController {
                 .contentType(MediaType.parseMediaType(file.contentType()))
                 .contentLength(file.size())
                 .body(new InputStreamResource(file.stream()));
+    }
+
+    @Operation(summary = "Resolver leitor externo", description = "Retorna URL incorporavel quando o livro externo permite leitura dentro da plataforma")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Leitor externo resolvido"),
+            @ApiResponse(responseCode = "404", description = "Livro nao encontrado")
+    })
+    @GetMapping("{bookId}/external-reader")
+    public ExternalReaderResponse getExternalReader(@PathVariable UUID bookId) {
+        return bookUseCase.getExternalReader(bookId);
     }
 
     @Operation(summary = "Listar todos os livros", description = "Retorna uma lista paginada de todos os livros disponíveis")

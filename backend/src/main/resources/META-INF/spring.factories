@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.unichristus.libraryapi.infrastructure.config.DatabaseTargetEnvironmentPostProcessor

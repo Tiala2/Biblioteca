@@ -59,6 +59,39 @@ public class OpenLibraryClient {
         return Optional.empty();
     }
 
+    public Optional<OpenLibraryReaderLookup> findReader(String title, String isbn) {
+        String safeTitle = title == null ? "" : title.trim();
+        String safeIsbn = isbn == null ? "" : isbn.trim();
+        if (safeTitle.isBlank() && safeIsbn.isBlank()) {
+            return Optional.empty();
+        }
+
+        String query = !safeIsbn.isBlank() ? "isbn:" + safeIsbn : safeTitle;
+        OpenLibrarySearchResponse response = search(query, 1, 5);
+        List<OpenLibraryDoc> docs = response == null || response.docs() == null ? List.of() : response.docs();
+        Optional<OpenLibraryDoc> preferred = docs.stream()
+                .filter(Objects::nonNull)
+                .filter(doc -> !extractArchiveIdentifiers(doc).isEmpty())
+                .findFirst();
+
+        if (preferred.isEmpty()) {
+            preferred = docs.stream().filter(Objects::nonNull).findFirst();
+        }
+
+        String fallbackUrl = buildSearchUrl(!safeTitle.isBlank() ? safeTitle : safeIsbn);
+        if (preferred.isEmpty()) {
+            return Optional.of(new OpenLibraryReaderLookup(null, fallbackUrl, false));
+        }
+
+        List<String> identifiers = extractArchiveIdentifiers(preferred.get());
+        if (identifiers.isEmpty()) {
+            return Optional.of(new OpenLibraryReaderLookup(null, fallbackUrl, false));
+        }
+
+        String embedUrl = "%s/embed/%s".formatted(archiveBaseUrl, encodePathSegment(identifiers.get(0)));
+        return Optional.of(new OpenLibraryReaderLookup(embedUrl, fallbackUrl, true));
+    }
+
     public DownloadedBinary downloadBinary(String url, int maxBytes) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -145,6 +178,10 @@ public class OpenLibraryClient {
         return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
+    private String buildSearchUrl(String query) {
+        return "%s/search?q=%s".formatted(baseUrl, URLEncoder.encode(query, StandardCharsets.UTF_8));
+    }
+
     private <T> T get(String url, Class<T> responseType) {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -222,5 +259,8 @@ public class OpenLibraryClient {
     }
 
     public record DownloadedBinary(byte[] bytes, String contentType) {
+    }
+
+    public record OpenLibraryReaderLookup(String embedUrl, String fallbackUrl, boolean availableInsideApp) {
     }
 }

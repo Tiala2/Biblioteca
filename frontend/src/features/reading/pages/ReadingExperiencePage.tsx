@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { BookOpenCheck } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
-import { useAuth } from "@features/auth/context/AuthContext";
+import { extractApiErrorMessage } from "@shared/api/errors";
+import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 import { readReaderCache, writeReaderCache } from "../lib/readerCache";
@@ -20,12 +22,13 @@ import type {
   HomeReading,
   HomeResumeResponse,
   NarrativeInsight,
+  ExternalReaderLookup,
   ReadingSyncResponse,
 } from "../types";
 
 export function ReadingExperiencePage() {
   const { bookId } = useParams<{ bookId: string }>();
-  const { auth } = useAuth();
+  const headers = useAuthHeaders();
   const { showToast } = useToast();
 
   const [book, setBook] = useState<BookDetail | null>(null);
@@ -43,14 +46,9 @@ export function ReadingExperiencePage() {
   const [externalReaderLoading, setExternalReaderLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const headers = useMemo(
-    () => (auth ? { Authorization: `Bearer ${auth.token}` } : undefined),
-    [auth]
-  );
-
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
   const isExternalReading = Boolean(book && !book.hasPdf);
-  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "PDF local" : "Catalogo";
+  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "PDF local" : "Catálogo";
   const derivedProgress = Math.round((currentPage / totalPages) * 100);
   const progressPercent = Math.max(0, Math.min(100, readingSnapshot?.progress ?? derivedProgress));
   const pagesRemaining = Math.max(totalPages - currentPage, 0);
@@ -87,11 +85,11 @@ export function ReadingExperiencePage() {
         setReadingSnapshot(savedReading);
         setCurrentPage(clampPage(savedReading?.currentPage ?? 1, loadedBook.numberOfPages));
         setError("");
-      } catch {
+      } catch (error) {
         if (!isActive) return;
         setBook(null);
         setReadingSnapshot(null);
-        setError("Nao foi possivel carregar os detalhes da leitura.");
+        setError(extractApiErrorMessage(error, "Não foi possível carregar os detalhes da leitura."));
       } finally {
         if (isActive) setLoading(false);
       }
@@ -133,7 +131,9 @@ export function ReadingExperiencePage() {
         setRevealed({});
         setError("");
       })
-      .catch(() => setError("Nao foi possivel carregar o estado narrativo para essa pagina."));
+      .catch((error) =>
+        setError(extractApiErrorMessage(error, "Não foi possível carregar o estado narrativo para essa página."))
+      );
   }, [bookId, headers, currentPage, book]);
 
   useEffect(() => {
@@ -153,57 +153,22 @@ export function ReadingExperiencePage() {
     }
 
     let isActive = true;
-    const controller = new AbortController();
 
     const loadOpenLibraryReader = async () => {
       setExternalReaderLoading(true);
       try {
-        const searchQuery = book.isbn?.trim() ? `isbn:${book.isbn.trim()}` : book.title;
-        const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(searchQuery)}&limit=5`;
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) throw new Error("open-library-unavailable");
-
-        const data = (await response.json()) as {
-          docs?: Array<{
-            key?: string;
-            ia?: string[] | string;
-            edition_key?: string[];
-            availability?: { identifier?: string };
-          }>;
-        };
-
-        const docs = data.docs ?? [];
-        const preferred =
-          docs.find((doc) => doc.availability?.identifier || doc.ia || doc.edition_key?.length) ?? docs[0];
-
-        const iaIdentifier =
-          preferred?.availability?.identifier ??
-          (Array.isArray(preferred?.ia) ? preferred?.ia[0] : preferred?.ia);
-
+        const response = await api.get<ExternalReaderLookup>(`/api/v1/books/${book.id}/external-reader`);
         if (!isActive) return;
 
-        if (iaIdentifier) {
-          const fallbackUrl = `https://openlibrary.org/search?q=${encodeURIComponent(book.title)}`;
-          writeReaderCache(book, {
-            embedUrl: `https://archive.org/embed/${iaIdentifier}`,
-            fallbackUrl,
-          });
-          setExternalReaderEmbedUrl(`https://archive.org/embed/${iaIdentifier}`);
-          setExternalReaderFallbackUrl(fallbackUrl);
-          return;
-        }
-
-        if (preferred?.key) {
-          writeReaderCache(book, {
-            embedUrl: null,
-            fallbackUrl: `https://openlibrary.org${preferred.key}`,
-          });
-          setExternalReaderFallbackUrl(`https://openlibrary.org${preferred.key}`);
-        } else {
-          const fallbackUrl = `https://openlibrary.org/search?q=${encodeURIComponent(book.title)}`;
-          writeReaderCache(book, { embedUrl: null, fallbackUrl });
-          setExternalReaderFallbackUrl(fallbackUrl);
-        }
+        const lookup = response.data;
+        writeReaderCache(book, {
+          embedUrl: lookup.embedUrl,
+          fallbackUrl: lookup.fallbackUrl,
+          availableInsideApp: lookup.availableInsideApp,
+          message: lookup.message,
+        });
+        setExternalReaderEmbedUrl(lookup.embedUrl);
+        setExternalReaderFallbackUrl(lookup.fallbackUrl);
       } catch {
         if (!isActive) return;
         const fallbackUrl = `https://openlibrary.org/search?q=${encodeURIComponent(book.title)}`;
@@ -218,7 +183,6 @@ export function ReadingExperiencePage() {
 
     return () => {
       isActive = false;
-      controller.abort();
     };
   }, [book]);
 
@@ -247,9 +211,10 @@ export function ReadingExperiencePage() {
       setCurrentPage(clampPage(response.data.currentPage, totalPages));
       setError("");
       showToast("Progresso de leitura salvo.", "success");
-    } catch {
-      setError("Falha ao sincronizar progresso de leitura.");
-      showToast("Nao foi possivel salvar o progresso.", "error");
+    } catch (error) {
+      const message = extractApiErrorMessage(error, "Não foi possível salvar o progresso.");
+      setError(message);
+      showToast(message, "error");
     } finally {
       setSaving(false);
     }
@@ -269,8 +234,8 @@ export function ReadingExperiencePage() {
         setIsFavorite(true);
         showToast("Livro adicionado aos favoritos.", "success");
       }
-    } catch {
-      showToast("Nao foi possivel atualizar favorito.", "error");
+    } catch (error) {
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
     } finally {
       setFavoriteLoading(false);
     }
@@ -288,12 +253,12 @@ export function ReadingExperiencePage() {
   if (!bookId) {
     return (
       <StateCard
-        title="Livro nao informado"
+        title="Livro não informado"
         message="Selecione um livro valido para abrir a experiencia de leitura."
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Voltar ao catalogo
+            Voltar ao catálogo
           </Link>
         }
       />
@@ -314,11 +279,11 @@ export function ReadingExperiencePage() {
     return (
       <StateCard
         title="Leitura indisponivel"
-        message={error || "Nao foi possivel carregar os detalhes da leitura."}
+        message={error || "Não foi possível carregar os detalhes da leitura."}
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Voltar ao catalogo
+            Voltar ao catálogo
           </Link>
         }
       />
@@ -326,7 +291,24 @@ export function ReadingExperiencePage() {
   }
 
   return (
-    <section className="grid">
+    <section className="grid aura-page aura-reading-page">
+      <article className="card hero aura-hero aura-reading-intro">
+        <div className="aura-hero__content">
+          <div>
+            <p className="eyebrow aura-eyebrow">Modo imersão</p>
+            <h2>Sua leitura, no seu ritmo</h2>
+            <p>
+              Ajuste a página, acompanhe a fase narrativa e transforme cada sessão em progresso real.
+            </p>
+          </div>
+          <div className="aura-hero__signal">
+            <BookOpenCheck aria-hidden="true" />
+            <strong>{progressPercent}%</strong>
+            <span>concluído</span>
+          </div>
+        </div>
+      </article>
+
       <ReadingHeroPanel
         book={book}
         currentPage={currentPage}

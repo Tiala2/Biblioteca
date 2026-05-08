@@ -36,17 +36,17 @@ export function ExternalReaderPanel({
           <span className="external-source-pill">{sourceLabel}</span>
         </div>
         <p className="section-sub">
-          Este livro e acessado em fonte externa. Leia no provedor oficial e volte aqui para registrar a pagina atual,
-          mantendo metas, ranking, historico e favoritos no mesmo fluxo.
+          Quando a fonte oficial permite incorporacao, abrimos o leitor aqui dentro. O link externo continua disponivel
+          como alternativa, mantendo metas, ranking, historico e favoritos no mesmo fluxo.
         </p>
         <div className="external-reading-steps" aria-label="Como usar leitura externa">
           <div className="external-step">
             <strong>1</strong>
-            <span>Abra o livro na fonte oficial.</span>
+            <span>Leia no leitor incorporado quando ele aparecer.</span>
           </div>
           <div className="external-step">
             <strong>2</strong>
-            <span>Leia normalmente fora da plataforma.</span>
+            <span>Use a fonte oficial quando a incorporacao nao estiver disponivel.</span>
           </div>
           <div className="external-step">
             <strong>3</strong>
@@ -78,7 +78,7 @@ export function ExternalReaderPanel({
       ) : null}
       {!externalReaderLoading && !externalReaderEmbedUrl ? (
         <p className="section-sub">
-          Nao encontramos uma versao incorporavel deste livro. Use o link oficial para continuar a leitura fora da plataforma.
+          Nao encontramos uma versao incorporavel deste livro. Use o link oficial para continuar a leitura na fonte autorizada.
         </p>
       ) : null}
       {externalReaderFallbackUrl ? (

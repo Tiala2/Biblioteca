@@ -1,6 +1,6 @@
 # Checklist Operacional
 
-Data de referencia: 2026-04-28
+Data de referencia: 2026-05-02
 
 ## 1) Subir ambiente
 
@@ -23,6 +23,12 @@ docker compose ps
 - MinIO Console: `http://localhost:9001`
 
 ## 3) Rodar testes automatizados
+
+Validar que o roteiro de pre-entrega ainda chama as etapas esperadas:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\test-pre-delivery-check.ps1
+```
 
 ```powershell
 ./gradlew.bat test integrationTest

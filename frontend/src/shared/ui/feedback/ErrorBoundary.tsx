@@ -34,8 +34,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       <main className="center-page" role="alert" aria-live="assertive">
         <article className="card error-boundary-card">
           <p className="eyebrow">Erro inesperado</p>
-          <h2>Nao foi possivel carregar esta tela</h2>
-          <p className="section-sub">A sessao foi preservada. Recarregue a pagina e tente novamente.</p>
+          <h2>Não foi possível carregar esta tela</h2>
+          <p className="section-sub">A sessão foi preservada. Recarregue a página e tente novamente.</p>
           <div className="card-actions">
             <button type="button" onClick={this.handleReload}>
               Recarregar
