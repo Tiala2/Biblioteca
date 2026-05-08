@@ -260,7 +260,7 @@ export function ProfilePage() {
           <div className="stat-box">
             <Medal aria-hidden="true" />
             <strong>{formatInteger(home?.readingProgress.sessionsThisWeek)}</strong>
-            <span>sessoes na semana</span>
+            <span>sessões na semana</span>
           </div>
         </div>
       </article>
@@ -268,7 +268,7 @@ export function ProfilePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Ritmo da semana</h3>
-          <span className="kpi">Visao resumida</span>
+          <span className="kpi">Visão resumida</span>
         </div>
         <div className="stats-grid">
           <div className="stat-box">

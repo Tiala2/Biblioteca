@@ -315,7 +315,7 @@ export function BooksPage() {
         <div>
           <p className="eyebrow aura-eyebrow">Vitrine viva</p>
           <h2>Escolha sua próxima jornada</h2>
-          <p>Explore livros locais e descobertas importadas com filtros rapidos, favoritos e leitura guiada.</p>
+          <p>Explore livros locais e descobertas importadas com filtros rápidos, favoritos e leitura guiada.</p>
         </div>
         <div className="aura-hero__signal">
           <Sparkles aria-hidden="true" />
@@ -452,7 +452,7 @@ export function BooksPage() {
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.localCount}</strong>
-              <span>catalogo local</span>
+              <span>catálogo local</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.favoriteCount}</strong>
@@ -460,11 +460,11 @@ export function BooksPage() {
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.averagePages}</strong>
-              <span>media de paginas</span>
+              <span>média de páginas</span>
             </div>
           </div>
           <p className="catalog-total-pages">
-            Total visivel: <strong>{catalogInsights.totalPagesVisible}</strong> paginas somadas nesta pagina.
+            Total visível: <strong>{catalogInsights.totalPagesVisible}</strong> páginas somadas nesta página.
           </p>
         </article>
       )}
@@ -487,7 +487,7 @@ export function BooksPage() {
             <p>{book.numberOfPages} páginas</p>
             <small>
               {book.hasPdf
-                ? "PDF disponivel"
+                ? "PDF disponível"
                 : book.source === "OPEN"
                   ? "Leitura externa com progresso manual"
                   : "Sem PDF local"}

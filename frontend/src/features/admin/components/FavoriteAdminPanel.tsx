@@ -39,7 +39,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
         <span className="kpi">{filteredFavorites.length}</span>
       </div>
       <p className="section-sub">
-        Visao consolidada dos livros mais salvos na plataforma.
+        Visão consolidada dos livros mais salvos na plataforma.
       </p>
       <div className="admin-favorite-summary">
         <div className="stat-box admin-list-stat">

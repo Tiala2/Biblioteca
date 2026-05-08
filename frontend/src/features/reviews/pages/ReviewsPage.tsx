@@ -314,7 +314,7 @@ export function ReviewsPage() {
                   </Link>
                 </strong>
                 <small>
-                  {selectedBook.author ?? "Autor nao informado"}
+                  {selectedBook.author ?? "Autor não informado"}
                   {selectedBook.source === "OPEN" ? " - Open Library" : ""}
                 </small>
                 <div className="review-book-badges">
@@ -384,7 +384,7 @@ export function ReviewsPage() {
           </div>
           <div className="stat-box">
             <strong>{reviewStats.latestUpdatedLabel}</strong>
-            <span>Ultima atualizacao</span>
+            <span>Última atualização</span>
           </div>
         </div>
 
@@ -410,7 +410,7 @@ export function ReviewsPage() {
                         {resolveBookLabel(review)}
                       </Link>
                     </h3>
-                    <small>{reviewBook?.author ?? "Autor nao informado"}</small>
+                    <small>{reviewBook?.author ?? "Autor não informado"}</small>
                     <div className="review-book-badges">
                       <span className={reviewBook?.source === "OPEN" ? "import-badge" : "favorite-badge"}>
                         {reviewBook?.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}

@@ -897,7 +897,8 @@ label {
 .book-cover img {
   position: relative;
   z-index: 0;
-  object-fit: cover;
+  object-fit: contain;
+  background: color-mix(in srgb, var(--card-bg) 86%, #0f172a);
 }
 
 .book-cover__placeholder {
@@ -2621,11 +2622,12 @@ body[data-theme="day"] .login-form {
 
   .aura-hero {
     padding: 1.35rem;
+    min-height: auto;
   }
 
   .aura-hero h2 {
-    font-size: 2.35rem;
-    line-height: 1.02;
+    font-size: clamp(1.75rem, 7vw, 2.35rem);
+    line-height: 1.06;
   }
 
   .aura-hero__content,
@@ -2706,7 +2708,30 @@ body[data-theme="day"] .login-form {
 @media (max-width: 640px) {
   .app-shell {
     width: 100%;
-    padding: 0.7rem;
+    padding: 4.75rem 0.7rem 0.7rem;
+  }
+
+  .topbar {
+    min-height: auto;
+    padding: 0.95rem;
+  }
+
+  .topbar .brand-block {
+    gap: 0.35rem;
+  }
+
+  .topbar .brand-block h2 {
+    font-size: 1.08rem;
+    line-height: 1.25;
+  }
+
+  .topbar .subtitle {
+    font-size: 0.95rem;
+  }
+
+  .mobile-nav-toggle {
+    top: 0.65rem;
+    left: 0.7rem;
   }
 
   .section-head {
@@ -2755,6 +2780,32 @@ body[data-theme="day"] .login-form {
 
   .admin-section {
     padding: 0.8rem;
+  }
+
+  .aura-hero {
+    padding: 1rem;
+    gap: 0.9rem;
+  }
+
+  .aura-hero p {
+    margin-top: 0.45rem;
+  }
+
+  .aura-hero .stats-grid,
+  .admin-hero__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .aura-hero .stat-box,
+  .admin-hero__stats .stat-box {
+    padding: 0.78rem;
+  }
+
+  .aura-book-detail-hero__cover .book-cover,
+  .aura-reading-focus > .book-cover {
+    justify-self: start;
+    width: min(168px, 58vw);
+    max-width: 168px;
   }
 
   .admin-section__head h2 {
@@ -2853,7 +2904,7 @@ body[data-theme="day"] .login-form {
 
 @media (max-width: 420px) {
   .app-shell {
-    padding: 0.55rem;
+    padding: 4.75rem 0.55rem 0.55rem;
   }
 
   .card {

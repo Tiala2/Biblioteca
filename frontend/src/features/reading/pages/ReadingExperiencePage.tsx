@@ -278,7 +278,7 @@ export function ReadingExperiencePage() {
   if (!book) {
     return (
       <StateCard
-        title="Leitura indisponivel"
+        title="Leitura indisponível"
         message={error || "Não foi possível carregar os detalhes da leitura."}
         variant="error"
         action={
