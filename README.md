@@ -17,7 +17,7 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 
 ## Subida rapida
 
-```powershell
+```pwsh
 cd C:\workspace\library-api-projeto
 powershell -ExecutionPolicy Bypass -File .\start-all.ps1
 ```

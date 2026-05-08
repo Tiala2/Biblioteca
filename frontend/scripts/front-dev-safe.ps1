@@ -6,6 +6,7 @@ Set-Location $projectRoot
 $apiUrl = "http://localhost:8080/actuator/health"
 Write-Host "Checking API at $apiUrl ..."
 
+# Loop de verificação de saúde da API
 for ($i = 0; $i -lt 15; $i++) {
   try {
     $resp = Invoke-RestMethod -Method GET -Uri $apiUrl -TimeoutSec 4
@@ -17,24 +18,27 @@ for ($i = 0; $i -lt 15; $i++) {
     if ($i -eq 14) {
       Write-Warning "API not ready yet. Frontend will start, but requests may fail for a moment."
     } else {
-      Start-Sleep -Seconds 2
+      Start-Sleep -Seconds 5
     }
   }
 }
 
 $port = 5173
-$listener = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($null -ne $listener) {
-  $ownerPid = $listener.OwningProcess
-  $proc = Get-Process -Id $ownerPid -ErrorAction SilentlyContinue
-  if ($proc -and $proc.ProcessName -like "node*") {
-    Write-Warning "Port 5173 already in use by node (PID $ownerPid). Closing old frontend process..."
-    Stop-Process -Id $ownerPid -Force
-    Start-Sleep -Seconds 1
-  } else {
-    Write-Error "Port 5173 is busy by another app (PID $ownerPid). Close it and run again."
-    exit 1
-  }
+
+# LÓGICA MULTIPLATAFORMA PARA VERIFICAR A PORTA
+if ($IsLinux) {
+    # No Linux (Pop!_OS), usamos o comando 'ss' para ver as portas
+    $portBusy = bash -c "ss -tuln | grep :$port"
+    if ($portBusy) {
+        Write-Warning "Porta $port parece estar em uso. Se o Vite falhar, verifique se ja existe um processo rodando."
+    }
+} else {
+    # No Windows, mantém a lógica original
+    $listener = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -ne $listener) {
+        Stop-Process -Id $listener.OwningProcess -Force
+    }
 }
 
-npm.cmd run dev -- --port 5173 --strictPort
+# Execução do NPM agnóstica (funciona em ambos)
+npm run dev -- --port 5173 --strictPort

@@ -14,7 +14,7 @@ if ($BuildBackend) {
   $backendArgs += "-Build"
 }
 
-& powershell @backendArgs
+& pwsh @backendArgs
 if ($LASTEXITCODE -ne 0) {
   throw "Backend startup failed."
 }
@@ -22,4 +22,4 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host ""
 Write-Host "Starting frontend dev server..."
 $frontScript = Join-Path $root "frontend\scripts\front-dev-safe.ps1"
-& powershell -ExecutionPolicy Bypass -File $frontScript
+& pwsh -ExecutionPolicy Bypass -File $frontScript
