@@ -17,9 +17,19 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 
 ## Subida rapida
 
+Linux/macOS:
+
+```bash
+cd ~/library-api-projeto
+chmod +x start-all.sh backend/scripts/*.sh frontend/scripts/*.sh
+./start-all.sh --build-backend
+```
+
+Windows/PowerShell:
+
 ```powershell
 cd C:\workspace\library-api-projeto
-powershell -ExecutionPolicy Bypass -File .\start-all.ps1
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 ```
 
 ## URLs principais

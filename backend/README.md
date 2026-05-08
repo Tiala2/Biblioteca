@@ -39,6 +39,23 @@ powershell -ExecutionPolicy Bypass -File .\scripts\docker-rebuild-safe.ps1 -Mode
 powershell -ExecutionPolicy Bypass -File .\scripts\docker-stop-safe.ps1 -Mode dev
 ```
 
+## Comandos recomendados (Linux/macOS)
+No diretorio `backend`:
+
+```bash
+# DEV sem rebuild
+./scripts/docker-up-safe.sh --mode dev
+
+# DEV com rebuild
+./scripts/docker-up-safe.sh --mode dev --build
+
+# PROD (sem mailpit)
+./scripts/docker-up-safe.sh --mode prod --build
+
+# Parar sem apagar dados
+./scripts/docker-stop-safe.sh --mode dev
+```
+
 ## Healthcheck e startup confiavel
 A API agora espera banco, MinIO e Mailpit (no dev) ficarem saudaveis antes de iniciar.
 
