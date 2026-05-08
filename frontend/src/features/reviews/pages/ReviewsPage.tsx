@@ -368,11 +368,11 @@ export function ReviewsPage() {
         <div className="review-insights">
           <div className="stat-box">
             <strong>{reviewStats.total}</strong>
-            <span>Nesta pÃ¡gina</span>
+            <span>Nesta página</span>
           </div>
           <div className="stat-box">
             <strong>{reviewStats.average}</strong>
-            <span>MÃ©dia das notas</span>
+            <span>Média das notas</span>
           </div>
           <div className="stat-box">
             <strong>{reviewStats.highest || "-"}</strong>
