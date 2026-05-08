@@ -363,7 +363,7 @@ export function HomePage() {
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3>Colecoes em destaque</h3>
+          <h3>Coleções em destaque</h3>
           <span className="kpi">{home.collections.length} coleção(ões)</span>
         </div>
         {home.collections.length > 0 ? (
@@ -417,7 +417,7 @@ export function HomePage() {
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3>Avaliacoes recentes</h3>
+          <h3>Avaliações recentes</h3>
           <span className="kpi">{home.recentReviews.length} item(ns)</span>
         </div>
         {home.recentReviews.length > 0 ? (
