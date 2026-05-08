@@ -1866,44 +1866,52 @@ form {
   min-height: 100%;
 }
 
+.admin-list-stat strong {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .admin-favorite-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.65rem;
   margin: 0.85rem 0 0.75rem;
 }
 
 .admin-collection-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.65rem;
   margin: 0.85rem 0 0.75rem;
 }
 
 .admin-badge-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.65rem;
   margin: 0.85rem 0 0.75rem;
 }
 
 .admin-taxonomy-summary {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.65rem;
   margin: 0.85rem 0 0.75rem;
 }
 
 .admin-alert-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.65rem;
   margin: 0.85rem 0 0.75rem;
 }
 
 .admin-user-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.65rem;
   margin: 0.85rem 0 0.75rem;
 }
@@ -1960,6 +1968,11 @@ form {
   gap: 0.5rem;
   flex-wrap: wrap;
   min-width: 0;
+}
+
+.filter-actions button,
+.filter-actions .btn-link {
+  min-width: 92px;
 }
 
 .check-inline {
@@ -2064,12 +2077,116 @@ textarea {
   min-width: 0;
   max-width: 100%;
   margin-bottom: 0.65rem;
-  padding: 0.68rem 0.75rem;
+  padding: 0.68rem 0.78rem;
   border-radius: 8px;
   border: 1px solid color-mix(in srgb, var(--card-border) 84%, transparent);
   background: color-mix(in srgb, var(--card-bg) 90%, transparent);
   color: var(--text-main);
   font: inherit;
+  line-height: 1.35;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: color-mix(in srgb, var(--primary-b) 34%, var(--card-border));
+  background: color-mix(in srgb, var(--card-bg) 96%, transparent);
+}
+
+select {
+  appearance: none;
+  padding-right: 2.35rem;
+  cursor: pointer;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--text-soft) 50%) calc(100% - 1.05rem) 50% / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--text-soft) 50%, transparent 50%) calc(100% - 0.72rem) 50% / 6px 6px no-repeat,
+    color-mix(in srgb, var(--card-bg) 90%, transparent);
+}
+
+select:hover {
+  background:
+    linear-gradient(45deg, transparent 50%, var(--primary-b) 50%) calc(100% - 1.05rem) 50% / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--primary-b) 50%, transparent 50%) calc(100% - 0.72rem) 50% / 6px 6px no-repeat,
+    color-mix(in srgb, var(--card-bg) 96%, transparent);
+}
+
+select[multiple] {
+  appearance: auto;
+  padding-right: 0.78rem;
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+}
+
+select option {
+  background: #111827;
+  color: #f8fafc;
+}
+
+body[data-theme="day"] select option {
+  background: #f8fafc;
+  color: #111827;
+}
+
+input[type="file"] {
+  min-height: 44px;
+  padding: 0.46rem;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+  min-height: 34px;
+  margin-right: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--primary-b) 34%, var(--card-border));
+  border-radius: 7px;
+  padding: 0.42rem 0.75rem;
+  background: color-mix(in srgb, var(--primary-b) 12%, var(--card-bg));
+  color: var(--text-main);
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.file-picker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 44px;
+  max-width: 100%;
+  margin-bottom: 0.65rem;
+  padding: 0.46rem 0.58rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 84%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+  cursor: pointer;
+}
+
+.file-picker span {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--primary-b) 34%, var(--card-border));
+  border-radius: 7px;
+  padding: 0.42rem 0.75rem;
+  background: color-mix(in srgb, var(--primary-b) 12%, var(--card-bg));
+  color: var(--text-main);
+  font-weight: 750;
+}
+
+.file-picker strong {
+  min-width: 0;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-picker:focus-within {
+  outline: 3px solid color-mix(in srgb, var(--focus-ring) 70%, transparent);
+  outline-offset: 2px;
+  border-color: var(--focus-ring);
 }
 
 input[type="range"] {
@@ -2213,21 +2330,29 @@ textarea:focus-visible {
 .tabs-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 72%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-bg) 70%, transparent);
 }
 
 .tab {
+  min-height: 40px;
+  border-radius: 7px;
   box-shadow: none;
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 84%, transparent), color-mix(in srgb, var(--primary-a) 4%, transparent));
+  background: transparent;
   color: var(--text-main);
-  border: 1px solid color-mix(in srgb, var(--card-border) 78%, transparent);
+  border: 1px solid transparent;
 }
 
 .tab.active {
-  background: linear-gradient(120deg, var(--accent-violet), var(--primary-b));
+  background: color-mix(in srgb, var(--primary-b) 20%, var(--card-bg));
   color: #fff;
-  box-shadow: var(--glow);
+  border-color: color-mix(in srgb, var(--primary-b) 42%, transparent);
+  box-shadow: none;
 }
 
 .btn-muted.active {

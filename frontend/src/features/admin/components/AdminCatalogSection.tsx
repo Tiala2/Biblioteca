@@ -28,6 +28,7 @@ type AdminCatalogSectionProps = {
   collections: Collection[];
   busyKey: string | null;
   uploadBookId: string;
+  uploadFile: File | null;
   coverBookId: string;
   coverBookUrl: string;
   importQuery: string;
@@ -77,6 +78,7 @@ export function AdminCatalogSection({
   collections,
   busyKey,
   uploadBookId,
+  uploadFile,
   coverBookId,
   coverBookUrl,
   importQuery,
@@ -128,6 +130,7 @@ export function AdminCatalogSection({
         categories={categories}
         busyKey={busyKey}
         uploadBookId={uploadBookId}
+        uploadFile={uploadFile}
         coverBookId={coverBookId}
         coverBookUrl={coverBookUrl}
         importQuery={importQuery}

@@ -23,6 +23,7 @@ type BookPanelProps = {
   categories: Category[];
   busyKey: string | null;
   uploadBookId: string;
+  uploadFile: File | null;
   coverBookId: string;
   coverBookUrl: string;
   importQuery: string;
@@ -52,6 +53,7 @@ export function BookPanel({
   categories,
   busyKey,
   uploadBookId,
+  uploadFile,
   coverBookId,
   coverBookUrl,
   importQuery,
@@ -161,7 +163,11 @@ export function BookPanel({
             </option>
           ))}
         </select>
-        <input aria-label="Arquivo PDF do livro" type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
+        <label className="file-picker">
+          <span>Selecionar PDF</span>
+          <strong>{uploadFile?.name ?? "Nenhum arquivo selecionado"}</strong>
+          <input className="sr-only" aria-label="Arquivo PDF do livro" type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
+        </label>
         <button type="submit" disabled={busyKey === "book-upload"}>
           Enviar PDF
         </button>

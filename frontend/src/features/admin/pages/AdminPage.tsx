@@ -143,6 +143,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         collections={staticData.collections}
         busyKey={busyKey}
         uploadBookId={staticData.uploadBookId}
+        uploadFile={uploadFile}
         coverBookId={staticData.coverBookId}
         coverBookUrl={staticData.coverBookUrl}
         importQuery={importQuery}
