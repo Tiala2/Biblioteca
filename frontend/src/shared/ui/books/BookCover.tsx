@@ -35,8 +35,20 @@ export function BookCover({ title, coverUrl, isbn, size = "medium" }: BookCoverP
 
     return Array.from(new Set(candidates));
   }, [coverUrl, isbn]);
-  const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
+  const imageCandidatesKey = imageCandidates.join("|");
+  const [failedState, setFailedState] = useState<{ key: string; urls: Set<string> }>(() => ({
+    key: "",
+    urls: new Set(),
+  }));
+  const failedUrls = failedState.key === imageCandidatesKey ? failedState.urls : new Set<string>();
   const imageUrl = imageCandidates.find((candidate) => !failedUrls.has(candidate)) ?? null;
+  const markImageAsFailed = (url: string) => {
+    setFailedState((current) => {
+      const urls = current.key === imageCandidatesKey ? new Set(current.urls) : new Set<string>();
+      urls.add(url);
+      return { key: imageCandidatesKey, urls };
+    });
+  };
 
   return (
     <div className={`book-cover book-cover--${size}`} aria-label={`Capa do livro ${title}`}>
@@ -45,7 +57,14 @@ export function BookCover({ title, coverUrl, isbn, size = "medium" }: BookCoverP
           src={imageUrl}
           alt={`Capa do livro ${title}`}
           loading="lazy"
-          onError={() => setFailedUrls((current) => new Set(current).add(imageUrl))}
+          decoding="async"
+          onError={() => markImageAsFailed(imageUrl)}
+          onLoad={(event) => {
+            const image = event.currentTarget;
+            if (image.naturalWidth <= 2 || image.naturalHeight <= 2) {
+              markImageAsFailed(imageUrl);
+            }
+          }}
         />
       ) : (
         <div className="book-cover__placeholder" aria-hidden="true">
