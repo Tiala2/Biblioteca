@@ -1849,6 +1849,7 @@ form {
 .aura-panel > form button,
 .card > form:not(.login-form) button {
   justify-self: start;
+  min-width: 120px;
 }
 
 .field-stack {
@@ -1996,12 +1997,16 @@ form {
   min-height: 44px;
   min-width: 0;
   line-height: 1.35;
+  cursor: pointer;
 }
 
 .check-inline input {
   flex: 0 0 auto;
-  width: auto;
+  width: 18px;
+  height: 18px;
   margin: 0;
+  accent-color: var(--primary-b);
+  cursor: pointer;
 }
 
 button,
@@ -3100,6 +3105,12 @@ body[data-theme="day"] .login-form {
   .stacked-list-item .card-actions > * {
     min-width: 0;
     width: 100%;
+  }
+
+  .aura-panel > form button,
+  .card > form:not(.login-form) button {
+    width: 100%;
+    justify-self: stretch;
   }
 
   .aura-podium-card strong,
