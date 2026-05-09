@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { FavoriteAdmin } from "../types";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 type FavoriteAdminPanelProps = {
   favorites: FavoriteAdmin[];
@@ -80,7 +81,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
           </li>
         ))}
       </ul>
-      {filteredFavorites.length === 0 && <p className="section-sub">Nenhum favorito encontrado para esse filtro.</p>}
+      {filteredFavorites.length === 0 && <AdminEmptyState title="Nenhum favorito encontrado" message="Revise o filtro para conferir outros livros salvos pelos usuarios." />}
       {filteredFavorites.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>

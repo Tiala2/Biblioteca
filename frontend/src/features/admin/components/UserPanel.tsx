@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo } from "react";
 import type { UserAdmin, UserForm } from "../types";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 type UserPanelProps = {
   form: UserForm;
@@ -223,7 +224,7 @@ export function UserPanel({
           );
         })}
       </ul>
-      {!loading && users.length === 0 && <p className="section-sub">Nenhum usuário encontrado para esse filtro.</p>}
+      {!loading && users.length === 0 && <AdminEmptyState title="Nenhum usuario encontrado" message="Revise filtros de status, papel ou busca para localizar outros usuarios." />}
       <div className="pagination-row">
         <button type="button" className="btn-muted" disabled={currentPage <= 0 || loading} onClick={() => onPageChange(currentPage - 1)}>
           Anterior

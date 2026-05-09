@@ -2,6 +2,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, BookForm, Category, ImportResult } from "../types";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 function readSelectedValues(event: ChangeEvent<HTMLSelectElement>) {
   return Array.from(event.currentTarget.selectedOptions, (option) => option.value);
@@ -216,7 +217,7 @@ export function BookPanel({
           </li>
         ))}
       </ul>
-      {filteredBooks.length === 0 && <p className="section-sub">Nenhum livro encontrado para esse filtro.</p>}
+      {filteredBooks.length === 0 && <AdminEmptyState title="Nenhum livro encontrado" message="Revise o termo de busca, autor ou ISBN para localizar outro item do acervo." />}
       {filteredBooks.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>

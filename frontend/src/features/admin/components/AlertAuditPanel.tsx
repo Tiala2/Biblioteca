@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 import type { AlertDeliveryAdmin } from "../types";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 type AlertAuditPanelProps = {
   deliveries: AlertDeliveryAdmin[];
@@ -125,7 +126,7 @@ export function AlertAuditPanel({
           </li>
         ))}
       </ul>
-      {!loading && deliveries.length === 0 && <p className="section-sub">Nenhum alerta encontrado para esse filtro.</p>}
+      {!loading && deliveries.length === 0 && <AdminEmptyState title="Nenhum alerta encontrado" message="Revise status, tipo ou periodo para encontrar entregas registradas." />}
       <div className="pagination-row">
         <button type="button" className="btn-muted" disabled={currentPage <= 0 || loading} onClick={() => onPageChange(currentPage - 1)}>
           Anterior

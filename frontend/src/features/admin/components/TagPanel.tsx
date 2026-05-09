@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import type { Tag, TagForm } from "../types";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 type TagPanelProps = {
   form: TagForm;
@@ -103,7 +104,7 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
           </li>
         ))}
       </ul>
-      {filteredTags.length === 0 && <p className="section-sub">Nenhuma tag encontrada para esse filtro.</p>}
+      {filteredTags.length === 0 && <AdminEmptyState title="Nenhuma tag encontrada" message="Revise o filtro ou crie uma tag para melhorar a descoberta dos livros." />}
       {filteredTags.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>

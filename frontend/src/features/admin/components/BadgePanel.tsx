@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BADGE_CODES, BADGE_CRITERIA, type Badge, type BadgeCode, type BadgeCriteria, type BadgeForm } from "../types";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 type BadgePanelProps = {
   form: BadgeForm;
@@ -156,7 +157,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
           </li>
         ))}
       </ul>
-      {filteredBadges.length === 0 && <p className="section-sub">Nenhuma conquista encontrada para esse filtro.</p>}
+      {filteredBadges.length === 0 && <AdminEmptyState title="Nenhuma conquista encontrada" message="Revise o filtro ou cadastre uma conquista para acompanhar o engajamento." />}
       {filteredBadges.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
