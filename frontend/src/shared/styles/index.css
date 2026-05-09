@@ -2245,9 +2245,19 @@ textarea:focus-visible {
   margin-top: 0.8rem;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.5rem;
   flex-wrap: wrap;
   max-width: 100%;
+}
+
+.stacked-list-item .card-actions {
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.stacked-list-item .card-actions > * {
+  min-width: 84px;
 }
 
 .aura-book-card .card-actions {
@@ -3079,6 +3089,17 @@ body[data-theme="day"] .login-form {
   .tabs-row > *,
   .user-box > * {
     flex: 1 1 100%;
+  }
+
+  .stacked-list-item .card-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(118px, 100%), 1fr));
+    justify-content: stretch;
+  }
+
+  .stacked-list-item .card-actions > * {
+    min-width: 0;
+    width: 100%;
   }
 
   .aura-podium-card strong,
