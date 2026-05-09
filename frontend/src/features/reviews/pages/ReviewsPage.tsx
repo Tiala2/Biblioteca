@@ -364,7 +364,13 @@ export function ReviewsPage() {
           <span className="kpi">Página {page + 1}</span>
         </div>
 
-        {loading && <p className="section-sub">Carregando avaliações...</p>}
+        {loading && (
+          <div className="panel-inline-state panel-inline-state--loading" role="status" aria-live="polite" aria-busy="true">
+            <p className="eyebrow">Carregando</p>
+            <h3>Buscando suas avaliações</h3>
+            <p className="section-sub">Estamos atualizando notas, comentários e livros relacionados.</p>
+          </div>
+        )}
         <div className="review-insights">
           <div className="stat-box">
             <strong>{reviewStats.total}</strong>
@@ -388,7 +394,13 @@ export function ReviewsPage() {
           </div>
         </div>
 
-        {error && <p className="error">{error}</p>}
+        {error && (
+          <div className="panel-inline-state panel-inline-state--error" role="alert">
+            <p className="eyebrow">Atenção</p>
+            <h3>Falha ao carregar avaliações</h3>
+            <p className="section-sub">{error}</p>
+          </div>
+        )}
 
         <div className="grid aura-review-grid">
           {items.map((review) => {
@@ -503,7 +515,8 @@ export function ReviewsPage() {
         </div>
 
         {!loading && !error && items.length === 0 && (
-          <div>
+          <div className="panel-inline-state" role="status" aria-live="polite">
+            <p className="eyebrow">Sem dados</p>
             <h3>Nenhuma avaliação registrada</h3>
             <p className="section-sub">
               Suas avaliações aparecerão aqui depois que você iniciar uma leitura e registrar sua primeira percepção.

@@ -1702,13 +1702,16 @@ label {
 .rating-picker {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.22rem;
   margin: 0.15rem 0 0.8rem;
+  max-width: 100%;
 }
 
 .rating-picker__star {
   display: inline-grid;
   place-items: center;
+  flex: 0 0 38px;
   width: 38px;
   height: 38px;
   padding: 0;
@@ -1738,6 +1741,12 @@ label {
 .rating-picker__value {
   margin-left: 0.35rem;
   font-weight: 800;
+}
+
+.aura-panel > form .rating-picker__star,
+.card > form:not(.login-form) .rating-picker__star {
+  width: 38px;
+  justify-self: auto;
 }
 
 .aura-podium-card:nth-child(1) {
@@ -1912,6 +1921,46 @@ form {
 .admin-empty-state h3 {
   margin: 0.2rem 0 0.25rem;
   font-size: 1rem;
+}
+
+.panel-inline-state {
+  margin-top: 0.95rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 72%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-bg) 76%, transparent);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.panel-inline-state h3 {
+  margin: 0.2rem 0 0.25rem;
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.14rem);
+  overflow-wrap: anywhere;
+}
+
+.panel-inline-state .section-sub {
+  max-width: 52rem;
+}
+
+.panel-inline-state--loading {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--primary-b) 28%, var(--card-border));
+}
+
+.panel-inline-state--loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 0%, color-mix(in srgb, var(--primary-b) 10%, transparent) 42%, transparent 76%);
+  transform: translateX(-100%);
+  animation: loading-sheen 1.6s ease-in-out infinite;
+}
+
+.panel-inline-state--error {
+  border-color: color-mix(in srgb, var(--danger) 34%, var(--card-border));
 }
 
 .admin-favorite-summary {
@@ -3142,6 +3191,15 @@ body[data-theme="day"] .login-form {
   .card > form:not(.login-form) button {
     width: 100%;
     justify-self: stretch;
+  }
+
+  .aura-panel > form .rating-picker__star,
+  .card > form:not(.login-form) .rating-picker__star {
+    flex: 0 0 38px;
+    width: 38px;
+    min-width: 38px;
+    max-width: 38px;
+    justify-self: auto;
   }
 
   .aura-podium-card strong,
