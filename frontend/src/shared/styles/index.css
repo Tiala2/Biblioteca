@@ -465,7 +465,10 @@ body[data-theme="night"] .admin-pill {
 .kpi {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
+  min-width: max-content;
+  max-width: 100%;
   padding: 0.25rem 0.62rem;
   border-radius: 999px;
   font-size: 0.78rem;
@@ -473,7 +476,7 @@ body[data-theme="night"] .admin-pill {
   border: 1px solid color-mix(in srgb, var(--primary-b) 28%, transparent);
   color: var(--text-main);
   background: color-mix(in srgb, var(--card-bg) 75%, transparent);
-  white-space: normal;
+  white-space: nowrap;
   text-align: center;
 }
 
@@ -500,6 +503,7 @@ body[data-theme="night"] .admin-pill {
   display: flex;
   align-items: end;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 0.8rem;
   margin-bottom: 0.9rem;
   min-width: 0;
@@ -515,6 +519,7 @@ label {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .section-head h3 svg {
@@ -2963,7 +2968,12 @@ body[data-theme="day"] .login-form {
 
   .section-head {
     align-items: flex-start;
-    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .section-head .kpi {
+    max-width: 100%;
+    white-space: normal;
   }
 
   .sidebar-nav,
