@@ -12,7 +12,7 @@ export function StateCard({ title, message, variant = "empty", action }: StateCa
   const live = variant === "error" ? "assertive" : "polite";
 
   return (
-    <article className={`card state-card state-card--${variant}`} role={role} aria-live={live}>
+    <article className={`card state-card state-card--${variant}`} role={role} aria-live={live} aria-busy={variant === "loading"}>
       <p className="eyebrow">{variant === "loading" ? "Carregando" : variant === "error" ? "Atencao" : "Sem dados"}</p>
       <h3>{title}</h3>
       <p className="section-sub">{message}</p>

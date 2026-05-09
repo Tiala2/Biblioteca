@@ -637,7 +637,22 @@ label {
 }
 
 .state-card--loading {
+  overflow: hidden;
   border-color: color-mix(in srgb, var(--primary-b) 30%, var(--card-border));
+}
+
+.state-card--loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 0%, color-mix(in srgb, var(--primary-b) 12%, transparent) 42%, transparent 76%);
+  transform: translateX(-100%);
+  animation: loading-sheen 1.6s ease-in-out infinite;
+}
+
+.state-card--loading .section-sub {
+  max-width: 48rem;
 }
 
 .state-card--error {
@@ -646,6 +661,12 @@ label {
 
 .state-card--empty {
   border-style: dashed;
+}
+
+@keyframes loading-sheen {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .error-boundary-card {
