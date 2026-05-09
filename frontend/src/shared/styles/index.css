@@ -2270,8 +2270,30 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.pagination-row .section-sub {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0.42rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 68%, transparent);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--card-bg) 58%, transparent);
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.pagination-row .btn-muted {
+  min-width: 92px;
+  min-height: 38px;
 }
 
 .reading-control-row {
@@ -3018,7 +3040,20 @@ body[data-theme="day"] .login-form {
   }
 
   .pagination-row {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .pagination-row .btn-muted {
+    min-width: 0;
+    width: 100%;
+    padding-inline: 0.55rem;
+  }
+
+  .pagination-row .section-sub {
+    padding-inline: 0.55rem;
   }
 
   .stacked-list-item {
