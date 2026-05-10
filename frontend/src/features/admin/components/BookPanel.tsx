@@ -75,7 +75,7 @@ export function BookPanel({
 }: BookPanelProps) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
-  const pageSize = 6;
+  const pageSize = 4;
   const normalizedSearch = search.trim().toLowerCase();
   const filteredBooks = useMemo(() => {
     if (!normalizedSearch) return books;
