@@ -1,12 +1,8 @@
-import type { ChangeEvent, FormEvent } from "react";
+import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, BookForm, Category, ImportResult } from "../types";
 import { AdminEmptyState } from "./AdminEmptyState";
-
-function readSelectedValues(event: ChangeEvent<HTMLSelectElement>) {
-  return Array.from(event.currentTarget.selectedOptions, (option) => option.value);
-}
 
 function normalizeIsbn(isbn?: string | null) {
   const normalized = isbn?.replace(/[^0-9Xx]/g, "");
@@ -92,6 +88,17 @@ export function BookPanel({
   const selectedCoverBook = books.find((book) => book.id === coverBookId) ?? null;
   const formCoverUrlFromIsbn = buildOpenLibraryCoverUrl(form.isbn);
   const selectedCoverUrlFromIsbn = buildOpenLibraryCoverUrl(selectedCoverBook?.isbn);
+  const toggleCategory = (categoryId: string) => {
+    onFormChange((prev) => {
+      const selected = new Set(prev.categoryIds);
+      if (selected.has(categoryId)) {
+        selected.delete(categoryId);
+      } else {
+        selected.add(categoryId);
+      }
+      return { ...prev, categoryIds: Array.from(selected) };
+    });
+  };
 
   return (
     <article id="admin-books" className="card admin-panel admin-panel--wide">
@@ -122,13 +129,25 @@ export function BookPanel({
         >
           Buscar capa por ISBN
         </button>
-        <select aria-label="Categorias do livro" multiple size={5} value={form.categoryIds} onChange={(event) => onFormChange((prev) => ({ ...prev, categoryIds: readSelectedValues(event) }))}>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
+        <fieldset className="admin-choice-list">
+          <legend>Categorias do livro</legend>
+          {categories.length > 0 ? (
+            <div className="admin-choice-list__items">
+              {categories.map((category) => (
+                <label key={category.id} className="admin-choice-option">
+                  <input
+                    type="checkbox"
+                    checked={form.categoryIds.includes(category.id)}
+                    onChange={() => toggleCategory(category.id)}
+                  />
+                  <span>{category.name}</span>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <p className="section-sub">Cadastre categorias para classificar o livro.</p>
+          )}
+        </fieldset>
         <button type="submit" disabled={busyKey === "book-create" || busyKey === `book-save-${form.id}`}>
           {form.id ? "Salvar livro" : "Criar livro"}
         </button>

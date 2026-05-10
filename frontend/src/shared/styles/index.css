@@ -868,6 +868,66 @@ label {
   justify-self: start;
 }
 
+.admin-choice-list {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 78%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-bg) 76%, transparent);
+}
+
+.admin-choice-list legend {
+  padding: 0 0.35rem;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.admin-choice-list__items {
+  display: grid;
+  gap: 0.42rem;
+  max-height: 190px;
+  overflow: auto;
+  padding-right: 0.2rem;
+}
+
+.admin-choice-option {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: start;
+  gap: 0.52rem;
+  min-height: 38px;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 62%, transparent);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--card-bg) 72%, transparent);
+  cursor: pointer;
+}
+
+.admin-choice-option:hover {
+  border-color: color-mix(in srgb, var(--primary-b) 34%, var(--card-border));
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+}
+
+.admin-choice-option input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin: 0.12rem 0 0;
+  padding: 0;
+  accent-color: var(--primary-b);
+}
+
+.admin-choice-option span {
+  min-width: 0;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
 .book-cover {
   position: relative;
   width: 100%;

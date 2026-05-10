@@ -1,12 +1,8 @@
-import type { ChangeEvent, FormEvent } from "react";
+import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, Collection, CollectionForm } from "../types";
 import { AdminEmptyState } from "./AdminEmptyState";
-
-function readSelectedValues(event: ChangeEvent<HTMLSelectElement>) {
-  return Array.from(event.currentTarget.selectedOptions, (option) => option.value);
-}
 
 type CollectionPanelProps = {
   form: CollectionForm;
@@ -54,6 +50,17 @@ export function CollectionPanel({
   }, [collections]);
   const totalPages = Math.max(1, Math.ceil(filteredCollections.length / pageSize));
   const visibleCollections = filteredCollections.slice(page * pageSize, page * pageSize + pageSize);
+  const toggleBook = (bookId: string) => {
+    onFormChange((prev) => {
+      const selected = new Set(prev.bookIds);
+      if (selected.has(bookId)) {
+        selected.delete(bookId);
+      } else {
+        selected.add(bookId);
+      }
+      return { ...prev, bookIds: Array.from(selected) };
+    });
+  };
 
   return (
     <article id="admin-collections" className="card admin-panel">
@@ -78,19 +85,21 @@ export function CollectionPanel({
           onChange={(event) => onFormChange((prev) => ({ ...prev, coverUrl: event.target.value }))}
           placeholder="URL da capa"
         />
-        <select
-          aria-label="Livros da coleção"
-          multiple
-          size={5}
-          value={form.bookIds}
-          onChange={(event) => onFormChange((prev) => ({ ...prev, bookIds: readSelectedValues(event) }))}
-        >
-          {books.map((book) => (
-            <option key={book.id} value={book.id}>
-              {book.title}
-            </option>
-          ))}
-        </select>
+        <fieldset className="admin-choice-list">
+          <legend>Livros da coleção</legend>
+          {books.length > 0 ? (
+            <div className="admin-choice-list__items">
+              {books.map((book) => (
+                <label key={book.id} className="admin-choice-option">
+                  <input type="checkbox" checked={form.bookIds.includes(book.id)} onChange={() => toggleBook(book.id)} />
+                  <span>{book.title}</span>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <p className="section-sub">Cadastre livros para montar coleções.</p>
+          )}
+        </fieldset>
         <button type="submit" disabled={busyKey === "collection-create" || busyKey === `collection-save-${form.id}`}>
           {form.id ? "Salvar coleção" : "Criar coleção"}
         </button>
