@@ -3132,6 +3132,34 @@ body[data-theme="day"] .login-form {
     grid-template-columns: 1fr;
   }
 
+  .aura-book-card {
+    gap: 0.42rem;
+    padding: 0.8rem;
+  }
+
+  .aura-book-card .book-cover {
+    width: min(128px, 46vw);
+  }
+
+  .aura-book-card h3 {
+    margin-top: 0.12rem;
+    font-size: 1rem;
+  }
+
+  .aura-book-card p,
+  .aura-book-card small {
+    margin: 0;
+  }
+
+  .aura-book-card .book-card-badges {
+    min-height: 0;
+    margin-bottom: 0.18rem;
+  }
+
+  .aura-book-card .card-actions {
+    gap: 0.42rem;
+  }
+
   .aura-panel > form,
   .card > form:not(.login-form),
   .profile-form {
