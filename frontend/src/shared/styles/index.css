@@ -3203,6 +3203,53 @@ body[data-theme="day"] .login-form {
     max-width: 168px;
   }
 
+  .aura-book-detail-hero {
+    gap: 0.8rem;
+  }
+
+  .aura-book-detail-hero .aura-book-detail-hero__cover .book-cover {
+    width: min(142px, 48vw);
+    max-width: 142px;
+  }
+
+  .aura-book-detail-hero .stats-grid,
+  .aura-book-detail-hero .book-detail-insights {
+    gap: 0.5rem;
+  }
+
+  .aura-book-detail-hero .stat-box {
+    padding: 0.68rem;
+  }
+
+  .aura-book-detail-hero .card-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 0.45rem;
+  }
+
+  .aura-book-detail-hero .card-actions > * {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .aura-book-detail-hero .favorite-toggle {
+    grid-column: auto;
+  }
+
+  .aura-book-detail-hero .book-detail-insights {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .aura-book-detail-hero .book-detail-insights .stat-box {
+    padding: 0.58rem 0.48rem;
+  }
+
+  .aura-book-detail-hero .book-detail-insights .stat-box strong,
+  .aura-book-detail-hero .book-detail-insights .stat-box span {
+    overflow-wrap: anywhere;
+  }
+
   .admin-section__head h2 {
     font-size: 1.35rem;
   }
