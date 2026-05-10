@@ -15,11 +15,33 @@ $requiredPorts = @(8080, 5437, 9000, 9001)
 if ($Mode -eq "dev") {
   $requiredPorts += @(1025, 8025)
 }
+
+$ownPublishedPorts = @{}
+try {
+  $composePsJson = docker compose -f $composeFile ps --format json 2>$null
+  if ($LASTEXITCODE -eq 0 -and $composePsJson) {
+    foreach ($line in @($composePsJson)) {
+      if ([string]::IsNullOrWhiteSpace($line)) {
+        continue
+      }
+
+      $container = $line | ConvertFrom-Json
+      foreach ($publisher in @($container.Publishers)) {
+        if ($null -ne $publisher.PublishedPort) {
+          $ownPublishedPorts[[int]$publisher.PublishedPort] = $true
+        }
+      }
+    }
+  }
+} catch {
+  $ownPublishedPorts = @{}
+}
+
 $busyPorts = @()
 
 foreach ($port in $requiredPorts) {
   $listener = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
-  if ($null -ne $listener) {
+  if ($null -ne $listener -and -not $ownPublishedPorts.ContainsKey($port)) {
     $ownerPid = $listener.OwningProcess
     $process = Get-Process -Id $ownerPid -ErrorAction SilentlyContinue
     $processName = if ($process) { $process.ProcessName } else { "unknown" }
