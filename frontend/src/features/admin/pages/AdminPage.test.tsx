@@ -128,7 +128,7 @@ function mockAdminRequests() {
           },
         ],
         page: {
-          size: 12,
+          size: 6,
           number: 0,
           totalElements: 1,
           totalPages: 1,
@@ -150,7 +150,7 @@ function mockAdminRequests() {
           },
         ],
         page: {
-          size: 12,
+          size: 6,
           number: 0,
           totalElements: 1,
           totalPages: 1,
@@ -221,7 +221,7 @@ describe("AdminPage", () => {
       data: {
         content: [],
         page: {
-          size: 12,
+          size: 6,
           number: 0,
           totalElements: 0,
           totalPages: 1,
@@ -240,7 +240,7 @@ describe("AdminPage", () => {
 
     await waitFor(() =>
       expect(vi.mocked(api.get)).toHaveBeenLastCalledWith(
-        "/api/admin/users?page=0&size=12&sort=createdAt%2Cdesc&q=joao",
+        "/api/admin/users?page=0&size=6&sort=createdAt%2Cdesc&q=joao",
         { headers: { Authorization: "Bearer test-token" } }
       )
     );
@@ -263,7 +263,7 @@ describe("AdminPage", () => {
           },
         ],
         page: {
-          size: 12,
+          size: 6,
           number: 0,
           totalElements: 1,
           totalPages: 1,

@@ -25,7 +25,7 @@ export function useAdminUsers({ headers }: UseAdminUsersParams) {
     try {
       const query = buildQuery({
         page,
-        size: 12,
+        size: 6,
         sort: "createdAt,desc",
         q: deferredSearch.trim() || undefined,
         active: activeFilter === "ALL" ? undefined : String(activeFilter === "ACTIVE"),

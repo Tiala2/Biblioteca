@@ -25,7 +25,7 @@ export function useAdminAlerts({ headers }: UseAdminAlertsParams) {
     try {
       const query = buildQuery({
         page,
-        size: 12,
+        size: 6,
         sort: "createdAt,desc",
         q: deferredSearch.trim() || undefined,
         status: statusFilter === "ALL" ? undefined : statusFilter,
