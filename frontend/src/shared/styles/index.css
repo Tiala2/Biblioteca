@@ -3377,6 +3377,47 @@ body[data-theme="day"] .login-form {
     grid-template-columns: 1fr;
   }
 
+  .reading-progress-panel {
+    padding: 0.85rem;
+  }
+
+  .reading-progress-panel > .section-sub {
+    margin-top: 0.35rem;
+  }
+
+  .reading-progress-panel .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .reading-progress-panel .stat-box {
+    padding: 0.62rem;
+  }
+
+  .reading-progress-panel .stat-box strong {
+    font-size: 0.98rem;
+  }
+
+  .reading-progress-panel .stat-box span {
+    font-size: 0.78rem;
+    line-height: 1.25;
+  }
+
+  .reading-progress-panel .reading-control-row {
+    gap: 0.55rem;
+    margin-top: 0.75rem;
+  }
+
+  .reading-progress-panel .page-jump-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+
+  .reading-progress-panel .page-jump-grid .btn-muted {
+    min-width: 0;
+    padding-inline: 0.5rem;
+  }
+
   .external-reading-panel__head {
     flex-direction: column;
     align-items: flex-start;

@@ -25,7 +25,7 @@ export function ReadingProgressPanel({
   onJumpPages,
 }: ReadingProgressPanelProps) {
   return (
-    <article className="card aura-panel aura-panel--focus">
+    <article className="card aura-panel aura-panel--focus reading-progress-panel">
       <div className="section-head">
         <div>
           <h3>Painel de progresso</h3>
