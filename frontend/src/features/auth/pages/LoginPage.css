@@ -4,9 +4,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(16px, 4vw, 24px);
   font-family: var(--ds-font-family);
-  overflow: hidden;
+  overflow-x: clip;
 }
 
 .login-page::before,
@@ -44,8 +44,8 @@
 }
 
 .login-shell {
-  width: 420px;
-  max-width: 90%;
+  width: min(420px, 100%);
+  max-width: 100%;
   position: relative;
   z-index: 1;
 }
@@ -57,9 +57,9 @@
 .login-shell::before {
   content: "";
   position: absolute;
-  inset: -58px -44px auto auto;
-  width: 138px;
-  height: 138px;
+  inset: -48px -32px auto auto;
+  width: clamp(96px, 26vw, 138px);
+  height: clamp(96px, 26vw, 138px);
   border-radius: 999px;
   background: radial-gradient(circle, rgba(45, 212, 255, 0.38), transparent 66%);
   filter: blur(2px);
@@ -70,7 +70,7 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  padding: 40px;
+  padding: clamp(28px, 7vw, 40px);
   min-height: auto;
   display: block;
   color: var(--ds-text-on-dark);
@@ -181,7 +181,7 @@
 
 .login-submit {
   width: 100%;
-  height: 50px;
+  min-height: 50px;
   margin-top: 16px;
   font-size: 15px;
   font-weight: 800;
@@ -232,12 +232,12 @@
 
 @media (max-width: 640px) {
   .login-shell {
-    width: min(420px, 94vw);
-    max-width: 94vw;
+    width: 100%;
+    max-width: 100%;
   }
 
   .login-form {
-    padding: 30px 24px;
+    padding: 28px 20px;
   }
 
   .login-title {

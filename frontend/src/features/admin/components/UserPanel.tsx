@@ -191,7 +191,7 @@ export function UserPanel({
                     {user.active ? "ATIVO" : "INVALIDADO"}
                   </span>
                 </div>
-                <p className="section-sub">{user.email}</p>
+                <p className="section-sub email-text">{user.email}</p>
                 <p className="section-sub">
                   Ranking {user.leaderboardOptIn ? "ativo" : "desligado"} | Alertas {user.alertsOptIn ? "ativos" : "desligados"}
                 </p>

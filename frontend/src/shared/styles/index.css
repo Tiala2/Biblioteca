@@ -172,9 +172,9 @@ select,
 textarea,
 button,
 .btn-link {
-  overflow-wrap: normal;
+  overflow-wrap: break-word;
   word-break: normal;
-  hyphens: auto;
+  hyphens: none;
 }
 
 .sr-only {
@@ -604,6 +604,10 @@ label {
   min-width: 0;
 }
 
+.book-list-row > div {
+  min-width: 0;
+}
+
 .stacked-list-item strong,
 .stacked-list-item p,
 .stacked-list-item small,
@@ -613,12 +617,25 @@ label {
   word-break: normal;
 }
 
+.stacked-list-item strong {
+  display: block;
+  max-width: 100%;
+}
+
 .section-sub,
 .book-cover__title,
 .import-badge,
 .favorite-badge,
 .kpi {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.text-break,
+.email-text,
+.code-text {
   overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .state-card {
@@ -1312,8 +1329,8 @@ label {
 .aura-book-card h3 .btn-link {
   justify-content: flex-start;
   width: 100%;
-  min-height: auto;
-  padding: 0;
+  min-height: 44px;
+  padding: 0.2rem 0;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2273,6 +2290,8 @@ select[multiple] {
 select option {
   background: #111827;
   color: #f8fafc;
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 body[data-theme="day"] select option {
@@ -2312,6 +2331,12 @@ input[type="file"]::file-selector-button {
   border-radius: 8px;
   background: color-mix(in srgb, var(--card-bg) 90%, transparent);
   cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+.file-picker:hover {
+  border-color: color-mix(in srgb, var(--primary-b) 34%, var(--card-border));
+  background: color-mix(in srgb, var(--card-bg) 96%, transparent);
 }
 
 .file-picker span {
@@ -3286,6 +3311,20 @@ body[data-theme="day"] .login-form {
     padding-inline: 0.55rem;
   }
 
+  .file-picker {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+
+  .file-picker span,
+  .file-picker strong {
+    width: 100%;
+  }
+
+  .file-picker strong {
+    white-space: normal;
+  }
+
   .stacked-list-item {
     align-items: flex-start;
     flex-direction: column;
@@ -3444,6 +3483,16 @@ body[data-theme="day"] .login-form {
   button,
   .btn-link {
     width: 100%;
+  }
+
+  .pagination-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination-row .section-sub {
+    order: -1;
+    width: 100%;
+    min-height: 34px;
   }
 }
 

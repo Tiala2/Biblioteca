@@ -302,7 +302,7 @@ export function ProfilePage() {
           </div>
           <div className="stacked-list-item">
             <strong>Email</strong>
-            <span>{profile?.email}</span>
+            <span className="email-text">{profile?.email}</span>
           </div>
           <div className="stacked-list-item profile-preference-row">
             <div>
