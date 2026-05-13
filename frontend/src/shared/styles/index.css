@@ -2596,11 +2596,43 @@ textarea:focus-visible {
   gap: 0.7rem;
 }
 
+.narrative-panel {
+  display: grid;
+  align-content: start;
+}
+
+.narrative-panel > p {
+  color: var(--text-soft);
+  line-height: 1.55;
+}
+
+.character-list .stacked-list-item {
+  align-items: flex-start;
+}
+
+.narrative-role {
+  margin-top: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--primary-b) 24%, transparent);
+  background: color-mix(in srgb, var(--primary-b) 12%, var(--card-bg));
+  color: var(--text-main);
+}
+
+.narrative-empty {
+  margin-top: 0.45rem;
+}
+
 .quiz-card {
+  display: grid;
+  gap: 0.7rem;
   border: 1px solid color-mix(in srgb, var(--card-border) 84%, transparent);
   border-radius: 8px;
   padding: 0.75rem;
   background: color-mix(in srgb, var(--card-bg) 86%, transparent);
+}
+
+.quiz-card h4 {
+  font-size: 1rem;
+  line-height: 1.35;
 }
 
 .aura-reading-page .card:not(.hero) {
@@ -2626,10 +2658,10 @@ textarea:focus-visible {
 .quiz-options {
   display: grid;
   gap: 0.4rem;
-  margin-top: 0.6rem;
 }
 
 .quiz-option {
+  justify-content: flex-start;
   text-align: left;
   box-shadow: none;
 }
@@ -2648,6 +2680,12 @@ textarea:focus-visible {
   background: color-mix(in srgb, var(--danger) 64%, white);
   color: #5c1212;
   box-shadow: none;
+}
+
+.quiz-feedback {
+  display: block;
+  color: var(--text-soft);
+  line-height: 1.45;
 }
 
 .external-reader-wrap {
@@ -2745,6 +2783,9 @@ textarea:focus-visible {
 }
 
 .flashcard {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
   border-radius: 8px;
   border: 1px solid color-mix(in srgb, var(--card-border) 88%, transparent);
   padding: 0.75rem;
@@ -2759,6 +2800,17 @@ textarea:focus-visible {
 
 .flashcard.locked {
   opacity: 0.75;
+}
+
+.flashcard h4 {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.flashcard p:not(.flash-symbol),
+.flashcard small {
+  color: var(--text-soft);
+  line-height: 1.45;
 }
 
 .flash-symbol {

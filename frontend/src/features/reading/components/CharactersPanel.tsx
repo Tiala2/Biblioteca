@@ -1,4 +1,5 @@
 import type { NarrativeCharacter } from "../types";
+import { formatNarrativeRole, humanizeNarrativeText } from "../lib/readingPresentation";
 
 type CharactersPanelProps = {
   characters: NarrativeCharacter[];
@@ -6,25 +7,31 @@ type CharactersPanelProps = {
 
 export function CharactersPanel({ characters }: CharactersPanelProps) {
   return (
-    <article className="card">
+    <article className="card narrative-panel">
       <div className="section-head">
-        <h3>Quem e quem</h3>
+        <h3>Quem é quem</h3>
         <span className="kpi">{characters.length} personagem(ns)</span>
       </div>
       {characters.length ? (
-        <ul className="stacked-list">
+        <ul className="stacked-list character-list">
           {characters.map((character) => (
             <li key={`${character.name}-${character.role}`} className="stacked-list-item">
               <div>
                 <strong>{character.name}</strong>
-                <p className="section-sub">{character.role}</p>
+                <p className="role-pill narrative-role">{formatNarrativeRole(character.role)}</p>
               </div>
-              <span>{character.note}</span>
+              <span className="section-sub">{humanizeNarrativeText(character.note)}</span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="section-sub">Nenhum personagem mapeado neste trecho.</p>
+        <div className="panel-inline-state narrative-empty" role="status">
+          <p className="eyebrow">Dinâmica em preparação</p>
+          <h3>Personagens ainda não mapeados</h3>
+          <p className="section-sub">
+            Este livro ainda não tem elenco narrativo cadastrado para a página atual. O progresso continua funcionando normalmente.
+          </p>
+        </div>
       )}
     </article>
   );

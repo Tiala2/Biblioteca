@@ -1,4 +1,5 @@
 import type { NarrativeAchievement } from "../types";
+import { humanizeNarrativeText } from "../lib/readingPresentation";
 
 type AchievementsPanelProps = {
   achievements: NarrativeAchievement[];
@@ -6,7 +7,7 @@ type AchievementsPanelProps = {
 
 export function AchievementsPanel({ achievements }: AchievementsPanelProps) {
   return (
-    <article className="card">
+    <article className="card narrative-panel">
       <div className="section-head">
         <h3>Conquistas e flashcards</h3>
         <span className="kpi">{achievements.length} item(ns)</span>
@@ -19,8 +20,8 @@ export function AchievementsPanel({ achievements }: AchievementsPanelProps) {
               className={achievement.unlocked ? "flashcard unlocked" : "flashcard locked"}
             >
               <p className="flash-symbol">{achievement.flashcardSymbol ?? "CARD"}</p>
-              <h4>{achievement.title}</h4>
-              <p>{achievement.description}</p>
+              <h4>{humanizeNarrativeText(achievement.title)}</h4>
+              <p>{humanizeNarrativeText(achievement.description)}</p>
               <small>
                 {achievement.unlocked ? "Desbloqueado" : `Bloqueado até página ${achievement.unlockPage ?? "?"}`}
               </small>
@@ -28,7 +29,13 @@ export function AchievementsPanel({ achievements }: AchievementsPanelProps) {
           ))}
         </div>
       ) : (
-        <p className="section-sub">Sem conquistas mapeadas para este livro.</p>
+        <div className="panel-inline-state narrative-empty" role="status">
+          <p className="eyebrow">Sem conquistas deste livro</p>
+          <h3>Flashcards ainda não cadastrados</h3>
+          <p className="section-sub">
+            A leitura continua salva normalmente. Quando a curadoria narrativa for adicionada, os cartões aparecem aqui.
+          </p>
+        </div>
       )}
     </article>
   );

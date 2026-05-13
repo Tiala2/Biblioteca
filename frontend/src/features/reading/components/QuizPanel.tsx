@@ -1,4 +1,5 @@
 import type { NarrativeQuiz } from "../types";
+import { humanizeNarrativeText } from "../lib/readingPresentation";
 
 type QuizPanelProps = {
   quizzes: NarrativeQuiz[];
@@ -35,7 +36,7 @@ export function QuizPanel({
   onCheckQuiz,
 }: QuizPanelProps) {
   return (
-    <article className="card">
+    <article className="card narrative-panel">
       <div className="section-head">
         <h3>Quiz do trecho</h3>
         <span className="kpi">{quizzes.length} pergunta(s)</span>
@@ -44,7 +45,7 @@ export function QuizPanel({
         <div className="quiz-list">
           {quizzes.map((quiz) => (
             <article key={quiz.id} className="quiz-card">
-              <h4>{quiz.question}</h4>
+              <h4>{humanizeNarrativeText(quiz.question)}</h4>
               <div className="quiz-options">
                 {quiz.options.map((option) => (
                   <button
@@ -54,7 +55,7 @@ export function QuizPanel({
                     aria-pressed={selectedOptions[quiz.id] === option}
                     onClick={() => onSelectOption(quiz.id, option)}
                   >
-                    {option}
+                    {humanizeNarrativeText(option)}
                   </button>
                 ))}
               </div>
@@ -69,16 +70,22 @@ export function QuizPanel({
                 </button>
               </div>
               {revealed[quiz.id] ? (
-                <small>
+                <small className="quiz-feedback">
                   {selectedOptions[quiz.id] === quiz.correctOption ? "Correto. " : "Incorreto. "}
-                  {quiz.explanation}
+                  {humanizeNarrativeText(quiz.explanation)}
                 </small>
               ) : null}
             </article>
           ))}
         </div>
       ) : (
-        <p className="section-sub">Nenhum quiz para a página selecionada.</p>
+        <div className="panel-inline-state narrative-empty" role="status">
+          <p className="eyebrow">Sem pergunta nesta página</p>
+          <h3>Quiz ainda não disponível</h3>
+          <p className="section-sub">
+            Quando este livro receber perguntas por trecho, elas aparecerão aqui conforme a página de leitura.
+          </p>
+        </div>
       )}
     </article>
   );
