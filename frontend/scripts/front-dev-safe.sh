@@ -42,4 +42,9 @@ if [[ -n "$pid" ]]; then
   fi
 fi
 
+if [[ ! -d node_modules ]]; then
+  echo "Installing frontend dependencies..."
+  npm ci
+fi
+
 npm run dev -- --port 5173 --strictPort

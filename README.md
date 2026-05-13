@@ -20,9 +20,27 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 Linux/macOS:
 
 ```bash
-cd ~/library-api-projeto
+git fetch origin
+git checkout feature/continua-melhorias-front
+git pull origin feature/continua-melhorias-front
+
+cd library-api-projeto
 chmod +x start-all.sh backend/scripts/*.sh frontend/scripts/*.sh
 ./start-all.sh --build-backend
+```
+
+Comandos uteis no Linux/macOS:
+
+```bash
+# Rebuild do backend/Docker sem apagar dados
+cd backend
+./scripts/docker-rebuild-safe.sh --mode dev
+
+# Parar containers sem remover banco/arquivos
+./scripts/docker-stop-safe.sh --mode dev
+
+# Rodar testes do backend no Linux/macOS
+./gradlew test
 ```
 
 Windows/PowerShell:

@@ -43,6 +43,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\docker-stop-safe.ps1 -Mode de
 No diretorio `backend`:
 
 ```bash
+# Permissoes na primeira vez, se necessario
+chmod +x ../start-all.sh ./gradlew ./scripts/*.sh ../frontend/scripts/*.sh
+
 # DEV sem rebuild
 ./scripts/docker-up-safe.sh --mode dev
 
@@ -51,6 +54,9 @@ No diretorio `backend`:
 
 # PROD (sem mailpit)
 ./scripts/docker-up-safe.sh --mode prod --build
+
+# Retry de rebuild (falhas temporarias)
+./scripts/docker-rebuild-safe.sh --mode dev
 
 # Parar sem apagar dados
 ./scripts/docker-stop-safe.sh --mode dev

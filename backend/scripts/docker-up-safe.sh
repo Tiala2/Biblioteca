@@ -40,9 +40,24 @@ required_ports=(8080 5437 9000 9001)
 if [[ "$mode" == "dev" ]]; then
   required_ports+=(1025 8025)
 fi
+
+own_published_ports=()
+while IFS= read -r published_port; do
+  [[ -n "$published_port" ]] && own_published_ports+=("$published_port")
+done < <(
+  docker compose -f "$compose_file" ps --format json 2>/dev/null \
+    | tr ',' '\n' \
+    | sed -n 's/.*"PublishedPort":[[:space:]]*\([0-9][0-9]*\).*/\1/p' \
+    || true
+)
+
 busy_ports=()
 
 for port in "${required_ports[@]}"; do
+  if printf '%s\n' "${own_published_ports[@]}" | grep -qx "$port"; then
+    continue
+  fi
+
   if command -v ss >/dev/null 2>&1; then
     line="$(ss -ltnp "sport = :$port" 2>/dev/null | awk 'NR==2 {print}')"
   elif command -v lsof >/dev/null 2>&1; then
