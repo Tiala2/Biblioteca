@@ -21,6 +21,7 @@ type BookDetails = {
   publicationDate?: string | null;
   coverUrl?: string | null;
   hasPdf: boolean;
+  hasNarrative?: boolean;
   source?: "LOCAL" | "OPEN";
   averageRating?: number | null;
   totalReviews?: number | null;
@@ -129,6 +130,7 @@ export function BookDetailsPage() {
       { label: "Páginas", value: `${book.numberOfPages}` },
       { label: "Autor", value: book.author || "Autor não informado" },
       { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Catálogo local" },
+      { label: "Dinâmica", value: book.hasNarrative ? "Disponível" : "Em breve" },
       { label: "ISBN", value: book.isbn || "Não informado" },
       {
         label: "Publicacao",

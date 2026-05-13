@@ -55,7 +55,7 @@ describe("BooksPage", () => {
     mockedGet.mockResolvedValueOnce({
       data: {
         content: [
-          { id: "1", title: "Livro A", numberOfPages: 120, hasPdf: false, source: "OPEN", coverUrl: null },
+          { id: "1", title: "Livro A", numberOfPages: 120, hasPdf: false, hasNarrative: true, source: "OPEN", coverUrl: null },
           { id: "2", title: "Livro B", numberOfPages: 200, hasPdf: true, source: "LOCAL", coverUrl: null },
         ],
         page: { size: 12, number: 0, totalElements: 2, totalPages: 1 },
@@ -78,12 +78,14 @@ describe("BooksPage", () => {
     expect(screen.getByText("livros nesta pagina")).toBeInTheDocument();
     expect(screen.getByText("com PDF")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
+    expect(screen.getByText("com dinâmica")).toBeInTheDocument();
     expect(screen.getByText("catálogo local")).toBeInTheDocument();
     expect(screen.getByText("favoritos")).toBeInTheDocument();
     expect(screen.getByText("média de páginas")).toBeInTheDocument();
     expect(screen.getByText(/Total visível:/)).toBeInTheDocument();
     expect(screen.getByText("320")).toBeInTheDocument();
     expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
+    expect(screen.getByText("DINÂMICA")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Livro B" })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Ler no app" })).toHaveLength(1);
     expect(screen.getByRole("link", { name: "Ler com progresso" })).toBeInTheDocument();

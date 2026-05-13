@@ -58,6 +58,10 @@ class ReadingNarrativeIntegrationTest extends IntegrationTestSupport {
                 .andExpect(jsonPath("$.knownCharacters[0].name").value("Julia"))
                 .andExpect(jsonPath("$.quizzes[0].correctOption").value("Resistência secreta"))
                 .andExpect(jsonPath("$.achievements[0].code").value("1984_VIGILANCIA"));
+
+        mockMvc.perform(get("/api/v1/books/{bookId}", bookId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasNarrative").value(true));
     }
 
     @Test

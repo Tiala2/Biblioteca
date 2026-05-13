@@ -46,6 +46,7 @@ describe("BookDetailsPage", () => {
           publicationDate: "2020-01-01",
           coverUrl: null,
           hasPdf: true,
+          hasNarrative: true,
           source: "LOCAL",
           averageRating: 4.5,
           totalReviews: 2,
@@ -107,6 +108,8 @@ describe("BookDetailsPage", () => {
     expect(screen.getByRole("link", { name: "Aventura" })).toHaveAttribute("href", "/books?tagId=tag-1");
     expect(screen.getByLabelText("Nota media 4,5 de 5")).toBeInTheDocument();
     expect(screen.getByText("origem")).toBeInTheDocument();
+    expect(screen.getByText("Dinâmica")).toBeInTheDocument();
+    expect(screen.getByText("Disponível")).toBeInTheDocument();
     expect(screen.getByText("pdf no app")).toBeInTheDocument();
     expect(screen.getByText("favorito")).toBeInTheDocument();
     expect(screen.getByText("categorias")).toBeInTheDocument();

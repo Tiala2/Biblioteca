@@ -19,6 +19,7 @@ public class BookResponse {
     private LocalDate publicationDate;
     private String coverUrl;
     private Boolean hasPdf;
+    private Boolean hasNarrative;
     private BookSource source;
     private List<CategoryLowResponse> categories;
     private List<TagResponse> tags;

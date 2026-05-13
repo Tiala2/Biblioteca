@@ -18,6 +18,7 @@ type Book = {
   isbn?: string | null;
   numberOfPages: number;
   hasPdf: boolean;
+  hasNarrative?: boolean;
   source?: "LOCAL" | "OPEN";
   coverUrl?: string | null;
 };
@@ -111,6 +112,7 @@ export function BooksPage() {
   const catalogInsights = useMemo(() => {
     const openCount = books.filter((book) => book.source === "OPEN").length;
     const pdfCount = books.filter((book) => book.hasPdf).length;
+    const narrativeCount = books.filter((book) => book.hasNarrative).length;
     const favoriteCount = books.filter((book) => favoriteBookIds.has(book.id)).length;
     const totalPagesVisible = books.reduce((total, book) => total + Number(book.numberOfPages || 0), 0);
 
@@ -118,6 +120,7 @@ export function BooksPage() {
       averagePages: books.length > 0 ? Math.round(totalPagesVisible / books.length) : 0,
       favoriteCount,
       localCount: books.length - openCount,
+      narrativeCount,
       openCount,
       pdfCount,
       totalPagesVisible,
@@ -451,6 +454,10 @@ export function BooksPage() {
               <span>Open Library</span>
             </div>
             <div className="stat-box">
+              <strong>{catalogInsights.narrativeCount}</strong>
+              <span>com dinâmica</span>
+            </div>
+            <div className="stat-box">
               <strong>{catalogInsights.localCount}</strong>
               <span>catálogo local</span>
             </div>
@@ -476,6 +483,7 @@ export function BooksPage() {
             <div className="book-card-badges">
               {book.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
               {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">SEM PDF</span>}
+              {book.hasNarrative && <span className="favorite-badge">DINÂMICA</span>}
               {favoriteBookIds.has(book.id) && <span className="favorite-badge">FAVORITO</span>}
             </div>
             <h3>

@@ -5,6 +5,7 @@ import com.unichristus.libraryapi.domain.tag.Tag;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
@@ -59,6 +60,9 @@ public class Book {
     @Builder.Default
     @Column(name = "last_seen_at", nullable = false)
     private LocalDateTime lastSeenAt = LocalDateTime.now();
+
+    @Formula("(select case when count(nb.id) > 0 then true else false end from book_narrative_beats nb where nb.book_id = id)")
+    private boolean hasNarrative;
 
         @Builder.Default
         @ManyToMany
