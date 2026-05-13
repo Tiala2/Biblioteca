@@ -42,6 +42,25 @@ class ReadingNarrativeIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
+    @DisplayName("Deve retornar curadoria narrativa para livros adicionais do catalogo")
+    void shouldReturnNarrativeInsightForAdditionalCuratedBooks() throws Exception {
+        String email = "narrative-extra" + System.nanoTime() + "@email.com";
+        String token = registerAndLogin("Narrative Extra User", email, "StrongPass123");
+        UUID bookId = findBookIdByIsbn("9780451524935");
+
+        mockMvc.perform(get("/api/v1/readings/{bookId}/narrative", bookId)
+                        .param("currentPage", "120")
+                        .header("Authorization", bearer(token)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookId").value(bookId.toString()))
+                .andExpect(jsonPath("$.phase").value("MIDDLE"))
+                .andExpect(jsonPath("$.plotState").value(org.hamcrest.Matchers.containsString("Winston")))
+                .andExpect(jsonPath("$.knownCharacters[0].name").value("Julia"))
+                .andExpect(jsonPath("$.quizzes[0].correctOption").value("Resistência secreta"))
+                .andExpect(jsonPath("$.achievements[0].code").value("1984_VIGILANCIA"));
+    }
+
+    @Test
     @DisplayName("Deve retornar 400 quando currentPage for invalido")
     void shouldReturnBadRequestWhenCurrentPageIsInvalid() throws Exception {
         String email = "narrative-invalid" + System.nanoTime() + "@email.com";
