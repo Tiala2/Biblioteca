@@ -8,6 +8,12 @@ $ErrorActionPreference = "Continue"
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $projectRoot
 
+$apiPort = if ($env:API_PORT) { [int]$env:API_PORT } else { 8080 }
+$env:API_PORT = "$apiPort"
+if (-not $env:API_PUBLIC_BASE_URL) {
+  $env:API_PUBLIC_BASE_URL = "http://localhost:$apiPort"
+}
+
 $composeFile = if ($Mode -eq "prod") { "docker-compose.prod.yml" } else { "docker-compose.dev.yml" }
 
 for ($attempt = 1; $attempt -le $Retries; $attempt++) {

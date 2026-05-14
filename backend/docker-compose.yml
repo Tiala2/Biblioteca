@@ -9,11 +9,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "${API_PORT:-8080}:8080"
     env_file:
       - .env
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - API_PUBLIC_BASE_URL=${API_PUBLIC_BASE_URL:-http://localhost:${API_PORT:-8080}}
     depends_on:
       library:
         condition: service_healthy

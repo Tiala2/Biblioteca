@@ -36,6 +36,10 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_root="$(cd "$script_dir/.." && pwd)"
 cd "$project_root"
 
+api_port="${API_PORT:-8080}"
+export API_PORT="$api_port"
+export API_PUBLIC_BASE_URL="${API_PUBLIC_BASE_URL:-http://localhost:$api_port}"
+
 compose_file="docker-compose.dev.yml"
 if [[ "$mode" == "prod" ]]; then
   compose_file="docker-compose.prod.yml"

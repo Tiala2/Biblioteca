@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,6 +14,9 @@ import java.util.List;
 
 @Configuration
 public class OpenAPIConfig {
+
+    @Value("${api.public-base-url:${API_PUBLIC_BASE_URL:http://localhost:${API_PORT:8080}}}")
+    private String publicBaseUrl;
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -24,7 +28,7 @@ public class OpenAPIConfig {
                         .version("1.0.0")
                         .description("API para gerenciamento de biblioteca com autenticação JWT"))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Local")
+                        new Server().url(publicBaseUrl).description("Local")
                 ))
                 .addSecurityItem(new SecurityRequirement()
                         .addList(securitySchemeName))

@@ -52,11 +52,17 @@ chmod +x ../start-all.sh ./gradlew ./scripts/*.sh ../frontend/scripts/*.sh
 # DEV com rebuild
 ./scripts/docker-up-safe.sh --mode dev --build
 
+# DEV com API publicada em http://localhost:8081
+API_PORT=8081 ./scripts/docker-up-safe.sh --mode dev --build
+
 # PROD (sem mailpit)
 ./scripts/docker-up-safe.sh --mode prod --build
 
 # Retry de rebuild (falhas temporarias)
 ./scripts/docker-rebuild-safe.sh --mode dev
+
+# Retry de rebuild na porta 8081
+API_PORT=8081 ./scripts/docker-rebuild-safe.sh --mode dev
 
 # Parar sem apagar dados
 ./scripts/docker-stop-safe.sh --mode dev

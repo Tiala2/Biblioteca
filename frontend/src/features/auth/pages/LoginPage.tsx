@@ -5,6 +5,7 @@ import { isAxiosError } from "axios";
 import { BookOpen, Lock, Mail } from "lucide-react";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { extractApiErrorMessage } from "@shared/api/errors";
+import { API_BASE_URL } from "@shared/api/http";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import "./LoginPage.css";
 
@@ -28,7 +29,7 @@ export function LoginPage() {
     } catch (err: unknown) {
       if (isAxiosError(err)) {
         if (!err.response) {
-          setError("Falha de conexão com a API. Verifique se o backend está ativo em http://localhost:8080.");
+          setError(`Falha de conexão com a API. Verifique se o backend está ativo em ${API_BASE_URL}.`);
           showToast("Falha de conexão com o backend.", "error");
           return;
         }

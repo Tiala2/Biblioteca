@@ -29,12 +29,21 @@ chmod +x start-all.sh backend/scripts/*.sh frontend/scripts/*.sh
 ./start-all.sh --build-backend
 ```
 
+Se a porta `8080` estiver ocupada no Linux, use `8081` sem alterar arquivos:
+
+```bash
+API_PORT=8081 ./start-all.sh --build-backend
+```
+
 Comandos uteis no Linux/macOS:
 
 ```bash
 # Rebuild do backend/Docker sem apagar dados
 cd backend
 ./scripts/docker-rebuild-safe.sh --mode dev
+
+# Rebuild usando API em http://localhost:8081
+API_PORT=8081 ./scripts/docker-rebuild-safe.sh --mode dev
 
 # Parar containers sem remover banco/arquivos
 ./scripts/docker-stop-safe.sh --mode dev
@@ -53,9 +62,9 @@ powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 ## URLs principais
 
 - Frontend: `http://localhost:5173`
-- API: `http://localhost:8080`
-- Swagger: `http://localhost:8080/swagger-ui/index.html`
-- Health: `http://localhost:8080/actuator/health`
+- API: `http://localhost:8080` ou `http://localhost:8081` se usar `API_PORT=8081`
+- Swagger: `http://localhost:8080/swagger-ui/index.html` ou `http://localhost:8081/swagger-ui/index.html`
+- Health: `http://localhost:8080/actuator/health` ou `http://localhost:8081/actuator/health`
 - Mailpit: `http://localhost:8025`
 
 ## Validacoes

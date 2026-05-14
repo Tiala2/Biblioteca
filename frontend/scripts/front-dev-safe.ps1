@@ -3,7 +3,14 @@
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $projectRoot
 
-$apiUrl = "http://localhost:8080/actuator/health"
+$apiBaseUrl = if ($env:VITE_API_BASE_URL) {
+  $env:VITE_API_BASE_URL
+} elseif ($env:API_PORT) {
+  "http://localhost:$($env:API_PORT)"
+} else {
+  "http://localhost:8080"
+}
+$apiUrl = "$($apiBaseUrl.TrimEnd('/'))/actuator/health"
 Write-Host "Checking API at $apiUrl ..."
 
 for ($i = 0; $i -lt 15; $i++) {
@@ -37,4 +44,5 @@ if ($null -ne $listener) {
   }
 }
 
+$env:VITE_API_BASE_URL = $apiBaseUrl
 npm.cmd run dev -- --port 5173 --strictPort

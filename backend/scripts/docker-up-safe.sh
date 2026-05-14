@@ -36,7 +36,10 @@ if [[ "$mode" == "prod" ]]; then
   compose_file="docker-compose.prod.yml"
 fi
 
-required_ports=(8080 5437 9000 9001)
+api_port="${API_PORT:-8080}"
+export API_PORT="$api_port"
+export API_PUBLIC_BASE_URL="${API_PUBLIC_BASE_URL:-http://localhost:$api_port}"
+required_ports=("$api_port" 5437 9000 9001)
 if [[ "$mode" == "dev" ]]; then
   required_ports+=(1025 8025)
 fi

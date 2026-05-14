@@ -28,6 +28,10 @@ if [[ "$mode" != "dev" && "$mode" != "prod" ]]; then
 fi
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+api_port="${API_PORT:-8080}"
+export API_PORT="$api_port"
+export API_PUBLIC_BASE_URL="${API_PUBLIC_BASE_URL:-http://localhost:$api_port}"
+export VITE_API_BASE_URL="${VITE_API_BASE_URL:-http://localhost:$api_port}"
 
 echo "Starting backend stack ($mode)..."
 backend_args=(--mode "$mode")
@@ -39,4 +43,5 @@ bash "$root/backend/scripts/docker-up-safe.sh" "${backend_args[@]}"
 
 echo
 echo "Starting frontend dev server..."
+echo "API URL: $VITE_API_BASE_URL"
 bash "$root/frontend/scripts/front-dev-safe.sh"

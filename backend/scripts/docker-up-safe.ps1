@@ -11,7 +11,12 @@ Set-Location $projectRoot
 
 $composeFile = if ($Mode -eq "prod") { "docker-compose.prod.yml" } else { "docker-compose.dev.yml" }
 
-$requiredPorts = @(8080, 5437, 9000, 9001)
+$apiPort = if ($env:API_PORT) { [int]$env:API_PORT } else { 8080 }
+$env:API_PORT = "$apiPort"
+if (-not $env:API_PUBLIC_BASE_URL) {
+  $env:API_PUBLIC_BASE_URL = "http://localhost:$apiPort"
+}
+$requiredPorts = @($apiPort, 5437, 9000, 9001)
 if ($Mode -eq "dev") {
   $requiredPorts += @(1025, 8025)
 }

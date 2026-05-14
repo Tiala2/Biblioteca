@@ -5,7 +5,8 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_root="$(cd "$script_dir/.." && pwd)"
 cd "$project_root"
 
-api_url="http://localhost:8080/actuator/health"
+api_base_url="${VITE_API_BASE_URL:-http://localhost:${API_PORT:-8080}}"
+api_url="${api_base_url%/}/actuator/health"
 echo "Checking API at $api_url ..."
 
 for attempt in {1..15}; do
@@ -47,4 +48,5 @@ if [[ ! -d node_modules ]]; then
   npm ci
 fi
 
+export VITE_API_BASE_URL="$api_base_url"
 npm run dev -- --port 5173 --strictPort
