@@ -875,6 +875,21 @@ label {
   margin-top: 0.75rem;
 }
 
+.admin-form--compact {
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  align-items: end;
+}
+
+.admin-form--compact .field-stack,
+.admin-form--compact .file-picker,
+.admin-form--compact .admin-selected-book {
+  min-width: 0;
+}
+
+.admin-form--compact button {
+  min-height: 44px;
+}
+
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
@@ -1973,6 +1988,15 @@ form {
   color: var(--text-soft);
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.admin-selected-book {
+  align-self: center;
+  padding: 0.35rem 0;
+}
+
+.admin-selected-book strong {
+  color: var(--text-main);
 }
 
 .admin-list-stat {

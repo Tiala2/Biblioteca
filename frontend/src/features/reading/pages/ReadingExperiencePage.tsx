@@ -254,7 +254,7 @@ export function ReadingExperiencePage() {
     return (
       <StateCard
         title="Livro não informado"
-        message="Selecione um livro valido para abrir a experiencia de leitura."
+        message="Selecione um livro válido para abrir a experiência de leitura."
         variant="error"
         action={
           <Link to="/books" className="btn-link">

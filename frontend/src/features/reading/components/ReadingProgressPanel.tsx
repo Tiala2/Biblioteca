@@ -54,11 +54,11 @@ export function ReadingProgressPanel({
         </div>
         <div className="stat-box">
           <strong>{formatDateLabel(readingSnapshot?.startedAt)}</strong>
-          <span>inicio da leitura</span>
+          <span>início da leitura</span>
         </div>
         <div className="stat-box">
           <strong>{formatDateLabel(readingSnapshot?.finishedAt)}</strong>
-          <span>conclusao</span>
+          <span>conclusão</span>
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export function ReadingProgressPanel({
 
       <div className="page-jump-grid">
         <button type="button" className="btn-muted" onClick={() => onUpdateCurrentPage(1)}>
-          Ir para inicio
+          Ir para início
         </button>
         <button type="button" className="btn-muted" onClick={() => onJumpPages(-10)}>
           Voltar 10 pág.

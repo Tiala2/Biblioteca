@@ -86,8 +86,10 @@ export function BookPanel({
   const totalPages = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
   const visibleBooks = filteredBooks.slice(page * pageSize, page * pageSize + pageSize);
   const selectedCoverBook = books.find((book) => book.id === coverBookId) ?? null;
+  const selectedUploadBook = books.find((book) => book.id === uploadBookId) ?? null;
   const formCoverUrlFromIsbn = buildOpenLibraryCoverUrl(form.isbn);
   const selectedCoverUrlFromIsbn = buildOpenLibraryCoverUrl(selectedCoverBook?.isbn);
+  const hasBooks = books.length > 0;
   const toggleCategory = (categoryId: string) => {
     onFormChange((prev) => {
       const selected = new Set(prev.categoryIds);
@@ -158,45 +160,70 @@ export function BookPanel({
         )}
       </form>
 
-      <form className="admin-form" onSubmit={onSubmitCover}>
-        <select aria-label="Livro para atualizar capa" value={coverBookId} onChange={(event) => onCoverBookChange(event.target.value)}>
-          {books.map((book) => (
-            <option key={book.id} value={book.id}>
-              {book.title}
-            </option>
-          ))}
-        </select>
-        <input aria-label="Nova URL da capa" value={coverBookUrl} onChange={(event) => onCoverUrlChange(event.target.value)} placeholder="Nova capa" />
+      <form className="admin-form admin-form--compact" onSubmit={onSubmitCover}>
+        <label className="field-stack">
+          <span>Livro da capa</span>
+          <select aria-label="Livro para atualizar capa" value={coverBookId} disabled={!hasBooks} onChange={(event) => onCoverBookChange(event.target.value)}>
+            {!hasBooks && <option value="">Nenhum livro cadastrado</option>}
+            {books.map((book) => (
+              <option key={book.id} value={book.id}>
+                {book.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field-stack">
+          <span>URL da nova capa</span>
+          <input aria-label="Nova URL da capa" value={coverBookUrl} onChange={(event) => onCoverUrlChange(event.target.value)} placeholder="Cole a URL da imagem" />
+        </label>
         <button type="button" className="btn-muted" disabled={!selectedCoverUrlFromIsbn} onClick={() => onCoverUrlChange(selectedCoverUrlFromIsbn)}>
           Usar ISBN do livro
         </button>
-        <button type="submit" disabled={busyKey === "book-cover"}>
+        <button type="submit" disabled={!hasBooks || busyKey === "book-cover"}>
           Atualizar capa
         </button>
       </form>
 
-      <form className="admin-form" onSubmit={onSubmitUpload}>
-        <select aria-label="Livro para enviar PDF" value={uploadBookId} onChange={(event) => onUploadBookChange(event.target.value)}>
-          {books.map((book) => (
-            <option key={book.id} value={book.id}>
-              {book.title}
-            </option>
-          ))}
-        </select>
+      <form className="admin-form admin-form--compact" onSubmit={onSubmitUpload}>
+        <label className="field-stack">
+          <span>Livro do PDF</span>
+          <select aria-label="Livro para enviar PDF" value={uploadBookId} disabled={!hasBooks} onChange={(event) => onUploadBookChange(event.target.value)}>
+            {!hasBooks && <option value="">Nenhum livro cadastrado</option>}
+            {books.map((book) => (
+              <option key={book.id} value={book.id}>
+                {book.title}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="file-picker">
           <span>Selecionar PDF</span>
           <strong>{uploadFile?.name ?? "Nenhum arquivo selecionado"}</strong>
           <input className="sr-only" aria-label="Arquivo PDF do livro" type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
         </label>
-        <button type="submit" disabled={busyKey === "book-upload"}>
+        {selectedUploadBook && (
+          <p className="section-sub admin-selected-book">
+            Envio selecionado para <strong>{selectedUploadBook.title}</strong>.
+          </p>
+        )}
+        <button type="submit" disabled={!hasBooks || !uploadFile || busyKey === "book-upload"}>
           Enviar PDF
         </button>
       </form>
 
-      <form className="admin-form" onSubmit={onSubmitImport}>
-        <input aria-label="Busca na Open Library" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Busca Open Library" />
-        <input aria-label="Quantidade de páginas para importar" type="number" min={1} value={importPages} onChange={(event) => onImportPagesChange(Number(event.target.value))} />
-        <input aria-label="Tamanho da página de importação" type="number" min={1} value={importPageSize} onChange={(event) => onImportPageSizeChange(Number(event.target.value))} />
+      <form className="admin-form admin-form--compact" onSubmit={onSubmitImport}>
+        <label className="field-stack">
+          <span>Busca na Open Library</span>
+          <input aria-label="Busca na Open Library" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Ex.: Machado de Assis" />
+        </label>
+        <label className="field-stack">
+          <span>Páginas externas</span>
+          <input aria-label="Quantidade de páginas para importar" type="number" min={1} value={importPages} onChange={(event) => onImportPagesChange(Number(event.target.value))} />
+        </label>
+        <label className="field-stack">
+          <span>Itens por página</span>
+          <input aria-label="Tamanho da página de importação" type="number" min={1} value={importPageSize} onChange={(event) => onImportPageSizeChange(Number(event.target.value))} />
+        </label>
         <button type="submit" disabled={busyKey === "book-import"}>
           Importar
         </button>

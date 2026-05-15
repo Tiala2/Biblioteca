@@ -79,7 +79,7 @@ export function FavoritesPage() {
       <div className="card hero aura-hero aura-hero--favorites">
         <div>
           <p className="eyebrow aura-eyebrow">Estante afetiva</p>
-          <h2>Seus capitulos preferidos continuam aqui</h2>
+          <h2>Seus capítulos preferidos continuam aqui</h2>
           <p>Retome os livros que marcaram sua jornada e mantenha perto o que ainda merece outra página.</p>
         </div>
         <div className="aura-hero__signal">
@@ -103,7 +103,7 @@ export function FavoritesPage() {
           <div className="section-head">
             <div>
               <h3><Library aria-hidden="true" /> Prontos para reabrir</h3>
-              <p className="section-sub">Escolha um favorito e volte direto para a experiencia de leitura.</p>
+              <p className="section-sub">Escolha um favorito e volte direto para a experiência de leitura.</p>
             </div>
             <span className="kpi"><Sparkles aria-hidden="true" /> Biblioteca pessoal</span>
           </div>

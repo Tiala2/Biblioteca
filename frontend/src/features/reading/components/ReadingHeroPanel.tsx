@@ -46,7 +46,7 @@ export function ReadingHeroPanel({
           <p>
             {isExternalReading
               ? "Leia na fonte externa e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
-              : "Retome sua leitura, acompanhe a fase narrativa e salve o progresso sem sair da experiencia."}
+              : "Retome sua leitura, acompanhe a fase narrativa e salve o progresso sem sair da experiência."}
           </p>
         </div>
         <span className="kpi">{progressPercent}% concluído</span>
