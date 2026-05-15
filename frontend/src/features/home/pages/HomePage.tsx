@@ -7,6 +7,7 @@ import { useAuth } from "@features/auth/context/AuthContext";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
+import { formatBookSource, formatReadingStatus, pluralizePt } from "@shared/lib/presentation";
 
 type HomeBook = {
   id: string;
@@ -197,7 +198,7 @@ export function HomePage() {
           <div className="aura-hero__signal">
             <Flame aria-hidden="true" />
             <strong>{home.readingProgress.streakDays}</strong>
-            <span>dia(s) de streak</span>
+            <span>{home.readingProgress.streakDays === 1 ? "dia de sequência" : "dias de sequência"}</span>
           </div>
         </div>
 
@@ -266,7 +267,7 @@ export function HomePage() {
                 <p><strong>{currentReading.book.title}</strong></p>
                 {currentReading.book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
                 <p className="section-sub">
-                  Página atual: {currentReading.currentPage} | Status: {currentReading.status}
+                  Página atual: {currentReading.currentPage}. Status: {formatReadingStatus(currentReading.status)}.
                 </p>
               </div>
             </div>
@@ -297,10 +298,10 @@ export function HomePage() {
         {home.readingProgress.goal ? (
           <>
             <p>
-              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} páginas concluída(s)
+              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} páginas concluídas
             </p>
             <p className="section-sub">
-              Restam {home.readingProgress.goal.remainingPages} páginas | Status: {home.readingProgress.goal.status}
+              Restam {home.readingProgress.goal.remainingPages} páginas. Status: {formatReadingStatus(home.readingProgress.goal.status)}.
             </p>
             <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -314,7 +315,7 @@ export function HomePage() {
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <h3><LibraryBig aria-hidden="true" /> Recomendações</h3>
-          <span className="kpi">{home.recommendations.length} destaque(s)</span>
+          <span className="kpi">{pluralizePt(home.recommendations.length, "destaque", "destaques")}</span>
         </div>
         {home.recommendations.length > 0 ? (
           <>
@@ -340,13 +341,13 @@ export function HomePage() {
                     <div className="home-recommendation-title-row">
                       <strong>{book.title}</strong>
                       <span className={book.source === "OPEN" ? "import-badge" : "status-pill status-pill--muted"}>
-                        {book.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                        {formatBookSource(book.source)}
                       </span>
-                      {book.favorite && <span className="favorite-badge">FAVORITO</span>}
+                      {book.favorite && <span className="favorite-badge">Favorito</span>}
                     </div>
                     <p className="section-sub">
                       Nota {Number(book.averageRating ?? 0).toFixed(1)}
-                      {book.numberOfPages ? ` | ${book.numberOfPages} páginas` : ""}
+                      {book.numberOfPages ? `. ${book.numberOfPages} páginas.` : ""}
                     </p>
                   </div>
                   <Link to={`/books/${book.id}`} className="btn-muted btn-link">
@@ -364,7 +365,7 @@ export function HomePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Coleções em destaque</h3>
-          <span className="kpi">{home.collections.length} coleção(ões)</span>
+          <span className="kpi">{pluralizePt(home.collections.length, "coleção", "coleções")}</span>
         </div>
         {home.collections.length > 0 ? (
           <>
@@ -397,11 +398,11 @@ export function HomePage() {
                       <div>
                         <strong>{collection.title}</strong>
                         <p className="section-sub">
-                          {collection.books?.length ?? 0} livro(s) relacionado(s)
+                          {pluralizePt(collection.books?.length ?? 0, "livro relacionado", "livros relacionados")}
                         </p>
                         {collection.description && <p className="section-sub">{collection.description}</p>}
                         {(collection.books?.length ?? 0) > 0 && (
-                          <small>{collection.books?.slice(0, 2).map((book) => book.title).join(" | ")}</small>
+                          <small>{collection.books?.slice(0, 2).map((book) => book.title).join(", ")}</small>
                         )}
                       </div>
                     </div>
@@ -418,7 +419,7 @@ export function HomePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Avaliações recentes</h3>
-          <span className="kpi">{home.recentReviews.length} item(ns)</span>
+          <span className="kpi">{pluralizePt(home.recentReviews.length, "item", "itens")}</span>
         </div>
         {home.recentReviews.length > 0 ? (
           <ul className="stacked-list">

@@ -1,5 +1,6 @@
 import type { NarrativeQuiz } from "../types";
 import { humanizeNarrativeText } from "../lib/readingPresentation";
+import { pluralizePt } from "@shared/lib/presentation";
 
 type QuizPanelProps = {
   quizzes: NarrativeQuiz[];
@@ -39,7 +40,7 @@ export function QuizPanel({
     <article className="card narrative-panel">
       <div className="section-head">
         <h3>Quiz do trecho</h3>
-        <span className="kpi">{quizzes.length} pergunta(s)</span>
+        <span className="kpi">{pluralizePt(quizzes.length, "pergunta", "perguntas")}</span>
       </div>
       {quizzes.length ? (
         <div className="quiz-list">

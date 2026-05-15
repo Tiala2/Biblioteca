@@ -1,5 +1,6 @@
 import type { NarrativeAchievement } from "../types";
 import { humanizeNarrativeText } from "../lib/readingPresentation";
+import { pluralizePt } from "@shared/lib/presentation";
 
 type AchievementsPanelProps = {
   achievements: NarrativeAchievement[];
@@ -10,7 +11,7 @@ export function AchievementsPanel({ achievements }: AchievementsPanelProps) {
     <article className="card narrative-panel">
       <div className="section-head">
         <h3>Conquistas e flashcards</h3>
-        <span className="kpi">{achievements.length} item(ns)</span>
+        <span className="kpi">{pluralizePt(achievements.length, "item", "itens")}</span>
       </div>
       {achievements.length ? (
         <div className="flashcards">

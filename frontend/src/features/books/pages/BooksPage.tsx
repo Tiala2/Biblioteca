@@ -8,6 +8,7 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
+import { formatBookSource } from "@shared/lib/presentation";
 
 type Category = { id: string; name: string };
 type Tag = { id: string; name: string };
@@ -481,10 +482,10 @@ export function BooksPage() {
           <article key={book.id} className="card aura-book-card">
             <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             <div className="book-card-badges">
-              {book.source === "OPEN" && <span className="import-badge">OPEN LIBRARY</span>}
+              {book.source === "OPEN" && <span className="import-badge">{formatBookSource(book.source)}</span>}
               {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">SEM PDF</span>}
-              {book.hasNarrative && <span className="favorite-badge">DINÂMICA</span>}
-              {favoriteBookIds.has(book.id) && <span className="favorite-badge">FAVORITO</span>}
+              {book.hasNarrative && <span className="favorite-badge">Dinâmica</span>}
+              {favoriteBookIds.has(book.id) && <span className="favorite-badge">Favorito</span>}
             </div>
             <h3>
               <Link to={`/books/${book.id}`} className="btn-link">

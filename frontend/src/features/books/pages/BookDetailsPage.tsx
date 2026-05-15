@@ -8,6 +8,7 @@ import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 import { formatDateBr, formatDateTimeBr, formatDecimal, formatInteger } from "@shared/lib/formatters";
+import { formatBookSource, pluralizePt } from "@shared/lib/presentation";
 
 type Category = { id: string; name: string };
 type Tag = { id: string; name: string };
@@ -238,20 +239,20 @@ export function BookDetailsPage() {
             {favoriteLoading ? "Salvando..." : isFavorite ? "Nos favoritos" : "Salvar nos favoritos"}
           </button>
           <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
-            Ver reviews
+            Ver avaliações
           </Link>
         </div>
         <div className="book-detail-insights">
           <div className="stat-box">
-            <strong>{book?.source === "OPEN" ? "OPEN" : "LOCAL"}</strong>
+            <strong>{formatBookSource(book?.source)}</strong>
             <span>origem</span>
           </div>
           <div className="stat-box">
-            <strong>{book?.hasPdf ? "SIM" : "NÃO"}</strong>
+            <strong>{book?.hasPdf ? "Disponível" : "Indisponível"}</strong>
             <span>pdf no app</span>
           </div>
           <div className="stat-box">
-            <strong>{isFavorite ? "SALVO" : "LIVRE"}</strong>
+            <strong>{isFavorite ? "Salvo" : "Livre"}</strong>
             <span>favorito</span>
           </div>
         </div>
@@ -261,7 +262,7 @@ export function BookDetailsPage() {
         <div className="section-head">
           <h3><Star aria-hidden="true" /> Recepção do catálogo</h3>
           <span className="kpi">
-            {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} avaliação(ões)
+            {formatDecimal(book?.averageRating)} / {pluralizePt(book?.totalReviews ?? 0, "avaliação", "avaliações")}
           </span>
         </div>
         <div className="rating-summary" aria-label={`Nota média ${formatDecimal(book?.averageRating)} de 5`}>
@@ -359,7 +360,7 @@ export function BookDetailsPage() {
               <p className="section-sub">Use sua percepção para enriquecer o catálogo social da plataforma.</p>
             </div>
             <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
-              Abrir reviews
+              Abrir avaliações
             </Link>
           </li>
         </ul>
@@ -368,7 +369,7 @@ export function BookDetailsPage() {
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <h3><MessageCircle aria-hidden="true" /> O que a comunidade achou</h3>
-          <span className="kpi">{communityReviews.length} destaque(s)</span>
+          <span className="kpi">{pluralizePt(communityReviews.length, "destaque", "destaques")}</span>
         </div>
         {communityReviews.length > 0 ? (
           <>
@@ -393,14 +394,14 @@ export function BookDetailsPage() {
             </ul>
           </>
         ) : (
-          <p className="section-sub">As primeiras opiniões da comunidade aparecerão aqui quando surgirem novas reviews para este livro.</p>
+          <p className="section-sub">As primeiras opiniões da comunidade aparecerão aqui quando surgirem novas avaliações para este livro.</p>
         )}
       </article>
 
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Continuar explorando</h3>
-          <span className="kpi">{recommendations.length} sugestão(ões)</span>
+          <span className="kpi">{pluralizePt(recommendations.length, "sugestão", "sugestões")}</span>
         </div>
         {recommendations.length > 0 ? (
           <ul className="stacked-list">
@@ -409,7 +410,7 @@ export function BookDetailsPage() {
                 <div>
                   <strong>{item.title}</strong>
                   <p className="section-sub">{item.author || "Autor não informado"}</p>
-                  <small>{formatDecimal(item.averageRating)} de média em {item.totalReviews ?? 0} avaliação(ões)</small>
+                  <small>{formatDecimal(item.averageRating)} de média em {pluralizePt(item.totalReviews ?? 0, "avaliação", "avaliações")}</small>
                 </div>
                 <Link to={`/books/${item.id}`} className="btn-muted btn-link">
                   Ver detalhes

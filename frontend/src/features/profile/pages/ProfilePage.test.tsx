@@ -141,14 +141,14 @@ describe("ProfilePage", () => {
     expect(screen.getByLabelText("Progresso de Livro em andamento: 30%")).toBeInTheDocument();
     expect(screen.getByText("Ranking semanal")).toBeInTheDocument();
     expect(screen.getByText("Alertas internos")).toBeInTheDocument();
-    expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
-    expect(screen.getByText("EM PROGRESSO")).toBeInTheDocument();
+    expect(screen.getByText("Open Library")).toBeInTheDocument();
+    expect(screen.getByText("Em progresso")).toBeInTheDocument();
     expect(screen.getByText("média das notas")).toBeInTheDocument();
     expect(screen.getByText("notas 4 e 5")).toBeInTheDocument();
     expect(screen.getByText("notas 1 a 3")).toBeInTheDocument();
     expect(screen.getByText(/Última avaliação:/)).toBeInTheDocument();
     expect(screen.getByText("Primeira Review")).toBeInTheDocument();
-    expect(screen.getByText("Nota 5 - Excelente leitura")).toBeInTheDocument();
+    expect(screen.getByText("Nota 5. Excelente leitura")).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Ver livro" })[0]).toHaveAttribute("href", "/books/book-1");
   });
 

@@ -7,6 +7,7 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { formatDateTimeBr, formatDecimal, formatInteger } from "@shared/lib/formatters";
+import { formatBookSource, formatReadingStatus, pluralizePt } from "@shared/lib/presentation";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
@@ -128,7 +129,7 @@ export function ProfilePage() {
       title: reading.book.title,
       book: reading.book,
       progress: reading.progress,
-      subtitle: `Página ${reading.currentPage} - ${reading.progress}% - ${reading.status}`,
+      subtitle: `Página ${reading.currentPage}. ${reading.progress}%. ${formatReadingStatus(reading.status)}.`,
       date: reading.lastReadedAt ?? reading.finishedAt ?? null,
       link: `/books/${reading.book.id}`,
       cta: "Abrir detalhes",
@@ -237,7 +238,7 @@ export function ProfilePage() {
           <div className="aura-hero__signal">
             <UserRound aria-hidden="true" />
             <strong>{profileInsights.totalBadges}</strong>
-            <span>conquista(s)</span>
+            <span>{profileInsights.totalBadges === 1 ? "conquista" : "conquistas"}</span>
           </div>
         </div>
         {error && <p className="error">{error}</p>}
@@ -293,7 +294,7 @@ export function ProfilePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3><Settings2 aria-hidden="true" /> Conta</h3>
-          <span className="kpi">{profile?.badges.length ?? 0} conquista(s)</span>
+          <span className="kpi">{pluralizePt(profile?.badges.length ?? 0, "conquista", "conquistas")}</span>
         </div>
         <div className="stacked-list">
           <div className="stacked-list-item">
@@ -362,7 +363,7 @@ export function ProfilePage() {
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <h3>Histórico recente</h3>
-          <span className="kpi">{filteredTimeline.length} registro(s)</span>
+          <span className="kpi">{pluralizePt(filteredTimeline.length, "registro", "registros")}</span>
         </div>
         <select aria-label="Filtrar histórico de leitura" value={readingFilter} onChange={(event) => setReadingFilter(event.target.value as "ALL" | "IN_PROGRESS" | "FINISHED")}>
           <option value="ALL">Todas as leituras</option>
@@ -379,10 +380,10 @@ export function ProfilePage() {
                   <p className="section-sub">{item.subtitle}</p>
                   <div className="book-card-badges">
                     <span className={item.book.source === "OPEN" ? "import-badge" : "favorite-badge"}>
-                      {item.book.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                      {formatBookSource(item.book.source)}
                     </span>
                     <span className={item.progress >= 100 ? "favorite-badge" : "import-badge"}>
-                      {item.progress >= 100 ? "CONCLUÍDA" : "EM PROGRESSO"}
+                      {item.progress >= 100 ? "Concluída" : "Em progresso"}
                     </span>
                   </div>
                   <div className="mini-progress" aria-label={`Progresso de ${item.book.title}: ${item.progress}%`}>
@@ -404,7 +405,7 @@ export function ProfilePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Conquistas recentes</h3>
-          <span className="kpi">{profileInsights.recentBadges.length} destaque(s)</span>
+          <span className="kpi">{pluralizePt(profileInsights.recentBadges.length, "destaque", "destaques")}</span>
         </div>
         {profileInsights.recentBadges.length > 0 ? (
           <ul className="stacked-list">
@@ -429,7 +430,7 @@ export function ProfilePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Avaliações recentes</h3>
-          <span className="kpi">{filteredReviews.length} avaliação(ões)</span>
+          <span className="kpi">{pluralizePt(filteredReviews.length, "avaliação", "avaliações")}</span>
         </div>
         <div className="profile-review-insights">
           <div className="stat-box">
@@ -466,7 +467,7 @@ export function ProfilePage() {
                     <BookCover title={reviewBook?.title ?? "Livro avaliado"} coverUrl={reviewBook?.coverUrl} isbn={reviewBook?.isbn} size="small" />
                     <div>
                       <strong>{reviewBook?.title ?? "Livro avaliado"}</strong>
-                      <p className="section-sub">Nota {review.rating} - {review.comment}</p>
+                      <p className="section-sub">Nota {review.rating}. {review.comment}</p>
                       <small>{formatDateTimeBr(review.updatedAt)}</small>
                     </div>
                   </div>

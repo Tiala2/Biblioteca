@@ -61,9 +61,8 @@ describe("FavoritesPage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Livro Favorito" })).toBeInTheDocument();
-    expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
+    expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
     expect(screen.getByText("favoritos salvos")).toBeInTheDocument();
-    expect(screen.getByText("Open Library")).toBeInTheDocument();
     expect(screen.getByText("Mais recente:")).toBeInTheDocument();
     expect(screen.getByText("Leitura externa com progresso manual")).toBeInTheDocument();
 

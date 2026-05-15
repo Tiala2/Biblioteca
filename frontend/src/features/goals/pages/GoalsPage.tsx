@@ -7,6 +7,7 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
+import { pluralizePt } from "@shared/lib/presentation";
 
 type Period = "WEEKLY" | "MONTHLY";
 
@@ -162,7 +163,7 @@ export function GoalsPage() {
           <div className="aura-hero__signal">
             <Flame aria-hidden="true" />
             <strong>{streak}</strong>
-            <span>dia(s) consecutivos</span>
+            <span>{streak === 1 ? "dia consecutivo" : "dias consecutivos"}</span>
           </div>
         </div>
       </article>
@@ -226,7 +227,9 @@ export function GoalsPage() {
             <div className="goal-status-row">
               <span className={goal.paceWarning ? "import-badge" : "favorite-badge"}>{paceLabel}</span>
               <span className={goalInsights.highPriorityAlerts > 0 ? "import-badge" : "favorite-badge"}>
-                {goalInsights.highPriorityAlerts > 0 ? `${goalInsights.highPriorityAlerts} alerta(s) prioritário(s)` : "Sem alerta prioritário"}
+                {goalInsights.highPriorityAlerts > 0
+                  ? `${pluralizePt(goalInsights.highPriorityAlerts, "alerta prioritário", "alertas prioritários")}`
+                  : "Sem alerta prioritário"}
               </span>
               <span className="section-sub">Status: {goal.status}</span>
             </div>
@@ -241,7 +244,7 @@ export function GoalsPage() {
                 </strong>
                 <small>
                   {goal.expiresInDays > 0
-                    ? `${goal.expiresInDays} dia(s) restantes neste período`
+                    ? `${pluralizePt(goal.expiresInDays, "dia restante", "dias restantes")} neste período`
                     : "Período encerrando, revise sua próxima meta"}
                 </small>
               </div>
@@ -271,7 +274,7 @@ export function GoalsPage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3><BellRing aria-hidden="true" /> Alertas</h3>
-          <span className="kpi">{alerts.length} aviso(s)</span>
+          <span className="kpi">{pluralizePt(alerts.length, "aviso", "avisos")}</span>
         </div>
         {alerts.length === 0 && (
           <p className="section-sub">

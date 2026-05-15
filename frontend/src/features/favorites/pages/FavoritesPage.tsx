@@ -7,6 +7,7 @@ import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
+import { formatBookSource } from "@shared/lib/presentation";
 
 type Favorite = {
   bookId: string;
@@ -16,8 +17,6 @@ type Favorite = {
   source?: "LOCAL" | "OPEN";
   createdAt: string;
 };
-
-const getFavoriteSourceLabel = (source?: Favorite["source"]) => (source === "OPEN" ? "OPEN LIBRARY" : "LOCAL");
 
 const getFavoriteSourceDescription = (source?: Favorite["source"]) =>
   source === "OPEN" ? "Leitura externa com progresso manual" : "Leitura local no app";
@@ -85,7 +84,7 @@ export function FavoritesPage() {
         <div className="aura-hero__signal">
           <Heart aria-hidden="true" />
           <strong>{favorites.length}</strong>
-          <span>favorito(s)</span>
+          <span>{favorites.length === 1 ? "favorito" : "favoritos"}</span>
         </div>
       </div>
 
@@ -137,13 +136,13 @@ export function FavoritesPage() {
           <article key={item.bookId} className="card aura-book-card aura-favorite-card">
             <BookCover title={item.bookTitle} coverUrl={item.coverUrl} isbn={item.bookIsbn} size="medium" />
             <div className="book-card-badges">
-              <span className="import-badge">{getFavoriteSourceLabel(item.source)}</span>
-              <span className="favorite-badge"><BookMarked aria-hidden="true" /> FAVORITO</span>
+              <span className="import-badge">{formatBookSource(item.source)}</span>
+              <span className="favorite-badge"><BookMarked aria-hidden="true" /> Favorito</span>
             </div>
             <h3>{item.bookTitle}</h3>
             <p>ISBN: {item.bookIsbn}</p>
             <small>{getFavoriteSourceDescription(item.source)}</small>
-            <small>Favoritado em: {new Date(item.createdAt).toLocaleString()}</small>
+            <small>Favoritado em {new Date(item.createdAt).toLocaleString()}</small>
             <div className="card-actions">
               <Link to={`/books/${item.bookId}`} className="btn-muted btn-link">
                 Ver detalhes

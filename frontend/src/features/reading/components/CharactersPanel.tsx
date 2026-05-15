@@ -1,5 +1,6 @@
 import type { NarrativeCharacter } from "../types";
 import { formatNarrativeRole, humanizeNarrativeText } from "../lib/readingPresentation";
+import { pluralizePt } from "@shared/lib/presentation";
 
 type CharactersPanelProps = {
   characters: NarrativeCharacter[];
@@ -10,7 +11,7 @@ export function CharactersPanel({ characters }: CharactersPanelProps) {
     <article className="card narrative-panel">
       <div className="section-head">
         <h3>Quem é quem</h3>
-        <span className="kpi">{characters.length} personagem(ns)</span>
+        <span className="kpi">{pluralizePt(characters.length, "personagem", "personagens")}</span>
       </div>
       {characters.length ? (
         <ul className="stacked-list character-list">

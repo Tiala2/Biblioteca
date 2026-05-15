@@ -101,17 +101,16 @@ describe("HomePage", () => {
     expect(screen.getAllByText("Livro Atual").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Livro Recomendado").length).toBeGreaterThan(0);
     expect(screen.getByText("locais/PDF")).toBeInTheDocument();
-    expect(screen.getByText("Open Library")).toBeInTheDocument();
+    expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
     expect(screen.getByText("nota média")).toBeInTheDocument();
-    expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
-    expect(screen.getByText("FAVORITO")).toBeInTheDocument();
-    expect(screen.getByText("Nota 4.5 | 240 páginas")).toBeInTheDocument();
+    expect(screen.getByText("Favorito")).toBeInTheDocument();
+    expect(screen.getByText("Nota 4.5. 240 páginas.")).toBeInTheDocument();
     expect(screen.getAllByText("Classicos").length).toBeGreaterThan(0);
     expect(screen.getByText("coleções")).toBeInTheDocument();
     expect(screen.getByText("livros reunidos")).toBeInTheDocument();
     expect(screen.getByText("maior coleção")).toBeInTheDocument();
     expect(screen.getByText("Leituras essenciais")).toBeInTheDocument();
-    expect(screen.getByText("Livro Atual | Livro Extra")).toBeInTheDocument();
+    expect(screen.getByText("Livro Atual, Livro Extra")).toBeInTheDocument();
     expect(screen.getAllByText("Livro Avaliado").length).toBeGreaterThan(0);
   });
 

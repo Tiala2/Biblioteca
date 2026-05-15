@@ -7,6 +7,7 @@ import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors"
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { formatBookSource, pluralizePt } from "@shared/lib/presentation";
 
 type Review = {
   id: string;
@@ -204,8 +205,8 @@ export function ReviewsPage() {
       const errorCode = extractApiErrorCode(error);
       const message =
         errorCode === "REVIEW_NOT_ALLOWED"
-          ? "Inicie a leitura deste livro antes de registrar uma review."
-          : extractApiErrorMessage(error, "Falha ao criar review.");
+          ? "Inicie a leitura deste livro antes de registrar uma avaliação."
+          : extractApiErrorMessage(error, "Falha ao criar avaliação.");
       showToast(message, "error");
     } finally {
       setCreating(false);
@@ -240,7 +241,7 @@ export function ReviewsPage() {
       cancelEditing();
       showToast("Avaliação atualizada com sucesso.", "success");
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Falha ao atualizar review."), "error");
+      showToast(extractApiErrorMessage(error, "Falha ao atualizar avaliação."), "error");
     } finally {
       setSavingId(null);
     }
@@ -257,7 +258,7 @@ export function ReviewsPage() {
       await loadPage();
       showToast("Avaliação removida com sucesso.", "success");
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Falha ao remover review."), "error");
+      showToast(extractApiErrorMessage(error, "Falha ao remover avaliação."), "error");
     } finally {
       setDeletingId(null);
     }
@@ -282,7 +283,7 @@ export function ReviewsPage() {
           <div className="aura-hero__signal">
             <MessageSquareQuote aria-hidden="true" />
             <strong>{items.length}</strong>
-            <span>avaliação(ões)</span>
+            <span>{items.length === 1 ? "avaliação" : "avaliações"}</span>
           </div>
         </div>
       </article>
@@ -290,7 +291,7 @@ export function ReviewsPage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3><PencilLine aria-hidden="true" /> Nova avaliação</h3>
-          <span className="kpi">{eligibleBooks.length} livro(s) elegível(is)</span>
+          <span className="kpi">{pluralizePt(eligibleBooks.length, "livro elegível", "livros elegíveis")}</span>
         </div>
         <p className="section-sub">
           Para manter o contexto da leitura, a plataforma libera avaliações apenas para livros que você já iniciou.
@@ -319,9 +320,9 @@ export function ReviewsPage() {
                 </small>
                 <div className="review-book-badges">
                   <span className={selectedBook.source === "OPEN" ? "import-badge" : "favorite-badge"}>
-                    {selectedBook.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                    {formatBookSource(selectedBook.source)}
                   </span>
-                  <span className="import-badge">Elegivel para review</span>
+                  <span className="import-badge">Elegível para avaliação</span>
                 </div>
               </div>
             </div>
@@ -425,7 +426,7 @@ export function ReviewsPage() {
                     <small>{reviewBook?.author ?? "Autor não informado"}</small>
                     <div className="review-book-badges">
                       <span className={reviewBook?.source === "OPEN" ? "import-badge" : "favorite-badge"}>
-                        {reviewBook?.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
+                        {formatBookSource(reviewBook?.source)}
                       </span>
                       <span className="import-badge">
                         {review.comment.trim().length > 0 ? `${review.comment.trim().length} caracteres` : "Sem comentário"}

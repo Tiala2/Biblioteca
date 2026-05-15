@@ -93,7 +93,7 @@ describe("ReviewsPage", () => {
     expect(screen.getByText("5,0")).toBeInTheDocument();
     expect(screen.getByText("Com comentário")).toBeInTheDocument();
     expect(screen.getByText("Última atualização")).toBeInTheDocument();
-    expect(screen.getAllByText("OPEN LIBRARY")).toHaveLength(2);
+    expect(screen.getAllByText("Open Library")).toHaveLength(2);
     expect(screen.getByText("9 caracteres")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ver livro" })).toHaveAttribute("href", "/books/book-1");
     expect(screen.queryByText("Livro: book-1")).not.toBeInTheDocument();

@@ -5,6 +5,7 @@ import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { StateCard } from "@shared/ui/feedback/StateCard";
+import { pluralizePt } from "@shared/lib/presentation";
 
 type Badge = {
   id: string;
@@ -180,13 +181,13 @@ export function BadgesPage() {
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <h3><Sparkles aria-hidden="true" /> Progresso das próximas conquistas</h3>
-          <span className="kpi">{progressCards.length} trilha(s)</span>
+          <span className="kpi">{pluralizePt(progressCards.length, "trilha", "trilhas")}</span>
         </div>
         <div className="badge-insights">
           <div className="stat-box">
             <CheckCircle2 aria-hidden="true" />
             <strong>{progressInsights.completed}</strong>
-            <span>trilha(s) completas</span>
+            <span>{progressInsights.completed === 1 ? "trilha completa" : "trilhas completas"}</span>
           </div>
           <div className="stat-box badge-insights__next">
             <Sparkles aria-hidden="true" />
@@ -213,7 +214,7 @@ export function BadgesPage() {
                 </div>
                 <small>{percent}% concluído</small>
                 <span className={missing === 0 ? "favorite-badge" : "import-badge"}>
-                  {missing === 0 ? "CONCLUIDA" : `Faltam ${missing} ${card.unit}`}
+                  {missing === 0 ? "Concluída" : `Faltam ${missing} ${card.unit}`}
                 </span>
               </article>
             );

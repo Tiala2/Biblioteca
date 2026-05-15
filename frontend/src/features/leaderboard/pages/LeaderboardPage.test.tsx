@@ -44,11 +44,11 @@ describe("LeaderboardPage", () => {
 
     expect(await screen.findAllByRole("heading", { name: "Ana" })).not.toHaveLength(0);
     expect(screen.getAllByRole("heading", { name: "Bruno" })).not.toHaveLength(0);
-    expect(screen.getAllByText("120 página(s)")).not.toHaveLength(0);
+    expect(screen.getAllByText("120 páginas")).not.toHaveLength(0);
     expect(screen.getByText("Opt-in ativo")).toBeInTheDocument();
     expect(screen.getByText("média por participante")).toBeInTheDocument();
-    expect(screen.getByText("LÍDER")).toBeInTheDocument();
-    expect(screen.getByText(/Faltam 30 p.gina\(s\)/)).toBeInTheDocument();
+    expect(screen.getByText("Líder")).toBeInTheDocument();
+    expect(screen.getByText("Faltam 30 páginas")).toBeInTheDocument();
     expect(screen.getAllByText("57% do volume").length).toBeGreaterThan(0);
   });
 

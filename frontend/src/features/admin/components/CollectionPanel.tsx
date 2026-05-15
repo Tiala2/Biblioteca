@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BookCover } from "@shared/ui/books/BookCover";
+import { pluralizePt } from "@shared/lib/presentation";
 import type { Book, Collection, CollectionForm } from "../types";
 import { AdminEmptyState } from "./AdminEmptyState";
 
@@ -148,7 +149,7 @@ export function CollectionPanel({
               />
               <div>
                 <strong>{collection.title}</strong>
-                <p className="section-sub">{collection.books?.length ?? 0} livro(s)</p>
+                <p className="section-sub">{pluralizePt(collection.books?.length ?? 0, "livro", "livros")}</p>
                 {collection.description && <p className="section-sub">{collection.description}</p>}
                 {(collection.books?.length ?? 0) > 0 && (
                   <small>{collection.books?.slice(0, 2).map((book) => book.title).join(", ")}</small>

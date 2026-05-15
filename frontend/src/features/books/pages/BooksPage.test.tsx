@@ -40,7 +40,7 @@ describe("BooksPage", () => {
     vi.clearAllMocks();
   });
 
-  it("deve carregar livros e mostrar selo OPEN LIBRARY para livro externo sem pdf", async () => {
+  it("deve carregar livros e mostrar selo Open Library para livro externo sem pdf", async () => {
     const mockedGet = vi.mocked(api.get);
     mockedGet.mockResolvedValueOnce({
       data: [
@@ -84,8 +84,8 @@ describe("BooksPage", () => {
     expect(screen.getByText("média de páginas")).toBeInTheDocument();
     expect(screen.getByText(/Total visível:/)).toBeInTheDocument();
     expect(screen.getByText("320")).toBeInTheDocument();
-    expect(screen.getByText("OPEN LIBRARY")).toBeInTheDocument();
-    expect(screen.getByText("DINÂMICA")).toBeInTheDocument();
+    expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
+    expect(screen.getByText("Dinâmica")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Livro B" })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Ler no app" })).toHaveLength(1);
     expect(screen.getByRole("link", { name: "Ler com progresso" })).toBeInTheDocument();

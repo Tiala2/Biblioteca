@@ -5,6 +5,7 @@ import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { formatInteger } from "@shared/lib/formatters";
+import { pluralizePt } from "@shared/lib/presentation";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 
 type LeaderboardMetric = "PAGES" | "BOOKS";
@@ -36,15 +37,21 @@ function metricCopy(metric: LeaderboardMetric) {
     return {
       title: "Livros concluídos",
       subtitle: "Ranking semanal por livros finalizados com opt-in ativo.",
-      valueLabel: "livro(s)",
+      singular: "livro",
+      plural: "livros",
     };
   }
 
   return {
       title: "Páginas lidas",
       subtitle: "Ranking semanal da comunidade por páginas lidas com opt-in ativo.",
-      valueLabel: "página(s)",
+      singular: "página",
+      plural: "páginas",
   };
+}
+
+function formatMetricValue(value: number, copy: ReturnType<typeof metricCopy>) {
+  return pluralizePt(value, copy.singular, copy.plural);
 }
 
 export function LeaderboardPage() {
@@ -127,7 +134,7 @@ export function LeaderboardPage() {
         <div className="aura-hero__signal">
           <Trophy aria-hidden="true" />
           <strong>{entries.length}</strong>
-          <span>participante(s)</span>
+          <span>{entries.length === 1 ? "participante" : "participantes"}</span>
         </div>
       </div>
 
@@ -193,7 +200,7 @@ export function LeaderboardPage() {
           </div>
           <div className="stat-box">
             <BarChart3 aria-hidden="true" />
-            <strong>{topEntry ? `${formatInteger(topEntry.value)} ${copy.valueLabel}` : "0"}</strong>
+            <strong>{topEntry ? formatMetricValue(topEntry.value, copy) : "0"}</strong>
             <span>melhor marca</span>
           </div>
           <div className="stat-box">
@@ -227,7 +234,7 @@ export function LeaderboardPage() {
                 <h3>{entry.name}</h3>
                 <p className="section-sub">{copy.title}</p>
                 <strong>
-                  {formatInteger(entry.value)} {copy.valueLabel}
+                  {formatMetricValue(entry.value, copy)}
                 </strong>
                 <div className="leaderboard-share" aria-label={`Participação de ${entry.name}`}>
                   <span style={{ width: `${communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0}%` }} />
@@ -252,14 +259,14 @@ export function LeaderboardPage() {
               <h3>{entry.name}</h3>
               <p className="section-sub">{copy.title}</p>
               <strong>
-                {formatInteger(entry.value)} {copy.valueLabel}
+                {formatMetricValue(entry.value, copy)}
               </strong>
               <div className="leaderboard-share" aria-label={`Participação de ${entry.name}`}>
                 <span style={{ width: `${share}%` }} />
               </div>
               <small>{share}% do volume</small>
               <span className={gapToLeader === 0 ? "favorite-badge" : "import-badge"}>
-                {gapToLeader === 0 ? "LÍDER" : `Faltam ${formatInteger(gapToLeader)} ${copy.valueLabel}`}
+                {gapToLeader === 0 ? "Líder" : `Faltam ${formatMetricValue(gapToLeader, copy)}`}
               </span>
             </article>
           );
