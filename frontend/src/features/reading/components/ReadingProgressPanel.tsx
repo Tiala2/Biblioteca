@@ -50,7 +50,7 @@ export function ReadingProgressPanel({
         </div>
         <div className="stat-box">
           <strong>{formatDateLabel(readingSnapshot?.lastReadedAt)}</strong>
-          <span>ultima sincronizacao</span>
+          <span>última sincronização</span>
         </div>
         <div className="stat-box">
           <strong>{formatDateLabel(readingSnapshot?.startedAt)}</strong>

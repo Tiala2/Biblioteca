@@ -209,7 +209,7 @@ export function LeaderboardPage() {
           <div className="stat-box">
             <BarChart3 aria-hidden="true" />
             <strong>{formatInteger(averageValue)}</strong>
-            <span>media por participante</span>
+            <span>média por participante</span>
           </div>
         </div>
       )}
@@ -229,7 +229,7 @@ export function LeaderboardPage() {
                 <strong>
                   {formatInteger(entry.value)} {copy.valueLabel}
                 </strong>
-                <div className="leaderboard-share" aria-label={`Participacao de ${entry.name}`}>
+                <div className="leaderboard-share" aria-label={`Participação de ${entry.name}`}>
                   <span style={{ width: `${communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0}%` }} />
                 </div>
                 <small>
@@ -254,12 +254,12 @@ export function LeaderboardPage() {
               <strong>
                 {formatInteger(entry.value)} {copy.valueLabel}
               </strong>
-              <div className="leaderboard-share" aria-label={`Participacao de ${entry.name}`}>
+              <div className="leaderboard-share" aria-label={`Participação de ${entry.name}`}>
                 <span style={{ width: `${share}%` }} />
               </div>
               <small>{share}% do volume</small>
               <span className={gapToLeader === 0 ? "favorite-badge" : "import-badge"}>
-                {gapToLeader === 0 ? "LIDER" : `Faltam ${formatInteger(gapToLeader)} ${copy.valueLabel}`}
+                {gapToLeader === 0 ? "LÍDER" : `Faltam ${formatInteger(gapToLeader)} ${copy.valueLabel}`}
               </span>
             </article>
           );

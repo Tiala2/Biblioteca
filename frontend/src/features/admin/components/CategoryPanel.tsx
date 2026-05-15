@@ -123,7 +123,7 @@ export function CategoryPanel({
           </li>
         ))}
       </ul>
-      {filteredCategories.length === 0 && <AdminEmptyState title="Nenhuma categoria encontrada" message="Revise o filtro ou crie uma categoria para organizar melhor o catalogo." />}
+      {filteredCategories.length === 0 && <AdminEmptyState title="Nenhuma categoria encontrada" message="Revise o filtro ou crie uma categoria para organizar melhor o catálogo." />}
       {filteredCategories.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>

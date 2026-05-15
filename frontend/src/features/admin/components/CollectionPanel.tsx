@@ -171,7 +171,7 @@ export function CollectionPanel({
           </li>
         ))}
       </ul>
-      {filteredCollections.length === 0 && <AdminEmptyState title="Nenhuma colecao encontrada" message="Revise o filtro ou crie uma colecao para destacar grupos de livros." />}
+      {filteredCollections.length === 0 && <AdminEmptyState title="Nenhuma coleção encontrada" message="Revise o filtro ou crie uma coleção para destacar grupos de livros." />}
       {filteredCollections.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>

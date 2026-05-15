@@ -224,7 +224,7 @@ export function UserPanel({
           );
         })}
       </ul>
-      {!loading && users.length === 0 && <AdminEmptyState title="Nenhum usuario encontrado" message="Revise filtros de status, papel ou busca para localizar outros usuarios." />}
+      {!loading && users.length === 0 && <AdminEmptyState title="Nenhum usuário encontrado" message="Revise filtros de status, papel ou busca para localizar outros usuários." />}
       <div className="pagination-row">
         <button type="button" className="btn-muted" disabled={currentPage <= 0 || loading} onClick={() => onPageChange(currentPage - 1)}>
           Anterior

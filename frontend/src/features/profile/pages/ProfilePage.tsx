@@ -216,7 +216,7 @@ export function ProfilePage() {
   if (loading) {
     return (
       <StateCard
-        title="Perfil em preparacao"
+        title="Perfil em preparação"
         message="Estamos carregando seu histórico, conquistas e preferências para montar sua visão pessoal."
         variant="loading"
       />
@@ -307,7 +307,7 @@ export function ProfilePage() {
           <div className="stacked-list-item profile-preference-row">
             <div>
               <strong>Ranking semanal</strong>
-              <p className="section-sub">Define se suas leituras entram na classificacao publica.</p>
+              <p className="section-sub">Define se suas leituras entram na classificação pública.</p>
             </div>
             <span className={leaderboardOptIn ? "favorite-badge" : "import-badge"}>
               {leaderboardOptIn ? "ATIVO" : "DESLIGADO"}
@@ -382,7 +382,7 @@ export function ProfilePage() {
                       {item.book.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
                     </span>
                     <span className={item.progress >= 100 ? "favorite-badge" : "import-badge"}>
-                      {item.progress >= 100 ? "CONCLUIDA" : "EM PROGRESSO"}
+                      {item.progress >= 100 ? "CONCLUÍDA" : "EM PROGRESSO"}
                     </span>
                   </div>
                   <div className="mini-progress" aria-label={`Progresso de ${item.book.title}: ${item.progress}%`}>
@@ -434,7 +434,7 @@ export function ProfilePage() {
         <div className="profile-review-insights">
           <div className="stat-box">
             <strong>{formatDecimal(profileInsights.averageRating)}</strong>
-            <span>media das notas</span>
+            <span>média das notas</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.highReviews)}</strong>
@@ -447,7 +447,7 @@ export function ProfilePage() {
         </div>
         {profileInsights.latestReview ? (
           <p className="profile-review-latest">
-            Ultima avaliacao: <strong>{formatDateTimeBr(profileInsights.latestReview.updatedAt)}</strong>
+            Última avaliação: <strong>{formatDateTimeBr(profileInsights.latestReview.updatedAt)}</strong>
           </p>
         ) : null}
         <select aria-label="Filtrar avaliações por nota" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as "ALL" | "HIGH" | "LOW")}>

@@ -36,8 +36,8 @@ export function ExternalReaderPanel({
           <span className="external-source-pill">{sourceLabel}</span>
         </div>
         <p className="section-sub">
-          Quando a fonte oficial permite incorporacao, abrimos o leitor aqui dentro. O link externo continua disponivel
-          como alternativa, mantendo metas, ranking, historico e favoritos no mesmo fluxo.
+          Quando a fonte oficial permite incorporação, abrimos o leitor aqui dentro. O link externo continua disponível
+          como alternativa, mantendo metas, ranking, histórico e favoritos no mesmo fluxo.
         </p>
         <div className="external-reading-steps" aria-label="Como usar leitura externa">
           <div className="external-step">
@@ -46,11 +46,11 @@ export function ExternalReaderPanel({
           </div>
           <div className="external-step">
             <strong>2</strong>
-            <span>Use a fonte oficial quando a incorporacao nao estiver disponivel.</span>
+            <span>Use a fonte oficial quando a incorporação não estiver disponível.</span>
           </div>
           <div className="external-step">
             <strong>3</strong>
-            <span>Volte e salve a pagina lida aqui.</span>
+            <span>Volte e salve a página lida aqui.</span>
           </div>
         </div>
         {externalReaderFallbackUrl ? (
@@ -59,7 +59,7 @@ export function ExternalReaderPanel({
               {externalSourceActionLabel}
             </a>
             <button type="button" className="btn-muted" onClick={onSyncReading} disabled={saving}>
-              {saving ? "Salvando..." : "Salvar pagina atual"}
+              {saving ? "Salvando..." : "Salvar página atual"}
             </button>
           </div>
         ) : null}
@@ -78,7 +78,7 @@ export function ExternalReaderPanel({
       ) : null}
       {!externalReaderLoading && !externalReaderEmbedUrl ? (
         <p className="section-sub">
-          Nao encontramos uma versao incorporavel deste livro. Use o link oficial para continuar a leitura na fonte autorizada.
+          Não encontramos uma versão incorporável deste livro. Use o link oficial para continuar a leitura na fonte autorizada.
         </p>
       ) : null}
       {externalReaderFallbackUrl ? (

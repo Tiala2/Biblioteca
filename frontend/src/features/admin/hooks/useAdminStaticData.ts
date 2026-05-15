@@ -45,7 +45,7 @@ export function useAdminStaticData({ headers }: UseAdminStaticDataParams) {
     ]);
 
     if (m.status === "fulfilled") setMetrics(m.value.data);
-    else failedSections.push("metricas");
+    else failedSections.push("métricas");
 
     if (c.status === "fulfilled") setCategories(c.value.data);
     else failedSections.push("categorias");
@@ -70,7 +70,7 @@ export function useAdminStaticData({ headers }: UseAdminStaticDataParams) {
     }
 
     if (col.status === "fulfilled") setCollections(col.value.data.content);
-    else failedSections.push("colecoes");
+    else failedSections.push("coleções");
 
     if (bd.status === "fulfilled") setBadges(bd.value.data.content);
     else failedSections.push("badges");

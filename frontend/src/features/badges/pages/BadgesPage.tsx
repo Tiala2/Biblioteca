@@ -194,7 +194,7 @@ export function BadgesPage() {
             <span>
               {progressInsights.nextUnlock
                 ? `Faltam ${progressInsights.nextUnlock.missing} ${progressInsights.nextUnlock.unit}`
-                : "Nenhuma pendencia nas trilhas atuais"}
+                : "Nenhuma pendência nas trilhas atuais"}
             </span>
           </div>
         </div>

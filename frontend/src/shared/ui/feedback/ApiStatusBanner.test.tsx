@@ -8,13 +8,13 @@ describe("ApiStatusBanner", () => {
     globalThis.fetch = originalFetch;
   });
 
-  it("exibe aviso quando a API estiver indisponivel", async () => {
+  it("exibe aviso quando a API estiver indisponível", async () => {
     globalThis.fetch = vi.fn().mockRejectedValue(new Error("network offline"));
 
     render(<ApiStatusBanner />);
 
     await waitFor(() => {
-      expect(screen.getByRole("status")).toHaveTextContent("API indisponivel");
+      expect(screen.getByRole("status")).toHaveTextContent("API indisponível");
     });
   });
 

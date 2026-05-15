@@ -141,8 +141,8 @@ export function useAdminActions({
         collectionForm.id
           ? api.put(`/api/admin/collections/${collectionForm.id}`, collectionForm, { headers })
           : api.post("/api/admin/collections", collectionForm, { headers }),
-      collectionForm.id ? "Colecao atualizada com sucesso." : "Colecao criada com sucesso.",
-      collectionForm.id ? "Falha ao atualizar colecao." : "Falha ao criar colecao."
+      collectionForm.id ? "Coleção atualizada com sucesso." : "Coleção criada com sucesso.",
+      collectionForm.id ? "Falha ao atualizar coleção." : "Falha ao criar coleção."
     );
     setCollectionForm(emptyCollection);
   };
@@ -216,7 +216,7 @@ export function useAdminActions({
           { headers }
         ),
       "Usuário atualizado com sucesso.",
-      "Falha ao atualizar usuario.",
+      "Falha ao atualizar usuário.",
       reloadUsers
     );
     setUserForm(emptyUser);
@@ -233,7 +233,7 @@ export function useAdminActions({
       `user-reactivate-${userId}`,
       () => api.patch(`/api/admin/users/${userId}/reactivate`, undefined, { headers }),
       "Usuário reativado com sucesso.",
-      "Falha ao reativar usuario.",
+      "Falha ao reativar usuário.",
       reloadUsers
     );
   };
@@ -275,7 +275,7 @@ export function useAdminActions({
       );
       setImportResult(response.data);
       await reloadStaticData();
-      showToast("Importacao concluida com sucesso.", "success");
+      showToast("Importação concluída com sucesso.", "success");
     } catch {
       showToast("Falha ao importar livros da Open Library.", "error");
     } finally {

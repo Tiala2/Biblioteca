@@ -62,7 +62,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
           setSearch(event.target.value);
           setPage(0);
         }}
-        placeholder="Filtrar favoritos por titulo, ISBN ou origem"
+        placeholder="Filtrar favoritos por título, ISBN ou origem"
       />
       <ul className="stacked-list">
         {visibleFavorites.map((favorite) => (
@@ -81,7 +81,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
           </li>
         ))}
       </ul>
-      {filteredFavorites.length === 0 && <AdminEmptyState title="Nenhum favorito encontrado" message="Revise o filtro para conferir outros livros salvos pelos usuarios." />}
+      {filteredFavorites.length === 0 && <AdminEmptyState title="Nenhum favorito encontrado" message="Revise o filtro para conferir outros livros salvos pelos usuários." />}
       {filteredFavorites.length > pageSize && (
         <div className="pagination-row">
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>

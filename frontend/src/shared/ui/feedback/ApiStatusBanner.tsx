@@ -50,7 +50,7 @@ export function ApiStatusBanner() {
 
   return (
     <div className="api-status-banner" role="status" aria-live="polite">
-      API indisponivel. Verifique se o backend esta ativo e tente novamente.
+      API indisponível. Verifique se o backend está ativo e tente novamente.
     </div>
   );
 }
