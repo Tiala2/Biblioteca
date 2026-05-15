@@ -75,7 +75,7 @@ describe("BooksPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Livro A" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Resumo da vitrine" })).toBeInTheDocument();
-    expect(screen.getByText("livros nesta pagina")).toBeInTheDocument();
+    expect(screen.getByText("livros nesta página")).toBeInTheDocument();
     expect(screen.getByText("com PDF")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
     expect(screen.getByText("com dinâmica")).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("BooksPage", () => {
       </MemoryRouter>
     );
 
-    const input = await screen.findByPlaceholderText(/Pesquisar por titulo/i);
+    const input = await screen.findByPlaceholderText(/Pesquisar por título/i);
     await user.type(input, "Hobbit");
     await user.click(screen.getByRole("button", { name: "Pesquisar" }));
 
@@ -162,7 +162,7 @@ describe("BooksPage", () => {
       </MemoryRouter>
     );
 
-    await screen.findByPlaceholderText(/Pesquisar por titulo/i);
+    await screen.findByPlaceholderText(/Pesquisar por título/i);
 
     await user.selectOptions(screen.getByLabelText("Filtrar por categoria"), "cat-1");
     await user.selectOptions(screen.getByLabelText("Filtrar por tag"), "tag-2");
@@ -220,7 +220,7 @@ describe("BooksPage", () => {
 
     expect(await screen.findByText("Busca: Hobbit")).toBeInTheDocument();
     expect(screen.getByText("Somente com PDF")).toBeInTheDocument();
-    expect(screen.getByText("Ordem: Lancamentos")).toBeInTheDocument();
+    expect(screen.getByText("Ordem: Lançamentos")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Remover filtro Busca: Hobbit" }));
 
@@ -255,6 +255,6 @@ describe("BooksPage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Falha ao carregar catálogo" })).toBeInTheDocument();
-    expect(screen.getByText("Falha de conexao com o servidor.")).toBeInTheDocument();
+    expect(screen.getByText("Falha de conexão com o servidor.")).toBeInTheDocument();
   });
 });

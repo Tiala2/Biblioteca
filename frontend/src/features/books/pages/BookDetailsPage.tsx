@@ -133,7 +133,7 @@ export function BookDetailsPage() {
       { label: "Dinâmica", value: book.hasNarrative ? "Disponível" : "Em breve" },
       { label: "ISBN", value: book.isbn || "Não informado" },
       {
-        label: "Publicacao",
+        label: "Publicação",
         value: book.publicationDate ? formatDateBr(book.publicationDate) : "Não informada",
       },
     ];
@@ -189,7 +189,7 @@ export function BookDetailsPage() {
     return (
       <StateCard
         title="Detalhes em carregamento"
-        message="Estamos preparando os dados do livro, suas acoes rapidas e as sugestoes relacionadas."
+        message="Estamos preparando os dados do livro, suas ações rápidas e as sugestões relacionadas."
         variant="loading"
       />
     );
@@ -247,7 +247,7 @@ export function BookDetailsPage() {
             <span>origem</span>
           </div>
           <div className="stat-box">
-            <strong>{book?.hasPdf ? "SIM" : "NAO"}</strong>
+            <strong>{book?.hasPdf ? "SIM" : "NÃO"}</strong>
             <span>pdf no app</span>
           </div>
           <div className="stat-box">
@@ -264,7 +264,7 @@ export function BookDetailsPage() {
             {formatDecimal(book?.averageRating)} / {book?.totalReviews ?? 0} avaliação(ões)
           </span>
         </div>
-        <div className="rating-summary" aria-label={`Nota media ${formatDecimal(book?.averageRating)} de 5`}>
+        <div className="rating-summary" aria-label={`Nota média ${formatDecimal(book?.averageRating)} de 5`}>
           {ratingStars.map((filled, index) => (
             <Star key={index} aria-hidden="true" className={filled ? "filled" : undefined} />
           ))}
@@ -284,7 +284,7 @@ export function BookDetailsPage() {
           </div>
           <div className="stat-box">
             <strong>{formatDecimal(detailInsights.communityAverage)}</strong>
-            <span>media dos destaques</span>
+            <span>média dos destaques</span>
           </div>
         </div>
         <div className="taxonomy-panel">
@@ -340,8 +340,8 @@ export function BookDetailsPage() {
 
       <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
-          <h3><WandSparkles aria-hidden="true" /> Proximos passos</h3>
-          <span className="kpi">{isFavorite ? "Favorito ativo" : "Exploracao"}</span>
+          <h3><WandSparkles aria-hidden="true" /> Próximos passos</h3>
+          <span className="kpi">{isFavorite ? "Favorito ativo" : "Exploração"}</span>
         </div>
         <ul className="stacked-list">
           <li className="stacked-list-item">
@@ -385,7 +385,7 @@ export function BookDetailsPage() {
                       <strong>Leitor {index + 1}</strong>
                       <span className={review.rating >= 4 ? "favorite-badge" : "import-badge"}>Nota {review.rating}/5</span>
                     </div>
-                    <p>{review.comment || "Sem comentario adicional."}</p>
+                    <p>{review.comment || "Sem comentário adicional."}</p>
                     <small>Atualizado em: {formatDateTimeBr(review.updatedAt)}</small>
                   </div>
                 </li>
@@ -393,14 +393,14 @@ export function BookDetailsPage() {
             </ul>
           </>
         ) : (
-          <p className="section-sub">As primeiras opinioes da comunidade aparecerao aqui quando surgirem novas reviews para este livro.</p>
+          <p className="section-sub">As primeiras opiniões da comunidade aparecerão aqui quando surgirem novas reviews para este livro.</p>
         )}
       </article>
 
       <article className="card aura-panel">
         <div className="section-head">
           <h3>Continuar explorando</h3>
-          <span className="kpi">{recommendations.length} sugestao(oes)</span>
+          <span className="kpi">{recommendations.length} sugestão(ões)</span>
         </div>
         {recommendations.length > 0 ? (
           <ul className="stacked-list">

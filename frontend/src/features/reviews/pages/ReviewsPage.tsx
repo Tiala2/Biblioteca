@@ -339,7 +339,7 @@ export function ReviewsPage() {
             </div>
           )}
           <label>Nota</label>
-          <RatingPicker value={rating} onChange={setRating} disabled={!hasEligibleBooks} label="Nota da nova avaliacao" />
+          <RatingPicker value={rating} onChange={setRating} disabled={!hasEligibleBooks} label="Nota da nova avaliação" />
           <label>Comentário</label>
           <textarea
             value={comment}
@@ -386,7 +386,7 @@ export function ReviewsPage() {
           </div>
           <div className="stat-box">
             <strong>{reviewStats.withComment}</strong>
-            <span>Com comentario</span>
+            <span>Com comentário</span>
           </div>
           <div className="stat-box">
             <strong>{reviewStats.latestUpdatedLabel}</strong>
@@ -428,7 +428,7 @@ export function ReviewsPage() {
                         {reviewBook?.source === "OPEN" ? "OPEN LIBRARY" : "LOCAL"}
                       </span>
                       <span className="import-badge">
-                        {review.comment.trim().length > 0 ? `${review.comment.trim().length} caracteres` : "Sem comentario"}
+                        {review.comment.trim().length > 0 ? `${review.comment.trim().length} caracteres` : "Sem comentário"}
                       </span>
                     </div>
                   </div>
@@ -436,7 +436,7 @@ export function ReviewsPage() {
                 {isEditing ? (
                   <>
                     <label>Nota</label>
-                    <RatingPicker value={editRating} onChange={setEditRating} label="Nota da avaliacao em edicao" />
+                    <RatingPicker value={editRating} onChange={setEditRating} label="Nota da avaliação em edição" />
                     <label>Comentário</label>
                     <textarea
                       value={editComment}

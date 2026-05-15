@@ -52,10 +52,10 @@ function parsePage(value: string | null): number {
 
 function formatSort(sort: BookSort): string {
   const labels: Record<BookSort, string> = {
-    BEST_RATED: "Melhor avaliacao",
-    NEW_RELEASES: "Lancamentos",
-    TRENDING_WEEK: "Tendencia semanal",
-    TRENDING_MONTH: "Tendencia mensal",
+    BEST_RATED: "Melhor avaliação",
+    NEW_RELEASES: "Lançamentos",
+    TRENDING_WEEK: "Tendência semanal",
+    TRENDING_MONTH: "Tendência mensal",
   };
   return labels[sort];
 }
@@ -102,8 +102,8 @@ export function BooksPage() {
     if (applied.author) filters.push({ key: "author", label: `Autor: ${applied.author}` });
     if (applied.categoryId) filters.push({ key: "categoryId", label: `Categoria: ${selectedCategory?.name ?? "selecionada"}` });
     if (applied.tagId) filters.push({ key: "tagId", label: `Tag: ${selectedTag?.name ?? "selecionada"}` });
-    if (applied.minPages) filters.push({ key: "minPages", label: `Minimo: ${applied.minPages} paginas` });
-    if (applied.maxPages) filters.push({ key: "maxPages", label: `Maximo: ${applied.maxPages} paginas` });
+    if (applied.minPages) filters.push({ key: "minPages", label: `Mínimo: ${applied.minPages} páginas` });
+    if (applied.maxPages) filters.push({ key: "maxPages", label: `Máximo: ${applied.maxPages} páginas` });
     if (applied.sort !== DEFAULT_SORT) filters.push({ key: "sort", label: `Ordem: ${formatSort(applied.sort)}` });
     if (applied.onlyWithPdf) filters.push({ key: "withPdf", label: "Somente com PDF" });
 
@@ -334,8 +334,8 @@ export function BooksPage() {
         </div>
         <form className="filters-grid" onSubmit={onSearch}>
           <input
-            aria-label="Pesquisar livros por titulo ou autor"
-            placeholder="Pesquisar por titulo ou autor"
+            aria-label="Pesquisar livros por título ou autor"
+            placeholder="Pesquisar por título ou autor"
             value={queryInput}
             onChange={(event) => setQueryInput(event.target.value)}
           />
@@ -379,9 +379,9 @@ export function BooksPage() {
           />
           <select aria-label="Ordenação do catálogo" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
             <option value="BEST_RATED">Melhor avaliação</option>
-            <option value="NEW_RELEASES">Lancamentos</option>
-            <option value="TRENDING_WEEK">Tendencia semanal</option>
-            <option value="TRENDING_MONTH">Tendencia mensal</option>
+            <option value="NEW_RELEASES">Lançamentos</option>
+            <option value="TRENDING_WEEK">Tendência semanal</option>
+            <option value="TRENDING_MONTH">Tendência mensal</option>
           </select>
           <label className="check-inline">
             <input
@@ -436,14 +436,14 @@ export function BooksPage() {
           <div className="section-head">
             <div>
               <h3>Resumo da vitrine</h3>
-              <p className="section-sub">Uma leitura rapida do resultado atual antes de escolher o proximo livro.</p>
+              <p className="section-sub">Uma leitura rápida do resultado atual antes de escolher o próximo livro.</p>
             </div>
-            <span className="kpi">Pagina {applied.page + 1}</span>
+            <span className="kpi">Página {applied.page + 1}</span>
           </div>
           <div className="catalog-insights">
             <div className="stat-box">
               <strong>{books.length}</strong>
-              <span>livros nesta pagina</span>
+              <span>livros nesta página</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.pdfCount}</strong>

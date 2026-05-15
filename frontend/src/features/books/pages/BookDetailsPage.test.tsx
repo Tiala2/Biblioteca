@@ -106,7 +106,7 @@ describe("BookDetailsPage", () => {
     expect(await screen.findByRole("heading", { name: "Livro Detalhado" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Fantasia" })).toHaveAttribute("href", "/books?categoryId=cat-1");
     expect(screen.getByRole("link", { name: "Aventura" })).toHaveAttribute("href", "/books?tagId=tag-1");
-    expect(screen.getByLabelText("Nota media 4,5 de 5")).toBeInTheDocument();
+    expect(screen.getByLabelText("Nota média 4,5 de 5")).toBeInTheDocument();
     expect(screen.getByText("origem")).toBeInTheDocument();
     expect(screen.getByText("Dinâmica")).toBeInTheDocument();
     expect(screen.getByText("Disponível")).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe("BookDetailsPage", () => {
     expect(screen.getByText("favorito")).toBeInTheDocument();
     expect(screen.getByText("categorias")).toBeInTheDocument();
     expect(screen.getByText("tags")).toBeInTheDocument();
-    expect(screen.getByText("media dos destaques")).toBeInTheDocument();
+    expect(screen.getByText("média dos destaques")).toBeInTheDocument();
     expect(screen.getByText("Destaque mais recente:")).toBeInTheDocument();
     expect(screen.getByText("Nota 4/5")).toBeInTheDocument();
     expect(screen.getByText("Nota registrada: 5")).toBeInTheDocument();

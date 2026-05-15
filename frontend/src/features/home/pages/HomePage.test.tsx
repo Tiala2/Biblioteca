@@ -125,7 +125,7 @@ describe("HomePage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Não foi possível carregar o painel" })).toBeInTheDocument();
-    expect(screen.getByText("Falha de conexao com o servidor.")).toBeInTheDocument();
+    expect(screen.getByText("Falha de conexão com o servidor.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ir para o catálogo" })).toBeInTheDocument();
   });
 });

@@ -128,7 +128,7 @@ export function GoalsPage() {
 
   const progressPercent = Math.max(0, Math.min(100, Number(goal?.progressPercent ?? 0)));
   const suggestedDailyPages = goal && goal.expiresInDays > 0 ? Math.ceil(goal.remainingPages / goal.expiresInDays) : goal?.remainingPages ?? 0;
-  const paceLabel = goal?.paceWarning ? "Ajuste necessario" : "Bom ritmo";
+  const paceLabel = goal?.paceWarning ? "Ajuste necessário" : "Bom ritmo";
   const goalInsights = useMemo(() => {
     const highPriorityAlerts = alerts.filter((alert) => ["HIGH", "ERROR", "CRITICAL", "WARNING"].includes(alert.severity)).length;
     const nextMilestone = goal ? Math.min(goal.targetPages, Math.ceil(goal.progressPages / 25) * 25 + 25) : 0;
@@ -173,7 +173,7 @@ export function GoalsPage() {
           <span className="kpi">{period === "WEEKLY" ? "Semanal" : "Mensal"}</span>
         </div>
         <form id="goal-form" onSubmit={onSubmit}>
-          <label>Periodo</label>
+          <label>Período</label>
           <select value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
             <option value="WEEKLY">Semanal</option>
             <option value="MONTHLY">Mensal</option>
@@ -193,7 +193,7 @@ export function GoalsPage() {
       <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
           <h3><Gauge aria-hidden="true" /> Resumo</h3>
-          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} pags` : "Sem meta ativa"}</span>
+          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} págs` : "Sem meta ativa"}</span>
         </div>
         {goal ? (
           <>
@@ -204,7 +204,7 @@ export function GoalsPage() {
               </div>
               <div className="stat-box">
                 <strong>{goal.remainingPages}</strong>
-                <span>paginas restantes</span>
+                <span>páginas restantes</span>
               </div>
               <div className="stat-box">
                 <strong>{goal.expiresInDays}</strong>
@@ -212,7 +212,7 @@ export function GoalsPage() {
               </div>
               <div className="stat-box">
                 <strong>{suggestedDailyPages}</strong>
-                <span>paginas por dia</span>
+                <span>páginas por dia</span>
               </div>
               <div className="stat-box">
                 <strong>{alerts.length}</strong>
@@ -220,13 +220,13 @@ export function GoalsPage() {
               </div>
               <div className="stat-box">
                 <strong>{streak}</strong>
-                <span>dias de sequencia</span>
+                <span>dias de sequência</span>
               </div>
             </div>
             <div className="goal-status-row">
               <span className={goal.paceWarning ? "import-badge" : "favorite-badge"}>{paceLabel}</span>
               <span className={goalInsights.highPriorityAlerts > 0 ? "import-badge" : "favorite-badge"}>
-                {goalInsights.highPriorityAlerts > 0 ? `${goalInsights.highPriorityAlerts} alerta(s) prioritario(s)` : "Sem alerta prioritario"}
+                {goalInsights.highPriorityAlerts > 0 ? `${goalInsights.highPriorityAlerts} alerta(s) prioritário(s)` : "Sem alerta prioritário"}
               </span>
               <span className="section-sub">Status: {goal.status}</span>
             </div>
@@ -236,13 +236,13 @@ export function GoalsPage() {
               <div>
                 <strong>
                   {goalInsights.pagesToMilestone > 0
-                    ? `Faltam ${goalInsights.pagesToMilestone} paginas para o proximo marco`
-                    : "Marco atual alcancado"}
+                    ? `Faltam ${goalInsights.pagesToMilestone} páginas para o próximo marco`
+                    : "Marco atual alcançado"}
                 </strong>
                 <small>
                   {goal.expiresInDays > 0
-                    ? `${goal.expiresInDays} dia(s) restantes neste periodo`
-                    : "Periodo encerrando, revise sua proxima meta"}
+                    ? `${goal.expiresInDays} dia(s) restantes neste período`
+                    : "Período encerrando, revise sua próxima meta"}
                 </small>
               </div>
             </div>
@@ -275,7 +275,7 @@ export function GoalsPage() {
         </div>
         {alerts.length === 0 && (
           <p className="section-sub">
-            Sem alertas no momento. Quando a meta precisar de ajuste, os avisos vao aparecer aqui.
+            Sem alertas no momento. Quando a meta precisar de ajuste, os avisos vão aparecer aqui.
           </p>
         )}
         {alerts.length > 0 && (
@@ -290,7 +290,7 @@ export function GoalsPage() {
                   <p className="section-sub">{alert.message}</p>
                 </div>
                 {alert.suggestedDailyPages ? (
-                  <span className="kpi">{alert.suggestedDailyPages} pags/dia</span>
+                  <span className="kpi">{alert.suggestedDailyPages} págs/dia</span>
                 ) : null}
               </li>
             ))}

@@ -91,7 +91,7 @@ describe("ReviewsPage", () => {
     expect(screen.getAllByRole("link", { name: "Livro Exibido" })[0]).toHaveAttribute("href", "/books/book-1");
     expect(screen.getByText("Média das notas")).toBeInTheDocument();
     expect(screen.getByText("5,0")).toBeInTheDocument();
-    expect(screen.getByText("Com comentario")).toBeInTheDocument();
+    expect(screen.getByText("Com comentário")).toBeInTheDocument();
     expect(screen.getByText("Última atualização")).toBeInTheDocument();
     expect(screen.getAllByText("OPEN LIBRARY")).toHaveLength(2);
     expect(screen.getByText("9 caracteres")).toBeInTheDocument();
@@ -177,7 +177,7 @@ describe("ReviewsPage", () => {
     const textInputs = screen.getAllByRole("textbox");
     await user.clear(textInputs[textInputs.length - 1]);
     await user.type(textInputs[textInputs.length - 1], "Comentario atualizado");
-    const editRatingPicker = screen.getByRole("radiogroup", { name: "Nota da avaliacao em edicao" });
+    const editRatingPicker = screen.getByRole("radiogroup", { name: "Nota da avaliação em edição" });
     await user.click(within(editRatingPicker).getByRole("radio", { name: "4 estrelas" }));
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 

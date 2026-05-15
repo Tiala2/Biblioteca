@@ -162,7 +162,7 @@ export function HomePage() {
     return (
       <StateCard
         title="Painel inicial em carregamento"
-        message="Estamos preparando seu resumo de leitura, metas e recomendacoes."
+        message="Estamos preparando seu resumo de leitura, metas e recomendações."
         variant="loading"
       />
     );
@@ -220,7 +220,7 @@ export function HomePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3><Sparkles aria-hidden="true" /> Resumo da conta</h3>
-          <span className="kpi">{home.userSummary.totalPagesRead} pags lidas</span>
+          <span className="kpi">{home.userSummary.totalPagesRead} pág. lidas</span>
         </div>
         <div className="stats-grid aura-stats">
           <div className="stat-box">
@@ -236,7 +236,7 @@ export function HomePage() {
           <div className="stat-box">
             <Target aria-hidden="true" />
             <strong>{home.readingProgress.pagesReadThisWeek}</strong>
-            <span>pags nesta semana</span>
+            <span>pág. nesta semana</span>
           </div>
           <div className="stat-box">
             <Flame aria-hidden="true" />
@@ -313,7 +313,7 @@ export function HomePage() {
 
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3><LibraryBig aria-hidden="true" /> Recomendacoes</h3>
+          <h3><LibraryBig aria-hidden="true" /> Recomendações</h3>
           <span className="kpi">{home.recommendations.length} destaque(s)</span>
         </div>
         {home.recommendations.length > 0 ? (
@@ -357,7 +357,7 @@ export function HomePage() {
             </ul>
           </>
         ) : (
-          <p className="section-sub">As recomendacoes aparecerao aqui quando houver mais dados de uso.</p>
+          <p className="section-sub">As recomendações aparecerão aqui quando houver mais dados de uso.</p>
         )}
       </article>
 
