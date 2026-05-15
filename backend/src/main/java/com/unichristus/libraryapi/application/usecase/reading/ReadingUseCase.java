@@ -83,7 +83,7 @@ public class ReadingUseCase {
         try {
             notifyReadingAlertsIfEnabled(userId);
         } catch (Exception ex) {
-            log.warn("Falha ao enviar alertas de leitura para usuario {}: {}", userId, ex.getMessage());
+            log.warn("Falha ao enviar alertas de leitura para usuário {}: {}", userId, ex.getMessage());
         }
     }
 

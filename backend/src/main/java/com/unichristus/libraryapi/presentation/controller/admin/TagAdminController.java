@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "[Admin]", description = "Operacoes administrativas da API")
+@Tag(name = "[Admin]", description = "Operações administrativas da API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ServiceURI.TAGS_ADMIN)
@@ -45,7 +45,7 @@ public class TagAdminController {
     @Operation(summary = "Criar tag", description = "Cria uma nova tag")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Tag criada com sucesso"),
-            @ApiResponse(responseCode = "409", description = "Tag ja cadastrada")
+            @ApiResponse(responseCode = "409", description = "Tag já cadastrada")
     })
     public ResponseEntity<TagResponse> createTag(@RequestBody @Valid TagRequest request) {
         TagResponse response = tagAdminUseCase.createTag(request);
@@ -56,8 +56,8 @@ public class TagAdminController {
     @Operation(summary = "Atualizar tag", description = "Atualiza uma tag existente")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag atualizada"),
-            @ApiResponse(responseCode = "404", description = "Tag nao encontrada"),
-            @ApiResponse(responseCode = "409", description = "Tag ja cadastrada")
+            @ApiResponse(responseCode = "404", description = "Tag não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Tag já cadastrada")
     })
     public TagResponse updateTag(@PathVariable UUID tagId, @RequestBody @Valid TagRequest request) {
         return tagAdminUseCase.updateTag(tagId, request);
@@ -68,7 +68,7 @@ public class TagAdminController {
     @Operation(summary = "Remover tag", description = "Remove uma tag")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Tag removida"),
-            @ApiResponse(responseCode = "404", description = "Tag nao encontrada")
+            @ApiResponse(responseCode = "404", description = "Tag não encontrada")
     })
     public void deleteTag(@PathVariable UUID tagId) {
         tagAdminUseCase.deleteTag(tagId);

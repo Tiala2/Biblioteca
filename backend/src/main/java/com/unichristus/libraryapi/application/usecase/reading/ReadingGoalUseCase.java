@@ -40,7 +40,7 @@ public class ReadingGoalUseCase {
         ReadingGoalResponse response = toResponse(userId, goal);
         CompletableFuture.runAsync(() -> notifyReadingAlertsIfEnabled(userId, request.period()))
                 .exceptionally(ex -> {
-                    log.warn("Falha ao processar alertas de meta para usuario {}: {}", userId, ex.getMessage());
+                    log.warn("Falha ao processar alertas de meta para usuário {}: {}", userId, ex.getMessage());
                     return null;
                 });
         return response;

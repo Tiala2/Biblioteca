@@ -143,7 +143,7 @@ public class OpenLibraryClient {
                     encodePathSegment(safeIdentifier),
                     encodePathSegment(file.name())));
         } catch (IllegalStateException ex) {
-            log.debug("Nao foi possivel resolver PDF no Archive para '{}': {}", safeIdentifier, ex.getMessage());
+            log.debug("Não foi possível resolver PDF no Archive para '{}': {}", safeIdentifier, ex.getMessage());
             return Optional.empty();
         }
     }

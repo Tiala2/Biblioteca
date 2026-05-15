@@ -46,7 +46,7 @@ public class ForgotPasswordUseCase {
     public void sendRecoveryEmail(String email, String requestedBaseUrl) {
         Optional<User> userOpt = userService.findUserByEmail(email);
         if (userOpt.isEmpty()) {
-            log.info("Recuperacao de senha solicitada para email nao cadastrado: {}", email);
+            log.info("Recuperação de senha solicitada para email não cadastrado: {}", email);
             return;
         }
 
@@ -64,7 +64,7 @@ public class ForgotPasswordUseCase {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
             if (mailSender == null) {
-                log.info("JavaMailSender indisponivel; simulando envio de recuperacao para {}", user.getEmail());
+                log.info("JavaMailSender indisponível; simulando envio de recuperação para {}", user.getEmail());
                 return;
             }
             MimeMessage message = mailSender.createMimeMessage();
@@ -74,9 +74,9 @@ public class ForgotPasswordUseCase {
             helper.setSubject("Library - Recuperacao de senha");
             helper.setText(buildPlainBody(user.getName(), resetLink), buildHtmlBody(user.getName(), resetLink));
             mailSender.send(message);
-            log.info("Email de recuperacao enviado para {}", user.getEmail());
+            log.info("Email de recuperação enviado para {}", user.getEmail());
         } catch (Exception ex) {
-            log.warn("Falha ao enviar email de recuperacao para {}: {}", user.getEmail(), ex.getMessage());
+            log.warn("Falha ao enviar email de recuperação para {}: {}", user.getEmail(), ex.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class ForgotPasswordUseCase {
             return requested.get();
         }
 
-        log.warn("Base URL de recuperacao ignorada por nao estar permitida: {}", requested.get());
+        log.warn("Base URL de recuperação ignorada por não estar permitida: {}", requested.get());
         return fallbackBaseUrl;
     }
 
@@ -130,23 +130,23 @@ public class ForgotPasswordUseCase {
     }
 
     private String buildPlainBody(String name, String resetLink) {
-        return "Ola, " + name + ".\n\n"
-                + "Recebemos uma solicitacao para recuperar sua senha no Library.\n\n"
+        return "Olá, " + name + ".\n\n"
+                + "Recebemos uma solicitação para recuperar sua senha no Library.\n\n"
                 + "Clique no link para redefinir sua senha:\n"
                 + resetLink + "\n\n"
-                + "Se voce nao solicitou, ignore este email.";
+                + "Se você não solicitou, ignore este email.";
     }
 
     private String buildHtmlBody(String name, String resetLink) {
         return "<html><body style=\"font-family:Arial,sans-serif;color:#111\">"
-                + "<p>Ola, " + name + ".</p>"
-                + "<p>Recebemos uma solicitacao para recuperar sua senha no Library.</p>"
+                + "<p>Olá, " + name + ".</p>"
+                + "<p>Recebemos uma solicitação para recuperar sua senha no Library.</p>"
                 + "<p><a href=\"" + resetLink + "\" "
                 + "style=\"display:inline-block;padding:10px 16px;background:#111;color:#fff;text-decoration:none;border-radius:6px\">"
                 + "Redefinir senha</a></p>"
-                + "<p>Se o botao nao abrir, copie e cole este link no navegador:</p>"
+                + "<p>Se o botão não abrir, copie e cole este link no navegador:</p>"
                 + "<p><a href=\"" + resetLink + "\">" + resetLink + "</a></p>"
-                + "<p>Se voce nao solicitou, ignore este email.</p>"
+                + "<p>Se você não solicitou, ignore este email.</p>"
                 + "</body></html>";
     }
 }

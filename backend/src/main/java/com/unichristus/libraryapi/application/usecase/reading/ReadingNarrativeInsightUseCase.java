@@ -75,7 +75,7 @@ public class ReadingNarrativeInsightUseCase {
         if (currentPage > book.getNumberOfPages()) {
             throw new DomainException(
                     DomainError.SEARCH_FILTER_INVALID,
-                    "currentPage nao pode exceder o total de paginas do livro (" + book.getNumberOfPages() + ")");
+                    "currentPage não pode exceder o total de páginas do livro (" + book.getNumberOfPages() + ")");
         }
     }
 

@@ -24,7 +24,7 @@ public record UserUpdateRequest(
         @Schema(description = "Receber alertas internos de leitura", example = "true", nullable = true)
         Boolean alertsOptIn,
 
-        @Schema(description = "Papel do usuario", example = "ADMIN", nullable = true)
+        @Schema(description = "Papel do usuário", example = "ADMIN", nullable = true)
         UserRole role
 ) {
 }

@@ -97,7 +97,7 @@ public class EmailReadingAlertNotifier implements ReadingAlertNotifier {
         try {
             alertDeliveryService.register(userId, userEmail, alertType, channel, status, message);
         } catch (Exception ex) {
-            log.warn("Falha ao registrar auditoria de alerta {} para usuario {}: {}", alertType, userId, ex.getMessage());
+            log.warn("Falha ao registrar auditoria de alerta {} para usuário {}: {}", alertType, userId, ex.getMessage());
         }
     }
 
@@ -106,7 +106,7 @@ public class EmailReadingAlertNotifier implements ReadingAlertNotifier {
         for (AlertResponse alert : alerts) {
             body.append("- [").append(alert.severity()).append("] ").append(alert.message());
             if (alert.suggestedDailyPages() != null) {
-                body.append(" (Sugestao: ").append(alert.suggestedDailyPages()).append(" paginas/dia)");
+                body.append(" (Sugestão: ").append(alert.suggestedDailyPages()).append(" páginas/dia)");
             }
             body.append('\n');
         }

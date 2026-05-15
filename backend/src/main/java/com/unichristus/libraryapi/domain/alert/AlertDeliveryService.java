@@ -51,7 +51,7 @@ public class AlertDeliveryService {
                                       LocalDateTime dateTo,
                                       Pageable pageable) {
         if (dateFrom != null && dateTo != null && dateFrom.isAfter(dateTo)) {
-            throw new DomainException(DomainError.SEARCH_FILTER_INVALID, "dateFrom nao pode ser apos dateTo");
+            throw new DomainException(DomainError.SEARCH_FILTER_INVALID, "dateFrom não pode ser após dateTo");
         }
         String normalizedQuery = query == null || query.isBlank() ? null : query.trim().toLowerCase();
         return repository.search(normalizedQuery, userId, status, alertType, dateFrom, dateTo, pageable);

@@ -47,7 +47,7 @@ public class NoOpReadingAlertNotifier implements ReadingAlertNotifier {
         try {
             alertDeliveryService.register(userId, userEmail, alertType, channel, status, message);
         } catch (Exception ex) {
-            log.warn("Falha ao registrar auditoria de alerta {} para usuario {}: {}", alertType, userId, ex.getMessage());
+            log.warn("Falha ao registrar auditoria de alerta {} para usuário {}: {}", alertType, userId, ex.getMessage());
         }
     }
 }

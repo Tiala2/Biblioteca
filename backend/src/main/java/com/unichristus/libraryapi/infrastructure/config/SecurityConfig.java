@@ -64,7 +64,7 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, ex) ->
-                                writeJsonError(response, HttpStatus.UNAUTHORIZED, "AUTHENTICATION_FAILED", "Autenticacao obrigatoria ou invalida."))
+                                writeJsonError(response, HttpStatus.UNAUTHORIZED, "AUTHENTICATION_FAILED", "Autenticação obrigatória ou inválida."))
                         .accessDeniedHandler((request, response, ex) ->
                                 writeJsonError(response, HttpStatus.FORBIDDEN, "ACCESS_DENIED", "Acesso negado."))
                 )

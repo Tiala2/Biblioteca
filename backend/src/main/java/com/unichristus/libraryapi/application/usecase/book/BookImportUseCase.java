@@ -148,13 +148,13 @@ public class BookImportUseCase {
 
     private String resolveAuthor(List<String> authorNames) {
         if (authorNames == null || authorNames.isEmpty()) {
-            return "Autor nao informado";
+            return "Autor não informado";
         }
         return authorNames.stream()
                 .filter(Objects::nonNull)
                 .map(String::trim)
                 .filter(name -> !name.isBlank())
                 .findFirst()
-                .orElse("Autor nao informado");
+                .orElse("Autor não informado");
     }
 }

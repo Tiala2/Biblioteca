@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse(AUTHENTICATION_FAILED_CODE, "Autenticacao obrigatoria ou invalida."));
+                .body(new ErrorResponse(AUTHENTICATION_FAILED_CODE, "Autenticação obrigatória ou inválida."));
     }
 
     @ExceptionHandler(RateLimitExceededException.class)
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex) {
         String message = ex instanceof FileStorageException
                 ? ex.getMessage()
-                : "Requisicao invalida.";
+                : "Requisição inválida.";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(INVALID_REQUEST_CODE, message));
     }
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponse> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse("UPLOAD_SIZE_EXCEEDED", "Arquivo excede o tamanho maximo permitido"));
+                .body(new ErrorResponse("UPLOAD_SIZE_EXCEEDED", "Arquivo excede o tamanho máximo permitido"));
     }
 
 }

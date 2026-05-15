@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Size;
 
 public record ForgotPasswordRequest(
         @NotBlank(message = "Email e obrigatorio")
-        @Email(message = "Email invalido")
+        @Email(message = "Email inválido")
         String email,
-        @Size(max = 255, message = "baseUrl excede tamanho maximo")
+        @Size(max = 255, message = "baseUrl excede tamanho máximo")
         String baseUrl
 ) {
 }

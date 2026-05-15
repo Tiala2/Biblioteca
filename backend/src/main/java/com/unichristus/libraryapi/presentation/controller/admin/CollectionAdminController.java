@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-@Tag(name = "[Admin]", description = "Operacoes administrativas da API")
+@Tag(name = "[Admin]", description = "Operações administrativas da API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ServiceURI.COLLECTIONS_ADMIN)
@@ -33,10 +33,10 @@ public class CollectionAdminController {
     private final CollectionAdminUseCase collectionAdminUseCase;
 
     @PostMapping
-    @Operation(summary = "Criar colecao", description = "Cria uma nova colecao")
+    @Operation(summary = "Criar coleção", description = "Cria uma nova coleção")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Colecao criada"),
-            @ApiResponse(responseCode = "404", description = "Livro nao encontrado")
+            @ApiResponse(responseCode = "201", description = "Coleção criada"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado")
     })
     public ResponseEntity<CollectionResponse> createCollection(@RequestBody @Valid CollectionUpsertRequest request) {
         CollectionResponse response = collectionAdminUseCase.createCollection(request);
@@ -44,10 +44,10 @@ public class CollectionAdminController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar colecao", description = "Atualiza uma colecao existente")
+    @Operation(summary = "Atualizar coleção", description = "Atualiza uma coleção existente")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Colecao atualizada"),
-            @ApiResponse(responseCode = "404", description = "Colecao ou livro nao encontrado")
+            @ApiResponse(responseCode = "200", description = "Coleção atualizada"),
+            @ApiResponse(responseCode = "404", description = "Coleção ou livro não encontrado")
     })
     public CollectionResponse updateCollection(@PathVariable UUID id,
                                                @RequestBody @Valid CollectionUpsertRequest request) {
@@ -56,10 +56,10 @@ public class CollectionAdminController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Remover colecao", description = "Remove uma colecao")
+    @Operation(summary = "Remover coleção", description = "Remove uma coleção")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Colecao removida"),
-            @ApiResponse(responseCode = "404", description = "Colecao nao encontrada")
+            @ApiResponse(responseCode = "204", description = "Coleção removida"),
+            @ApiResponse(responseCode = "404", description = "Coleção não encontrada")
     })
     public void deleteCollection(@PathVariable UUID id) {
         collectionAdminUseCase.deleteCollection(id);

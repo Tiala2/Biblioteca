@@ -72,10 +72,10 @@ public class BookController {
                 .body(new InputStreamResource(file.stream()));
     }
 
-    @Operation(summary = "Resolver leitor externo", description = "Retorna URL incorporavel quando o livro externo permite leitura dentro da plataforma")
+    @Operation(summary = "Resolver leitor externo", description = "Retorna URL incorporável quando o livro externo permite leitura dentro da plataforma")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Leitor externo resolvido"),
-            @ApiResponse(responseCode = "404", description = "Livro nao encontrado")
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado")
     })
     @GetMapping("{bookId}/external-reader")
     public ExternalReaderResponse getExternalReader(@PathVariable UUID bookId) {

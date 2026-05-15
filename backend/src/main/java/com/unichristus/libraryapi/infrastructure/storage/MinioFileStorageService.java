@@ -69,10 +69,10 @@ public class MinioFileStorageService {
     private void validatePdfUpload(MultipartFile file, String objectName) {
         validateObjectName(objectName);
         if (file == null || file.isEmpty()) {
-            throw new FileStorageException("Arquivo PDF invalido ou vazio.");
+            throw new FileStorageException("Arquivo PDF inválido ou vazio.");
         }
         if (file.getSize() > (long) maxFileSizeMb * 1024 * 1024) {
-            throw new FileStorageException("Arquivo PDF excede o tamanho maximo permitido.");
+            throw new FileStorageException("Arquivo PDF excede o tamanho máximo permitido.");
         }
 
         String originalFilename = file.getOriginalFilename();
@@ -82,14 +82,14 @@ public class MinioFileStorageService {
 
         String contentType = normalizeContentType(file.getContentType());
         if (!PDF_CONTENT_TYPE.equals(contentType) && !OCTET_STREAM_CONTENT_TYPE.equals(contentType)) {
-            throw new FileStorageException("Tipo de arquivo invalido. Envie um PDF.");
+            throw new FileStorageException("Tipo de arquivo inválido. Envie um PDF.");
         }
 
         try {
             byte[] content = file.getBytes();
             validatePdfSignature(content);
         } catch (IOException ex) {
-            throw new FileStorageException("Nao foi possivel validar o arquivo PDF enviado.");
+            throw new FileStorageException("Não foi possível validar o arquivo PDF enviado.");
         }
     }
 
@@ -189,15 +189,15 @@ public class MinioFileStorageService {
     private void validatePdfBytes(byte[] content, String contentType, String objectName) {
         validateObjectName(objectName);
         if (content == null || content.length == 0) {
-            throw new FileStorageException("Arquivo PDF invalido ou vazio.");
+            throw new FileStorageException("Arquivo PDF inválido ou vazio.");
         }
         if (content.length > (long) maxFileSizeMb * 1024 * 1024) {
-            throw new FileStorageException("Arquivo PDF excede o tamanho maximo permitido.");
+            throw new FileStorageException("Arquivo PDF excede o tamanho máximo permitido.");
         }
 
         String normalizedContentType = normalizeContentType(contentType);
         if (!PDF_CONTENT_TYPE.equals(normalizedContentType) && !OCTET_STREAM_CONTENT_TYPE.equals(normalizedContentType)) {
-            throw new FileStorageException("Tipo de arquivo invalido. Envie um PDF.");
+            throw new FileStorageException("Tipo de arquivo inválido. Envie um PDF.");
         }
 
         validatePdfSignature(content);
@@ -205,19 +205,19 @@ public class MinioFileStorageService {
 
     private void validatePdfSignature(byte[] content) {
         if (content.length < PDF_SIGNATURE.length) {
-            throw new FileStorageException("Conteudo do arquivo nao corresponde a um PDF valido.");
+            throw new FileStorageException("Conteúdo do arquivo não corresponde a um PDF válido.");
         }
 
         for (int index = 0; index < PDF_SIGNATURE.length; index++) {
             if (content[index] != PDF_SIGNATURE[index]) {
-                throw new FileStorageException("Conteudo do arquivo nao corresponde a um PDF valido.");
+                throw new FileStorageException("Conteúdo do arquivo não corresponde a um PDF válido.");
             }
         }
     }
 
     private void validateObjectName(String objectName) {
         if (objectName == null || objectName.isBlank() || objectName.contains("/") || objectName.contains("\\")) {
-            throw new FileStorageException("Identificador de arquivo invalido para upload.");
+            throw new FileStorageException("Identificador de arquivo inválido para upload.");
         }
     }
 

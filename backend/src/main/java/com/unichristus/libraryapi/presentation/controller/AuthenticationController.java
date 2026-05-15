@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Autenticacao", description = "Autenticacao de usuarios")
+@Tag(name = "Autenticação", description = "Autenticação de usuários")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ServiceURI.AUTH_RESOURCE)
@@ -39,13 +39,13 @@ public class AuthenticationController {
     private final LoginRateLimitService loginRateLimitService;
     private final ForgotPasswordRateLimitService forgotPasswordRateLimitService;
 
-    @Operation(summary = "Login de usuario", description = "Realiza o login de um usuario existente")
+    @Operation(summary = "Login de usuário", description = "Realiza o login de um usuário existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados invalidos"),
-            @ApiResponse(responseCode = "401", description = "Credenciais invalidas"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas"),
             @ApiResponse(responseCode = "429", description = "Muitas tentativas de login"),
-            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado")
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest request, HttpServletRequest httpRequest) {
@@ -61,11 +61,11 @@ public class AuthenticationController {
         }
     }
 
-    @Operation(summary = "Esqueci minha senha", description = "Dispara email de recuperacao de senha quando o email existe")
+    @Operation(summary = "Esqueci minha senha", description = "Dispara email de recuperação de senha quando o email existe")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Solicitacao recebida"),
-            @ApiResponse(responseCode = "400", description = "Dados invalidos"),
-            @ApiResponse(responseCode = "429", description = "Muitas solicitacoes de recuperacao")
+            @ApiResponse(responseCode = "204", description = "Solicitação recebida"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações de recuperação")
     })
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request, HttpServletRequest httpRequest) {
@@ -74,10 +74,10 @@ public class AuthenticationController {
         return noStoreNoContentResponse();
     }
 
-    @Operation(summary = "Redefinir senha", description = "Redefine a senha com token de recuperacao valido")
+    @Operation(summary = "Redefinir senha", description = "Redefine a senha com token de recuperação válido")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Senha redefinida com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Token invalido/expirado ou dados invalidos")
+            @ApiResponse(responseCode = "400", description = "Token inválido/expirado ou dados inválidos")
     })
     @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {

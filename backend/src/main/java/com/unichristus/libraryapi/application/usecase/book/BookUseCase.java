@@ -204,14 +204,14 @@ public class BookUseCase {
 
     private String resolveAuthor(List<String> authorNames) {
         if (authorNames == null || authorNames.isEmpty()) {
-            return "Autor nao informado";
+            return "Autor não informado";
         }
         return authorNames.stream()
                 .filter(Objects::nonNull)
                 .map(String::trim)
                 .filter(name -> !name.isBlank())
                 .findFirst()
-                .orElse("Autor nao informado");
+                .orElse("Autor não informado");
     }
 
     private Optional<String> extractOrGenerateIsbn13(List<String> isbns, String title, Integer firstPublishYear) {
@@ -351,7 +351,7 @@ public class BookUseCase {
                     false,
                     null,
                     null,
-                    "Este livro ja possui PDF local e deve ser lido pelo leitor interno."
+                    "Este livro já possui PDF local e deve ser lido pelo leitor interno."
             );
         }
 
@@ -366,12 +366,12 @@ public class BookUseCase {
                         reader.embedUrl(),
                         reader.fallbackUrl(),
                         reader.availableInsideApp()
-                                ? "Leitor incorporavel encontrado."
-                                : "Nao encontramos uma versao incorporavel; use a fonte oficial."
+                                ? "Leitor incorporável encontrado."
+                                : "Não encontramos uma versão incorporável; use a fonte oficial."
                 );
             }
         } catch (Exception ex) {
-            log.warn("Nao foi possivel resolver leitor externo para bookId={}: {}", bookId, ex.getMessage());
+            log.warn("Não foi possível resolver leitor externo para bookId={}: {}", bookId, ex.getMessage());
         }
 
         return new ExternalReaderResponse(
@@ -380,7 +380,7 @@ public class BookUseCase {
                 false,
                 null,
                 "https://openlibrary.org/search?q=" + java.net.URLEncoder.encode(book.getTitle(), java.nio.charset.StandardCharsets.UTF_8),
-                "Nao foi possivel consultar a fonte externa agora."
+                "Não foi possível consultar a fonte externa agora."
         );
     }
 

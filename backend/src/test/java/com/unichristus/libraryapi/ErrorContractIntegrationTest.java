@@ -21,7 +21,7 @@ class ErrorContractIntegrationTest extends IntegrationTestSupport {
                         .content("{\"email\":\"" + email + "\",\"password\":\"senha-errada\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("AUTHENTICATION_FAILED"))
-                .andExpect(jsonPath("$.message").value("Autenticacao obrigatoria ou invalida."));
+                .andExpect(jsonPath("$.message").value("Autenticação obrigatória ou inválida."));
     }
 
     @Test
@@ -49,7 +49,7 @@ class ErrorContractIntegrationTest extends IntegrationTestSupport {
                         .content("{\"name\":"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("INVALID_REQUEST"))
-                .andExpect(jsonPath("$.message").value("Requisicao invalida."));
+                .andExpect(jsonPath("$.message").value("Requisição inválida."));
     }
 
     @Test

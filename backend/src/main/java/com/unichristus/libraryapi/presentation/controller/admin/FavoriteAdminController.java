@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
-@Tag(name = "[Admin]", description = "Operacoes administrativas da API")
+@Tag(name = "[Admin]", description = "Operações administrativas da API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ServiceURI.FAVORITES_ADMIN)
@@ -32,7 +32,7 @@ public class FavoriteAdminController {
     @Operation(summary = "Listar todos os favoritos (admin)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de favoritos retornada com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Nao autorizado"),
+            @ApiResponse(responseCode = "401", description = "Não autorizado"),
             @ApiResponse(responseCode = "403", description = "Acesso proibido")
     })
     @GetMapping

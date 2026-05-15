@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "[Admin]", description = "Operacoes administrativas da API")
+@Tag(name = "[Admin]", description = "Operações administrativas da API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ServiceURI.CATEGORIES_ADMIN)
@@ -35,7 +35,7 @@ public class CategoryAdminController {
     private final CategoryUseCase categoryUseCase;
 
     @GetMapping
-    @Operation(summary = "Listar categorias", description = "Retorna a lista completa de categorias para administracao")
+    @Operation(summary = "Listar categorias", description = "Retorna a lista completa de categorias para administração")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso")
     })
@@ -46,8 +46,8 @@ public class CategoryAdminController {
     @Operation(summary = "Criar uma nova categoria", description = "Cria uma nova categoria no sistema")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Categoria criada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados invalidos"),
-            @ApiResponse(responseCode = "409", description = "Ja existe uma categoria com este nome")
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "409", description = "Já existe uma categoria com este nome")
     })
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
@@ -59,9 +59,9 @@ public class CategoryAdminController {
     @Operation(summary = "Atualizar uma categoria", description = "Atualiza os dados de uma categoria existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Categoria atualizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados invalidos"),
-            @ApiResponse(responseCode = "404", description = "Categoria nao encontrada"),
-            @ApiResponse(responseCode = "409", description = "Ja existe uma categoria com este nome")
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Categoria não encontrada"),
+            @ApiResponse(responseCode = "409", description = "Já existe uma categoria com este nome")
     })
     public CategoryResponse updateCategory(
             @PathVariable UUID categoryId,
@@ -75,7 +75,7 @@ public class CategoryAdminController {
     @Operation(summary = "Deleta uma categoria", description = "Deleta uma categoria")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Categoria deletada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Categoria nao encontrada")
+            @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     })
     public void deleteCategory(@PathVariable UUID categoryId) {
         categoryUseCase.deleteCategory(categoryId);

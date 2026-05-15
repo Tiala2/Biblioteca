@@ -37,7 +37,7 @@ public class ForgotPasswordRateLimitService {
         Deque<Long> requests = requestsByClient.computeIfAbsent(normalizedClientKey, ignored -> new ArrayDeque<>());
         purgeExpired(requests);
         if (requests.size() >= maxRequests) {
-            throw new RateLimitExceededException("Muitas solicitacoes de recuperacao. Aguarde alguns minutos antes de tentar novamente.");
+            throw new RateLimitExceededException("Muitas solicitações de recuperação. Aguarde alguns minutos antes de tentar novamente.");
         }
         requests.addLast(clock.millis());
     }

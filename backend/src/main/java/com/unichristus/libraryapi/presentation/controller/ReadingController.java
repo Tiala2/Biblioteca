@@ -34,12 +34,12 @@ public class ReadingController {
     private final ReadingUseCase readingUseCase;
     private final ReadingNarrativeInsightUseCase readingNarrativeInsightUseCase;
 
-    @Operation(summary = "Sincronizar leitura", description = "Sincroniza o progresso de leitura de um livro para o usuario logado")
+    @Operation(summary = "Sincronizar leitura", description = "Sincroniza o progresso de leitura de um livro para o usuário logado")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Leitura atualizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Dados invalidos"),
-            @ApiResponse(responseCode = "404", description = "Livro nao encontrado"),
-            @ApiResponse(responseCode = "404", description = "Usuario nao encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Livro não encontrado"),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
     })
     @PostMapping
     public ResponseEntity<ReadingResponse> syncReading(
@@ -49,18 +49,18 @@ public class ReadingController {
         return ResponseEntity.ok(readingUseCase.syncReading(userId, request.bookId(), request.currentPage()));
     }
 
-    @Operation(summary = "Listar historico de leituras", description = "Retorna as leituras do usuario logado ordenadas pela ultima atualizacao")
-    @ApiResponse(responseCode = "200", description = "Historico retornado com sucesso")
+    @Operation(summary = "Listar histórico de leituras", description = "Retorna as leituras do usuário logado ordenadas pela última atualização")
+    @ApiResponse(responseCode = "200", description = "Histórico retornado com sucesso")
     @GetMapping("/me")
     public ResponseEntity<List<ReadingResponse>> listMyReadings(@LoggedUser UUID userId) {
         return ResponseEntity.ok(readingUseCase.listUserReadings(userId));
     }
 
-    @Operation(summary = "Obter estado da trama", description = "Retorna beat narrativo, personagens conhecidos, quizzes e conquistas para a pagina atual")
+    @Operation(summary = "Obter estado da trama", description = "Retorna beat narrativo, personagens conhecidos, quizzes e conquistas para a página atual")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Insights narrativos retornados com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Pagina atual invalida"),
-            @ApiResponse(responseCode = "404", description = "Livro ou usuario nao encontrado")
+            @ApiResponse(responseCode = "400", description = "Página atual inválida"),
+            @ApiResponse(responseCode = "404", description = "Livro ou usuário não encontrado")
     })
     @GetMapping("/{bookId}/narrative")
     public ResponseEntity<ReadingNarrativeInsightResponse> getNarrativeInsight(
