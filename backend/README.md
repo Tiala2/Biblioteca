@@ -84,6 +84,12 @@ Backups sao gravados em `backend\backups\<timestamp>`:
 powershell -ExecutionPolicy Bypass -File .\scripts\restore-volumes.ps1 -BackupDir .\backups\<timestamp> -Force
 ```
 
+No Linux:
+```bash
+chmod +x ./scripts/restore-volumes.sh
+./scripts/restore-volumes.sh --backup-dir ../backups/<timestamp> --force
+```
+
 ## Observacao
 No primeiro start, aguarde `Started LibraryApiApplication` nos logs:
 

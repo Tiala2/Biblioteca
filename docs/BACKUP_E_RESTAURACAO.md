@@ -36,6 +36,13 @@ No diretorio `backend`:
 powershell -ExecutionPolicy Bypass -File .\scripts\restore-volumes.ps1 -BackupDir .\backups\<timestamp> -Force
 ```
 
+No Linux, com a stack do backend ja iniciada:
+
+```bash
+chmod +x ./scripts/restore-volumes.sh
+./scripts/restore-volumes.sh --backup-dir ../backups/<timestamp> --force
+```
+
 ## Cuidados Operacionais
 
 - usar restauracao apenas com a stack parada ou em janela controlada
