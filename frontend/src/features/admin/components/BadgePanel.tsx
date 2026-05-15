@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BADGE_CODES, BADGE_CRITERIA, type Badge, type BadgeCode, type BadgeCriteria, type BadgeForm } from "../types";
+import { formatBadgeCode, formatBadgeCriteria } from "../lib/labels";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type BadgePanelProps = {
@@ -58,7 +59,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
         >
           {BADGE_CODES.map((code) => (
             <option key={code} value={code}>
-              {code}
+              {formatBadgeCode(code)}
             </option>
           ))}
         </select>
@@ -82,7 +83,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
         >
           {BADGE_CRITERIA.map((criteria) => (
             <option key={criteria} value={criteria}>
-              {criteria}
+              {formatBadgeCriteria(criteria)}
             </option>
           ))}
         </select>
@@ -118,7 +119,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
           <span>inativas</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{badgeInsights.mostUsedCriteria}</strong>
+          <strong>{badgeInsights.mostUsedCriteria === "-" ? "-" : formatBadgeCriteria(badgeInsights.mostUsedCriteria as BadgeCriteria)}</strong>
           <span>critério mais usado</span>
         </div>
       </div>
@@ -142,7 +143,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
                 </span>
               </div>
               <p className="section-sub">
-                {badge.code} | {badge.criteriaType} | {badge.criteriaValue ?? "sem valor"}
+                {formatBadgeCode(badge.code)}. Critério: {formatBadgeCriteria(badge.criteriaType)}. Valor: {badge.criteriaValue ?? "sem valor"}.
               </p>
               {badge.description && <small>{badge.description}</small>}
             </div>

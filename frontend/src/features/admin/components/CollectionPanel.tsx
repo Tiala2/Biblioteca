@@ -151,7 +151,7 @@ export function CollectionPanel({
                 <p className="section-sub">{collection.books?.length ?? 0} livro(s)</p>
                 {collection.description && <p className="section-sub">{collection.description}</p>}
                 {(collection.books?.length ?? 0) > 0 && (
-                  <small>{collection.books?.slice(0, 2).map((book) => book.title).join(" | ")}</small>
+                  <small>{collection.books?.slice(0, 2).map((book) => book.title).join(", ")}</small>
                 )}
               </div>
             </div>

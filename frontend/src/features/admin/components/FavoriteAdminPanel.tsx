@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { FavoriteAdmin } from "../types";
+import { formatFavoriteSource } from "../lib/labels";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type FavoriteAdminPanelProps = {
@@ -73,11 +74,11 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
                 <strong>{favorite.bookTitle}</strong>
                 <p className="section-sub">{favorite.bookIsbn || "ISBN não informado"}</p>
                 <p className="section-sub">
-                  Origem {favorite.source ?? "LOCAL"} | Favoritado em {formatDateTimeBr(favorite.createdAt)}
+                  Origem {formatFavoriteSource(favorite.source)}. Favoritado em {formatDateTimeBr(favorite.createdAt)}.
                 </p>
               </div>
             </div>
-            <span className="import-badge">{favorite.source ?? "LOCAL"}</span>
+            <span className="import-badge">{formatFavoriteSource(favorite.source)}</span>
           </li>
         ))}
       </ul>

@@ -231,7 +231,7 @@ export function BookPanel({
 
       {importResult && (
         <p className="section-sub">
-          Importados: {importResult.imported} | Pulados: {importResult.skipped} | Falhas: {importResult.failed}
+          Importados: {importResult.imported}. Pulados: {importResult.skipped}. Falhas: {importResult.failed}.
         </p>
       )}
 

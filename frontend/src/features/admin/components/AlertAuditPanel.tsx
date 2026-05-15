@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 import type { AlertDeliveryAdmin } from "../types";
+import { formatAlertStatus, formatAlertType } from "../lib/labels";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type AlertAuditPanelProps = {
@@ -17,12 +18,6 @@ type AlertAuditPanelProps = {
   onAlertTypeFilterChange: (value: "ALL" | AlertDeliveryAdmin["alertType"]) => void;
   onPageChange: (page: number) => void;
 };
-
-function getAlertStatusLabel(status: AlertDeliveryAdmin["status"]) {
-  if (status === "SENT") return "ENVIADO";
-  if (status === "FAILED") return "FALHO";
-  return "IGNORADO";
-}
 
 export function AlertAuditPanel({
   deliveries,
@@ -96,9 +91,9 @@ export function AlertAuditPanel({
           <span>Tipo</span>
           <select value={alertTypeFilter} onChange={(event) => onAlertTypeFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["alertType"])}>
             <option value="ALL">Todos</option>
-            <option value="GOAL_EXPIRING">Meta expirando</option>
-            <option value="PACE_WARNING">Ritmo em risco</option>
-            <option value="NO_STREAK">Sem sequência</option>
+            <option value="GOAL_EXPIRING">{formatAlertType("GOAL_EXPIRING")}</option>
+            <option value="PACE_WARNING">{formatAlertType("PACE_WARNING")}</option>
+            <option value="NO_STREAK">{formatAlertType("NO_STREAK")}</option>
           </select>
         </label>
         <div className="stat-box admin-list-stat">
@@ -114,11 +109,11 @@ export function AlertAuditPanel({
               <div className="admin-alert-title-row">
                 <strong>{delivery.email}</strong>
                 <span className={delivery.status === "SENT" ? "import-badge" : "status-pill status-pill--muted"}>
-                  {getAlertStatusLabel(delivery.status)}
+                  {formatAlertStatus(delivery.status)}
                 </span>
               </div>
               <p className="section-sub">
-                {delivery.alertType} | {delivery.channel} | {delivery.status}
+                {formatAlertType(delivery.alertType)}. Canal: {delivery.channel}. Status: {formatAlertStatus(delivery.status)}.
               </p>
               <p>{delivery.message}</p>
               <small>Registrado em {formatDateTimeBr(delivery.createdAt)}</small>

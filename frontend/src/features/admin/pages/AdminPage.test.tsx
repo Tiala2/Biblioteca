@@ -207,12 +207,12 @@ describe("AdminPage", () => {
     expect(screen.getByText("ATIVA")).toBeInTheDocument();
     expect(screen.getByText("locais/PDF")).toBeInTheDocument();
     expect(screen.getByText("último favorito")).toBeInTheDocument();
-    expect(screen.getByText("OPEN")).toBeInTheDocument();
+    expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
     expect(screen.getByText("enviados na página")).toBeInTheDocument();
     expect(screen.getByText("falhos na página")).toBeInTheDocument();
     expect(screen.getByText("ignorados na página")).toBeInTheDocument();
     expect(screen.getByText("último registro")).toBeInTheDocument();
-    expect(screen.getByText("ENVIADO")).toBeInTheDocument();
+    expect(screen.getByText("Enviado")).toBeInTheDocument();
   });
 
   it("deve enviar filtro de busca de usuarios para o backend", async () => {

@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo } from "react";
 import type { UserAdmin, UserForm } from "../types";
+import { formatAdminRole } from "../lib/labels";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type UserPanelProps = {
@@ -96,7 +97,7 @@ export function UserPanel({
             <option value="USER" disabled={isEditingCurrentUser}>
               Usuário
             </option>
-            <option value="ADMIN">Admin</option>
+            <option value="ADMIN">Administrador</option>
           </select>
         </label>
         {isEditingCurrentUser && <p className="section-sub">Seu próprio acesso administrativo não pode ser rebaixado pelo painel.</p>}
@@ -167,7 +168,7 @@ export function UserPanel({
           <select value={roleFilter} onChange={(event) => onRoleFilterChange(event.target.value as "ALL" | "USER" | "ADMIN")}>
             <option value="ALL">Todos</option>
             <option value="USER">Usuários</option>
-            <option value="ADMIN">Admins</option>
+            <option value="ADMIN">Administradores</option>
           </select>
         </label>
         <div className="stat-box admin-list-stat">
@@ -186,14 +187,14 @@ export function UserPanel({
               <div>
                 <div className="admin-user-title-row">
                   <strong>{user.name}</strong>
-                  <span className={user.role === "ADMIN" ? "import-badge" : "status-pill status-pill--muted"}>{user.role}</span>
+                  <span className={user.role === "ADMIN" ? "import-badge" : "status-pill status-pill--muted"}>{formatAdminRole(user.role)}</span>
                   <span className={user.active ? "import-badge" : "status-pill status-pill--muted"}>
                     {user.active ? "ATIVO" : "INVALIDADO"}
                   </span>
                 </div>
                 <p className="section-sub email-text">{user.email}</p>
                 <p className="section-sub">
-                  Ranking {user.leaderboardOptIn ? "ativo" : "desligado"} | Alertas {user.alertsOptIn ? "ativos" : "desligados"}
+                  Ranking {user.leaderboardOptIn ? "ativo" : "desligado"}. Alertas {user.alertsOptIn ? "ativos" : "desligados"}.
                 </p>
               </div>
               <div className="card-actions">
