@@ -183,7 +183,7 @@ describe("AdminPage", () => {
     await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0));
 
     expect(screen.getByRole("heading", { name: "Acervo e descoberta" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Gamificacao e comunidade" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Gamificação e comunidade" })).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();

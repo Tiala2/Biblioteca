@@ -31,8 +31,8 @@ export function AdminEngagementSection({
   return (
     <AdminSection
       eyebrow="Engajamento"
-      title="Gamificacao e comunidade"
-      description="Acompanhe mecanismos de permanencia, reputacao social e uso real da plataforma."
+      title="Gamificação e comunidade"
+      description="Acompanhe mecanismos de permanência, reputação social e uso real da plataforma."
       icon={<Sparkles aria-hidden="true" />}
     >
       <BadgePanel

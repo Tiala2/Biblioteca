@@ -157,7 +157,7 @@ export function GoalsPage() {
         <div className="aura-hero__content">
           <div>
             <p className="eyebrow aura-eyebrow">Ritual de leitura</p>
-            <h2>Transforme leitura em constancia</h2>
+            <h2>Transforme leitura em constância</h2>
             <p>Defina uma meta que parece possível hoje e acompanhe o ritmo sem pressão.</p>
           </div>
           <div className="aura-hero__signal">

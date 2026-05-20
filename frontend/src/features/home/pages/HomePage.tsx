@@ -242,7 +242,7 @@ export function HomePage() {
           <div className="stat-box">
             <Flame aria-hidden="true" />
             <strong>{home.readingProgress.sessionsThisWeek}</strong>
-            <span>sessoes de leitura</span>
+            <span>sessões de leitura</span>
           </div>
         </div>
       </article>

@@ -66,7 +66,7 @@
   pointer-events: none;
 }
 
-.login-form {
+.login-page .login-form {
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -74,10 +74,23 @@
   min-height: auto;
   display: block;
   color: var(--ds-text-on-dark);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+    rgba(12, 16, 38, 0.86);
+  border: 1px solid rgba(198, 216, 255, 0.24);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42), 0 0 44px rgba(45, 212, 255, 0.16);
   animation: login-card-in 460ms ease-out;
 }
 
-.login-form::before {
+body[data-theme="day"] .login-page .login-form {
+  color: var(--ds-text-on-dark);
+  background:
+    linear-gradient(145deg, rgba(23, 32, 51, 0.94), rgba(10, 27, 45, 0.9)),
+    rgba(12, 16, 38, 0.92);
+  border-color: rgba(198, 216, 255, 0.28);
+}
+
+.login-page .login-form::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
@@ -85,7 +98,7 @@
   background: linear-gradient(90deg, #ff5f9e, #f2b84b, #2dd4ff, #8b7cff);
 }
 
-.login-form::after {
+.login-page .login-form::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -95,7 +108,7 @@
     radial-gradient(circle at 86% 6%, rgba(139, 124, 255, 0.18), transparent 34%);
 }
 
-.login-form > * {
+.login-page .login-form > * {
   position: relative;
   z-index: 1;
 }
@@ -134,13 +147,13 @@
   text-align: center;
 }
 
-.login-form label {
+.login-page .login-form label {
   display: block;
   margin-bottom: 8px;
   margin-top: 10px;
   font-size: 13px;
-  font-weight: 500;
-  color: rgba(245, 246, 255, 0.9);
+  font-weight: 700;
+  color: rgba(248, 251, 255, 0.94);
 }
 
 .login-input-wrap {
@@ -156,11 +169,20 @@
   margin: 0;
   font-family: inherit;
   font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
 .login-input:focus {
-  background: rgba(226, 232, 240, 0.13);
+  background: rgba(226, 232, 240, 0.16);
+  border-color: #2dd4ff;
+  box-shadow: 0 0 0 3px rgba(45, 212, 255, 0.18);
+}
+
+.login-input::placeholder {
+  color: rgba(240, 246, 255, 0.68);
 }
 
 .login-input:-webkit-autofill,

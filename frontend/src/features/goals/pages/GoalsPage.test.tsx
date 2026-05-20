@@ -90,7 +90,7 @@ describe("GoalsPage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Transforme leitura em constancia" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Transforme leitura em constância" })).toBeInTheDocument();
     expect(screen.getByText("Bom ritmo de leitura.")).toBeInTheDocument();
     expect(screen.getByText("50%")).toBeInTheDocument();
     expect(screen.getByText("páginas por dia")).toBeInTheDocument();
