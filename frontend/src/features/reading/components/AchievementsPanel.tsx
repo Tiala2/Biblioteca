@@ -1,10 +1,22 @@
 import type { NarrativeAchievement } from "../types";
 import { humanizeNarrativeText } from "../lib/readingPresentation";
 import { pluralizePt } from "@shared/lib/presentation";
+import { BadgeCheck } from "lucide-react";
 
 type AchievementsPanelProps = {
   achievements: NarrativeAchievement[];
 };
+
+const FLASHCARD_SYMBOL_LABELS: Record<string, string> = {
+  CROWN: "Marco de conquista",
+  WOLF: "Marco final",
+  CARD: "Flashcard",
+};
+
+function formatFlashcardSymbol(value?: string | null) {
+  if (!value) return FLASHCARD_SYMBOL_LABELS.CARD;
+  return FLASHCARD_SYMBOL_LABELS[value] ?? humanizeNarrativeText(value.replaceAll("_", " ").toLowerCase());
+}
 
 export function AchievementsPanel({ achievements }: AchievementsPanelProps) {
   return (
@@ -20,7 +32,10 @@ export function AchievementsPanel({ achievements }: AchievementsPanelProps) {
               key={achievement.code}
               className={achievement.unlocked ? "flashcard unlocked" : "flashcard locked"}
             >
-              <p className="flash-symbol">{achievement.flashcardSymbol ?? "CARD"}</p>
+              <p className="flash-symbol">
+                <BadgeCheck aria-hidden="true" />
+                {formatFlashcardSymbol(achievement.flashcardSymbol)}
+              </p>
               <h4>{humanizeNarrativeText(achievement.title)}</h4>
               <p>{humanizeNarrativeText(achievement.description)}</p>
               <small>
