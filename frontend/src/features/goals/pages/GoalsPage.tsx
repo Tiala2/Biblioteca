@@ -7,7 +7,7 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
-import { pluralizePt } from "@shared/lib/presentation";
+import { formatReadingStatus, pluralizePt } from "@shared/lib/presentation";
 
 type Period = "WEEKLY" | "MONTHLY";
 
@@ -39,6 +39,37 @@ function parsePeriod(value: string | null): Period {
 function normalizeGoal(value: GoalResponse | "" | null | undefined): GoalResponse | null {
   if (!value || typeof value !== "object") return null;
   return value;
+}
+
+const ALERT_TYPE_LABELS: Record<string, string> = {
+  GOAL_EXPIRING: "Meta perto do prazo",
+  PACE_WARNING: "Ritmo em atenção",
+  NO_STREAK: "Sequência pausada",
+  PACE: "Ritmo de leitura",
+};
+
+const ALERT_SEVERITY_LABELS: Record<string, string> = {
+  INFO: "Informativo",
+  LOW: "Baixa prioridade",
+  WARNING: "Atenção",
+  HIGH: "Alta prioridade",
+  ERROR: "Crítico",
+  CRITICAL: "Crítico",
+};
+
+function humanizeCode(value: string) {
+  return value
+    .replaceAll("_", " ")
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (letter) => letter.toUpperCase());
+}
+
+function formatAlertType(type: string) {
+  return ALERT_TYPE_LABELS[type] ?? humanizeCode(type);
+}
+
+function formatAlertSeverity(severity: string) {
+  return ALERT_SEVERITY_LABELS[severity] ?? humanizeCode(severity);
 }
 
 export function GoalsPage() {
@@ -231,7 +262,7 @@ export function GoalsPage() {
                   ? `${pluralizePt(goalInsights.highPriorityAlerts, "alerta prioritário", "alertas prioritários")}`
                   : "Sem alerta prioritário"}
               </span>
-              <span className="section-sub">Status: {goal.status}</span>
+              <span className="section-sub">Status: {formatReadingStatus(goal.status)}</span>
             </div>
             <p>Leitura acumulada: {goal.progressPages} páginas de {goal.targetPages} planejadas.</p>
             <div className="goal-plan-note">
@@ -287,8 +318,8 @@ export function GoalsPage() {
               <li key={alert.id} className="stacked-list-item">
                 <div>
                   <div className="goal-alert-title">
-                    <strong>{alert.severity}</strong>
-                    <span className="import-badge">{alert.type}</span>
+                    <strong>{formatAlertSeverity(alert.severity)}</strong>
+                    <span className="import-badge">{formatAlertType(alert.type)}</span>
                   </div>
                   <p className="section-sub">{alert.message}</p>
                 </div>

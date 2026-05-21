@@ -205,7 +205,7 @@ describe("AdminPage", () => {
     expect(screen.getByText("conquistas ativas")).toBeInTheDocument();
     expect(screen.getByText("inativas")).toBeInTheDocument();
     expect(screen.getByText("critério mais usado")).toBeInTheDocument();
-    expect(screen.getByText("ATIVA")).toBeInTheDocument();
+    expect(screen.getByText("Ativa")).toBeInTheDocument();
     expect(screen.getByText("locais/PDF")).toBeInTheDocument();
     expect(screen.getByText("último favorito")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);

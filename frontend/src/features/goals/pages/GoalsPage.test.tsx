@@ -100,7 +100,8 @@ describe("GoalsPage", () => {
     expect(screen.getByText("Sem alerta prioritário")).toBeInTheDocument();
     expect(screen.getByText("Faltam 40 páginas para o próximo marco")).toBeInTheDocument();
     expect(screen.getByText("12 dias restantes neste período")).toBeInTheDocument();
-    expect(screen.getByText("PACE")).toBeInTheDocument();
+    expect(screen.getByText("Informativo")).toBeInTheDocument();
+    expect(screen.getByText("Ritmo de leitura")).toBeInTheDocument();
 
     const targetInput = screen.getByDisplayValue("120");
     await user.clear(targetInput);

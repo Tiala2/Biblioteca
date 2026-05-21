@@ -107,7 +107,7 @@ export function CategoryPanel({
               <div className="admin-taxonomy-title-row">
                 <strong>{category.name}</strong>
                 <span className={category.description ? "import-badge" : "status-pill status-pill--muted"}>
-                  {category.description ? "DESCRITA" : "SEM DESCRIÇÃO"}
+                  {category.description ? "Descrita" : "Sem descrição"}
                 </span>
               </div>
               <p className="section-sub">{category.description || "Sem descrição"}</p>

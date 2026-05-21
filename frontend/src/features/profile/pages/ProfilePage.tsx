@@ -311,7 +311,7 @@ export function ProfilePage() {
               <p className="section-sub">Define se suas leituras entram na classificação pública.</p>
             </div>
             <span className={leaderboardOptIn ? "favorite-badge" : "import-badge"}>
-              {leaderboardOptIn ? "ATIVO" : "DESLIGADO"}
+              {leaderboardOptIn ? "Ativo" : "Desligado"}
             </span>
           </div>
           <div className="stacked-list-item profile-preference-row">
@@ -320,7 +320,7 @@ export function ProfilePage() {
               <p className="section-sub">Controla lembretes de ritmo, metas e continuidade.</p>
             </div>
             <span className={alertsOptIn ? "favorite-badge" : "import-badge"}>
-              {alertsOptIn ? "ATIVO" : "DESLIGADO"}
+              {alertsOptIn ? "Ativo" : "Desligado"}
             </span>
           </div>
         </div>

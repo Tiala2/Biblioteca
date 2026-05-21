@@ -189,7 +189,7 @@ export function UserPanel({
                   <strong>{user.name}</strong>
                   <span className={user.role === "ADMIN" ? "import-badge" : "status-pill status-pill--muted"}>{formatAdminRole(user.role)}</span>
                   <span className={user.active ? "import-badge" : "status-pill status-pill--muted"}>
-                    {user.active ? "ATIVO" : "INVALIDADO"}
+                    {user.active ? "Ativo" : "Invalidado"}
                   </span>
                 </div>
                 <p className="section-sub email-text">{user.email}</p>

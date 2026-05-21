@@ -139,7 +139,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
               <div className="admin-badge-title-row">
                 <strong>{badge.name}</strong>
                 <span className={badge.active ? "import-badge" : "status-pill status-pill--muted"}>
-                  {badge.active ? "ATIVA" : "INATIVA"}
+                  {badge.active ? "Ativa" : "Inativa"}
                 </span>
               </div>
               <p className="section-sub">
