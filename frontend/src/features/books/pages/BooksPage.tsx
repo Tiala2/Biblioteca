@@ -483,7 +483,7 @@ export function BooksPage() {
             <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             <div className="book-card-badges">
               {book.source === "OPEN" && <span className="import-badge">{formatBookSource(book.source)}</span>}
-              {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">Sem PDF local</span>}
+              {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">Progresso manual</span>}
               {book.hasNarrative && <span className="favorite-badge">Dinâmica</span>}
               {favoriteBookIds.has(book.id) && <span className="favorite-badge">Favorito</span>}
             </div>
@@ -492,14 +492,14 @@ export function BooksPage() {
                 {book.title}
               </Link>
             </h3>
-            <p>{book.author || "Autor não informado"}</p>
+            <p>{book.author || "Autoria ainda não informada"}</p>
             <p>{book.numberOfPages} páginas</p>
             <small>
               {book.hasPdf
-                ? "PDF disponível"
+                ? "Leitura no app disponível"
                 : book.source === "OPEN"
                   ? "Leitura externa com progresso manual"
-                  : "Sem PDF local"}
+                  : "Leitura com progresso manual"}
             </small>
             <div className="card-actions">
               <Link to={`/books/${book.id}`} className="btn-muted btn-link">

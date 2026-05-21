@@ -316,7 +316,7 @@ export function ReviewsPage() {
                   </Link>
                 </strong>
                 <small>
-                  {selectedBook.author ?? "Autor não informado"}
+                  {selectedBook.author ?? "Autoria ainda não informada"}
                   {selectedBook.source === "OPEN" ? " · Open Library" : ""}
                 </small>
                 <div className="review-book-badges">
@@ -424,7 +424,7 @@ export function ReviewsPage() {
                         {resolveBookLabel(review)}
                       </Link>
                     </h3>
-                    <small>{reviewBook?.author ?? "Autor não informado"}</small>
+                    <small>{reviewBook?.author ?? "Autoria ainda não informada"}</small>
                     <div className="review-book-badges">
                       <span className={reviewBook?.source === "OPEN" ? "import-badge" : "favorite-badge"}>
                         {formatBookSource(reviewBook?.source)}

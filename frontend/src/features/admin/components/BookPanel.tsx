@@ -252,7 +252,7 @@ export function BookPanel({
               <div>
                 <strong>{book.title}</strong>
                 <p className="section-sub">
-                  {book.author ?? "Autor não informado"} · {book.isbn}
+                  {book.author ?? "Autoria ainda não informada"} · {book.isbn}
                 </p>
               </div>
             </div>
