@@ -5,6 +5,7 @@ import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { StateCard } from "@shared/ui/feedback/StateCard";
+import { formatDateTimeBr } from "@shared/lib/formatters";
 import { pluralizePt } from "@shared/lib/presentation";
 
 type Badge = {
@@ -230,7 +231,7 @@ export function BadgesPage() {
             <p>{badge.description}</p>
             <small>Código: {badge.code}</small>
             <br />
-            <small>Conquistado em: {new Date(badge.awardedAt).toLocaleString()}</small>
+            <small>Conquistado em {formatDateTimeBr(badge.awardedAt)}</small>
           </article>
         ))}
       </div>

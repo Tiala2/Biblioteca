@@ -8,6 +8,7 @@ import { useToast } from "@shared/ui/toast/ToastContext";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 import { formatBookSource } from "@shared/lib/presentation";
+import { formatDateTimeBr } from "@shared/lib/formatters";
 
 type Favorite = {
   bookId: string;
@@ -140,9 +141,9 @@ export function FavoritesPage() {
               <span className="favorite-badge"><BookMarked aria-hidden="true" /> Favorito</span>
             </div>
             <h3>{item.bookTitle}</h3>
-            <p>ISBN: {item.bookIsbn}</p>
+            <p>ISBN {item.bookIsbn}</p>
             <small>{getFavoriteSourceDescription(item.source)}</small>
-            <small>Favoritado em {new Date(item.createdAt).toLocaleString()}</small>
+            <small>Favoritado em {formatDateTimeBr(item.createdAt)}</small>
             <div className="card-actions">
               <Link to={`/books/${item.bookId}`} className="btn-muted btn-link">
                 Ver detalhes

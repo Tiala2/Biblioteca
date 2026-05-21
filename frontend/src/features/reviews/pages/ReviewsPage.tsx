@@ -7,6 +7,7 @@ import { extractApiErrorCode, extractApiErrorMessage } from "@shared/api/errors"
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { useToast } from "@shared/ui/toast/ToastContext";
+import { formatDateBr, formatDateTimeBr } from "@shared/lib/formatters";
 import { formatBookSource, pluralizePt } from "@shared/lib/presentation";
 
 type Review = {
@@ -143,7 +144,7 @@ export function ReviewsPage() {
       average: average.toFixed(1).replace(".", ","),
       highest,
       withComment,
-      latestUpdatedLabel: latestUpdated ? new Date(latestUpdated).toLocaleDateString() : "-",
+      latestUpdatedLabel: latestUpdated ? formatDateBr(new Date(latestUpdated).toISOString()) : "-",
     };
   }, [items]);
 
@@ -316,7 +317,7 @@ export function ReviewsPage() {
                 </strong>
                 <small>
                   {selectedBook.author ?? "Autor não informado"}
-                  {selectedBook.source === "OPEN" ? " - Open Library" : ""}
+                  {selectedBook.source === "OPEN" ? " · Open Library" : ""}
                 </small>
                 <div className="review-book-badges">
                   <span className={selectedBook.source === "OPEN" ? "import-badge" : "favorite-badge"}>
@@ -453,7 +454,7 @@ export function ReviewsPage() {
                     <p>{review.comment}</p>
                   </>
                 )}
-                <small>Atualizado em: {new Date(review.updatedAt).toLocaleString()}</small>
+                <small>Atualizado em {formatDateTimeBr(review.updatedAt)}</small>
                 <div className="card-actions">
                   {isEditing ? (
                     <>
