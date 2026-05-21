@@ -129,7 +129,7 @@ export function ProfilePage() {
       title: reading.book.title,
       book: reading.book,
       progress: reading.progress,
-      subtitle: `Página ${reading.currentPage}. ${reading.progress}%. ${formatReadingStatus(reading.status)}.`,
+      subtitle: `Página ${reading.currentPage} · ${reading.progress}% · ${formatReadingStatus(reading.status)}`,
       date: reading.lastReadedAt ?? reading.finishedAt ?? null,
       link: `/books/${reading.book.id}`,
       cta: "Abrir detalhes",

@@ -9,7 +9,7 @@ export function AdminEmptyState({
 }: AdminEmptyStateProps) {
   return (
     <div className="admin-empty-state" role="status" aria-live="polite">
-      <p className="eyebrow">Sem dados</p>
+      <p className="eyebrow">Nada por enquanto</p>
       <h3>{title}</h3>
       <p className="section-sub">{message}</p>
     </div>

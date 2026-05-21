@@ -52,6 +52,7 @@ export function UserPanel({
   onPageChange,
 }: UserPanelProps) {
   const isEditingCurrentUser = form.email.trim().toLowerCase() === currentUserEmail.toLowerCase();
+  const loadingLabel = "Carregando";
   const userInsights = useMemo(() => {
     const activeCount = users.filter((user) => user.active).length;
     const adminCount = users.filter((user) => user.role === "ADMIN").length;
@@ -65,7 +66,7 @@ export function UserPanel({
     <article id="admin-users" className="card admin-panel admin-panel--wide">
       <div className="section-head">
         <h3>Usuários e permissões</h3>
-        <span className="kpi">{loading ? "..." : totalUsers}</span>
+        <span className="kpi">{loading ? loadingLabel : totalUsers}</span>
       </div>
       <p className="section-sub">
         Edite dados básicos, controle preferências, governe papéis e bloqueie ou reative acesso sem apagar histórico.
@@ -131,19 +132,19 @@ export function UserPanel({
 
       <div className="admin-user-summary">
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : userInsights.activeCount}</strong>
+          <strong>{loading ? loadingLabel : userInsights.activeCount}</strong>
           <span>ativos na página</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : userInsights.adminCount}</strong>
+          <strong>{loading ? loadingLabel : userInsights.adminCount}</strong>
           <span>admins na página</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : userInsights.rankingCount}</strong>
+          <strong>{loading ? loadingLabel : userInsights.rankingCount}</strong>
           <span>no ranking</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : userInsights.alertsCount}</strong>
+          <strong>{loading ? loadingLabel : userInsights.alertsCount}</strong>
           <span>com alertas</span>
         </div>
       </div>
@@ -172,7 +173,7 @@ export function UserPanel({
           </select>
         </label>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : users.length}</strong>
+          <strong>{loading ? loadingLabel : users.length}</strong>
           <span>na página atual</span>
         </div>
       </div>

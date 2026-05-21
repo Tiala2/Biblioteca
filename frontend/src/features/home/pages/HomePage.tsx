@@ -267,7 +267,7 @@ export function HomePage() {
                 <p><strong>{currentReading.book.title}</strong></p>
                 {currentReading.book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
                 <p className="section-sub">
-                  Página atual: {currentReading.currentPage}. Status: {formatReadingStatus(currentReading.status)}.
+                  Página {currentReading.currentPage} · {formatReadingStatus(currentReading.status)}
                 </p>
               </div>
             </div>
@@ -301,7 +301,7 @@ export function HomePage() {
               {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} páginas concluídas
             </p>
             <p className="section-sub">
-              Restam {home.readingProgress.goal.remainingPages} páginas. Status: {formatReadingStatus(home.readingProgress.goal.status)}.
+              Faltam {home.readingProgress.goal.remainingPages} páginas · {formatReadingStatus(home.readingProgress.goal.status)}
             </p>
             <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />

@@ -262,7 +262,7 @@ export function GoalsPage() {
                   ? `${pluralizePt(goalInsights.highPriorityAlerts, "alerta prioritário", "alertas prioritários")}`
                   : "Sem alerta prioritário"}
               </span>
-              <span className="section-sub">Status: {formatReadingStatus(goal.status)}</span>
+              <span className="section-sub">Meta {formatReadingStatus(goal.status).toLowerCase()}</span>
             </div>
             <p>Leitura acumulada: {goal.progressPages} páginas de {goal.targetPages} planejadas.</p>
             <div className="goal-plan-note">

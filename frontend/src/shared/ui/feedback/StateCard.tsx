@@ -10,10 +10,11 @@ type StateCardProps = {
 export function StateCard({ title, message, variant = "empty", action }: StateCardProps) {
   const role = variant === "error" ? "alert" : "status";
   const live = variant === "error" ? "assertive" : "polite";
+  const eyebrow = variant === "loading" ? "Carregando" : variant === "error" ? "Atenção" : "Nada por enquanto";
 
   return (
     <article className={`card state-card state-card--${variant}`} role={role} aria-live={live} aria-busy={variant === "loading"}>
-      <p className="eyebrow">{variant === "loading" ? "Carregando" : variant === "error" ? "Atencao" : "Sem dados"}</p>
+      <p className="eyebrow">{eyebrow}</p>
       <h3>{title}</h3>
       <p className="section-sub">{message}</p>
       {action ? <div className="card-actions">{action}</div> : null}

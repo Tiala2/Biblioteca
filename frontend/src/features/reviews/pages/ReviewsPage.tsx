@@ -517,7 +517,7 @@ export function ReviewsPage() {
 
         {!loading && !error && items.length === 0 && (
           <div className="panel-inline-state" role="status" aria-live="polite">
-            <p className="eyebrow">Sem dados</p>
+            <p className="eyebrow">Nada por enquanto</p>
             <h3>Nenhuma avaliação registrada</h3>
             <p className="section-sub">
               Suas avaliações aparecerão aqui depois que você iniciar uma leitura e registrar sua primeira percepção.

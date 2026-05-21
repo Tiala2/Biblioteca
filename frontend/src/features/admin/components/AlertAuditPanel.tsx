@@ -33,6 +33,8 @@ export function AlertAuditPanel({
   onAlertTypeFilterChange,
   onPageChange,
 }: AlertAuditPanelProps) {
+  const loadingLabel = "Carregando";
+  const formatChannel = (channel: string) => (channel === "EMAIL" ? "E-mail" : channel);
   const alertInsights = useMemo(() => {
     const sentCount = deliveries.filter((delivery) => delivery.status === "SENT").length;
     const failedCount = deliveries.filter((delivery) => delivery.status === "FAILED").length;
@@ -50,24 +52,24 @@ export function AlertAuditPanel({
     <article id="admin-alerts" className="card admin-panel">
       <div className="section-head">
         <h3>Auditoria de alertas</h3>
-        <span className="kpi">{loading ? "..." : totalDeliveries}</span>
+        <span className="kpi">{loading ? loadingLabel : totalDeliveries}</span>
       </div>
       <p className="section-sub">Acompanhe entregas de alertas por e-mail e o resultado de cada envio.</p>
       <div className="admin-alert-summary">
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : alertInsights.sentCount}</strong>
+          <strong>{loading ? loadingLabel : alertInsights.sentCount}</strong>
           <span>enviados na página</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : alertInsights.failedCount}</strong>
+          <strong>{loading ? loadingLabel : alertInsights.failedCount}</strong>
           <span>falhos na página</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : alertInsights.skippedCount}</strong>
+          <strong>{loading ? loadingLabel : alertInsights.skippedCount}</strong>
           <span>ignorados na página</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{alertInsights.latest ? formatDateTimeBr(alertInsights.latest.createdAt) : "-"}</strong>
+          <strong>{loading ? loadingLabel : alertInsights.latest ? formatDateTimeBr(alertInsights.latest.createdAt) : "Sem registro"}</strong>
           <span>último registro</span>
         </div>
       </div>
@@ -97,7 +99,7 @@ export function AlertAuditPanel({
           </select>
         </label>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? "..." : deliveries.length}</strong>
+          <strong>{loading ? loadingLabel : deliveries.length}</strong>
           <span>na página atual</span>
         </div>
       </div>
@@ -113,7 +115,7 @@ export function AlertAuditPanel({
                 </span>
               </div>
               <p className="section-sub">
-                {formatAlertType(delivery.alertType)}. Canal: {delivery.channel}. Status: {formatAlertStatus(delivery.status)}.
+                {formatAlertType(delivery.alertType)} por {formatChannel(delivery.channel)} · {formatAlertStatus(delivery.status)}
               </p>
               <p>{delivery.message}</p>
               <small>Registrado em {formatDateTimeBr(delivery.createdAt)}</small>
