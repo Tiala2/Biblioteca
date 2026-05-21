@@ -209,7 +209,7 @@ export function UserPanel({
                   onClick={() => onInvalidate(user.id)}
                   title={isCurrentUser ? "Não é permitido invalidar o próprio acesso pelo painel." : undefined}
                 >
-                  {isBusy ? "Processando..." : user.active ? "Invalidar acesso" : "Acesso invalidado"}
+                  {isBusy ? "Invalidando..." : user.active ? "Invalidar acesso" : "Acesso invalidado"}
                 </button>
                 {!user.active && (
                   <button

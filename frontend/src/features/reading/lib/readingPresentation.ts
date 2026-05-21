@@ -63,9 +63,9 @@ export function formatStatusLabel(status?: string | null): string {
 }
 
 export function formatDateLabel(value?: string | null): string {
-  if (!value) return "Sem registro";
+  if (!value) return "Ainda sem registro";
   const formatted = formatDateTimeBr(value);
-  return formatted === "Invalid Date" ? "Sem registro" : formatted;
+  return formatted === "Invalid Date" ? "Ainda sem registro" : formatted;
 }
 
 export function formatNarrativeRole(role?: string | null): string {

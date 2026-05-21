@@ -25,7 +25,7 @@ describe("ApiStatusBanner", () => {
       await vi.advanceTimersByTimeAsync(10000);
     });
 
-    expect(screen.getByRole("status")).toHaveTextContent("API indisponível");
+    expect(screen.getByRole("status")).toHaveTextContent("Servidor indisponível");
   });
 
   it("permanece oculto quando a API responder com sucesso", async () => {

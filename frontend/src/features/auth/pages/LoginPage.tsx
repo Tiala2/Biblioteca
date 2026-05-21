@@ -29,8 +29,8 @@ export function LoginPage() {
     } catch (err: unknown) {
       if (isAxiosError(err)) {
         if (!err.response) {
-          setError(`Falha de conexão com a API. Verifique se o backend está ativo em ${API_BASE_URL}.`);
-          showToast("Falha de conexão com o backend.", "error");
+          setError(`Não foi possível conectar ao servidor. Verifique se o sistema está ativo em ${API_BASE_URL}.`);
+          showToast("Não foi possível conectar ao servidor.", "error");
           return;
         }
 
@@ -47,7 +47,7 @@ export function LoginPage() {
           return;
         }
 
-        const fallback = `Erro na API (${err.response.status}).`;
+        const fallback = `Não foi possível entrar agora. Código ${err.response.status}.`;
         const apiMessage = extractApiErrorMessage(err, fallback);
         setError(apiMessage ?? fallback);
         showToast(apiMessage ?? fallback, "error");

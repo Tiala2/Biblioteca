@@ -69,7 +69,7 @@ export function AlertAuditPanel({
           <span>ignorados na página</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{loading ? loadingLabel : alertInsights.latest ? formatDateTimeBr(alertInsights.latest.createdAt) : "Sem registro"}</strong>
+          <strong>{loading ? loadingLabel : alertInsights.latest ? formatDateTimeBr(alertInsights.latest.createdAt) : "Ainda sem registro"}</strong>
           <span>último registro</span>
         </div>
       </div>

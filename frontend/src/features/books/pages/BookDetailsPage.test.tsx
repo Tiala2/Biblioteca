@@ -110,7 +110,8 @@ describe("BookDetailsPage", () => {
     expect(screen.getByText("origem")).toBeInTheDocument();
     expect(screen.getByText("Dinâmica")).toBeInTheDocument();
     expect(screen.getAllByText("Disponível").length).toBeGreaterThan(0);
-    expect(screen.getByText("pdf no app")).toBeInTheDocument();
+    expect(screen.getByText("Leitura no app")).toBeInTheDocument();
+    expect(screen.getByText("modo de leitura")).toBeInTheDocument();
     expect(screen.getByText("favorito")).toBeInTheDocument();
     expect(screen.getByText("categorias")).toBeInTheDocument();
     expect(screen.getByText("tags")).toBeInTheDocument();

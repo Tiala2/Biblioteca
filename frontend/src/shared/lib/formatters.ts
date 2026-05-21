@@ -1,10 +1,10 @@
 export function formatDateBr(value?: string | null) {
-  if (!value) return "Sem data registrada";
+  if (!value) return "Data ainda não registrada";
   return new Date(value).toLocaleDateString("pt-BR");
 }
 
 export function formatDateTimeBr(value?: string | null) {
-  if (!value) return "Sem data registrada";
+  if (!value) return "Data ainda não registrada";
   return new Date(value).toLocaleString("pt-BR");
 }
 

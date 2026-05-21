@@ -27,7 +27,7 @@ const AdminAlertsPage = lazy(() => import("@features/admin/pages/AdminAlertsPage
 function RouteLoadingFallback() {
   return (
     <section className="card">
-      <p className="section-sub">Carregando tela...</p>
+      <p className="section-sub">Preparando tela...</p>
     </section>
   );
 }

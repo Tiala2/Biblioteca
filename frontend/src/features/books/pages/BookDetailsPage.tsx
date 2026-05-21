@@ -130,12 +130,12 @@ export function BookDetailsPage() {
     return [
       { label: "Páginas", value: `${book.numberOfPages}` },
       { label: "Autor", value: book.author || "Autoria ainda não informada" },
-      { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Catálogo local" },
+      { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Acervo interno" },
       { label: "Dinâmica", value: book.hasNarrative ? "Disponível" : "Em breve" },
-      { label: "ISBN", value: book.isbn || "Não informado" },
+      { label: "ISBN", value: book.isbn || "ISBN não cadastrado" },
       {
         label: "Publicação",
-        value: book.publicationDate ? formatDateBr(book.publicationDate) : "Não informada",
+        value: book.publicationDate ? formatDateBr(book.publicationDate) : "Data não cadastrada",
       },
     ];
   }, [book]);
@@ -212,8 +212,8 @@ export function BookDetailsPage() {
           </div>
           <div className="aura-hero__signal">
             <BookMarked aria-hidden="true" />
-            <strong>{book?.hasPdf ? "PDF" : "Guia"}</strong>
-            <span>{book?.hasPdf ? "local" : "com progresso"}</span>
+            <strong>{book?.hasPdf ? "Leitura" : "Guia"}</strong>
+            <span>{book?.hasPdf ? "no app" : "com progresso"}</span>
           </div>
         </div>
         {error && <p className="error">{error}</p>}
@@ -248,8 +248,8 @@ export function BookDetailsPage() {
             <span>origem</span>
           </div>
           <div className="stat-box">
-            <strong>{book?.hasPdf ? "Disponível" : "Indisponível"}</strong>
-            <span>pdf no app</span>
+            <strong>{book?.hasPdf ? "Leitura no app" : "Progresso manual"}</strong>
+            <span>modo de leitura</span>
           </div>
           <div className="stat-box">
             <strong>{isFavorite ? "Salvo" : "Livre"}</strong>

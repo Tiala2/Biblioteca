@@ -247,7 +247,7 @@ export function useAdminActions({
       "book-upload",
       () => api.post(`/api/admin/books/${uploadBookId}/upload`, formData, { headers: { ...headers, "Content-Type": "multipart/form-data" } }),
       "PDF enviado com sucesso.",
-      "Falha no upload do PDF."
+      "Não foi possível enviar o arquivo do livro."
     );
     setUploadFile(null);
   };

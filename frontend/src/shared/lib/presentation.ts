@@ -9,11 +9,11 @@ const READING_STATUS_LABELS: Record<string, string> = {
 };
 
 export function formatBookSource(source?: BookSource) {
-  return source === "OPEN" ? "Open Library" : "Local";
+  return source === "OPEN" ? "Open Library" : "Acervo interno";
 }
 
 export function formatReadingStatus(status?: string | null) {
-  if (!status) return "Sem registro";
+  if (!status) return "Ainda sem registro";
   return READING_STATUS_LABELS[status] ?? status.replaceAll("_", " ").toLowerCase();
 }
 
