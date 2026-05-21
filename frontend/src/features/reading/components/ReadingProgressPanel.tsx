@@ -108,7 +108,7 @@ export function ReadingProgressPanel({
       </div>
 
       <p className="section-sub">
-        Trecho atual: {insight?.beatTitle ?? "Sem contexto narrativo definido para a página selecionada."}
+        Trecho atual: {insight?.beatTitle ?? "A curadoria narrativa ainda não chegou a esta página."}
       </p>
     </article>
   );

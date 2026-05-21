@@ -129,7 +129,7 @@ export function BookDetailsPage() {
 
     return [
       { label: "Páginas", value: `${book.numberOfPages}` },
-      { label: "Autor", value: book.author || "Autor não informado" },
+      { label: "Autor", value: book.author || "Autoria ainda não informada" },
       { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Catálogo local" },
       { label: "Dinâmica", value: book.hasNarrative ? "Disponível" : "Em breve" },
       { label: "ISBN", value: book.isbn || "Não informado" },
@@ -332,7 +332,7 @@ export function BookDetailsPage() {
               <strong>Nota registrada: {myReview.rating}</strong>
             </div>
             <p>{myReview.comment}</p>
-            <small>Atualizado em: {formatDateTimeBr(myReview.updatedAt)}</small>
+            <small>Atualizado em {formatDateTimeBr(myReview.updatedAt)}</small>
           </>
         ) : (
           <p className="section-sub">Você ainda não avaliou este livro. Quando terminar, registre uma avaliação para alimentar seu perfil.</p>
@@ -386,8 +386,8 @@ export function BookDetailsPage() {
                       <strong>Leitor {index + 1}</strong>
                       <span className={review.rating >= 4 ? "favorite-badge" : "import-badge"}>Nota {review.rating}/5</span>
                     </div>
-                    <p>{review.comment || "Sem comentário adicional."}</p>
-                    <small>Atualizado em: {formatDateTimeBr(review.updatedAt)}</small>
+                    <p>{review.comment || "O leitor registrou apenas a nota, sem comentário adicional."}</p>
+                    <small>Atualizado em {formatDateTimeBr(review.updatedAt)}</small>
                   </div>
                 </li>
               ))}
@@ -409,7 +409,7 @@ export function BookDetailsPage() {
               <li key={item.id} className="stacked-list-item">
                 <div>
                   <strong>{item.title}</strong>
-                  <p className="section-sub">{item.author || "Autor não informado"}</p>
+                  <p className="section-sub">{item.author || "Autoria ainda não informada"}</p>
                   <small>{formatDecimal(item.averageRating)} de média em {pluralizePt(item.totalReviews ?? 0, "avaliação", "avaliações")}</small>
                 </div>
                 <Link to={`/books/${item.id}`} className="btn-muted btn-link">
