@@ -151,7 +151,11 @@ export function BookPanel({
           )}
         </fieldset>
         <button type="submit" disabled={busyKey === "book-create" || busyKey === `book-save-${form.id}`}>
-          {form.id ? "Salvar livro" : "Criar livro"}
+          {busyKey === "book-create" || busyKey === `book-save-${form.id}`
+            ? "Salvando..."
+            : form.id
+              ? "Salvar livro"
+              : "Criar livro"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -180,7 +184,7 @@ export function BookPanel({
           Usar ISBN do livro
         </button>
         <button type="submit" disabled={!hasBooks || busyKey === "book-cover"}>
-          Atualizar capa
+          {busyKey === "book-cover" ? "Atualizando..." : "Atualizar capa"}
         </button>
       </form>
 
@@ -207,7 +211,7 @@ export function BookPanel({
           </p>
         )}
         <button type="submit" disabled={!hasBooks || !uploadFile || busyKey === "book-upload"}>
-          Enviar PDF
+          {busyKey === "book-upload" ? "Enviando..." : "Enviar PDF"}
         </button>
       </form>
 
@@ -225,13 +229,13 @@ export function BookPanel({
           <input aria-label="Tamanho da página de importação" type="number" min={1} value={importPageSize} onChange={(event) => onImportPageSizeChange(Number(event.target.value))} />
         </label>
         <button type="submit" disabled={busyKey === "book-import"}>
-          Importar
+          {busyKey === "book-import" ? "Importando..." : "Importar"}
         </button>
       </form>
 
       {importResult && (
         <p className="section-sub">
-          Importados: {importResult.imported}. Pulados: {importResult.skipped}. Falhas: {importResult.failed}.
+          Importados: {importResult.imported}. Ignorados: {importResult.skipped}. Falhas: {importResult.failed}.
         </p>
       )}
 
@@ -247,8 +251,8 @@ export function BookPanel({
               <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
               <div>
                 <strong>{book.title}</strong>
-              <p className="section-sub">
-                {book.author ?? "Autor não informado"} - {book.isbn}
+                <p className="section-sub">
+                  {book.author ?? "Autor não informado"} · {book.isbn}
                 </p>
               </div>
             </div>
@@ -257,7 +261,7 @@ export function BookPanel({
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `book-delete-${book.id}`} onClick={() => onDelete(book.id)}>
-                Excluir
+                {busyKey === `book-delete-${book.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </div>
           </li>

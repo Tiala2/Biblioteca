@@ -152,7 +152,7 @@ export function FavoritesPage() {
               </Link>
               <button
                 type="button"
-                className="btn-muted"
+                className="btn-muted btn-danger"
                 aria-label={`Remover ${item.bookTitle} dos favoritos`}
                 onClick={() => removeFavorite(item.bookId)}
                 disabled={deletingBookId === item.bookId}

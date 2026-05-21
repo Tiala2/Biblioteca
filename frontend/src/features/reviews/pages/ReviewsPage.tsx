@@ -478,7 +478,7 @@ export function ReviewsPage() {
                     Ver livro
                   </Link>
                   <button
-                    className="btn-muted"
+                    className="btn-muted btn-danger"
                     onClick={() => onDelete(review.id)}
                     disabled={deletingId === review.id}
                     type="button"
