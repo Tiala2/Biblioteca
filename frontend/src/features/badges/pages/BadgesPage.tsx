@@ -45,6 +45,25 @@ function parsePage(value: string | null): number {
   return parsed;
 }
 
+const BADGE_CODE_LABELS: Record<string, string> = {
+  FIRST_REVIEW: "Primeira avaliação",
+  FIRST_BOOK_FINISHED: "Primeiro livro concluído",
+  STREAK_7_DAYS: "Sequência de 7 dias",
+  STREAK_30_DAYS: "Sequência de 30 dias",
+  TOTAL_BOOKS_10: "10 livros concluídos",
+  TOTAL_PAGES_1000: "1.000 páginas lidas",
+};
+
+function formatBadgeCode(code: string) {
+  return (
+    BADGE_CODE_LABELS[code] ??
+    code
+      .replaceAll("_", " ")
+      .toLowerCase()
+      .replace(/(^|\s)\S/g, (letter) => letter.toUpperCase())
+  );
+}
+
 export function BadgesPage() {
   const headers = useAuthHeaders();
   const [badges, setBadges] = useState<Badge[]>([]);
@@ -229,7 +248,7 @@ export function BadgesPage() {
             <Medal aria-hidden="true" />
             <h3>{badge.name}</h3>
             <p>{badge.description}</p>
-            <small>Código: {badge.code}</small>
+            <small>Tipo: {formatBadgeCode(badge.code)}</small>
             <br />
             <small>Conquistado em {formatDateTimeBr(badge.awardedAt)}</small>
           </article>

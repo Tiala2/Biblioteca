@@ -54,6 +54,8 @@ describe("BadgesPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Primeira Review" })).toBeInTheDocument();
     expect(screen.getByText("Registrou a primeira avaliacao")).toBeInTheDocument();
+    expect(screen.getByText("Tipo: Primeira avaliação")).toBeInTheDocument();
+    expect(screen.queryByText("Código: FIRST_REVIEW")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Streak de 7 dias" })).toBeInTheDocument();
     expect(screen.getByText("5 de 7 dias")).toBeInTheDocument();
     expect(screen.getByText("trilha completa")).toBeInTheDocument();
