@@ -36,7 +36,7 @@ function metricCopy(metric: LeaderboardMetric) {
   if (metric === "BOOKS") {
     return {
       title: "Livros concluídos",
-      subtitle: "Ranking semanal por livros finalizados com opt-in ativo.",
+      subtitle: "Ranking semanal por livros finalizados com participação ativa.",
       singular: "livro",
       plural: "livros",
     };
@@ -44,7 +44,7 @@ function metricCopy(metric: LeaderboardMetric) {
 
   return {
       title: "Páginas lidas",
-      subtitle: "Ranking semanal da comunidade por páginas lidas com opt-in ativo.",
+      subtitle: "Ranking semanal da comunidade por páginas lidas com participação ativa.",
       singular: "página",
       plural: "páginas",
   };
@@ -276,7 +276,7 @@ export function LeaderboardPage() {
       {!loading && !error && entries.length === 0 && (
         <StateCard
           title="Nenhum participante elegível nesta semana"
-          message="Ative seu opt-in no perfil e continue lendo para aparecer na próxima atualização do ranking."
+          message="Ative sua participação no perfil e continue lendo para aparecer na próxima atualização do ranking."
           action={
             <Link to="/profile" className="btn-link">
               Ajustar preferências

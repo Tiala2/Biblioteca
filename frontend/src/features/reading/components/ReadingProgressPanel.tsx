@@ -38,7 +38,7 @@ export function ReadingProgressPanel({
 
       {!hasPdf ? (
         <p className="section-sub">
-          Mesmo sem PDF local, você pode informar manualmente a página atual. Assim o livro continua contando em metas,
+          Mesmo sem leitura interna, você pode informar manualmente a página atual. Assim o livro continua contando em metas,
           histórico e engajamento.
         </p>
       ) : null}

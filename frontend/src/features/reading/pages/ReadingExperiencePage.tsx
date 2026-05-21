@@ -48,7 +48,7 @@ export function ReadingExperiencePage() {
 
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
   const isExternalReading = Boolean(book && !book.hasPdf);
-  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "PDF local" : "Catálogo";
+  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "Leitura no app" : "Catálogo com progresso";
   const derivedProgress = Math.round((currentPage / totalPages) * 100);
   const progressPercent = Math.max(0, Math.min(100, readingSnapshot?.progress ?? derivedProgress));
   const pagesRemaining = Math.max(totalPages - currentPage, 0);

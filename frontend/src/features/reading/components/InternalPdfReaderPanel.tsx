@@ -8,7 +8,7 @@ export function InternalPdfReaderPanel({ bookTitle, internalPdfUrl }: InternalPd
     <article className="card">
       <div className="section-head">
         <h3>Leitor interno</h3>
-        <span className="kpi">PDF local</span>
+        <span className="kpi">Leitura no app</span>
       </div>
       {internalPdfUrl ? (
         <>
@@ -31,7 +31,7 @@ export function InternalPdfReaderPanel({ bookTitle, internalPdfUrl }: InternalPd
         </>
       ) : (
         <p className="section-sub">
-          O PDF deste livro existe, mas a URL de leitura ainda não está disponível. Tente novamente em instantes.
+          A leitura no app existe para este livro, mas o acesso ainda está sendo preparado. Tente novamente em instantes.
         </p>
       )}
     </article>
