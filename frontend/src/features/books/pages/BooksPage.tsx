@@ -483,7 +483,7 @@ export function BooksPage() {
             <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             <div className="book-card-badges">
               {book.source === "OPEN" && <span className="import-badge">{formatBookSource(book.source)}</span>}
-              {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">SEM PDF</span>}
+              {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">Sem PDF local</span>}
               {book.hasNarrative && <span className="favorite-badge">Dinâmica</span>}
               {favoriteBookIds.has(book.id) && <span className="favorite-badge">Favorito</span>}
             </div>

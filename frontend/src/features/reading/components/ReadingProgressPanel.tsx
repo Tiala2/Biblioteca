@@ -107,7 +107,9 @@ export function ReadingProgressPanel({
         </button>
       </div>
 
-      <p className="section-sub">Beat atual: {insight?.beatTitle ?? "Sem beat definido para a página selecionada."}</p>
+      <p className="section-sub">
+        Trecho atual: {insight?.beatTitle ?? "Sem contexto narrativo definido para a página selecionada."}
+      </p>
     </article>
   );
 }

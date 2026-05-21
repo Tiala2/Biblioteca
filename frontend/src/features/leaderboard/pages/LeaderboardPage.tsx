@@ -141,7 +141,7 @@ export function LeaderboardPage() {
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
           <h3><Settings2 aria-hidden="true" /> Seu status no ranking</h3>
-          <span className="kpi">{leaderboardOptIn ? "Opt-in ativo" : "Opt-in desligado"}</span>
+          <span className="kpi">{leaderboardOptIn ? "Participação ativa" : "Participação desligada"}</span>
         </div>
         <p className="section-sub">
           {leaderboardOptIn
