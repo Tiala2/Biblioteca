@@ -28,6 +28,8 @@ export function AppLayout() {
   const { mode, theme, cycleMode } = useTheme();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const themeModeLabel = mode === "auto" ? "Automático" : mode === "night" ? "Noite" : "Dia";
+  const activeThemeLabel = theme === "night" ? "Noite ativa" : "Dia ativo";
 
   const onLogout = () => {
     logout();
@@ -143,13 +145,13 @@ export function AppLayout() {
           </div>
           <div className="user-box">
             <span className="kpi">
-              {theme === "night" ? "Tema Noite" : "Tema Dia"} ({mode})
+              {activeThemeLabel} · {themeModeLabel}
             </span>
             <button
               type="button"
               className="btn-muted"
               onClick={cycleMode}
-              aria-label={`Alternar tema. Modo atual: ${mode}`}
+              aria-label={`Alternar tema. Modo atual: ${themeModeLabel}`}
             >
               {mode === "auto" ? <Settings2 aria-hidden="true" /> : <MoonStar aria-hidden="true" />}
               {mode === "auto" ? "Auto" : mode === "night" ? "Noite" : "Dia"}

@@ -64,7 +64,7 @@ export function UserPanel({
   return (
     <article id="admin-users" className="card admin-panel admin-panel--wide">
       <div className="section-head">
-        <h3>Gestão de usuários</h3>
+        <h3>Usuários e permissões</h3>
         <span className="kpi">{loading ? "..." : totalUsers}</span>
       </div>
       <p className="section-sub">

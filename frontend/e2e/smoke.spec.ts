@@ -295,7 +295,7 @@ test("deve exibir paineis administrativos de usuarios, favoritos e alertas", asy
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Painel admin" })).toBeVisible();
 
-  await expect(page.locator("#admin-users").getByRole("heading", { name: "Gestão de usuários" })).toBeVisible();
+  await expect(page.locator("#admin-users").getByRole("heading", { name: "Usuários e permissões" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Favoritos registrados" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Auditoria de alertas" })).toBeVisible();
   await expect(page.getByPlaceholder("Buscar usuários por nome ou email")).toBeVisible();

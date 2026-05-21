@@ -185,6 +185,7 @@ describe("AdminPage", () => {
     expect(screen.getByRole("heading", { name: "Acervo e descoberta" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Gamificação e comunidade" })).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "Usuários e permissões" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
     expect(screen.getByText("ativos na página")).toBeInTheDocument();
