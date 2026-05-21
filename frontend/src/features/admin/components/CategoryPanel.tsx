@@ -116,7 +116,7 @@ export function CategoryPanel({
               <button type="button" className="btn-muted" onClick={() => onEdit(category)}>
                 Editar
               </button>
-              <button type="button" className="btn-muted" disabled={busyKey === `category-delete-${category.id}`} onClick={() => onDelete(category.id)}>
+              <button type="button" className="btn-muted btn-danger" disabled={busyKey === `category-delete-${category.id}`} onClick={() => onDelete(category.id)}>
                 Excluir
               </button>
             </div>

@@ -256,7 +256,7 @@ export function BookPanel({
               <button type="button" className="btn-muted" onClick={() => onEdit(book)}>
                 Editar
               </button>
-              <button type="button" className="btn-muted" disabled={busyKey === `book-delete-${book.id}`} onClick={() => onDelete(book.id)}>
+              <button type="button" className="btn-muted btn-danger" disabled={busyKey === `book-delete-${book.id}`} onClick={() => onDelete(book.id)}>
                 Excluir
               </button>
             </div>

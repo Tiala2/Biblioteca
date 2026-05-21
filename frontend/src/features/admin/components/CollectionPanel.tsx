@@ -162,7 +162,7 @@ export function CollectionPanel({
               </button>
               <button
                 type="button"
-                className="btn-muted"
+                className="btn-muted btn-danger"
                 disabled={busyKey === `collection-delete-${collection.id}`}
                 onClick={() => onDelete(collection.id)}
               >

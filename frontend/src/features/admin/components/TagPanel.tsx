@@ -97,7 +97,7 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
               <button type="button" className="btn-muted" onClick={() => onEdit(tag)}>
                 Editar
               </button>
-              <button type="button" className="btn-muted" disabled={busyKey === `tag-delete-${tag.id}`} onClick={() => onDelete(tag.id)}>
+              <button type="button" className="btn-muted btn-danger" disabled={busyKey === `tag-delete-${tag.id}`} onClick={() => onDelete(tag.id)}>
                 Excluir
               </button>
             </div>

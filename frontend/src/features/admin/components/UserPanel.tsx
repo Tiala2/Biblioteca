@@ -203,7 +203,7 @@ export function UserPanel({
                 </button>
                 <button
                   type="button"
-                  className="btn-muted"
+                  className="btn-muted btn-danger"
                   disabled={isBusy || !user.active || isCurrentUser}
                   onClick={() => onInvalidate(user.id)}
                   title={isCurrentUser ? "Não é permitido invalidar o próprio acesso pelo painel." : undefined}
@@ -213,7 +213,7 @@ export function UserPanel({
                 {!user.active && (
                   <button
                     type="button"
-                    className="btn-muted"
+                    className="btn-muted btn-success"
                     disabled={busyKey === `user-reactivate-${user.id}`}
                     onClick={() => onReactivate(user.id)}
                   >

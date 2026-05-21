@@ -12,6 +12,8 @@ export function ApiStatusBanner() {
 
   useEffect(() => {
     let active = true;
+    let consecutiveFailures = 0;
+    let timeoutId: number | undefined;
 
     const checkHealth = async () => {
       const controller = new AbortController();
@@ -24,23 +26,35 @@ export function ApiStatusBanner() {
           cache: "no-store",
         });
         if (active) {
-          setStatus(response.ok ? "online" : "offline");
+          if (response.ok) {
+            consecutiveFailures = 0;
+            setStatus("online");
+          } else {
+            consecutiveFailures += 1;
+            setStatus(consecutiveFailures >= 2 ? "offline" : "checking");
+          }
         }
       } catch {
         if (active) {
-          setStatus("offline");
+          consecutiveFailures += 1;
+          setStatus(consecutiveFailures >= 2 ? "offline" : "checking");
         }
       } finally {
         window.clearTimeout(timeout);
+        if (active) {
+          const nextDelay = consecutiveFailures > 0 ? 10000 : 60000;
+          timeoutId = window.setTimeout(() => void checkHealth(), nextDelay);
+        }
       }
     };
 
     void checkHealth();
-    const interval = window.setInterval(() => void checkHealth(), 60000);
 
     return () => {
       active = false;
-      window.clearInterval(interval);
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
     };
   }, []);
 

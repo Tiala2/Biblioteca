@@ -2244,6 +2244,32 @@ textarea:disabled {
   box-shadow: none;
 }
 
+.btn-danger {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--danger) 11%, var(--card-bg)), color-mix(in srgb, var(--danger) 5%, var(--card-bg)));
+  color: color-mix(in srgb, var(--danger) 88%, var(--text-main));
+  border-color: color-mix(in srgb, var(--danger) 34%, var(--card-border));
+  box-shadow: none;
+}
+
+.btn-danger:hover {
+  border-color: color-mix(in srgb, var(--danger) 52%, transparent);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.btn-success {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--success) 13%, var(--card-bg)), color-mix(in srgb, var(--primary-b) 6%, var(--card-bg)));
+  color: color-mix(in srgb, var(--success) 88%, var(--text-main));
+  border-color: color-mix(in srgb, var(--success) 34%, var(--card-border));
+  box-shadow: none;
+}
+
+.btn-success:hover {
+  border-color: color-mix(in srgb, var(--success) 52%, transparent);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--success) 12%, transparent);
+}
+
 .favorite-toggle {
   border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--card-border));
   background:

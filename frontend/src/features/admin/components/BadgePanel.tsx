@@ -151,7 +151,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
               <button type="button" className="btn-muted" onClick={() => onEdit(badge)}>
                 Editar
               </button>
-              <button type="button" className="btn-muted" disabled={busyKey === `badge-delete-${badge.id}`} onClick={() => onDelete(badge.id)}>
+              <button type="button" className="btn-muted btn-danger" disabled={busyKey === `badge-delete-${badge.id}`} onClick={() => onDelete(badge.id)}>
                 Excluir
               </button>
             </div>
