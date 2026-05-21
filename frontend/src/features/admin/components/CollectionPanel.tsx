@@ -51,6 +51,7 @@ export function CollectionPanel({
   }, [collections]);
   const totalPages = Math.max(1, Math.ceil(filteredCollections.length / pageSize));
   const visibleCollections = filteredCollections.slice(page * pageSize, page * pageSize + pageSize);
+  const saving = busyKey === "collection-create" || busyKey === `collection-save-${form.id}`;
   const toggleBook = (bookId: string) => {
     onFormChange((prev) => {
       const selected = new Set(prev.bookIds);
@@ -101,8 +102,8 @@ export function CollectionPanel({
             <p className="section-sub">Cadastre livros para montar coleções.</p>
           )}
         </fieldset>
-        <button type="submit" disabled={busyKey === "collection-create" || busyKey === `collection-save-${form.id}`}>
-          {form.id ? "Salvar coleção" : "Criar coleção"}
+        <button type="submit" disabled={saving}>
+          {saving ? "Salvando..." : form.id ? "Salvar coleção" : "Criar coleção"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -166,7 +167,7 @@ export function CollectionPanel({
                 disabled={busyKey === `collection-delete-${collection.id}`}
                 onClick={() => onDelete(collection.id)}
               >
-                Excluir
+                {busyKey === `collection-delete-${collection.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </div>
           </li>

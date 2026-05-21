@@ -46,6 +46,7 @@ export function CategoryPanel({
   }, [categories]);
   const totalPages = Math.max(1, Math.ceil(filteredCategories.length / pageSize));
   const visibleCategories = filteredCategories.slice(page * pageSize, page * pageSize + pageSize);
+  const saving = busyKey === "category-create" || busyKey === `category-save-${form.id}`;
 
   return (
     <article id="admin-categories" className="card admin-panel">
@@ -64,8 +65,8 @@ export function CategoryPanel({
           onChange={(event) => onFormChange((prev) => ({ ...prev, description: event.target.value }))}
           placeholder="Descrição"
         />
-        <button type="submit" disabled={busyKey === "category-create" || busyKey === `category-save-${form.id}`}>
-          {form.id ? "Salvar categoria" : "Criar categoria"}
+        <button type="submit" disabled={saving}>
+          {saving ? "Salvando..." : form.id ? "Salvar categoria" : "Criar categoria"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -117,7 +118,7 @@ export function CategoryPanel({
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `category-delete-${category.id}`} onClick={() => onDelete(category.id)}>
-                Excluir
+                {busyKey === `category-delete-${category.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </div>
           </li>

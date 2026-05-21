@@ -38,6 +38,7 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
   }, [tags]);
   const totalPages = Math.max(1, Math.ceil(filteredTags.length / pageSize));
   const visibleTags = filteredTags.slice(page * pageSize, page * pageSize + pageSize);
+  const saving = busyKey === "tag-create" || busyKey === `tag-save-${form.id}`;
 
   return (
     <article id="admin-tags" className="card admin-panel">
@@ -50,8 +51,8 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
           placeholder="Nome"
           required
         />
-        <button type="submit" disabled={busyKey === "tag-create" || busyKey === `tag-save-${form.id}`}>
-          {form.id ? "Salvar tag" : "Criar tag"}
+        <button type="submit" disabled={saving}>
+          {saving ? "Salvando..." : form.id ? "Salvar tag" : "Criar tag"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -98,7 +99,7 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `tag-delete-${tag.id}`} onClick={() => onDelete(tag.id)}>
-                Excluir
+                {busyKey === `tag-delete-${tag.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </div>
           </li>

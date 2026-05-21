@@ -47,6 +47,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
   }, [badges]);
   const totalPages = Math.max(1, Math.ceil(filteredBadges.length / pageSize));
   const visibleBadges = filteredBadges.slice(page * pageSize, page * pageSize + pageSize);
+  const saving = busyKey === "badge-create" || busyKey === `badge-save-${form.id}`;
 
   return (
     <article id="admin-badges" className="card admin-panel">
@@ -96,8 +97,8 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
         <label className="check-inline">
           <input type="checkbox" checked={form.active} onChange={(event) => onFormChange((prev) => ({ ...prev, active: event.target.checked }))} /> Ativo
         </label>
-        <button type="submit" disabled={busyKey === "badge-create" || busyKey === `badge-save-${form.id}`}>
-          {form.id ? "Salvar conquista" : "Criar conquista"}
+        <button type="submit" disabled={saving}>
+          {saving ? "Salvando..." : form.id ? "Salvar conquista" : "Criar conquista"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -143,7 +144,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
                 </span>
               </div>
               <p className="section-sub">
-                {formatBadgeCode(badge.code)}. Critério: {formatBadgeCriteria(badge.criteriaType)}. Valor: {badge.criteriaValue ?? "sem valor"}.
+                {formatBadgeCode(badge.code)} · {formatBadgeCriteria(badge.criteriaType)} · {badge.criteriaValue ?? "Sem valor"}
               </p>
               {badge.description && <small>{badge.description}</small>}
             </div>
@@ -152,7 +153,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `badge-delete-${badge.id}`} onClick={() => onDelete(badge.id)}>
-                Excluir
+                {busyKey === `badge-delete-${badge.id}` ? "Excluindo..." : "Excluir"}
               </button>
             </div>
           </li>
