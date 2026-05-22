@@ -115,7 +115,7 @@ export function useAdminActions({
           ? api.put(`/api/admin/categories/${categoryForm.id}`, { name: categoryForm.name, description: categoryForm.description }, { headers })
           : api.post("/api/admin/categories", { name: categoryForm.name, description: categoryForm.description }, { headers }),
       categoryForm.id ? "Categoria atualizada com sucesso." : "Categoria criada com sucesso.",
-      categoryForm.id ? "Falha ao atualizar categoria." : "Falha ao criar categoria."
+      categoryForm.id ? "Não foi possível atualizar a categoria." : "Não foi possível criar a categoria."
     );
     setCategoryForm(emptyCategory);
   };
@@ -127,7 +127,7 @@ export function useAdminActions({
       tagForm.id ? `tag-save-${tagForm.id}` : "tag-create",
       () => (tagForm.id ? api.put(`/api/admin/tags/${tagForm.id}`, { name: tagForm.name }, { headers }) : api.post("/api/admin/tags", { name: tagForm.name }, { headers })),
       tagForm.id ? "Tag atualizada com sucesso." : "Tag criada com sucesso.",
-      tagForm.id ? "Falha ao atualizar tag." : "Falha ao criar tag."
+      tagForm.id ? "Não foi possível atualizar a tag." : "Não foi possível criar a tag."
     );
     setTagForm(emptyTag);
   };
@@ -142,7 +142,7 @@ export function useAdminActions({
           ? api.put(`/api/admin/collections/${collectionForm.id}`, collectionForm, { headers })
           : api.post("/api/admin/collections", collectionForm, { headers }),
       collectionForm.id ? "Coleção atualizada com sucesso." : "Coleção criada com sucesso.",
-      collectionForm.id ? "Falha ao atualizar coleção." : "Falha ao criar coleção."
+      collectionForm.id ? "Não foi possível atualizar a coleção." : "Não foi possível criar a coleção."
     );
     setCollectionForm(emptyCollection);
   };
@@ -181,7 +181,7 @@ export function useAdminActions({
               { headers }
             ),
       bookForm.id ? "Livro atualizado com sucesso." : "Livro criado com sucesso.",
-      bookForm.id ? "Falha ao atualizar livro." : "Falha ao criar livro."
+      bookForm.id ? "Não foi possível atualizar o livro." : "Não foi possível criar o livro."
     );
     setBookForm(emptyBook);
   };
@@ -193,7 +193,7 @@ export function useAdminActions({
       badgeForm.id ? `badge-save-${badgeForm.id}` : "badge-create",
       () => (badgeForm.id ? api.put(`/api/admin/badges/${badgeForm.id}`, badgeForm, { headers }) : api.post("/api/admin/badges", badgeForm, { headers })),
       badgeForm.id ? "Conquista atualizada com sucesso." : "Conquista criada com sucesso.",
-      badgeForm.id ? "Falha ao atualizar conquista." : "Falha ao criar conquista."
+      badgeForm.id ? "Não foi possível atualizar a conquista." : "Não foi possível criar a conquista."
     );
     setBadgeForm(emptyBadge);
   };
@@ -216,7 +216,7 @@ export function useAdminActions({
           { headers }
         ),
       "Usuário atualizado com sucesso.",
-      "Falha ao atualizar usuário.",
+      "Não foi possível atualizar o usuário.",
       reloadUsers
     );
     setUserForm(emptyUser);
@@ -233,7 +233,7 @@ export function useAdminActions({
       `user-reactivate-${userId}`,
       () => api.patch(`/api/admin/users/${userId}/reactivate`, undefined, { headers }),
       "Usuário reativado com sucesso.",
-      "Falha ao reativar usuário.",
+      "Não foi possível reativar o usuário.",
       reloadUsers
     );
   };
@@ -259,7 +259,7 @@ export function useAdminActions({
       "book-cover",
       () => api.patch(`/api/admin/books/${coverBookId}`, { coverUrl: coverBookUrl }, { headers }),
       "Capa do livro atualizada com sucesso.",
-      "Falha ao atualizar capa do livro."
+      "Não foi possível atualizar a capa do livro."
     );
   };
 
@@ -277,7 +277,7 @@ export function useAdminActions({
       await reloadStaticData();
       showToast("Importação concluída com sucesso.", "success");
     } catch {
-      showToast("Falha ao importar livros da Open Library.", "error");
+      showToast("Não foi possível importar livros da Open Library.", "error");
     } finally {
       setBusyKey(null);
     }

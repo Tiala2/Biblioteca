@@ -157,7 +157,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onBookFormChange={setBookForm}
         onResetBook={() => setBookForm(EMPTY_BOOK)}
         onEditBook={actions.fillBookFormFromBook}
-        onDeleteBook={(bookId) => void actions.removeItem(`book-delete-${bookId}`, `/api/admin/books/${bookId}`, "Livro removido com sucesso.", "Falha ao remover livro.")}
+        onDeleteBook={(bookId) => void actions.removeItem(`book-delete-${bookId}`, `/api/admin/books/${bookId}`, "Livro removido com sucesso.", "Não foi possível remover o livro.")}
         onUploadBookChange={staticData.setUploadBookId}
         onCoverBookChange={staticData.setCoverBookId}
         onCoverUrlChange={staticData.setCoverBookUrl}
@@ -170,19 +170,19 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onEditCategory={actions.fillCategoryFormFromCategory}
         onResetCategory={() => setCategoryForm(EMPTY_CATEGORY)}
         onDeleteCategory={(categoryId) =>
-          void actions.removeItem(`category-delete-${categoryId}`, `/api/admin/categories/${categoryId}`, "Categoria removida com sucesso.", "Falha ao remover categoria.")
+          void actions.removeItem(`category-delete-${categoryId}`, `/api/admin/categories/${categoryId}`, "Categoria removida com sucesso.", "Não foi possível remover a categoria.")
         }
         onSubmitTag={actions.submitTag}
         onTagFormChange={setTagForm}
         onEditTag={actions.fillTagFormFromTag}
         onResetTag={() => setTagForm(EMPTY_TAG)}
-        onDeleteTag={(tagId) => void actions.removeItem(`tag-delete-${tagId}`, `/api/admin/tags/${tagId}`, "Tag removida com sucesso.", "Falha ao remover tag.")}
+        onDeleteTag={(tagId) => void actions.removeItem(`tag-delete-${tagId}`, `/api/admin/tags/${tagId}`, "Tag removida com sucesso.", "Não foi possível remover a tag.")}
         onSubmitCollection={actions.submitCollection}
         onCollectionFormChange={setCollectionForm}
         onEditCollection={actions.fillCollectionFormFromCollection}
         onResetCollection={() => setCollectionForm(EMPTY_COLLECTION)}
         onDeleteCollection={(collectionId) =>
-          void actions.removeItem(`collection-delete-${collectionId}`, `/api/admin/collections/${collectionId}`, "Coleção removida com sucesso.", "Falha ao remover coleção.")
+          void actions.removeItem(`collection-delete-${collectionId}`, `/api/admin/collections/${collectionId}`, "Coleção removida com sucesso.", "Não foi possível remover a coleção.")
         }
       />
       )}
@@ -197,7 +197,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onFormChange={setBadgeForm}
         onEdit={actions.fillBadgeFormFromBadge}
         onReset={() => setBadgeForm(EMPTY_BADGE)}
-        onDelete={(badgeId) => void actions.removeItem(`badge-delete-${badgeId}`, `/api/admin/badges/${badgeId}`, "Conquista removida com sucesso.", "Falha ao remover conquista.")}
+        onDelete={(badgeId) => void actions.removeItem(`badge-delete-${badgeId}`, `/api/admin/badges/${badgeId}`, "Conquista removida com sucesso.", "Não foi possível remover a conquista.")}
       />
       )}
 
@@ -219,7 +219,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
           onEdit={actions.fillUserFormFromUser}
           onReset={() => setUserForm(EMPTY_USER)}
           onInvalidate={(userId) =>
-            void actions.removeItem(`user-invalidate-${userId}`, `/api/admin/users/${userId}`, "Usuário invalidado com sucesso.", "Falha ao invalidar usuário.", userAdmin.reload)
+            void actions.removeItem(`user-invalidate-${userId}`, `/api/admin/users/${userId}`, "Usuário invalidado com sucesso.", "Não foi possível invalidar o usuário.", userAdmin.reload)
           }
           onReactivate={(userId) => void actions.reactivateUser(userId)}
           onSearchChange={userAdmin.setSearch}

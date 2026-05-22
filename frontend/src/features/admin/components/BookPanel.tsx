@@ -191,7 +191,7 @@ export function BookPanel({
       <form className="admin-form admin-form--compact" onSubmit={onSubmitUpload}>
         <label className="field-stack">
           <span>Livro para arquivo de leitura</span>
-          <select aria-label="Livro para enviar PDF" value={uploadBookId} disabled={!hasBooks} onChange={(event) => onUploadBookChange(event.target.value)}>
+          <select aria-label="Livro para enviar arquivo PDF" value={uploadBookId} disabled={!hasBooks} onChange={(event) => onUploadBookChange(event.target.value)}>
             {!hasBooks && <option value="">Nenhum livro cadastrado</option>}
             {books.map((book) => (
               <option key={book.id} value={book.id}>
