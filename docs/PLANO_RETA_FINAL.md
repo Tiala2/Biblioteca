@@ -37,6 +37,13 @@ API_PORT=8081 ./start-all.sh --build-backend
 
 ## Prioridade 4 - Testes antes da entrega
 
+Checagem rapida recomendada para repetir durante o polimento:
+
+```powershell
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\scripts\pre-delivery-check.ps1 -SkipBackendIntegration -SkipFrontendE2E -SkipOperationalSmoke
+```
+
 Frontend:
 
 ```powershell

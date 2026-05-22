@@ -84,3 +84,10 @@ Para uma checagem completa antes de entrega:
 cd C:\workspace\library-api-projeto
 powershell -ExecutionPolicy Bypass -File .\scripts\pre-delivery-check.ps1
 ```
+
+Para uma checagem rapida, sem depender do navegador E2E nem do smoke autenticado:
+
+```powershell
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\scripts\pre-delivery-check.ps1 -SkipBackendIntegration -SkipFrontendE2E -SkipOperationalSmoke
+```
