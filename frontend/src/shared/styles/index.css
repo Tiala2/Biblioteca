@@ -3338,7 +3338,7 @@ body[data-theme="day"] .login-form {
 
   .aura-hero .stats-grid,
   .admin-hero__stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(118px, 100%), 1fr));
   }
 
   .aura-hero .stat-box,
@@ -3388,7 +3388,7 @@ body[data-theme="day"] .login-form {
   }
 
   .aura-book-detail-hero .book-detail-insights {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(118px, 100%), 1fr));
   }
 
   .aura-book-detail-hero .book-detail-insights .stat-box {
