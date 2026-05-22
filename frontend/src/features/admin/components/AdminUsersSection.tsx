@@ -33,7 +33,7 @@ export function AdminUsersSection(props: AdminUsersSectionProps) {
     <AdminSection
       eyebrow="Operacao"
       title="Gestão de usuários"
-      description="Edite dados básicos, aplique filtros reais do backend e controle acesso sem apagar histórico de leitura, avaliações e auditoria."
+      description="Edite dados básicos, aplique filtros do sistema e controle acesso sem apagar histórico de leitura, avaliações e auditoria."
       icon={<UsersRound aria-hidden="true" />}
       variant="wide"
     >

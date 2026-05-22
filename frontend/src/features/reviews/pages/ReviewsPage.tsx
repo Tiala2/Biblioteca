@@ -484,7 +484,7 @@ export function ReviewsPage() {
                     disabled={deletingId === review.id}
                     type="button"
                   >
-                    {deletingId === review.id ? "Removendo..." : "Excluir"}
+                    {deletingId === review.id ? "Removendo..." : "Remover"}
                   </button>
                 </div>
               </article>

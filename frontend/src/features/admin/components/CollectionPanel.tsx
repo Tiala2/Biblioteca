@@ -167,7 +167,7 @@ export function CollectionPanel({
                 disabled={busyKey === `collection-delete-${collection.id}`}
                 onClick={() => onDelete(collection.id)}
               >
-                {busyKey === `collection-delete-${collection.id}` ? "Excluindo..." : "Excluir"}
+                {busyKey === `collection-delete-${collection.id}` ? "Removendo..." : "Remover"}
               </button>
             </div>
           </li>

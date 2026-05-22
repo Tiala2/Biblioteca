@@ -18,16 +18,16 @@ type ApiError = { message?: string };
 
 function getRegisterErrorMessage(error: unknown): string {
   if (!isAxiosError<ApiError>(error)) {
-    return "Falha ao cadastrar. Tente novamente.";
+    return "Não foi possível criar sua conta agora. Tente novamente.";
   }
   if (error.response?.status === 409) {
     return "Este email já está cadastrado.";
   }
   const fieldErrors = extractFieldErrorMessages(error);
   if (fieldErrors.length > 0) {
-    return `Dados inválidos: ${fieldErrors.join(" | ")}`;
+    return `Revise os dados: ${fieldErrors.join(" | ")}`;
   }
-  return extractApiErrorMessage(error, "Falha ao cadastrar. Verifique os dados informados.");
+  return extractApiErrorMessage(error, "Não foi possível criar sua conta. Verifique os dados informados.");
 }
 
 export function RegisterPage() {

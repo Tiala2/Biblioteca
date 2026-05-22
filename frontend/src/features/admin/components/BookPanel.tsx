@@ -190,7 +190,7 @@ export function BookPanel({
 
       <form className="admin-form admin-form--compact" onSubmit={onSubmitUpload}>
         <label className="field-stack">
-          <span>Livro do PDF</span>
+          <span>Livro para arquivo de leitura</span>
           <select aria-label="Livro para enviar PDF" value={uploadBookId} disabled={!hasBooks} onChange={(event) => onUploadBookChange(event.target.value)}>
             {!hasBooks && <option value="">Nenhum livro cadastrado</option>}
             {books.map((book) => (
@@ -201,17 +201,17 @@ export function BookPanel({
           </select>
         </label>
         <label className="file-picker">
-          <span>Selecionar PDF</span>
+          <span>Selecionar arquivo PDF</span>
           <strong>{uploadFile?.name ?? "Nenhum arquivo selecionado"}</strong>
           <input className="sr-only" aria-label="Arquivo PDF do livro" type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
         </label>
         {selectedUploadBook && (
           <p className="section-sub admin-selected-book">
-            Envio selecionado para <strong>{selectedUploadBook.title}</strong>.
+            Arquivo selecionado para <strong>{selectedUploadBook.title}</strong>.
           </p>
         )}
         <button type="submit" disabled={!hasBooks || !uploadFile || busyKey === "book-upload"}>
-          {busyKey === "book-upload" ? "Enviando..." : "Enviar PDF"}
+          {busyKey === "book-upload" ? "Enviando..." : "Enviar arquivo"}
         </button>
       </form>
 
@@ -235,7 +235,7 @@ export function BookPanel({
 
       {importResult && (
         <p className="section-sub">
-          Importados: {importResult.imported}. Ignorados: {importResult.skipped}. Falhas: {importResult.failed}.
+          Importados: {importResult.imported}. Ignorados: {importResult.skipped}. Não importados: {importResult.failed}.
         </p>
       )}
 
@@ -261,7 +261,7 @@ export function BookPanel({
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `book-delete-${book.id}`} onClick={() => onDelete(book.id)}>
-                {busyKey === `book-delete-${book.id}` ? "Excluindo..." : "Excluir"}
+                {busyKey === `book-delete-${book.id}` ? "Removendo..." : "Remover"}
               </button>
             </div>
           </li>

@@ -47,14 +47,14 @@ export function ForgotPasswordPage() {
       } else {
         const fieldErrors = extractFieldErrorMessages(err);
         if (fieldErrors.length > 0) {
-          setError(`Dados inválidos: ${fieldErrors.join(" | ")}`);
+          setError(`Revise os dados: ${fieldErrors.join(" | ")}`);
         } else if (err.response?.status === 429) {
           setError(extractApiErrorMessage(err, "Muitas solicitações de recuperação. Aguarde alguns minutos antes de tentar novamente."));
         } else {
           setError(extractApiErrorMessage(err, "Não foi possível enviar o email de recuperação."));
         }
       }
-      showToast("Falha ao solicitar recuperação de senha.", "error");
+      showToast("Não foi possível solicitar a recuperação de senha.", "error");
     } finally {
       setLoading(false);
     }
@@ -87,12 +87,12 @@ export function ForgotPasswordPage() {
       } else {
         const fieldErrors = extractFieldErrorMessages(err);
         if (fieldErrors.length > 0) {
-          setError(`Dados inválidos: ${fieldErrors.join(" | ")}`);
+          setError(`Revise os dados: ${fieldErrors.join(" | ")}`);
         } else {
           setError(extractApiErrorMessage(err, "Link inválido ou expirado."));
         }
       }
-      showToast("Falha ao redefinir senha.", "error");
+      showToast("Não foi possível redefinir a senha.", "error");
     } finally {
       setLoading(false);
     }
@@ -182,7 +182,7 @@ export function ForgotPasswordPage() {
           )}
 
           <button type="submit" className="login-submit ds-btn-primary" disabled={loading}>
-            {loading ? "Processando..." : isResetFlow ? "Salvar nova senha" : "Enviar link por email"}
+            {loading ? (isResetFlow ? "Salvando..." : "Enviando...") : isResetFlow ? "Salvar nova senha" : "Enviar link por email"}
           </button>
 
           {isResetFlow && (
