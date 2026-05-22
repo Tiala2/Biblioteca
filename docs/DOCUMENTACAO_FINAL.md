@@ -76,7 +76,7 @@ Resultados mais recentes:
 - Backend `./gradlew.bat test --no-daemon`: **BUILD SUCCESSFUL**
 - Backend `./gradlew.bat integrationTest --no-daemon`: **BUILD SUCCESSFUL**
 - Frontend `npm run build`: **PASS**
-- Frontend `npm run test`: **46 passed**
+- Frontend `npm run test`: **51 passed**
 - Frontend `npm run test:e2e`: **13 passed** na ultima execucao completa
 - Smoke API (`scripts/e2e-smoke.ps1`): **PASS**
 - Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0** em 2026-05-02
@@ -122,6 +122,9 @@ Cobertura de integracao inclui:
 
 - `docs/MATRIZ_RASTREABILIDADE.md`
 - `docs/CHECKLIST_OPERACIONAL.md`
+- `docs/PLANO_RETA_FINAL.md`
+- `docs/ROTEIRO_APRESENTACAO.md`
+- `docs/FRONT_ROUTES_MAP.md`
 - `docs/generated/ROUTE_COVERAGE_REPORT.md`
 - `docs/EVIDENCIAS_FRONT.md`
 - `docs/API_FRONT_READINESS.md`
