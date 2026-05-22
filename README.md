@@ -22,8 +22,8 @@ Linux/macOS:
 
 ```bash
 git fetch origin
-git checkout feature/continua-melhorias-front
-git pull origin feature/continua-melhorias-front
+git checkout feature/polimento-final-ui-textos
+git pull origin feature/polimento-final-ui-textos
 
 cd library-api-projeto
 chmod +x start-all.sh backend/scripts/*.sh frontend/scripts/*.sh
@@ -57,6 +57,14 @@ Windows/PowerShell:
 
 ```powershell
 cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
+```
+
+Se a porta `8080` estiver ocupada no Windows:
+
+```powershell
+cd C:\workspace\library-api-projeto
+$env:API_PORT = "8081"
 powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 ```
 
