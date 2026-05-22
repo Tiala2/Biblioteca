@@ -225,7 +225,7 @@ export function GoalsPage() {
       <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
           <h3><Gauge aria-hidden="true" /> Resumo</h3>
-          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} págs` : "Sem meta ativa"}</span>
+          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} páginas` : "Sem meta ativa"}</span>
         </div>
         {goal ? (
           <>
@@ -324,7 +324,7 @@ export function GoalsPage() {
                   <p className="section-sub">{alert.message}</p>
                 </div>
                 {alert.suggestedDailyPages ? (
-                  <span className="kpi">{alert.suggestedDailyPages} págs/dia</span>
+                  <span className="kpi">{alert.suggestedDailyPages} páginas/dia</span>
                 ) : null}
               </li>
             ))}

@@ -144,7 +144,7 @@ export function ReviewsPage() {
       average: average.toFixed(1).replace(".", ","),
       highest,
       withComment,
-      latestUpdatedLabel: latestUpdated ? formatDateBr(new Date(latestUpdated).toISOString()) : "-",
+      latestUpdatedLabel: latestUpdated ? formatDateBr(new Date(latestUpdated).toISOString()) : "Ainda sem registro",
     };
   }, [items]);
 
@@ -451,7 +451,7 @@ export function ReviewsPage() {
                 ) : (
                   <>
                     <p className="aura-rating"><RatingStars value={review.rating} /> Nota {review.rating}</p>
-                    <p>{review.comment}</p>
+                    <p>{review.comment.trim() || "Sem comentário registrado."}</p>
                   </>
                 )}
                 <small>Atualizado em {formatDateTimeBr(review.updatedAt)}</small>

@@ -122,14 +122,14 @@ export function BadgesPage() {
           },
           {
             code: "STREAK_7_DAYS",
-            name: "Streak de 7 dias",
+            name: "Sequência de 7 dias",
             current: Math.min(stats.readingProgress.streakDays, 7),
             target: 7,
             unit: "dias",
           },
           {
             code: "STREAK_30_DAYS",
-            name: "Streak de 30 dias",
+            name: "Sequência de 30 dias",
             current: Math.min(stats.readingProgress.streakDays, 30),
             target: 30,
             unit: "dias",
@@ -248,7 +248,7 @@ export function BadgesPage() {
             <Medal aria-hidden="true" />
             <h3>{badge.name}</h3>
             <p>{badge.description}</p>
-            <small>Tipo: {formatBadgeCode(badge.code)}</small>
+            <small>Trilha: {formatBadgeCode(badge.code)}</small>
             <br />
             <small>Conquistado em {formatDateTimeBr(badge.awardedAt)}</small>
           </article>

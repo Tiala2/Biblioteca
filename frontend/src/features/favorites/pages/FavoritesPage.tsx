@@ -116,7 +116,7 @@ export function FavoritesPage() {
             <div className="stat-box">
               <Library aria-hidden="true" />
               <strong>{favoriteInsights.localCount}</strong>
-              <span>PDF/local</span>
+              <span>leitura no app</span>
             </div>
             <div className="stat-box">
               <Sparkles aria-hidden="true" />
