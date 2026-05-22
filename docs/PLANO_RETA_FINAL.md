@@ -69,6 +69,7 @@ cd backend
 
 ## Prioridade 5 - Apresentacao
 
+- Seguir o roteiro em `docs/ROTEIRO_APRESENTACAO.md`.
 - Separar usuario e senha de demonstracao.
 - Deixar backup pronto para restaurar, se necessario.
 - Abrir previamente frontend, Swagger, Mailpit e banco Docker.
