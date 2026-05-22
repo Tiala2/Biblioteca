@@ -97,10 +97,10 @@ export function ReadingProgressPanel({
           Ir para início
         </button>
         <button type="button" className="btn-muted" onClick={() => onJumpPages(-10)}>
-          Voltar 10 pág.
+          Voltar 10 páginas
         </button>
         <button type="button" className="btn-muted" onClick={() => onJumpPages(10)}>
-          Avançar 10 pág.
+          Avançar 10 páginas
         </button>
         <button type="button" className="btn-muted" onClick={() => onUpdateCurrentPage(totalPages)}>
           Ir para final

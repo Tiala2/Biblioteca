@@ -194,7 +194,7 @@ describe("AdminPage", () => {
     expect(screen.getByText("com alertas")).toBeInTheDocument();
     expect(screen.getAllByText("Spring em pratica").length).toBeGreaterThan(0);
     expect(screen.getByText("com descrição")).toBeInTheDocument();
-    expect(screen.getByText("sem descrição")).toBeInTheDocument();
+    expect(screen.getByText("a descrever")).toBeInTheDocument();
     expect(screen.getByText("nome mais longo")).toBeInTheDocument();
     expect(screen.getByText("tags cadastradas")).toBeInTheDocument();
     expect(screen.getByText("primeira A-Z")).toBeInTheDocument();
@@ -206,7 +206,7 @@ describe("AdminPage", () => {
     expect(screen.getByText("inativas")).toBeInTheDocument();
     expect(screen.getByText("critério mais usado")).toBeInTheDocument();
     expect(screen.getByText("Ativa")).toBeInTheDocument();
-    expect(screen.getByText("locais/PDF")).toBeInTheDocument();
+    expect(screen.getByText("leitura no app")).toBeInTheDocument();
     expect(screen.getByText("último favorito")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
     expect(screen.getByText("enviados na página")).toBeInTheDocument();

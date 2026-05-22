@@ -300,7 +300,7 @@ export function BookDetailsPage() {
                 ))}
               </div>
             ) : (
-              <p className="section-sub">Sem categorias</p>
+              <p className="section-sub">Categorias ainda não cadastradas para este livro.</p>
             )}
           </div>
           <div>
@@ -314,7 +314,7 @@ export function BookDetailsPage() {
                 ))}
               </div>
             ) : (
-              <p className="section-sub">Sem tags</p>
+              <p className="section-sub">Tags ainda não cadastradas para este livro.</p>
             )}
           </div>
         </div>

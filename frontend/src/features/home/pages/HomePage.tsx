@@ -221,7 +221,7 @@ export function HomePage() {
       <article className="card aura-panel">
         <div className="section-head">
           <h3><Sparkles aria-hidden="true" /> Resumo da conta</h3>
-          <span className="kpi">{home.userSummary.totalPagesRead} pág. lidas</span>
+          <span className="kpi">{home.userSummary.totalPagesRead} páginas lidas</span>
         </div>
         <div className="stats-grid aura-stats">
           <div className="stat-box">
@@ -237,7 +237,7 @@ export function HomePage() {
           <div className="stat-box">
             <Target aria-hidden="true" />
             <strong>{home.readingProgress.pagesReadThisWeek}</strong>
-            <span>pág. nesta semana</span>
+            <span>páginas nesta semana</span>
           </div>
           <div className="stat-box">
             <Flame aria-hidden="true" />
@@ -322,7 +322,7 @@ export function HomePage() {
             <div className="home-recommendation-insights">
               <div className="stat-box">
                 <strong>{recommendationInsights.localCount}</strong>
-                <span>locais/PDF</span>
+                <span>leitura no app</span>
               </div>
               <div className="stat-box">
                 <strong>{recommendationInsights.openCount}</strong>
@@ -379,7 +379,7 @@ export function HomePage() {
                 <span>livros reunidos</span>
               </div>
               <div className="stat-box">
-                <strong>{collectionInsights.largest?.title ?? "-"}</strong>
+                <strong>{collectionInsights.largest?.title ?? "Ainda sem destaque"}</strong>
                 <span>maior coleção</span>
               </div>
             </div>

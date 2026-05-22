@@ -46,14 +46,14 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
       <div className="admin-favorite-summary">
         <div className="stat-box admin-list-stat">
           <strong>{favoriteInsights.localCount}</strong>
-          <span>locais/PDF</span>
+          <span>leitura no app</span>
         </div>
         <div className="stat-box admin-list-stat">
           <strong>{favoriteInsights.openCount}</strong>
           <span>Open Library</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{favoriteInsights.latest ? formatDateTimeBr(favoriteInsights.latest.createdAt) : "-"}</strong>
+          <strong>{favoriteInsights.latest ? formatDateTimeBr(favoriteInsights.latest.createdAt) : "Ainda sem favorito"}</strong>
           <span>último favorito</span>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
               <BookCover title={favorite.bookTitle} coverUrl={favorite.coverUrl} isbn={favorite.bookIsbn} size="small" />
               <div>
                 <strong>{favorite.bookTitle}</strong>
-                <p className="section-sub">{favorite.bookIsbn || "ISBN não informado"}</p>
+                <p className="section-sub">{favorite.bookIsbn || "ISBN não cadastrado"}</p>
                 <p className="section-sub">
                   Origem {formatFavoriteSource(favorite.source)}. Favoritado em {formatDateTimeBr(favorite.createdAt)}.
                 </p>

@@ -21,7 +21,7 @@ function getMostUsedCriteria(badges: Badge[]) {
     return accumulator;
   }, {});
 
-  return Object.entries(counts).sort(([, first], [, second]) => second - first)[0]?.[0] ?? "-";
+  return Object.entries(counts).sort(([, first], [, second]) => second - first)[0]?.[0] ?? "";
 }
 
 export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEdit, onReset, onDelete }: BadgePanelProps) {
@@ -120,7 +120,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
           <span>inativas</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{badgeInsights.mostUsedCriteria === "-" ? "-" : formatBadgeCriteria(badgeInsights.mostUsedCriteria as BadgeCriteria)}</strong>
+          <strong>{badgeInsights.mostUsedCriteria ? formatBadgeCriteria(badgeInsights.mostUsedCriteria as BadgeCriteria) : "Ainda sem critério"}</strong>
           <span>critério mais usado</span>
         </div>
       </div>
@@ -144,7 +144,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
                 </span>
               </div>
               <p className="section-sub">
-                {formatBadgeCode(badge.code)} · {formatBadgeCriteria(badge.criteriaType)} · {badge.criteriaValue ?? "Sem valor"}
+                {formatBadgeCode(badge.code)} · {formatBadgeCriteria(badge.criteriaType)} · {badge.criteriaValue ?? "Valor não definido"}
               </p>
               {badge.description && <small>{badge.description}</small>}
             </div>

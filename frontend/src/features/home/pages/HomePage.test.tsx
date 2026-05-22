@@ -100,7 +100,7 @@ describe("HomePage", () => {
     expect(await screen.findByRole("heading", { name: "Bem-vinda, Leitora Teste" })).toBeInTheDocument();
     expect(screen.getAllByText("Livro Atual").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Livro Recomendado").length).toBeGreaterThan(0);
-    expect(screen.getByText("locais/PDF")).toBeInTheDocument();
+    expect(screen.getByText("leitura no app")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
     expect(screen.getByText("nota média")).toBeInTheDocument();
     expect(screen.getByText("Favorito")).toBeInTheDocument();

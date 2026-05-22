@@ -85,10 +85,10 @@ export function CategoryPanel({
         </div>
         <div className="stat-box admin-list-stat">
           <strong>{categoryInsights.withoutDescription}</strong>
-          <span>sem descrição</span>
+          <span>a descrever</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{categoryInsights.longestName?.name ?? "-"}</strong>
+          <strong>{categoryInsights.longestName?.name ?? "Ainda sem categorias"}</strong>
           <span>nome mais longo</span>
         </div>
       </div>
@@ -108,10 +108,10 @@ export function CategoryPanel({
               <div className="admin-taxonomy-title-row">
                 <strong>{category.name}</strong>
                 <span className={category.description ? "import-badge" : "status-pill status-pill--muted"}>
-                  {category.description ? "Descrita" : "Sem descrição"}
+                  {category.description ? "Descrita" : "A descrever"}
                 </span>
               </div>
-              <p className="section-sub">{category.description || "Sem descrição"}</p>
+              <p className="section-sub">{category.description || "Adicione uma descrição para orientar melhor a descoberta."}</p>
             </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(category)}>
