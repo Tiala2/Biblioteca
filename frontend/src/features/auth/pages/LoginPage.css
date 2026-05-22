@@ -215,6 +215,10 @@ body[data-theme="day"] .login-page .login-form {
   box-shadow: 0 18px 38px rgba(45, 212, 255, 0.3), 0 0 34px rgba(139, 124, 255, 0.2);
 }
 
+.login-submit--secondary {
+  margin-top: 8px;
+}
+
 .login-submit:disabled {
   cursor: not-allowed;
   opacity: 0.85;

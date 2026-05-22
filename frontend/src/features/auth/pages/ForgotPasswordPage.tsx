@@ -188,10 +188,9 @@ export function ForgotPasswordPage() {
           {isResetFlow && (
             <button
               type="button"
-              className="login-submit ds-btn-primary"
+              className="login-submit login-submit--secondary ds-btn-primary"
               onClick={() => navigate("/forgot-password")}
               disabled={loading}
-              style={{ marginTop: 8 }}
             >
               Solicitar novo link
             </button>

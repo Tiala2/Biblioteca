@@ -54,8 +54,8 @@ export function LoginPage() {
         return;
       }
 
-      setError("Erro inesperado no login.");
-      showToast("Erro inesperado no login.", "error");
+      setError("Não foi possível entrar agora. Tente novamente em instantes.");
+      showToast("Não foi possível entrar agora.", "error");
     } finally {
       setSubmitting(false);
     }
