@@ -22,6 +22,12 @@ docker compose ps
 - Mailpit UI: `http://localhost:8025`
 - MinIO Console: `http://localhost:9001`
 
+Se a porta `8080` estiver ocupada, subir a API com `API_PORT=8081` e usar:
+
+- API: `http://localhost:8081`
+- Swagger: `http://localhost:8081/swagger-ui/index.html`
+- Health: `http://localhost:8081/actuator/health`
+
 ## 3) Rodar testes automatizados
 
 Validar que o roteiro de pre-entrega ainda chama as etapas esperadas:
