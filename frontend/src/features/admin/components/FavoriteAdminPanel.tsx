@@ -58,6 +58,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
         </div>
       </div>
       <input
+        aria-label="Filtrar favoritos administrativos"
         value={search}
         onChange={(event) => {
           setSearch(event.target.value);

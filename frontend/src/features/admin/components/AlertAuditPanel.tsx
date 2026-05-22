@@ -82,7 +82,7 @@ export function AlertAuditPanel({
         />
         <label className="field-stack">
           <span>Status</span>
-          <select value={statusFilter} onChange={(event) => onStatusFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["status"])}>
+          <select aria-label="Filtrar alertas por status" value={statusFilter} onChange={(event) => onStatusFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["status"])}>
             <option value="ALL">Todos</option>
             <option value="SENT">Enviados</option>
             <option value="FAILED">Falhos</option>
@@ -91,7 +91,7 @@ export function AlertAuditPanel({
         </label>
         <label className="field-stack">
           <span>Tipo</span>
-          <select value={alertTypeFilter} onChange={(event) => onAlertTypeFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["alertType"])}>
+          <select aria-label="Filtrar alertas por tipo" value={alertTypeFilter} onChange={(event) => onAlertTypeFilterChange(event.target.value as "ALL" | AlertDeliveryAdmin["alertType"])}>
             <option value="ALL">Todos</option>
             <option value="GOAL_EXPIRING">{formatAlertType("GOAL_EXPIRING")}</option>
             <option value="PACE_WARNING">{formatAlertType("PACE_WARNING")}</option>

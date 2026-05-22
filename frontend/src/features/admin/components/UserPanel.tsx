@@ -158,7 +158,7 @@ export function UserPanel({
         />
         <label className="field-stack">
           <span>Status</span>
-          <select value={activeFilter} onChange={(event) => onActiveFilterChange(event.target.value as "ALL" | "ACTIVE" | "INACTIVE")}>
+          <select aria-label="Filtrar usuários por status" value={activeFilter} onChange={(event) => onActiveFilterChange(event.target.value as "ALL" | "ACTIVE" | "INACTIVE")}>
             <option value="ALL">Todos</option>
             <option value="ACTIVE">Ativos</option>
             <option value="INACTIVE">Inválidos</option>
@@ -166,7 +166,7 @@ export function UserPanel({
         </label>
         <label className="field-stack">
           <span>Papel</span>
-          <select value={roleFilter} onChange={(event) => onRoleFilterChange(event.target.value as "ALL" | "USER" | "ADMIN")}>
+          <select aria-label="Filtrar usuários por papel" value={roleFilter} onChange={(event) => onRoleFilterChange(event.target.value as "ALL" | "USER" | "ADMIN")}>
             <option value="ALL">Todos</option>
             <option value="USER">Usuários</option>
             <option value="ADMIN">Administradores</option>

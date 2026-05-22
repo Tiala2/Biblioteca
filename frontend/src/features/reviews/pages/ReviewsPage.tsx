@@ -299,7 +299,7 @@ export function ReviewsPage() {
         </p>
         <form onSubmit={onCreate}>
           <label>Livro</label>
-          <select value={bookId} onChange={(event) => setBookId(event.target.value)} disabled={!hasEligibleBooks || creating}>
+          <select aria-label="Livro da nova avaliação" value={bookId} onChange={(event) => setBookId(event.target.value)} disabled={!hasEligibleBooks || creating}>
             {eligibleBooks.map((book) => (
               <option key={book.id} value={book.id}>
                 {book.title}
@@ -344,6 +344,7 @@ export function ReviewsPage() {
           <RatingPicker value={rating} onChange={setRating} disabled={!hasEligibleBooks} label="Nota da nova avaliação" />
           <label>Comentário</label>
           <textarea
+            aria-label="Comentário da nova avaliação"
             value={comment}
             onChange={(event) => setComment(event.target.value)}
             disabled={!hasEligibleBooks}
@@ -441,6 +442,7 @@ export function ReviewsPage() {
                     <RatingPicker value={editRating} onChange={setEditRating} label="Nota da avaliação em edição" />
                     <label>Comentário</label>
                     <textarea
+                      aria-label="Comentário da avaliação em edição"
                       value={editComment}
                       onChange={(event) => setEditComment(event.target.value)}
                       maxLength={600}

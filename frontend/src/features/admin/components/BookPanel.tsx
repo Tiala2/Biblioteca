@@ -243,7 +243,7 @@ export function BookPanel({
         <h4>Lista de livros</h4>
         <span className="kpi">{filteredBooks.length}</span>
       </div>
-      <input value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar por título, autor ou ISBN" />
+      <input aria-label="Filtrar livros administrativos" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar por título, autor ou ISBN" />
       <ul className="stacked-list">
         {visibleBooks.map((book) => (
           <li key={book.id} className="stacked-list-item">

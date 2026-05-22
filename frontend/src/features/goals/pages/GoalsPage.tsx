@@ -206,13 +206,14 @@ export function GoalsPage() {
         </div>
         <form id="goal-form" onSubmit={onSubmit}>
           <label>Período</label>
-          <select value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
+          <select aria-label="Período da meta" value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
             <option value="WEEKLY">Semanal</option>
             <option value="MONTHLY">Mensal</option>
           </select>
 
           <label>Páginas alvo</label>
           <input
+            aria-label="Páginas alvo da meta"
             type="number"
             min={1}
             value={targetPages}
