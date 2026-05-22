@@ -36,7 +36,7 @@ Fontes revisadas:
 | `/profile` | Perfil | `GET /api/v1/users/me`, `PUT /api/v1/users/me`, `GET /api/v1/home/resume`, `GET /api/v1/readings/me`, `GET /api/v1/reviews/me` |
 | `/books` | Catalogo | `GET /api/v1/books`, `GET /api/v1/categories`, `GET /api/v1/tags`, `GET /api/v1/users/me/favorites`, `POST /api/v1/users/me/favorites`, `DELETE /api/v1/users/me/favorites/{bookId}` |
 | `/books/:bookId` | Detalhes do livro | `GET /api/v1/books/{bookId}`, `GET /api/v1/users/me/favorites/{bookId}`, `GET /api/v1/reviews/me`, `GET /api/v1/reviews`, `GET /api/v1/books/recommendations`, `POST /api/v1/users/me/favorites`, `DELETE /api/v1/users/me/favorites/{bookId}` |
-| `/books/:bookId/read` | Experiencia de leitura | `GET /api/v1/books/{bookId}`, `GET /api/v1/home/resume`, `GET /api/v1/users/me/favorites`, `GET /api/v1/readings/{bookId}/narrative`, `POST /api/v1/readings`, `POST /api/v1/users/me/favorites`, `DELETE /api/v1/users/me/favorites/{bookId}` |
+| `/books/:bookId/read` | Experiencia de leitura | `GET /api/v1/books/{bookId}`, `GET /api/v1/home/resume`, `GET /api/v1/books/{bookId}/external-reader`, `GET /api/v1/readings/{bookId}/narrative`, `POST /api/v1/readings`, `POST /api/v1/users/me/favorites`, `DELETE /api/v1/users/me/favorites/{bookId}` |
 | `/favorites` | Favoritos | `GET /api/v1/users/me/favorites`, `DELETE /api/v1/users/me/favorites/{bookId}` |
 | `/reviews` | Reviews | `GET /api/v1/reviews/me`, `GET /api/v1/books`, `GET /api/v1/readings/me`, `POST /api/v1/reviews`, `PATCH /api/v1/reviews/{reviewId}`, `DELETE /api/v1/reviews/{reviewId}` |
 | `/goals` | Metas | `GET /api/v1/users/me/goals`, `PUT /api/v1/users/me/goals`, `GET /api/v1/users/me/alerts`, `GET /api/v1/users/me/streak` |
@@ -66,6 +66,7 @@ As rotas admin usam `RoleRoute` com `ROLE_ADMIN`. A tela `/admin` mostra a visao
 | `DELETE /api/v1/users/me/favorites/{bookId}` | Catalogo, Detalhes do livro, Favoritos, Leitura |
 | `GET /api/v1/reviews/me` | Perfil, Reviews, Detalhes do livro |
 | `GET /api/v1/readings/me` | Perfil, Reviews |
+| `GET /api/v1/books/{bookId}/external-reader` | Leitura |
 
 ## Checklist Para Evoluir Sem Quebrar Rotas
 
