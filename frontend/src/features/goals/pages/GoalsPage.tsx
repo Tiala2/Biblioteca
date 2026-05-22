@@ -332,7 +332,7 @@ export function GoalsPage() {
           </ul>
         )}
       </article>
-      {error && <StateCard title="Falha ao carregar metas" message={error} variant="error" />}
+      {error && <StateCard title="Não foi possível carregar suas metas" message={error} variant="error" />}
     </section>
   );
 }

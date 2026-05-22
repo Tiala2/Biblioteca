@@ -68,7 +68,7 @@ export function FavoritesPage() {
       await loadFavorites();
       showToast("Favorito removido com sucesso.", "success");
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Falha ao remover favorito."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível remover o favorito."), "error");
     } finally {
       setDeletingBookId(null);
     }
@@ -96,7 +96,7 @@ export function FavoritesPage() {
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Falha ao carregar favoritos" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Não foi possível carregar favoritos" message={error} variant="error" />}
 
       {!loading && favorites.length > 0 && (
         <article className="card aura-panel aura-panel--wide">

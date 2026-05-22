@@ -196,7 +196,7 @@ export function BadgesPage() {
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Falha ao carregar conquistas" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Não foi possível carregar conquistas" message={error} variant="error" />}
 
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">

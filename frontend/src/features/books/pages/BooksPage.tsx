@@ -430,7 +430,7 @@ export function BooksPage() {
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Falha ao carregar catálogo" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Não foi possível carregar o catálogo" message={error} variant="error" />}
 
       {!loading && !error && books.length > 0 && (
         <article className="card aura-panel aura-panel--wide">

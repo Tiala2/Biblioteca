@@ -189,7 +189,7 @@ export function LeaderboardPage() {
         </div>
       </article>
 
-      {error && <StateCard title="Falha ao carregar ranking" message={error} variant="error" />}
+      {error && <StateCard title="Não foi possível carregar o ranking" message={error} variant="error" />}
 
       {!error && (
         <div className="stats-grid aura-stats">

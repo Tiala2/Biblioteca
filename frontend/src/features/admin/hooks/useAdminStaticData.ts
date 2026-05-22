@@ -78,7 +78,7 @@ export function useAdminStaticData({ headers }: UseAdminStaticDataParams) {
     if (f.status === "fulfilled") setFavorites(f.value.data.content);
     else failedSections.push("favoritos");
 
-    setError(failedSections.length ? `Falha ao carregar: ${failedSections.join(", ")}.` : "");
+    setError(failedSections.length ? `Não foi possível carregar: ${failedSections.join(", ")}.` : "");
   }, [headers, updateCoverBookId, updateUploadBookId]);
 
   useEffect(() => {

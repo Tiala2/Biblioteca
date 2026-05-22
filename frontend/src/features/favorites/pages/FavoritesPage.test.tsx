@@ -86,7 +86,7 @@ describe("FavoritesPage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Falha ao carregar favoritos" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Não foi possível carregar favoritos" })).toBeInTheDocument();
     expect(screen.getByText("Falha de conexão com o servidor.")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Nenhum favorito salvo" })).not.toBeInTheDocument();
   });

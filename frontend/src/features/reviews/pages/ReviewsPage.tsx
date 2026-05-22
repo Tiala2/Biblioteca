@@ -207,7 +207,7 @@ export function ReviewsPage() {
       const message =
         errorCode === "REVIEW_NOT_ALLOWED"
           ? "Inicie a leitura deste livro antes de registrar uma avaliação."
-          : extractApiErrorMessage(error, "Falha ao criar avaliação.");
+          : extractApiErrorMessage(error, "Não foi possível criar a avaliação.");
       showToast(message, "error");
     } finally {
       setCreating(false);
@@ -242,7 +242,7 @@ export function ReviewsPage() {
       cancelEditing();
       showToast("Avaliação atualizada com sucesso.", "success");
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Falha ao atualizar avaliação."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar a avaliação."), "error");
     } finally {
       setSavingId(null);
     }
@@ -259,7 +259,7 @@ export function ReviewsPage() {
       await loadPage();
       showToast("Avaliação removida com sucesso.", "success");
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Falha ao remover avaliação."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível remover a avaliação."), "error");
     } finally {
       setDeletingId(null);
     }
@@ -400,7 +400,7 @@ export function ReviewsPage() {
         {error && (
           <div className="panel-inline-state panel-inline-state--error" role="alert">
             <p className="eyebrow">Atenção</p>
-            <h3>Falha ao carregar avaliações</h3>
+            <h3>Não foi possível carregar suas avaliações</h3>
             <p className="section-sub">{error}</p>
           </div>
         )}

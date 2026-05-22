@@ -254,7 +254,7 @@ describe("BooksPage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Falha ao carregar catálogo" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Não foi possível carregar o catálogo" })).toBeInTheDocument();
     expect(screen.getByText("Falha de conexão com o servidor.")).toBeInTheDocument();
   });
 });
