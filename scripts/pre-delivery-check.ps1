@@ -33,6 +33,9 @@ function Invoke-Step {
     }
 }
 
+Invoke-Step -Name "Pre-delivery script contract" -WorkingDirectory $Root -Command @("powershell", "-ExecutionPolicy", "Bypass", "-File", ".\scripts\test-pre-delivery-check.ps1")
+Invoke-Step -Name "Local stack script contract" -WorkingDirectory $Root -Command @("powershell", "-ExecutionPolicy", "Bypass", "-File", ".\scripts\test-check-local-stack.ps1")
+
 Invoke-Step -Name "Backend unit tests" -WorkingDirectory (Join-Path $Root "backend") -Command @(".\gradlew.bat", "test", "--no-daemon")
 
 if (-not $SkipBackendIntegration) {

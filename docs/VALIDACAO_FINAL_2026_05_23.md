@@ -15,6 +15,8 @@ Status geral: **PASS**
 
 Etapas validadas:
 
+- Contrato do script de pre-entrega: **PASS**
+- Contrato da checagem local: **PASS**
 - Backend unit tests: **BUILD SUCCESSFUL**
 - Frontend lint: **PASS**
 - Frontend unit tests: **24 arquivos / 51 testes passando**

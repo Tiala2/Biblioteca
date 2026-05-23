@@ -16,6 +16,8 @@ function Assert-Contains {
 }
 
 Assert-Contains -Label "local Gradle cache" -Expected '$env:GRADLE_USER_HOME = $BackendGradleHome'
+Assert-Contains -Label "pre-delivery script contract" -Expected 'Invoke-Step -Name "Pre-delivery script contract"'
+Assert-Contains -Label "local stack script contract" -Expected 'Invoke-Step -Name "Local stack script contract"'
 Assert-Contains -Label "backend unit tests" -Expected 'Invoke-Step -Name "Backend unit tests"'
 Assert-Contains -Label "backend integration tests" -Expected 'Invoke-Step -Name "Backend integration tests"'
 Assert-Contains -Label "frontend lint" -Expected 'Invoke-Step -Name "Frontend lint"'
