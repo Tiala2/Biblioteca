@@ -42,3 +42,5 @@ Resumo:
 ## Decisao recomendada
 
 Fazer merge para `main` somente depois que `docs/CHECKLIST_VALIDACAO_AUTENTICADA.md` passar no computador da apresentacao.
+
+Quando passar, seguir `docs/GUIA_MERGE_MAIN.md`.
