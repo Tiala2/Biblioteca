@@ -14,6 +14,7 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 - [Documentacao Final](docs/DOCUMENTACAO_FINAL.md)
 - [Plano de Reta Final](docs/PLANO_RETA_FINAL.md)
 - [Roteiro de Apresentacao](docs/ROTEIRO_APRESENTACAO.md)
+- [Apresentacao no Computador Principal](docs/APRESENTACAO_COMPUTADOR_TIALA.md)
 - [Checklist Operacional](docs/CHECKLIST_OPERACIONAL.md)
 - [Checklist UAT](docs/UAT_CHECKLIST.md)
 - [Checklist de Validacao Autenticada](docs/CHECKLIST_VALIDACAO_AUTENTICADA.md)

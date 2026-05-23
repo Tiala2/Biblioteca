@@ -69,6 +69,7 @@ cd backend
 
 ## Prioridade 5 - Apresentacao
 
+- Usar `docs/APRESENTACAO_COMPUTADOR_TIALA.md` como guia do ambiente principal.
 - Seguir o roteiro em `docs/ROTEIRO_APRESENTACAO.md`.
 - Conferir o checklist autenticado em `docs/CHECKLIST_VALIDACAO_AUTENTICADA.md`.
 - Separar usuario e senha de demonstracao.
