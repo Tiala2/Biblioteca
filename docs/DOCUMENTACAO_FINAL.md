@@ -122,6 +122,7 @@ Cobertura de integracao inclui:
 
 - `docs/MATRIZ_RASTREABILIDADE.md`
 - `docs/CHECKLIST_OPERACIONAL.md`
+- `docs/CHECKLIST_VALIDACAO_AUTENTICADA.md`
 - `docs/PLANO_RETA_FINAL.md`
 - `docs/ROTEIRO_APRESENTACAO.md`
 - `docs/VALIDACAO_FINAL_2026_05_23.md`
