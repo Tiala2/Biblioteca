@@ -34,7 +34,7 @@ powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 - Swagger: `http://localhost:8080/swagger-ui/index.html`
 - Mailpit: `http://localhost:8025`
 
-Se usar `API_PORT=8081`, trocar as URLs de Health e Swagger para `8081`.
+Se usar `API_PORT=8081`, abrir Health e Swagger no navegador com a porta `8081`.
 
 Para conferir tudo pelo terminal:
 
@@ -47,7 +47,8 @@ Se estiver usando `8081`:
 
 ```powershell
 cd C:\workspace\library-api-projeto
-powershell -ExecutionPolicy Bypass -File .\scripts\check-local-stack.ps1 -BackendHealthUrl "http://localhost:8081/actuator/health" -SwaggerUrl "http://localhost:8081/swagger-ui/index.html"
+$env:API_PORT = "8081"
+powershell -ExecutionPolicy Bypass -File .\scripts\check-local-stack.ps1
 ```
 
 ## Validar rapidamente

@@ -1,14 +1,18 @@
 param(
     [string]$FrontendUrl = "http://localhost:5173",
-    [string]$BackendHealthUrl = "http://localhost:8080/actuator/health",
-    [string]$SwaggerUrl = "http://localhost:8080/swagger-ui/index.html",
+    [string]$BackendHealthUrl,
+    [string]$SwaggerUrl,
     [string]$MailpitUrl = "http://localhost:8025"
 )
 
+$apiPort = if ($env:API_PORT) { $env:API_PORT } else { "8080" }
+$resolvedBackendHealthUrl = if ($BackendHealthUrl) { $BackendHealthUrl } else { "http://localhost:$apiPort/actuator/health" }
+$resolvedSwaggerUrl = if ($SwaggerUrl) { $SwaggerUrl } else { "http://localhost:$apiPort/swagger-ui/index.html" }
+
 $targets = @(
     @{ Name = "frontend"; Url = $FrontendUrl },
-    @{ Name = "backend-health"; Url = $BackendHealthUrl },
-    @{ Name = "swagger"; Url = $SwaggerUrl },
+    @{ Name = "backend-health"; Url = $resolvedBackendHealthUrl },
+    @{ Name = "swagger"; Url = $resolvedSwaggerUrl },
     @{ Name = "mailpit"; Url = $MailpitUrl }
 )
 
