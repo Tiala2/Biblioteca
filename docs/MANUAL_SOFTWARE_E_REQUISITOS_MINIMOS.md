@@ -36,7 +36,7 @@ Data de referencia: 2026-04-04
 
 ```powershell
 cd C:\workspace\library-api-projeto
-powershell -ExecutionPolicy Bypass -File .\start-all.ps1
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 ```
 
 ## Execucao Manual
@@ -59,9 +59,9 @@ npm run dev
 ## Acessos Principais
 
 - Frontend: `http://localhost:5173`
-- Backend: `http://localhost:8080`
-- Swagger: `http://localhost:8080/swagger-ui/index.html`
-- Health: `http://localhost:8080/actuator/health`
+- Backend: `http://localhost:8080` ou `http://localhost:8081` se usar `API_PORT=8081`
+- Swagger: `http://localhost:8080/swagger-ui/index.html` ou `http://localhost:8081/swagger-ui/index.html`
+- Health: `http://localhost:8080/actuator/health` ou `http://localhost:8081/actuator/health`
 - Mailpit: `http://localhost:8025`
 
 ## Perfis De Usuario

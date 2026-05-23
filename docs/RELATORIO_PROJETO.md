@@ -220,15 +220,15 @@ Comando principal:
 
 ```powershell
 cd C:\workspace\library-api-projeto
-powershell -ExecutionPolicy Bypass -File .\start-all.ps1
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 ```
 
 Principais URLs:
 
 - Frontend: `http://localhost:5173`
-- API: `http://localhost:8080`
-- Swagger: `http://localhost:8080/swagger-ui/index.html`
-- Health: `http://localhost:8080/actuator/health`
+- API: `http://localhost:8080` ou `http://localhost:8081` se usar `API_PORT=8081`
+- Swagger: `http://localhost:8080/swagger-ui/index.html` ou `http://localhost:8081/swagger-ui/index.html`
+- Health: `http://localhost:8080/actuator/health` ou `http://localhost:8081/actuator/health`
 - Mailpit: `http://localhost:8025`
 
 ## 10. Sequencia Recomendada De Exploracao
