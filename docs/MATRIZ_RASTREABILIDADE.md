@@ -1,4 +1,4 @@
-﻿# Matriz de Rastreabilidade (RF/RNF -> Endpoint -> Teste)
+# Matriz de Rastreabilidade (RF/RNF -> Endpoint -> Teste)
 
 Data de referencia: 2026-02-27
 

@@ -17,9 +17,9 @@ Evidencias:
 
 Referencias:
 
-- [UserUpdateRequest.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/application/dto/request/UserUpdateRequest.java)
-- [AuthenticationController.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/presentation/controller/AuthenticationController.java)
-- [AlertAdminController.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/presentation/controller/admin/AlertAdminController.java)
+- [UserUpdateRequest.java](../backend/src/main/java/com/unichristus/libraryapi/application/dto/request/UserUpdateRequest.java)
+- [AuthenticationController.java](../backend/src/main/java/com/unichristus/libraryapi/presentation/controller/AuthenticationController.java)
+- [AlertAdminController.java](../backend/src/main/java/com/unichristus/libraryapi/presentation/controller/admin/AlertAdminController.java)
 
 ## RNF005 - Tempo De Resposta Ate 2 Segundos
 
@@ -27,7 +27,7 @@ Status: `Validado`
 
 Relatorio automatizado gerado em:
 
-- [RESPONSE_TIME_REPORT.md](/c:/workspace/library-api-projeto/docs/RESPONSE_TIME_REPORT.md)
+- [RESPONSE_TIME_REPORT.md](RESPONSE_TIME_REPORT.md)
 
 Resultados medidos:
 
@@ -39,7 +39,7 @@ Todos os cenarios prioritarios medidos ficaram abaixo de `2 segundos` na media.
 
 Ferramenta usada:
 
-- [measure-rnf-response-times.ps1](/c:/workspace/library-api-projeto/scripts/measure-rnf-response-times.ps1)
+- [measure-rnf-response-times.ps1](../scripts/measure-rnf-response-times.ps1)
 
 ## RNF006 - Otimizacao Para Internet Limitada
 
@@ -54,10 +54,10 @@ Evidencias:
 
 Referencias:
 
-- [BookController.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/presentation/controller/BookController.java)
-- [application-dev.yaml](/c:/workspace/library-api-projeto/backend/src/main/resources/application-dev.yaml)
-- [application-prod.yaml](/c:/workspace/library-api-projeto/backend/src/main/resources/application-prod.yaml)
-- [router.tsx](/c:/workspace/library-api-projeto/frontend/src/app/router.tsx)
+- [BookController.java](../backend/src/main/java/com/unichristus/libraryapi/presentation/controller/BookController.java)
+- [application-dev.yaml](../backend/src/main/resources/application-dev.yaml)
+- [application-prod.yaml](../backend/src/main/resources/application-prod.yaml)
+- [router.tsx](../frontend/src/app/router.tsx)
 
 ## RNF007 - Disponibilidade Minima De 99,5%
 
@@ -72,8 +72,8 @@ Evidencias de suporte operacional:
 
 Referencias:
 
-- [docker-compose.dev.yml](/c:/workspace/library-api-projeto/backend/docker-compose.dev.yml)
-- [start-all.ps1](/c:/workspace/library-api-projeto/start-all.ps1)
+- [docker-compose.dev.yml](../backend/docker-compose.dev.yml)
+- [start-all.ps1](../start-all.ps1)
 
 Observacao:
 
@@ -91,9 +91,9 @@ Evidencias:
 
 Referencias:
 
-- [AppLayout.tsx](/c:/workspace/library-api-projeto/frontend/src/shared/layout/AppLayout.tsx)
-- [BooksPage.tsx](/c:/workspace/library-api-projeto/frontend/src/features/books/pages/BooksPage.tsx)
-- [playwright.config.ts](/c:/workspace/library-api-projeto/frontend/playwright.config.ts)
+- [AppLayout.tsx](../frontend/src/shared/layout/AppLayout.tsx)
+- [BooksPage.tsx](../frontend/src/features/books/pages/BooksPage.tsx)
+- [playwright.config.ts](../frontend/playwright.config.ts)
 
 Observacao:
 
@@ -122,10 +122,10 @@ Evidencias:
 
 Referencias:
 
-- [AppLayout.tsx](/c:/workspace/library-api-projeto/frontend/src/shared/layout/AppLayout.tsx)
-- [LoginPage.tsx](/c:/workspace/library-api-projeto/frontend/src/features/auth/pages/LoginPage.tsx)
-- [ForgotPasswordPage.tsx](/c:/workspace/library-api-projeto/frontend/src/features/auth/pages/ForgotPasswordPage.tsx)
-- [LeaderboardPage.tsx](/c:/workspace/library-api-projeto/frontend/src/features/leaderboard/pages/LeaderboardPage.tsx)
+- [AppLayout.tsx](../frontend/src/shared/layout/AppLayout.tsx)
+- [LoginPage.tsx](../frontend/src/features/auth/pages/LoginPage.tsx)
+- [ForgotPasswordPage.tsx](../frontend/src/features/auth/pages/ForgotPasswordPage.tsx)
+- [LeaderboardPage.tsx](../frontend/src/features/leaderboard/pages/LeaderboardPage.tsx)
 
 ## RNF011 - Manutenibilidade Do Codigo
 
@@ -151,6 +151,6 @@ Evidencias:
 
 Referencias:
 
-- [backup-volumes.ps1](/c:/workspace/library-api-projeto/backend/scripts/backup-volumes.ps1)
-- [restore-volumes.ps1](/c:/workspace/library-api-projeto/backend/scripts/restore-volumes.ps1)
-- [BACKUP_E_RESTAURACAO.md](/c:/workspace/library-api-projeto/docs/BACKUP_E_RESTAURACAO.md)
+- [backup-volumes.ps1](../backend/scripts/backup-volumes.ps1)
+- [restore-volumes.ps1](../backend/scripts/restore-volumes.ps1)
+- [BACKUP_E_RESTAURACAO.md](BACKUP_E_RESTAURACAO.md)

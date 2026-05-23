@@ -1,4 +1,4 @@
-﻿# Relatorio de Cobertura de Rotas
+# Relatorio de Cobertura de Rotas
 
 Data/hora: 2026-03-11 22:29:16 -03:00
 

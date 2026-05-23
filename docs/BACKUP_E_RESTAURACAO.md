@@ -60,6 +60,6 @@ Para o contexto atual de uso e laboratorio:
 
 ## Evidencia No Projeto
 
-- script de backup: [backup-volumes.ps1](/c:/workspace/library-api-projeto/backend/scripts/backup-volumes.ps1)
-- script de restauracao: [restore-volumes.ps1](/c:/workspace/library-api-projeto/backend/scripts/restore-volumes.ps1)
-- volumes persistentes: [docker-compose.dev.yml](/c:/workspace/library-api-projeto/backend/docker-compose.dev.yml)
+- script de backup: [backup-volumes.ps1](../backend/scripts/backup-volumes.ps1)
+- script de restauracao: [restore-volumes.ps1](../backend/scripts/restore-volumes.ps1)
+- volumes persistentes: [docker-compose.dev.yml](../backend/docker-compose.dev.yml)

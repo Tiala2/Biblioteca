@@ -123,6 +123,6 @@ cd C:\workspace\library-api-projeto
 
 ## Documentos De Apoio
 
-- [RELATORIO_PROJETO.md](/c:/workspace/library-api-projeto/docs/RELATORIO_PROJETO.md)
-- [BACKUP_E_RESTAURACAO.md](/c:/workspace/library-api-projeto/docs/BACKUP_E_RESTAURACAO.md)
-- [TEMPLATE_CHECKLIST_FINAL.md](/c:/workspace/library-api-projeto/docs/TEMPLATE_CHECKLIST_FINAL.md)
+- [RELATORIO_PROJETO.md](RELATORIO_PROJETO.md)
+- [BACKUP_E_RESTAURACAO.md](BACKUP_E_RESTAURACAO.md)
+- [TEMPLATE_CHECKLIST_FINAL.md](TEMPLATE_CHECKLIST_FINAL.md)
