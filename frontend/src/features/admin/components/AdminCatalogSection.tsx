@@ -120,7 +120,7 @@ export function AdminCatalogSection({
     <AdminSection
       eyebrow="Catálogo"
       title="Acervo e descoberta"
-      description="Cadastre livros, organize categorias, tags e colecoes sem sair do mesmo fluxo."
+      description="Cadastre livros, organize categorias, tags e coleções sem sair do mesmo fluxo."
       icon={<LibraryBig aria-hidden="true" />}
       variant="wide"
     >
