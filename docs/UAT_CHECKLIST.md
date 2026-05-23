@@ -38,7 +38,7 @@ Este checklist cobre validacao funcional (RF) e nao funcional (RNF) do projeto.
 
 - Backend `.\gradlew.bat test --no-daemon`: PASS
 - Backend `.\gradlew.bat integrationTest --no-daemon`: PASS
-- Frontend `npm run test`: 51 passed
+- Frontend `npm run test`: 52 passed
 - Frontend `npm run build`: PASS
 - Frontend `npm run test:e2e`: 13 passed na ultima execucao completa
 - Checklist de rotas: 56 PASS / 0 FAIL em 02/05/2026

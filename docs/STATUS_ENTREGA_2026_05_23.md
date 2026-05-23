@@ -16,7 +16,7 @@ Resumo:
 - Contrato da checagem local: `PASS`
 - Backend unit tests: `BUILD SUCCESSFUL`
 - Frontend lint: `PASS`
-- Frontend unit tests: `24 arquivos / 51 testes passando`
+- Frontend unit tests: `24 arquivos / 52 testes passando`
 - Frontend build de producao: `PASS`
 
 ## Itens prontos
