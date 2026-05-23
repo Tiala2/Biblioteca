@@ -127,6 +127,7 @@ Cobertura de integracao inclui:
 - `docs/PLANO_RETA_FINAL.md`
 - `docs/ROTEIRO_APRESENTACAO.md`
 - `docs/VALIDACAO_FINAL_2026_05_23.md`
+- `docs/STATUS_ENTREGA_2026_05_23.md`
 - `docs/FRONT_ROUTES_MAP.md`
 - `docs/ROUTE_COVERAGE_REPORT.md`
 - `docs/RESPONSE_TIME_REPORT.md`
