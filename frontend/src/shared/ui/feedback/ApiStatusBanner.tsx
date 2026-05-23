@@ -64,7 +64,7 @@ export function ApiStatusBanner() {
 
   return (
     <div className="api-status-banner" role="status" aria-live="polite">
-      Servidor indisponível. Verifique se o sistema está ativo e tente novamente.
+      Não foi possível confirmar a conexão com a API. Verifique se o backend está ativo e tente novamente.
     </div>
   );
 }

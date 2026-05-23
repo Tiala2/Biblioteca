@@ -2997,14 +2997,20 @@ body[data-theme="day"] .login-form {
   z-index: var(--z-banner);
   width: min(560px, calc(100vw - 1.5rem));
   transform: translateX(-50%);
-  border: 1px solid #efb8b2;
+  border: 1px solid rgba(255, 211, 148, 0.38);
   border-radius: 8px;
-  padding: 0.65rem 0.85rem;
-  color: #742f28;
-  background: #fdecea;
-  box-shadow: var(--shadow-soft);
-  font-weight: 700;
+  padding: 0.7rem 0.9rem;
+  color: #ffe8bd;
+  background:
+    linear-gradient(135deg, rgba(255, 196, 87, 0.14), rgba(45, 212, 255, 0.08)),
+    rgba(14, 18, 42, 0.94);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.35;
   text-align: center;
+  overflow-wrap: anywhere;
+  backdrop-filter: blur(12px);
 }
 
 @keyframes content-in {
