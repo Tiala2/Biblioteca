@@ -12,6 +12,8 @@ Data de referencia: 2026-05-02
 ## Segredos e ambiente
 
 - Nao commitar `.env`, chaves SMTP, credenciais de banco, JWT ou MinIO.
+- Nao compartilhar `backend/.env` com credenciais reais; usar `.env.example` ou `.env.brevo.example` como modelo.
+- Rotacionar chave SMTP/Brevo se ela for exposta fora da maquina local.
 - Preencher `APP_CORS_ALLOWED_ORIGINS` em producao somente com o dominio oficial.
 - Manter Swagger desativado em producao (`springdoc.*.enabled=false`).
 - Confirmar SMTP/MinIO/banco por variaveis de ambiente, nao por valores fixos.

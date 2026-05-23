@@ -11,7 +11,7 @@ Este projeto suporta 2 modos:
 2. Valide um remetente (sender).
 3. Copie as credenciais SMTP.
 
-Crie `backend/.env` (copie de `.env.example`) e preencha:
+Crie `backend/.env` (copie de `.env.example` ou `.env.brevo.example`) e preencha:
 
 ```env
 APP_FRONTEND_BASE_URL=https://library.seudominio.com
@@ -25,6 +25,13 @@ MAIL_SMTP_AUTH=true
 MAIL_SMTP_STARTTLS=true
 ALERT_EMAIL_FROM=SEU_EMAIL_VALIDADO_NO_BREVO
 ```
+
+Importante:
+
+- Nao envie `backend/.env` pelo Git, WhatsApp ou Drive com senha real.
+- Para outro integrante configurar o Brevo, envie apenas `backend/.env.brevo.example` e as instrucoes.
+- Cada pessoa deve preencher as proprias credenciais no `backend/.env` local.
+- Se uma chave SMTP real for compartilhada por engano, gere uma nova chave no Brevo.
 
 ## 2) Subir ambiente
 
