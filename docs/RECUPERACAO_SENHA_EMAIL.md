@@ -5,7 +5,12 @@ Este projeto suporta 2 modos:
 1. `Mailpit` (gratis/local): email fake para teste no navegador.
 2. `Brevo SMTP` (gratis/real): entrega email na caixa real do usuario.
 
-## 1) Configurar Brevo (recomendado)
+## 1) Escolher modo de email
+
+- Para teste local e apresentacao: use `backend/.env.example`, que vem configurado para Mailpit.
+- Para envio real com Brevo: use `backend/.env.brevo.example` e preencha as credenciais SMTP.
+
+## 2) Configurar Brevo
 
 1. Crie conta em Brevo.
 2. Valide um remetente (sender).
@@ -33,7 +38,7 @@ Importante:
 - Cada pessoa deve preencher as proprias credenciais no `backend/.env` local.
 - Se uma chave SMTP real for compartilhada por engano, gere uma nova chave no Brevo.
 
-## 2) Subir ambiente
+## 3) Subir ambiente
 
 ```powershell
 cd C:\workspace\library-api-projeto\backend
@@ -53,7 +58,7 @@ cd C:\workspace\library-api-projeto\backend
 No modo `brevo`, abra `backend/.env` e substitua os campos `CHANGE_ME`.
 O script preserva as demais configuracoes do `.env` e altera apenas as chaves relacionadas ao envio de email.
 
-## 3) Testar endpoint
+## 4) Testar endpoint
 
 ```powershell
 $payload = @{
@@ -73,12 +78,12 @@ Observacao:
 - Quando enviado, o backend so usa esse valor se ele estiver em `APP_FRONTEND_ALLOWED_RESET_BASE_URLS`.
 - Se nao enviar `baseUrl` (ou se for invalido), o backend usa `APP_FRONTEND_BASE_URL`.
 
-## 4) Validar entrega
+## 5) Validar entrega
 
 - Se `MAIL_HOST=mailpit`: abra `http://localhost:8025`.
 - Se `MAIL_HOST=smtp-relay.brevo.com`: verifique inbox/spam do email real.
 
-## 5) Teste de fumaca automatico
+## 6) Teste de fumaca automatico
 
 ```powershell
 cd C:\workspace\library-api-projeto\backend
