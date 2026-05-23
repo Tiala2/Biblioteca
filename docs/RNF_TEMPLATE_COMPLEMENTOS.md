@@ -27,7 +27,7 @@ Status: `Validado`
 
 Relatorio automatizado gerado em:
 
-- [response-time-report.json](/c:/workspace/library-api-projeto/docs/generated/response-time-report.json)
+- [RESPONSE_TIME_REPORT.md](/c:/workspace/library-api-projeto/docs/RESPONSE_TIME_REPORT.md)
 
 Resultados medidos:
 

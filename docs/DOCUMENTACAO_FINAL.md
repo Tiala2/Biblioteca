@@ -127,7 +127,8 @@ Cobertura de integracao inclui:
 - `docs/ROTEIRO_APRESENTACAO.md`
 - `docs/VALIDACAO_FINAL_2026_05_23.md`
 - `docs/FRONT_ROUTES_MAP.md`
-- `docs/generated/ROUTE_COVERAGE_REPORT.md`
+- `docs/ROUTE_COVERAGE_REPORT.md`
+- `docs/RESPONSE_TIME_REPORT.md`
 - `docs/EVIDENCIAS_FRONT.md`
 - `docs/API_FRONT_READINESS.md`
 - `docs/UAT_CHECKLIST.md`

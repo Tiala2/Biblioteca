@@ -30,7 +30,7 @@ Observacao adicional:
 | RNF002 | OK | Controle por perfil no backend e frontend | [SecurityConfig.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/infrastructure/config/SecurityConfig.java), [RoleRoute.tsx](/c:/workspace/library-api-projeto/frontend/src/features/auth/routes/RoleRoute.tsx) |
 | RNF003 | OK | JWT com expiracao, reset token controlado e limpeza de sessao expirada no front | [AuthenticationController.java](/c:/workspace/library-api-projeto/backend/src/main/java/com/unichristus/libraryapi/presentation/controller/AuthenticationController.java) |
 | RNF004 | OK | LGPD tratada no escopo do projeto | [RNF_TEMPLATE_COMPLEMENTOS.md](/c:/workspace/library-api-projeto/docs/RNF_TEMPLATE_COMPLEMENTOS.md) |
-| RNF005 | OK | Resposta media abaixo de 2 segundos | [response-time-report.json](/c:/workspace/library-api-projeto/docs/generated/response-time-report.json) |
+| RNF005 | OK | Resposta media abaixo de 2 segundos | [RESPONSE_TIME_REPORT.md](/c:/workspace/library-api-projeto/docs/RESPONSE_TIME_REPORT.md) |
 | RNF006 | OK | Paginacao, compressao e carregamento progressivo | [RNF_TEMPLATE_COMPLEMENTOS.md](/c:/workspace/library-api-projeto/docs/RNF_TEMPLATE_COMPLEMENTOS.md) |
 | RNF007 | OK | Disponibilidade tratada por estrategia operacional documentada | [RNF_TEMPLATE_COMPLEMENTOS.md](/c:/workspace/library-api-projeto/docs/RNF_TEMPLATE_COMPLEMENTOS.md) |
 | RNF008 | OK | Compatibilidade e responsividade documentadas | [RNF_TEMPLATE_COMPLEMENTOS.md](/c:/workspace/library-api-projeto/docs/RNF_TEMPLATE_COMPLEMENTOS.md) |
