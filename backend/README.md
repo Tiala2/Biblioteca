@@ -8,6 +8,11 @@ Manter banco e arquivos sempre persistidos, evitando perda de dados e erros ao s
 - `docker-compose.prod.yml`: producao (sem Mailpit)
 - `docker-compose.yml`: atalho para desenvolvimento
 
+## Arquivo `.env`
+- Para desenvolvimento local e apresentacao, copie `.env.example` para `.env`; ele usa Mailpit por padrao.
+- Para envio real com Brevo, use `.env.brevo.example` como modelo e preencha as credenciais SMTP.
+- Nao compartilhe nem commite o `.env` com senhas reais.
+
 ## Banco padrao de desenvolvimento
 - O banco compartilhado do projeto roda no Docker em `localhost:5437`.
 - Evite usar `localhost:5432`, porque essa porta costuma ser de um PostgreSQL instalado na maquina.
