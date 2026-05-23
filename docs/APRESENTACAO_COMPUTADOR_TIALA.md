@@ -43,6 +43,13 @@ cd C:\workspace\library-api-projeto
 powershell -ExecutionPolicy Bypass -File .\scripts\check-local-stack.ps1
 ```
 
+Para validar que essa checagem continua respeitando `API_PORT`:
+
+```powershell
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\scripts\test-check-local-stack.ps1
+```
+
 Se estiver usando `8081`:
 
 ```powershell
