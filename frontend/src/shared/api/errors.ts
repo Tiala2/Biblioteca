@@ -18,7 +18,7 @@ export function extractApiErrorCode(error: unknown): string | undefined {
 
 export function extractApiErrorMessage(error: unknown, fallback: string): string {
   if (!isAxiosError<ApiErrorPayload>(error)) return fallback;
-  if (!error.response) return "Falha de conexão com o servidor.";
+  if (!error.response) return "Não foi possível conversar com o servidor. Verifique se o backend está ativo.";
   return error.response.data?.message ?? fallback;
 }
 

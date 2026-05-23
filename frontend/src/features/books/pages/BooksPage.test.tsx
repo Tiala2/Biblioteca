@@ -255,6 +255,6 @@ describe("BooksPage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Não foi possível carregar o catálogo" })).toBeInTheDocument();
-    expect(screen.getByText("Falha de conexão com o servidor.")).toBeInTheDocument();
+    expect(screen.getByText("Não foi possível conversar com o servidor. Verifique se o backend está ativo.")).toBeInTheDocument();
   });
 });
