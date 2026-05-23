@@ -89,6 +89,13 @@ powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 
 ## Validacoes
 
+Checar se frontend, API, Swagger e Mailpit estao acessiveis:
+
+```powershell
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\scripts\check-local-stack.ps1
+```
+
 ```powershell
 cd C:\workspace\library-api-projeto
 .\scripts\e2e-smoke.ps1
