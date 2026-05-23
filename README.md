@@ -24,6 +24,8 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 - [Guia de Merge para Main](docs/GUIA_MERGE_MAIN.md)
 - [Mapa de Rotas Frontend x Backend](docs/FRONT_ROUTES_MAP.md)
 - [Matriz de Rastreabilidade](docs/MATRIZ_RASTREABILIDADE.md)
+- [Relatorio de Cobertura de Rotas](docs/ROUTE_COVERAGE_REPORT.md)
+- [Relatorio de Tempo de Resposta](docs/RESPONSE_TIME_REPORT.md)
 - [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md)
 - [Relatorio do Projeto](docs/RELATORIO_PROJETO.md)
 
