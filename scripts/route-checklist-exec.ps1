@@ -2,7 +2,7 @@
     [string]$BaseUrl = "http://localhost:8080",
     [string]$AdminEmail = $env:LIBRARY_ADMIN_EMAIL,
     [string]$AdminPassword = $env:LIBRARY_ADMIN_PASSWORD,
-    [string]$ReportPath = "docs/generated/ROUTE_COVERAGE_REPORT.md",
+    [string]$ReportPath = "docs/ROUTE_COVERAGE_REPORT.md",
     [string]$EnvFilePath = ".\backend\.env"
 )
 
