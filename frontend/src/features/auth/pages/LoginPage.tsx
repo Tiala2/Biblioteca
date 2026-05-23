@@ -5,9 +5,10 @@ import { isAxiosError } from "axios";
 import { BookOpen, Lock, Mail } from "lucide-react";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { extractApiErrorMessage } from "@shared/api/errors";
-import { API_BASE_URL } from "@shared/api/http";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import "./LoginPage.css";
+
+const NETWORK_ERROR_MESSAGE = "Não foi possível conversar com o servidor. Verifique se o backend está ativo.";
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -29,8 +30,8 @@ export function LoginPage() {
     } catch (err: unknown) {
       if (isAxiosError(err)) {
         if (!err.response) {
-          setError(`Não foi possível conectar ao servidor. Verifique se o sistema está ativo em ${API_BASE_URL}.`);
-          showToast("Não foi possível conectar ao servidor.", "error");
+          setError(NETWORK_ERROR_MESSAGE);
+          showToast(NETWORK_ERROR_MESSAGE, "error");
           return;
         }
 

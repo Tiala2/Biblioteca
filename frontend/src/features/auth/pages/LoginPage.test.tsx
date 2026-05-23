@@ -54,4 +54,30 @@ describe("LoginPage", () => {
     expect(showToast).toHaveBeenCalledWith("Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.", "error");
     expect(screen.queryByText("home-page")).not.toBeInTheDocument();
   });
+
+  it("deve exibir mensagem clara quando o backend estiver indisponivel", async () => {
+    loginMock.mockRejectedValue({
+      isAxiosError: true,
+      request: {},
+    });
+
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/login"]}>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<div>home-page</div>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await user.type(screen.getByLabelText("Email"), "admin@email.com");
+    await user.type(screen.getByLabelText("Senha"), "Senha@123");
+    await user.click(screen.getByRole("button", { name: "Entrar" }));
+
+    expect(await screen.findByText("Não foi possível conversar com o servidor. Verifique se o backend está ativo.")).toBeInTheDocument();
+    expect(showToast).toHaveBeenCalledWith("Não foi possível conversar com o servidor. Verifique se o backend está ativo.", "error");
+    expect(screen.queryByText("home-page")).not.toBeInTheDocument();
+  });
 });
