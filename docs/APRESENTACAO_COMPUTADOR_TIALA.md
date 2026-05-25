@@ -69,7 +69,7 @@ Resultado esperado:
 
 - Backend unit tests: `BUILD SUCCESSFUL`
 - Frontend lint: `PASS`
-- Frontend unit tests: `53 passed`
+- Frontend unit tests: `54 passed`
 - Frontend build: `PASS`
 
 ## Fluxo de demonstracao

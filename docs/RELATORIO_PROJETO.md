@@ -182,7 +182,7 @@ Documento de apoio:
 ### Frontend
 
 - `npm run build`: PASS
-- `npm run test`: `53 passed`
+- `npm run test`: `54 passed`
 - `npm run test:e2e`: `13 passed` na ultima execucao completa
 
 ### Fluxos E2E validados

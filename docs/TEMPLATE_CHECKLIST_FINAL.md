@@ -7,7 +7,7 @@ Observacao adicional:
 - o backend tambem recebeu validacao operacional real em 2026-04-08 para `health`, `login` e `forgot-password`, registrada em `docs/BACKEND_FINAL_VALIDACAO.md`
 - a rodada de retomada em 2026-04-28 confirmou backend unitario, backend integracao, frontend unitario, build de producao, E2E completo e checklist de rotas
 - a rodada de 2026-05-02 confirmou frontend unitario, build de producao e checklist de rotas apos as melhorias pos-main
-- resultados atuais: backend `test` PASS, backend `integrationTest` PASS, frontend `53 passed`, frontend E2E `13 passed` na ultima execucao completa, rotas `56 PASS / 0 FAIL`
+- resultados atuais: backend `test` PASS, backend `integrationTest` PASS, frontend `54 passed`, frontend E2E `13 passed` na ultima execucao completa, rotas `56 PASS / 0 FAIL`
 
 ## Requisitos Funcionais
 
