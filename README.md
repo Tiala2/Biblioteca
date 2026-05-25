@@ -20,8 +20,6 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 - [Checklist de Validacao Autenticada](docs/CHECKLIST_VALIDACAO_AUTENTICADA.md)
 - [Validacao Final 2026-05-24](docs/VALIDACAO_FINAL_2026_05_24.md)
 - [Status de Entrega 2026-05-24](docs/STATUS_ENTREGA_2026_05_24.md)
-- [Validacao Final 2026-05-23](docs/VALIDACAO_FINAL_2026_05_23.md)
-- [Status de Entrega 2026-05-23](docs/STATUS_ENTREGA_2026_05_23.md)
 - [Resumo Para Repassar Ao Colega](docs/RESUMO_PARA_COLEGA.md)
 - [Guia de Merge para Main](docs/GUIA_MERGE_MAIN.md)
 - [Mapa de Rotas Frontend x Backend](docs/FRONT_ROUTES_MAP.md)
@@ -30,6 +28,11 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 - [Relatorio de Tempo de Resposta](docs/RESPONSE_TIME_REPORT.md)
 - [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md)
 - [Relatorio do Projeto](docs/RELATORIO_PROJETO.md)
+
+Historico:
+
+- [Validacao Final 2026-05-23](docs/VALIDACAO_FINAL_2026_05_23.md)
+- [Status de Entrega 2026-05-23](docs/STATUS_ENTREGA_2026_05_23.md)
 
 ## Subida rapida
 
