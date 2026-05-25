@@ -44,6 +44,16 @@ public class OpenLibraryClient {
         return get(url, OpenLibrarySearchResponse.class);
     }
 
+    public OpenLibrarySearchResponse searchReadable(String query, int page, int limit) {
+        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+        String fields = URLEncoder.encode(
+                "title,author_name,isbn,number_of_pages_median,first_publish_year,cover_i,ia,availability,public_scan_b",
+                StandardCharsets.UTF_8);
+        String url = "%s/search.json?q=%s&has_fulltext=true&page=%d&limit=%d&fields=%s"
+                .formatted(baseUrl, encodedQuery, page, limit, fields);
+        return get(url, OpenLibrarySearchResponse.class);
+    }
+
     public Optional<String> findArchivePdfDownloadUrl(OpenLibraryDoc doc) {
         if (doc == null) {
             return Optional.empty();
@@ -66,8 +76,18 @@ public class OpenLibraryClient {
             return Optional.empty();
         }
 
-        String query = !safeIsbn.isBlank() ? "isbn:" + safeIsbn : safeTitle;
-        OpenLibrarySearchResponse response = search(query, 1, 5);
+        if (!safeIsbn.isBlank()) {
+            Optional<OpenLibraryReaderLookup> byIsbn = findReaderByQuery("isbn:" + safeIsbn, !safeTitle.isBlank() ? safeTitle : safeIsbn);
+            if (byIsbn.isPresent() && byIsbn.get().availableInsideApp()) {
+                return byIsbn;
+            }
+        }
+
+        return findReaderByQuery(!safeTitle.isBlank() ? safeTitle : safeIsbn, !safeTitle.isBlank() ? safeTitle : safeIsbn);
+    }
+
+    private Optional<OpenLibraryReaderLookup> findReaderByQuery(String query, String fallbackQuery) {
+        OpenLibrarySearchResponse response = searchReadable(query, 1, 10);
         List<OpenLibraryDoc> docs = response == null || response.docs() == null ? List.of() : response.docs();
         Optional<OpenLibraryDoc> preferred = docs.stream()
                 .filter(Objects::nonNull)
@@ -78,7 +98,7 @@ public class OpenLibraryClient {
             preferred = docs.stream().filter(Objects::nonNull).findFirst();
         }
 
-        String fallbackUrl = buildSearchUrl(!safeTitle.isBlank() ? safeTitle : safeIsbn);
+        String fallbackUrl = buildSearchUrl(fallbackQuery);
         if (preferred.isEmpty()) {
             return Optional.of(new OpenLibraryReaderLookup(null, fallbackUrl, false));
         }
@@ -90,6 +110,10 @@ public class OpenLibraryClient {
 
         String embedUrl = "%s/embed/%s".formatted(archiveBaseUrl, encodePathSegment(identifiers.get(0)));
         return Optional.of(new OpenLibraryReaderLookup(embedUrl, fallbackUrl, true));
+    }
+
+    public boolean hasEmbeddableReader(OpenLibraryDoc doc) {
+        return doc != null && !extractArchiveIdentifiers(doc).isEmpty();
     }
 
     public DownloadedBinary downloadBinary(String url, int maxBytes) {
@@ -219,6 +243,7 @@ public class OpenLibraryClient {
             @JsonProperty("first_publish_year") Integer firstPublishYear,
             @JsonProperty("cover_i") Integer coverId,
             @JsonProperty("ia") List<String> ia,
+            @JsonProperty("public_scan_b") Boolean publicScan,
             @JsonProperty("availability") OpenLibraryAvailability availability
     ) {
         public OpenLibraryDoc(String title,
@@ -227,7 +252,7 @@ public class OpenLibraryClient {
                               Integer numberOfPagesMedian,
                               Integer firstPublishYear,
                               Integer coverId) {
-            this(title, authorNames, isbn, numberOfPagesMedian, firstPublishYear, coverId, List.of(), null);
+            this(title, authorNames, isbn, numberOfPagesMedian, firstPublishYear, coverId, List.of(), false, null);
         }
 
         public OpenLibraryDoc(String title,
@@ -235,7 +260,18 @@ public class OpenLibraryClient {
                               Integer numberOfPagesMedian,
                               Integer firstPublishYear,
                               Integer coverId) {
-            this(title, List.of(), isbn, numberOfPagesMedian, firstPublishYear, coverId, List.of(), null);
+            this(title, List.of(), isbn, numberOfPagesMedian, firstPublishYear, coverId, List.of(), false, null);
+        }
+
+        public OpenLibraryDoc(String title,
+                              List<String> authorNames,
+                              List<String> isbn,
+                              Integer numberOfPagesMedian,
+                              Integer firstPublishYear,
+                              Integer coverId,
+                              List<String> ia,
+                              OpenLibraryAvailability availability) {
+            this(title, authorNames, isbn, numberOfPagesMedian, firstPublishYear, coverId, ia, true, availability);
         }
     }
 

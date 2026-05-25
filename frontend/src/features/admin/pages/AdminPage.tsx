@@ -49,9 +49,11 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
   const [badgeForm, setBadgeForm] = useState<BadgeForm>(EMPTY_BADGE);
   const [userForm, setUserForm] = useState<UserForm>(EMPTY_USER);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [importQuery, setImportQuery] = useState("programming");
-  const [importPages, setImportPages] = useState(1);
-  const [importPageSize, setImportPageSize] = useState(20);
+  const [importQuery, setImportQuery] = useState("subject:fiction");
+  const [importPages, setImportPages] = useState(10);
+  const [importPageSize, setImportPageSize] = useState(100);
+  const [importReadableOnly, setImportReadableOnly] = useState(true);
+  const [importTargetCount, setImportTargetCount] = useState(100);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const staticData = useAdminStaticData({ headers });
   const userAdmin = useAdminUsers({ headers });
@@ -95,6 +97,8 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
     importQuery,
     importPages,
     importPageSize,
+    importReadableOnly,
+    importTargetCount,
     setImportResult,
     emptyCategory: EMPTY_CATEGORY,
     emptyTag: EMPTY_TAG,
@@ -149,6 +153,8 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         importQuery={importQuery}
         importPages={importPages}
         importPageSize={importPageSize}
+        importReadableOnly={importReadableOnly}
+        importTargetCount={importTargetCount}
         importResult={importResult}
         onSubmitBook={actions.submitBook}
         onSubmitUpload={actions.uploadPdf}
@@ -165,6 +171,8 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onImportQueryChange={setImportQuery}
         onImportPagesChange={setImportPages}
         onImportPageSizeChange={setImportPageSize}
+        onImportReadableOnlyChange={setImportReadableOnly}
+        onImportTargetCountChange={setImportTargetCount}
         onSubmitCategory={actions.submitCategory}
         onCategoryFormChange={setCategoryForm}
         onEditCategory={actions.fillCategoryFormFromCategory}

@@ -38,11 +38,15 @@ public class BookImportUseCase {
         int failed = 0;
         List<String> messages = new ArrayList<>();
         Set<String> seenIsbn = new HashSet<>();
+        boolean readableOnly = request.shouldImportReadableOnly();
+        int targetImportCount = request.resolvedTargetImportCount();
 
-        for (int page = 1; page <= request.pages(); page++) {
+        for (int page = 1; page <= request.pages() && imported < targetImportCount; page++) {
             List<OpenLibraryClient.OpenLibraryDoc> docs;
             try {
-                OpenLibraryClient.OpenLibrarySearchResponse result = openLibraryClient.search(request.query(), page, request.pageSize());
+                OpenLibraryClient.OpenLibrarySearchResponse result = readableOnly
+                        ? openLibraryClient.searchReadable(request.query(), page, request.pageSize())
+                        : openLibraryClient.search(request.query(), page, request.pageSize());
                 docs = result.docs() == null ? List.of() : result.docs();
             } catch (Exception ex) {
                 failed++;
@@ -54,11 +58,20 @@ public class BookImportUseCase {
             }
 
             for (OpenLibraryClient.OpenLibraryDoc doc : docs) {
+                if (imported >= targetImportCount) {
+                    break;
+                }
                 fetched++;
                 try {
                     if (doc == null || isBlank(doc.title())) {
                         skipped++;
                         addMessage(messages, "Skipped item without title");
+                        continue;
+                    }
+
+                    if (readableOnly && !openLibraryClient.hasEmbeddableReader(doc)) {
+                        skipped++;
+                        addMessage(messages, "Skipped '%s': no embeddable reader".formatted(doc.title()));
                         continue;
                     }
 
@@ -87,7 +100,9 @@ public class BookImportUseCase {
                             publicationDate,
                             coverUrl);
 
-                    tryAttachPdfFromArchiveIfAvailable(doc, createdBook, messages);
+                    if (!readableOnly) {
+                        tryAttachPdfFromArchiveIfAvailable(doc, createdBook, messages);
+                    }
                     imported++;
                 } catch (BookIsbnConflict conflict) {
                     skipped++;

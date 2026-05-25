@@ -96,4 +96,62 @@ class BookImportUseCaseTest {
                 any());
         verify(minioFileStorageService, never()).uploadPdf(any(), any(), any());
     }
+
+    @Test
+    void shouldImportOnlyReadableBooksUntilTargetCount() {
+        BookImportUseCase useCase = new BookImportUseCase(openLibraryClient, bookService, minioFileStorageService);
+        ReflectionTestUtils.setField(useCase, "maxDownloadBytes", 1024);
+
+        ExternalBooksImportRequest request = new ExternalBooksImportRequest("subject:fiction", 3, 2, true, 1);
+
+        OpenLibraryClient.OpenLibraryDoc readableDoc = new OpenLibraryClient.OpenLibraryDoc(
+                "The Picture of Dorian Gray",
+                List.of("Oscar Wilde"),
+                List.of("9780141439570"),
+                256,
+                1890,
+                321,
+                List.of("pictureofdoriang00wild_5"),
+                new OpenLibraryClient.OpenLibraryAvailability("pictureofdoriang00wild_5")
+        );
+        OpenLibraryClient.OpenLibraryDoc skippedDoc = new OpenLibraryClient.OpenLibraryDoc(
+                "Unreadable Book",
+                List.of("Unknown"),
+                List.of("9780000000000"),
+                100,
+                2000,
+                654
+        );
+
+        when(openLibraryClient.searchReadable("subject:fiction", 1, 2))
+                .thenReturn(new OpenLibraryClient.OpenLibrarySearchResponse(2, List.of(skippedDoc, readableDoc)));
+        when(openLibraryClient.hasEmbeddableReader(skippedDoc)).thenReturn(false);
+        when(openLibraryClient.hasEmbeddableReader(readableDoc)).thenReturn(true);
+
+        Book createdBook = Book.builder()
+                .id(UUID.randomUUID())
+                .title("The Picture of Dorian Gray")
+                .author("Oscar Wilde")
+                .isbn("9780141439570")
+                .publicationDate(LocalDate.of(1890, 1, 1))
+                .categories(Set.of())
+                .build();
+
+        when(bookService.upsertOpenLibraryBook(
+                eq("The Picture of Dorian Gray"),
+                eq("Oscar Wilde"),
+                eq("9780141439570"),
+                eq(256),
+                eq(LocalDate.of(1890, 1, 1)),
+                any()))
+                .thenReturn(createdBook);
+
+        ExternalBooksImportResponse response = useCase.importFromOpenLibrary(request);
+
+        assertThat(response.fetched()).isEqualTo(2);
+        assertThat(response.imported()).isEqualTo(1);
+        assertThat(response.skipped()).isEqualTo(1);
+        verify(openLibraryClient).searchReadable("subject:fiction", 1, 2);
+        verify(openLibraryClient, never()).search("subject:fiction", 1, 2);
+    }
 }

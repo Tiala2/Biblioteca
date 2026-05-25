@@ -42,6 +42,8 @@ type UseAdminActionsParams = {
   importQuery: string;
   importPages: number;
   importPageSize: number;
+  importReadableOnly: boolean;
+  importTargetCount: number;
   setImportResult: Dispatch<SetStateAction<ImportResult | null>>;
   emptyCategory: CategoryForm;
   emptyTag: TagForm;
@@ -78,6 +80,8 @@ export function useAdminActions({
   importQuery,
   importPages,
   importPageSize,
+  importReadableOnly,
+  importTargetCount,
   setImportResult,
   emptyCategory,
   emptyTag,
@@ -270,7 +274,13 @@ export function useAdminActions({
     try {
       const response = await api.post<ImportResult>(
         "/api/admin/books/import/open-library",
-        { query: importQuery, pages: Number(importPages), pageSize: Number(importPageSize) },
+        {
+          query: importQuery,
+          pages: Number(importPages),
+          pageSize: Number(importPageSize),
+          readableOnly: importReadableOnly,
+          targetImportCount: Number(importTargetCount),
+        },
         { headers }
       );
       setImportResult(response.data);

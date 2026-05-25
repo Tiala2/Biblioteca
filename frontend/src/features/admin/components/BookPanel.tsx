@@ -26,6 +26,8 @@ type BookPanelProps = {
   importQuery: string;
   importPages: number;
   importPageSize: number;
+  importReadableOnly: boolean;
+  importTargetCount: number;
   importResult: ImportResult | null;
   onSubmitBook: (event: FormEvent) => Promise<void>;
   onSubmitUpload: (event: FormEvent) => Promise<void>;
@@ -42,6 +44,8 @@ type BookPanelProps = {
   onImportQueryChange: (value: string) => void;
   onImportPagesChange: (value: number) => void;
   onImportPageSizeChange: (value: number) => void;
+  onImportReadableOnlyChange: (value: boolean) => void;
+  onImportTargetCountChange: (value: number) => void;
 };
 
 export function BookPanel({
@@ -56,6 +60,8 @@ export function BookPanel({
   importQuery,
   importPages,
   importPageSize,
+  importReadableOnly,
+  importTargetCount,
   importResult,
   onSubmitBook,
   onSubmitUpload,
@@ -72,6 +78,8 @@ export function BookPanel({
   onImportQueryChange,
   onImportPagesChange,
   onImportPageSizeChange,
+  onImportReadableOnlyChange,
+  onImportTargetCountChange,
 }: BookPanelProps) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -218,7 +226,7 @@ export function BookPanel({
       <form className="admin-form admin-form--compact" onSubmit={onSubmitImport}>
         <label className="field-stack">
           <span>Busca na Open Library</span>
-          <input aria-label="Busca na Open Library" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Ex.: Machado de Assis" />
+          <input aria-label="Busca na Open Library" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Ex.: subject:fiction" />
         </label>
         <label className="field-stack">
           <span>Páginas externas</span>
@@ -228,8 +236,16 @@ export function BookPanel({
           <span>Itens por página</span>
           <input aria-label="Tamanho da página de importação" type="number" min={1} value={importPageSize} onChange={(event) => onImportPageSizeChange(Number(event.target.value))} />
         </label>
+        <label className="field-stack">
+          <span>Alvo importado</span>
+          <input aria-label="Quantidade alvo de livros importados" type="number" min={1} max={500} value={importTargetCount} onChange={(event) => onImportTargetCountChange(Number(event.target.value))} />
+        </label>
+        <label className="check-inline">
+          <input type="checkbox" checked={importReadableOnly} onChange={(event) => onImportReadableOnlyChange(event.target.checked)} />
+          Apenas livros com leitor no app
+        </label>
         <button type="submit" disabled={busyKey === "book-import"}>
-          {busyKey === "book-import" ? "Importando..." : "Importar"}
+          {busyKey === "book-import" ? "Importando..." : "Importar legíveis"}
         </button>
       </form>
 

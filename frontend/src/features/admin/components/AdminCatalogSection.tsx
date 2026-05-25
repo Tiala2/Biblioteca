@@ -34,6 +34,8 @@ type AdminCatalogSectionProps = {
   importQuery: string;
   importPages: number;
   importPageSize: number;
+  importReadableOnly: boolean;
+  importTargetCount: number;
   importResult: ImportResult | null;
   onSubmitBook: (event: FormEvent) => Promise<void>;
   onSubmitUpload: (event: FormEvent) => Promise<void>;
@@ -50,6 +52,8 @@ type AdminCatalogSectionProps = {
   onImportQueryChange: (value: string) => void;
   onImportPagesChange: (value: number) => void;
   onImportPageSizeChange: (value: number) => void;
+  onImportReadableOnlyChange: (value: boolean) => void;
+  onImportTargetCountChange: (value: number) => void;
   onSubmitCategory: (event: FormEvent) => Promise<void>;
   onCategoryFormChange: (updater: (previous: CategoryForm) => CategoryForm) => void;
   onEditCategory: (category: Category) => void;
@@ -84,6 +88,8 @@ export function AdminCatalogSection({
   importQuery,
   importPages,
   importPageSize,
+  importReadableOnly,
+  importTargetCount,
   importResult,
   onSubmitBook,
   onSubmitUpload,
@@ -100,6 +106,8 @@ export function AdminCatalogSection({
   onImportQueryChange,
   onImportPagesChange,
   onImportPageSizeChange,
+  onImportReadableOnlyChange,
+  onImportTargetCountChange,
   onSubmitCategory,
   onCategoryFormChange,
   onEditCategory,
@@ -136,6 +144,8 @@ export function AdminCatalogSection({
         importQuery={importQuery}
         importPages={importPages}
         importPageSize={importPageSize}
+        importReadableOnly={importReadableOnly}
+        importTargetCount={importTargetCount}
         importResult={importResult}
         onSubmitBook={onSubmitBook}
         onSubmitUpload={onSubmitUpload}
@@ -152,6 +162,8 @@ export function AdminCatalogSection({
         onImportQueryChange={onImportQueryChange}
         onImportPagesChange={onImportPagesChange}
         onImportPageSizeChange={onImportPageSizeChange}
+        onImportReadableOnlyChange={onImportReadableOnlyChange}
+        onImportTargetCountChange={onImportTargetCountChange}
       />
 
       <CategoryPanel
