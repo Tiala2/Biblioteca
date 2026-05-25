@@ -3,7 +3,7 @@
 ## Situacao da branch
 
 - Branch atual: `feature/polimento-final-ui-textos`
-- Relacao com `main`: `71` commits a frente e `0` commits atras no momento da checagem
+- Relacao com `main`: branch a frente da `main` e `0` commits atras no momento da checagem; confirmar a contagem atual com `git rev-list --left-right --count main...HEAD`
 - Estado do Git no momento da checagem: limpo e sincronizado com `origin/feature/polimento-final-ui-textos`
 
 ## Validacao automatizada recente
