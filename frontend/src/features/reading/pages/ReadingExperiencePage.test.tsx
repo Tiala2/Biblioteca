@@ -307,4 +307,60 @@ describe("ReadingExperiencePage", () => {
       )
     );
   });
+
+  it("deve tratar livro local sem PDF como leitura manual", async () => {
+    vi.mocked(api.get).mockImplementation((url: string) => {
+      if (url === "/api/v1/books/book-manual") {
+        return Promise.resolve({
+          data: {
+            id: "book-manual",
+            title: "Livro Local Sem PDF",
+            isbn: "9780000000003",
+            numberOfPages: 180,
+            coverUrl: null,
+            hasPdf: false,
+            source: "LOCAL",
+          },
+        } as never);
+      }
+
+      if (url === "/api/v1/home/resume") {
+        return Promise.resolve({ data: { readings: [] } } as never);
+      }
+
+      if (url === "/api/v1/users/me/favorites") {
+        return Promise.resolve({ data: [] } as never);
+      }
+
+      if (url.startsWith("/api/v1/readings/book-manual/narrative")) {
+        return Promise.resolve({
+          data: {
+            phase: null,
+            plotState: "Acompanhe sua narrativa por trecho lido.",
+            beatTitle: null,
+            knownCharacters: [],
+            quizzes: [],
+            achievements: [],
+          },
+        } as never);
+      }
+
+      return Promise.reject(new Error(`Unhandled GET ${url}`));
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/books/book-manual/read"]}>
+        <Routes>
+          <Route path="/books/:bookId/read" element={<ReadingExperiencePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: "Livro Local Sem PDF" })).toBeInTheDocument();
+    expect(screen.getAllByText("Progresso manual").length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "Leitura manual do acervo" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "PDF ainda não cadastrado" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Abrir fonte externa" })).not.toBeInTheDocument();
+    expect(vi.mocked(api.get)).not.toHaveBeenCalledWith("/api/v1/books/book-manual/external-reader");
+  });
 });

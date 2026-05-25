@@ -12,6 +12,7 @@ import { AchievementsPanel } from "../components/AchievementsPanel";
 import { CharactersPanel } from "../components/CharactersPanel";
 import { ExternalReaderPanel } from "../components/ExternalReaderPanel";
 import { InternalPdfReaderPanel } from "../components/InternalPdfReaderPanel";
+import { ManualReaderPanel } from "../components/ManualReaderPanel";
 import { NarrativeContextPanel } from "../components/NarrativeContextPanel";
 import { QuizPanel } from "../components/QuizPanel";
 import { ReadingHeroPanel } from "../components/ReadingHeroPanel";
@@ -48,7 +49,7 @@ export function ReadingExperiencePage() {
   const [error, setError] = useState("");
 
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
-  const isExternalReading = Boolean(book && !book.hasPdf);
+  const isExternalReading = Boolean(book && !book.hasPdf && book.source === "OPEN");
   const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "Leitura no app" : "Catálogo com progresso";
   const derivedProgress = Math.round((currentPage / totalPages) * 100);
   const progressPercent = Math.max(0, Math.min(100, readingSnapshot?.progress ?? derivedProgress));
@@ -138,7 +139,7 @@ export function ReadingExperiencePage() {
   }, [bookId, headers, currentPage, book]);
 
   useEffect(() => {
-    if (!book || book.hasPdf) {
+    if (!book || book.hasPdf || book.source !== "OPEN") {
       setExternalReaderEmbedUrl(null);
       setExternalReaderFallbackUrl(null);
       setExternalReaderMessage(null);
@@ -342,7 +343,7 @@ export function ReadingExperiencePage() {
         />
       ) : null}
 
-      {!book.hasPdf ? (
+      {!book.hasPdf && book.source === "OPEN" ? (
         <ExternalReaderPanel
           book={book}
           sourceLabel={sourceLabel}
@@ -354,6 +355,10 @@ export function ReadingExperiencePage() {
           saving={saving}
           onSyncReading={syncReading}
         />
+      ) : null}
+
+      {!book.hasPdf && book.source !== "OPEN" ? (
+        <ManualReaderPanel bookTitle={book.title} saving={saving} onSyncReading={syncReading} />
       ) : null}
 
       <ReadingProgressPanel

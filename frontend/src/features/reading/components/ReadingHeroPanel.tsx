@@ -42,6 +42,11 @@ export function ReadingHeroPanel({
     : book.source === "OPEN"
       ? "Open Library"
       : "Progresso manual";
+  const description = book.hasPdf
+    ? "Leia no app, acompanhe a fase narrativa e salve o progresso sem sair da experiência."
+    : book.source === "OPEN"
+      ? "Leia na fonte oficial e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
+      : "Registre manualmente a página atual enquanto o PDF local não está disponível no app.";
 
   return (
     <article className="card hero aura-hero aura-book-detail-hero aura-reading-focus">
@@ -49,11 +54,7 @@ export function ReadingHeroPanel({
       <div className="section-head">
         <div>
           <h2>{book.title}</h2>
-          <p>
-            {isExternalReading
-              ? "Leia na fonte oficial e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
-              : "Leia no app, acompanhe a fase narrativa e salve o progresso sem sair da experiência."}
-          </p>
+          <p>{description}</p>
         </div>
         <div className="reading-mode-stack">
           <span className="kpi reader-source-badge">{readingModeLabel}</span>
@@ -103,7 +104,7 @@ export function ReadingHeroPanel({
             Abrir leitor
           </a>
         ) : null}
-        {!book.hasPdf && externalReaderFallbackUrl ? (
+        {isExternalReading && externalReaderFallbackUrl ? (
           <a className="btn-link" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
             Abrir fonte externa
           </a>

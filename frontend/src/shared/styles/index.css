@@ -2810,6 +2810,12 @@ textarea:focus-visible {
     linear-gradient(135deg, color-mix(in srgb, var(--gold) 18%, var(--card-bg)), color-mix(in srgb, var(--accent-violet) 8%, var(--card-bg)));
 }
 
+.reader-source-badge--manual {
+  border-color: color-mix(in srgb, var(--primary-a) 42%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary-a) 18%, var(--card-bg)), color-mix(in srgb, var(--card-bg) 88%, transparent));
+}
+
 .reader-toolbar {
   display: flex;
   flex-wrap: wrap;

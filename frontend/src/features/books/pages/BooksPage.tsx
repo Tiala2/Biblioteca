@@ -496,7 +496,7 @@ export function BooksPage() {
             <p>{book.numberOfPages} páginas</p>
             <small>
               {book.hasPdf
-                ? "Leitura no app disponível"
+                ? "Leitura e progresso no app"
                 : book.source === "OPEN"
                   ? "Leitura externa com progresso manual"
                   : "Leitura com progresso manual"}
@@ -509,7 +509,7 @@ export function BooksPage() {
                 to={`/books/${book.id}/read`}
                 className={book.hasPdf ? "btn-link" : "btn-muted btn-link"}
               >
-                {book.hasPdf ? "Ler no app" : "Ler com progresso"}
+                {book.hasPdf ? "Abrir leitura" : "Ler com progresso"}
               </Link>
               <button
                 type="button"
