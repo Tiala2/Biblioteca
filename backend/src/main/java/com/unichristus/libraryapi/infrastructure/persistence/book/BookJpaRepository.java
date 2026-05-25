@@ -19,7 +19,10 @@ public interface BookJpaRepository extends JpaRepository<Book, UUID> {
     java.util.Optional<Book> findByIsbn(String isbn);
 
     @Query(value = """
-            SELECT *
+            SELECT b.*,
+                   (SELECT CASE WHEN COUNT(nb.id) > 0 THEN TRUE ELSE FALSE END
+                    FROM book_narrative_beats nb
+                    WHERE nb.book_id = b.id) AS hasNarrative
             FROM books b
             WHERE b.source = 'OPEN'
               AND LOWER(TRIM(b.title)) = LOWER(TRIM(:title))
