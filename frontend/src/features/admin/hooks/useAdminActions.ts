@@ -17,7 +17,7 @@ import type {
 
 type UseAdminActionsParams = {
   headers?: Record<string, string>;
-  showToast: (message: string, type: "success" | "error") => void;
+  showToast: (message: string, type: "success" | "error" | "info") => void;
   reloadAll: () => Promise<void>;
   reloadStaticData: () => Promise<void>;
   reloadUsers: () => Promise<void>;
@@ -285,7 +285,13 @@ export function useAdminActions({
       );
       setImportResult(response.data);
       await reloadStaticData();
-      showToast("Importação concluída com sucesso.", "success");
+      if (response.data.imported > 0 && response.data.failed > 0) {
+        showToast("Importação parcial: alguns livros entraram, mas a Open Library falhou em parte da busca.", "info");
+      } else if (response.data.failed > 0) {
+        showToast("A Open Library não respondeu como esperado. Tente novamente em instantes.", "error");
+      } else {
+        showToast("Importação concluída com sucesso.", "success");
+      }
     } catch {
       showToast("Não foi possível importar livros da Open Library.", "error");
     } finally {

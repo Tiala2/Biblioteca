@@ -99,7 +99,13 @@ export type Page<T> = {
     totalPages: number;
   };
 };
-export type ImportResult = { fetched: number; imported: number; skipped: number; failed: number };
+export type ImportResult = {
+  fetched: number;
+  imported: number;
+  skipped: number;
+  failed: number;
+  messages?: string[];
+};
 
 export type CategoryForm = { id: string | null; name: string; description: string };
 export type TagForm = { id: string | null; name: string };

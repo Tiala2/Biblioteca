@@ -29,6 +29,7 @@
   --primary-b: #0f766e;
   --success: #168553;
   --danger: #c24135;
+  --warning: #d99b18;
   --gold: #d99b18;
   --admin: #147d64;
   --accent-coral: #c75f3a;
@@ -2008,6 +2009,65 @@ form {
 
 .admin-selected-book strong {
   color: var(--text-main);
+}
+
+.admin-import-summary {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0.85rem 0 1rem;
+  padding: 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 76%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-bg) 84%, transparent);
+}
+
+.admin-import-summary--success {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--card-border));
+}
+
+.admin-import-summary--warning {
+  border-color: color-mix(in srgb, var(--warning) 52%, var(--card-border));
+}
+
+.admin-import-summary--danger {
+  border-color: color-mix(in srgb, var(--danger) 52%, var(--card-border));
+}
+
+.admin-import-summary h4 {
+  margin: 0.15rem 0 0.2rem;
+  font-size: 1rem;
+}
+
+.admin-import-summary__stats {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+}
+
+.admin-import-summary__stats span {
+  min-width: 0;
+  padding: 0.65rem;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-strong) 72%, transparent);
+}
+
+.admin-import-summary__stats strong,
+.admin-import-summary__stats small {
+  display: block;
+}
+
+.admin-import-summary__stats small {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+}
+
+.admin-import-summary__messages {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--text-soft);
+  overflow-wrap: anywhere;
 }
 
 .admin-list-stat {

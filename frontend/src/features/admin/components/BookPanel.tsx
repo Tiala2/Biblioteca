@@ -14,6 +14,38 @@ function buildOpenLibraryCoverUrl(isbn?: string | null) {
   return cleanIsbn ? `https://covers.openlibrary.org/b/isbn/${cleanIsbn}-L.jpg?default=false` : "";
 }
 
+function getImportStatus(result: ImportResult | null) {
+  if (!result) {
+    return null;
+  }
+  if (result.imported > 0 && result.failed > 0) {
+    return {
+      tone: "warning",
+      title: "Importação parcial",
+      description: "Alguns livros entraram no catálogo, mas a Open Library falhou em parte da busca. Você pode tentar novamente sem perder o que já foi importado.",
+    };
+  }
+  if (result.imported > 0) {
+    return {
+      tone: "success",
+      title: "Importação concluída",
+      description: "Os livros encontrados foram adicionados ou atualizados no acervo.",
+    };
+  }
+  if (result.failed > 0) {
+    return {
+      tone: "danger",
+      title: "Importação não concluída",
+      description: "A Open Library não respondeu como esperado. Aguarde alguns instantes e tente novamente.",
+    };
+  }
+  return {
+    tone: "muted",
+    title: "Nenhum livro novo",
+    description: "A busca terminou, mas não encontrou itens elegíveis para adicionar ao acervo.",
+  };
+}
+
 type BookPanelProps = {
   form: BookForm;
   books: Book[];
@@ -97,6 +129,8 @@ export function BookPanel({
   const selectedUploadBook = books.find((book) => book.id === uploadBookId) ?? null;
   const formCoverUrlFromIsbn = buildOpenLibraryCoverUrl(form.isbn);
   const selectedCoverUrlFromIsbn = buildOpenLibraryCoverUrl(selectedCoverBook?.isbn);
+  const importStatus = getImportStatus(importResult);
+  const importMessages = importResult?.messages?.filter(Boolean).slice(0, 4) ?? [];
   const hasBooks = books.length > 0;
   const toggleCategory = (categoryId: string) => {
     onFormChange((prev) => {
@@ -249,10 +283,39 @@ export function BookPanel({
         </button>
       </form>
 
-      {importResult && (
-        <p className="section-sub">
-          Importados: {importResult.imported}. Ignorados: {importResult.skipped}. Não importados: {importResult.failed}.
-        </p>
+      {importResult && importStatus && (
+        <section className={`admin-import-summary admin-import-summary--${importStatus.tone}`} aria-live="polite">
+          <div>
+            <p className="eyebrow">Resultado da Open Library</p>
+            <h4>{importStatus.title}</h4>
+            <p className="section-sub">{importStatus.description}</p>
+          </div>
+          <div className="admin-import-summary__stats" aria-label="Resumo da importação">
+            <span>
+              <strong>{importResult.fetched}</strong>
+              <small>lidos</small>
+            </span>
+            <span>
+              <strong>{importResult.imported}</strong>
+              <small>importados</small>
+            </span>
+            <span>
+              <strong>{importResult.skipped}</strong>
+              <small>ignorados</small>
+            </span>
+            <span>
+              <strong>{importResult.failed}</strong>
+              <small>falhas</small>
+            </span>
+          </div>
+          {importMessages.length > 0 && (
+            <ul className="admin-import-summary__messages" aria-label="Detalhes da importação">
+              {importMessages.map((message, index) => (
+                <li key={`${message}-${index}`}>{message}</li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
 
       <div className="section-head">
