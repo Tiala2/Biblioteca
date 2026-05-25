@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
+import { BookPlus, Edit3, ImagePlus, LibraryBig, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, BookForm, Category, ImportResult } from "../types";
 import { AdminEmptyState } from "./AdminEmptyState";
@@ -148,6 +149,13 @@ export function BookPanel({
     <article id="admin-books" className="card admin-panel admin-panel--wide">
       <h3>{form.id ? "Editar livro" : "Novo livro"}</h3>
       <form className="admin-form" onSubmit={onSubmitBook}>
+        <div className="admin-form-title">
+          <BookPlus aria-hidden="true" />
+          <div>
+            <strong>Dados principais</strong>
+            <span>Título, autoria, ISBN, páginas e classificação.</span>
+          </div>
+        </div>
         <input aria-label="Título do livro" value={form.title} onChange={(event) => onFormChange((prev) => ({ ...prev, title: event.target.value }))} placeholder="Título" required />
         <input aria-label="Autor do livro" value={form.author} onChange={(event) => onFormChange((prev) => ({ ...prev, author: event.target.value }))} placeholder="Autor" required />
         <input aria-label="ISBN do livro" value={form.isbn} onChange={(event) => onFormChange((prev) => ({ ...prev, isbn: event.target.value }))} placeholder="ISBN" required />
@@ -171,6 +179,7 @@ export function BookPanel({
           disabled={!formCoverUrlFromIsbn}
           onClick={() => onFormChange((prev) => ({ ...prev, coverUrl: buildOpenLibraryCoverUrl(prev.isbn) }))}
         >
+          <Search aria-hidden="true" />
           Buscar capa por ISBN
         </button>
         <fieldset className="admin-choice-list">
@@ -193,6 +202,7 @@ export function BookPanel({
           )}
         </fieldset>
         <button type="submit" disabled={busyKey === "book-create" || busyKey === `book-save-${form.id}`}>
+          <Save aria-hidden="true" />
           {busyKey === "book-create" || busyKey === `book-save-${form.id}`
             ? "Salvando..."
             : form.id
@@ -201,12 +211,20 @@ export function BookPanel({
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
+            <RotateCcw aria-hidden="true" />
             Cancelar
           </button>
         )}
       </form>
 
       <form className="admin-form admin-form--compact" onSubmit={onSubmitCover}>
+        <div className="admin-form-title">
+          <ImagePlus aria-hidden="true" />
+          <div>
+            <strong>Capa do livro</strong>
+            <span>Atualize a imagem manualmente ou a partir do ISBN.</span>
+          </div>
+        </div>
         <label className="field-stack">
           <span>Livro da capa</span>
           <select aria-label="Livro para atualizar capa" value={coverBookId} disabled={!hasBooks} onChange={(event) => onCoverBookChange(event.target.value)}>
@@ -223,14 +241,23 @@ export function BookPanel({
           <input aria-label="Nova URL da capa" value={coverBookUrl} onChange={(event) => onCoverUrlChange(event.target.value)} placeholder="Cole a URL da imagem" />
         </label>
         <button type="button" className="btn-muted" disabled={!selectedCoverUrlFromIsbn} onClick={() => onCoverUrlChange(selectedCoverUrlFromIsbn)}>
+          <Search aria-hidden="true" />
           Usar ISBN do livro
         </button>
         <button type="submit" disabled={!hasBooks || busyKey === "book-cover"}>
+          <Save aria-hidden="true" />
           {busyKey === "book-cover" ? "Atualizando..." : "Atualizar capa"}
         </button>
       </form>
 
       <form className="admin-form admin-form--compact" onSubmit={onSubmitUpload}>
+        <div className="admin-form-title">
+          <Upload aria-hidden="true" />
+          <div>
+            <strong>Arquivo de leitura</strong>
+            <span>Envie o PDF para liberar leitura interna no app.</span>
+          </div>
+        </div>
         <label className="field-stack">
           <span>Livro para arquivo de leitura</span>
           <select aria-label="Livro para enviar arquivo PDF" value={uploadBookId} disabled={!hasBooks} onChange={(event) => onUploadBookChange(event.target.value)}>
@@ -253,11 +280,19 @@ export function BookPanel({
           </p>
         )}
         <button type="submit" disabled={!hasBooks || !uploadFile || busyKey === "book-upload"}>
+          <Upload aria-hidden="true" />
           {busyKey === "book-upload" ? "Enviando..." : "Enviar arquivo"}
         </button>
       </form>
 
       <form className="admin-form admin-form--compact" onSubmit={onSubmitImport}>
+        <div className="admin-form-title">
+          <LibraryBig aria-hidden="true" />
+          <div>
+            <strong>Importação Open Library</strong>
+            <span>Traga livros legíveis sem cadastrar item por item.</span>
+          </div>
+        </div>
         <label className="field-stack">
           <span>Busca na Open Library</span>
           <input aria-label="Busca na Open Library" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Ex.: subject:fiction" />
@@ -279,6 +314,7 @@ export function BookPanel({
           Apenas livros com leitor no app
         </label>
         <button type="submit" disabled={busyKey === "book-import"}>
+          <LibraryBig aria-hidden="true" />
           {busyKey === "book-import" ? "Importando..." : "Importar legíveis"}
         </button>
       </form>
@@ -337,9 +373,11 @@ export function BookPanel({
             </div>
             <div className="card-actions">
               <button type="button" className="btn-muted" onClick={() => onEdit(book)}>
+                <Edit3 aria-hidden="true" />
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `book-delete-${book.id}`} onClick={() => onDelete(book.id)}>
+                <Trash2 aria-hidden="true" />
                 {busyKey === `book-delete-${book.id}` ? "Removendo..." : "Remover"}
               </button>
             </div>

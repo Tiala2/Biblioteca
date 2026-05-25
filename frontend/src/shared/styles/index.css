@@ -875,6 +875,45 @@ label {
   background: color-mix(in srgb, var(--card-bg) 82%, transparent);
 }
 
+.admin-form-title {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.6rem;
+  grid-column: 1 / -1;
+  min-width: 0;
+  padding: 0.62rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--primary-b) 18%, var(--card-border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary-b) 7%, var(--card-bg));
+}
+
+.admin-form-title svg {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-b);
+  margin-top: 0.1rem;
+}
+
+.admin-form-title strong,
+.admin-form-title span {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-form-title strong {
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.admin-form-title span {
+  margin-top: 0.12rem;
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
 .admin-form + .admin-form {
   margin-top: 0.75rem;
 }
@@ -902,6 +941,18 @@ label {
 
 .admin-form button {
   justify-self: start;
+}
+
+.admin-panel .card-actions svg,
+.admin-form button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-panel .stacked-list-item strong,
+.admin-panel .stacked-list-item .section-sub,
+.admin-list-stat strong {
+  overflow-wrap: anywhere;
 }
 
 .admin-choice-list {
