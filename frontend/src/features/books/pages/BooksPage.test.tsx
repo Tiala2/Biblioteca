@@ -87,8 +87,7 @@ describe("BooksPage", () => {
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
     expect(screen.getByText("Dinâmica")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Livro B" })).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Abrir leitura" })).toHaveLength(1);
-    expect(screen.getByRole("link", { name: "Ler com progresso" })).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Ler agora" })).toHaveLength(2);
   });
 
   it("deve atualizar busca ao clicar em pesquisar", async () => {

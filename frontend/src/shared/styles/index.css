@@ -1310,6 +1310,15 @@ label {
   min-width: 0;
 }
 
+.aura-book-card p,
+.aura-book-card small,
+.aura-book-card h3,
+.aura-book-card h3 .btn-link {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .aura-book-card::after {
   content: "";
   position: absolute;
@@ -1356,6 +1365,10 @@ label {
   color: var(--text-main);
   box-shadow: none;
   text-align: left;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .aura-book-card h3 .btn-link:hover,
@@ -2555,10 +2568,19 @@ textarea:focus-visible {
 
 .aura-book-card .card-actions > * {
   width: 100%;
+  min-width: 0;
+  padding-inline: 0.7rem;
+  white-space: normal;
 }
 
 .aura-book-card .card-actions .favorite-toggle {
   grid-column: 1 / -1;
+}
+
+.aura-book-card .card-actions svg,
+.aura-book-detail-hero .card-actions svg {
+  width: 16px;
+  height: 16px;
 }
 
 .pagination-row {

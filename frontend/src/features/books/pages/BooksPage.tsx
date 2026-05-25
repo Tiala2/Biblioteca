@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Filter, Search, Sparkles, X } from "lucide-react";
+import { BookOpen, Eye, Filter, Heart, Search, Sparkles, X } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { api } from "@shared/api/http";
@@ -503,13 +503,15 @@ export function BooksPage() {
             </small>
             <div className="card-actions">
               <Link to={`/books/${book.id}`} className="btn-muted btn-link">
+                <Eye aria-hidden="true" />
                 Ver detalhes
               </Link>
               <Link
                 to={`/books/${book.id}/read`}
                 className={book.hasPdf ? "btn-link" : "btn-muted btn-link"}
               >
-                {book.hasPdf ? "Abrir leitura" : "Ler com progresso"}
+                <BookOpen aria-hidden="true" />
+                Ler agora
               </Link>
               <button
                 type="button"
@@ -518,6 +520,7 @@ export function BooksPage() {
                 onClick={() => toggleFavorite(book.id)}
                 disabled={favoriteLoadingBookId === book.id}
               >
+                <Heart aria-hidden="true" />
                 {favoriteLoadingBookId === book.id
                   ? "Salvando..."
                   : favoriteBookIds.has(book.id)

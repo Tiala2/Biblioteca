@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { BookMarked, Heart, Library, Sparkles } from "lucide-react";
+import { BookMarked, BookOpen, Eye, Heart, Library, Sparkles, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -146,9 +146,11 @@ export function FavoritesPage() {
             <small>Favoritado em {formatDateTimeBr(item.createdAt)}</small>
             <div className="card-actions">
               <Link to={`/books/${item.bookId}`} className="btn-muted btn-link">
+                <Eye aria-hidden="true" />
                 Ver detalhes
               </Link>
               <Link to={`/books/${item.bookId}/read`} className="btn-link">
+                <BookOpen aria-hidden="true" />
                 Ler agora
               </Link>
               <button
@@ -158,6 +160,7 @@ export function FavoritesPage() {
                 onClick={() => removeFavorite(item.bookId)}
                 disabled={deletingBookId === item.bookId}
               >
+                <Trash2 aria-hidden="true" />
                 {deletingBookId === item.bookId ? "Removendo..." : "Remover"}
               </button>
             </div>

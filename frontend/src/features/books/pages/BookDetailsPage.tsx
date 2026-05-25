@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BookMarked, MessageCircle, Sparkles, Star, Tags, WandSparkles } from "lucide-react";
+import { BookMarked, BookOpen, Heart, MessageCircle, Sparkles, Star, Tags, WandSparkles } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
@@ -227,6 +227,7 @@ export function BookDetailsPage() {
         </div>
         <div className="card-actions">
           <Link to={`/books/${bookId}/read`} className="btn-link">
+            <BookOpen aria-hidden="true" />
             {book?.hasPdf ? "Ler no app" : "Ler com progresso"}
           </Link>
           <button
@@ -236,9 +237,11 @@ export function BookDetailsPage() {
             onClick={toggleFavorite}
             disabled={!headers || favoriteLoading}
           >
+            <Heart aria-hidden="true" />
             {favoriteLoading ? "Salvando..." : isFavorite ? "Nos favoritos" : "Salvar nos favoritos"}
           </button>
           <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
+            <MessageCircle aria-hidden="true" />
             Ver avaliações
           </Link>
         </div>
@@ -351,6 +354,7 @@ export function BookDetailsPage() {
               <p className="section-sub">Continue sua jornada com salvamento de progresso e metas.</p>
             </div>
             <Link to={`/books/${bookId}/read`} className="btn-link">
+              <BookOpen aria-hidden="true" />
               Abrir leitura
             </Link>
           </li>
@@ -360,6 +364,7 @@ export function BookDetailsPage() {
               <p className="section-sub">Use sua percepção para enriquecer o catálogo social da plataforma.</p>
             </div>
             <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
+              <MessageCircle aria-hidden="true" />
               Abrir avaliações
             </Link>
           </li>
