@@ -43,6 +43,7 @@ export function ReadingExperiencePage() {
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [externalReaderEmbedUrl, setExternalReaderEmbedUrl] = useState<string | null>(null);
   const [externalReaderFallbackUrl, setExternalReaderFallbackUrl] = useState<string | null>(null);
+  const [externalReaderMessage, setExternalReaderMessage] = useState<string | null>(null);
   const [externalReaderLoading, setExternalReaderLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -140,6 +141,7 @@ export function ReadingExperiencePage() {
     if (!book || book.hasPdf) {
       setExternalReaderEmbedUrl(null);
       setExternalReaderFallbackUrl(null);
+      setExternalReaderMessage(null);
       setExternalReaderLoading(false);
       return;
     }
@@ -148,6 +150,7 @@ export function ReadingExperiencePage() {
     if (cacheHit) {
       setExternalReaderEmbedUrl(cacheHit.embedUrl);
       setExternalReaderFallbackUrl(cacheHit.fallbackUrl);
+      setExternalReaderMessage(cacheHit.message ?? null);
       setExternalReaderLoading(false);
       return;
     }
@@ -169,11 +172,14 @@ export function ReadingExperiencePage() {
         });
         setExternalReaderEmbedUrl(lookup.embedUrl);
         setExternalReaderFallbackUrl(lookup.fallbackUrl);
+        setExternalReaderMessage(lookup.message ?? null);
       } catch {
         if (!isActive) return;
         const fallbackUrl = `https://openlibrary.org/search?q=${encodeURIComponent(book.title)}`;
-        writeReaderCache(book, { embedUrl: null, fallbackUrl });
+        const message = "Não foi possível consultar a fonte externa agora.";
+        writeReaderCache(book, { embedUrl: null, fallbackUrl, message });
         setExternalReaderFallbackUrl(fallbackUrl);
+        setExternalReaderMessage(message);
       } finally {
         if (isActive) setExternalReaderLoading(false);
       }
@@ -327,7 +333,14 @@ export function ReadingExperiencePage() {
         onToggleFavorite={toggleFavorite}
       />
 
-      {book.hasPdf ? <InternalPdfReaderPanel bookTitle={book.title} internalPdfUrl={internalPdfUrl} /> : null}
+      {book.hasPdf ? (
+        <InternalPdfReaderPanel
+          bookTitle={book.title}
+          internalPdfUrl={internalPdfUrl}
+          saving={saving}
+          onSyncReading={syncReading}
+        />
+      ) : null}
 
       {!book.hasPdf ? (
         <ExternalReaderPanel
@@ -337,6 +350,7 @@ export function ReadingExperiencePage() {
           externalReaderEmbedUrl={externalReaderEmbedUrl}
           externalReaderFallbackUrl={externalReaderFallbackUrl}
           externalSourceActionLabel={externalSourceActionLabel}
+          externalReaderMessage={externalReaderMessage}
           saving={saving}
           onSyncReading={syncReading}
         />

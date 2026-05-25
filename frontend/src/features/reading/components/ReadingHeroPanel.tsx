@@ -37,6 +37,12 @@ export function ReadingHeroPanel({
   onSyncReading,
   onToggleFavorite,
 }: ReadingHeroPanelProps) {
+  const readingModeLabel = book.hasPdf
+    ? "PDF no app"
+    : book.source === "OPEN"
+      ? "Open Library"
+      : "Progresso manual";
+
   return (
     <article className="card hero aura-hero aura-book-detail-hero aura-reading-focus">
       <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="large" />
@@ -45,11 +51,14 @@ export function ReadingHeroPanel({
           <h2>{book.title}</h2>
           <p>
             {isExternalReading
-              ? "Leia na fonte externa e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
-              : "Retome sua leitura, acompanhe a fase narrativa e salve o progresso sem sair da experiência."}
+              ? "Leia na fonte oficial e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
+              : "Leia no app, acompanhe a fase narrativa e salve o progresso sem sair da experiência."}
           </p>
         </div>
-        <span className="kpi">{progressPercent}% concluído</span>
+        <div className="reading-mode-stack">
+          <span className="kpi reader-source-badge">{readingModeLabel}</span>
+          <span className="kpi">{progressPercent}% concluído</span>
+        </div>
       </div>
 
       <div className="stats-grid">

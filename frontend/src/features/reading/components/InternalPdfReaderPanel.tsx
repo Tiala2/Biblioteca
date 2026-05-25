@@ -1,26 +1,36 @@
 type InternalPdfReaderPanelProps = {
   bookTitle: string;
   internalPdfUrl: string | null;
+  saving: boolean;
+  onSyncReading: () => void;
 };
 
-export function InternalPdfReaderPanel({ bookTitle, internalPdfUrl }: InternalPdfReaderPanelProps) {
+export function InternalPdfReaderPanel({
+  bookTitle,
+  internalPdfUrl,
+  saving,
+  onSyncReading,
+}: InternalPdfReaderPanelProps) {
   return (
-    <article className="card">
+    <article className="card reader-panel reader-panel--internal">
       <div className="section-head">
-        <h3>Leitor interno</h3>
-        <span className="kpi">Leitura no app</span>
+        <div>
+          <p className="eyebrow">Modo leitura</p>
+          <h3>Leitor do acervo interno</h3>
+          <p className="section-sub">
+            Leia o PDF no app, ajuste a página no painel de progresso e salve quando quiser atualizar metas, ranking e
+            histórico.
+          </p>
+        </div>
+        <span className="kpi reader-source-badge reader-source-badge--local">PDF no app</span>
       </div>
+
       {internalPdfUrl ? (
         <>
-          <div className="external-reader-wrap">
-            <iframe
-              title={`Leitor PDF - ${bookTitle}`}
-              src={internalPdfUrl}
-              className="external-reader-frame"
-              loading="lazy"
-            />
-          </div>
-          <div className="card-actions">
+          <div className="reader-toolbar" aria-label="Ações do leitor interno">
+            <button type="button" onClick={onSyncReading} disabled={saving}>
+              {saving ? "Salvando..." : "Salvar página atual"}
+            </button>
             <a className="btn-muted btn-link" href={internalPdfUrl} target="_blank" rel="noreferrer">
               Abrir em nova aba
             </a>
@@ -28,11 +38,24 @@ export function InternalPdfReaderPanel({ bookTitle, internalPdfUrl }: InternalPd
               Baixar PDF
             </a>
           </div>
+
+          <div className="external-reader-wrap reader-frame-wrap">
+            <iframe
+              title={`Leitor PDF - ${bookTitle}`}
+              src={internalPdfUrl}
+              className="external-reader-frame"
+              loading="lazy"
+            />
+          </div>
         </>
       ) : (
-        <p className="section-sub">
-          A leitura no app existe para este livro, mas o acesso ainda está sendo preparado. Tente novamente em instantes.
-        </p>
+        <div className="reader-unavailable" role="status">
+          <h4>PDF ainda indisponível</h4>
+          <p className="section-sub">
+            Este livro está marcado para leitura no app, mas o arquivo ainda está sendo preparado. Tente novamente em
+            instantes.
+          </p>
+        </div>
       )}
     </article>
   );

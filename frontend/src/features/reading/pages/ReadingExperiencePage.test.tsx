@@ -218,4 +218,93 @@ describe("ReadingExperiencePage", () => {
     expect(screen.getByText(/Correto\./)).toBeInTheDocument();
     expect(screen.getByText(/As relações mudam constantemente/)).toBeInTheDocument();
   });
+
+  it("deve orientar leitura externa da Open Library sem leitor incorporado", async () => {
+    vi.mocked(api.get).mockImplementation((url: string) => {
+      if (url === "/api/v1/books/book-open") {
+        return Promise.resolve({
+          data: {
+            id: "book-open",
+            title: "Livro Externo",
+            isbn: "9780000000002",
+            numberOfPages: 320,
+            coverUrl: null,
+            hasPdf: false,
+            source: "OPEN",
+          },
+        } as never);
+      }
+
+      if (url === "/api/v1/home/resume") {
+        return Promise.resolve({ data: { readings: [] } } as never);
+      }
+
+      if (url === "/api/v1/users/me/favorites") {
+        return Promise.resolve({ data: [] } as never);
+      }
+
+      if (url.startsWith("/api/v1/readings/book-open/narrative")) {
+        return Promise.resolve({
+          data: {
+            phase: null,
+            plotState: "Acompanhe sua narrativa por trecho lido.",
+            beatTitle: null,
+            knownCharacters: [],
+            quizzes: [],
+            achievements: [],
+          },
+        } as never);
+      }
+
+      if (url === "/api/v1/books/book-open/external-reader") {
+        return Promise.resolve({
+          data: {
+            bookId: "book-open",
+            source: "OPEN",
+            availableInsideApp: false,
+            embedUrl: null,
+            fallbackUrl: "https://openlibrary.org/books/OL1M/Livro_Externo",
+            message: "Não encontramos uma versão incorporável; use a fonte oficial.",
+          },
+        } as never);
+      }
+
+      return Promise.reject(new Error(`Unhandled GET ${url}`));
+    });
+    vi.mocked(api.post).mockResolvedValue({
+      data: {
+        id: "reading-open",
+        status: "IN_PROGRESS",
+        currentPage: 1,
+        progress: 1,
+      },
+    } as never);
+
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={["/books/book-open/read"]}>
+        <Routes>
+          <Route path="/books/:bookId/read" element={<ReadingExperiencePage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: "Livro Externo" })).toBeInTheDocument();
+    expect(await screen.findByText("Open Library externo")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Leitura fora do app" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Continuar na Open Library" })).toHaveAttribute(
+      "href",
+      "https://openlibrary.org/books/OL1M/Livro_Externo"
+    );
+
+    await user.click(screen.getByRole("button", { name: "Salvar página atual" }));
+
+    await waitFor(() =>
+      expect(vi.mocked(api.post)).toHaveBeenCalledWith(
+        "/api/v1/readings",
+        { bookId: "book-open", currentPage: 1 },
+        { headers: { Authorization: "Bearer test-token" } }
+      )
+    );
+  });
 });

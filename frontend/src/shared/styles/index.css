@@ -1426,6 +1426,14 @@ label {
   background: rgba(255, 255, 255, 0.09);
 }
 
+.reading-mode-stack {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  max-width: 100%;
+}
+
 .aura-badge-grid {
   margin-top: 1rem;
 }
@@ -2772,6 +2780,72 @@ textarea:focus-visible {
   display: block;
 }
 
+.reader-panel {
+  display: grid;
+  gap: 0.95rem;
+  min-width: 0;
+}
+
+.reader-panel .section-head {
+  align-items: flex-start;
+}
+
+.reader-source-badge {
+  border-color: color-mix(in srgb, var(--primary-b) 42%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary-b) 20%, var(--card-bg)), color-mix(in srgb, var(--accent-violet) 12%, var(--card-bg)));
+  color: var(--text-main);
+  white-space: normal;
+}
+
+.reader-source-badge--local {
+  border-color: color-mix(in srgb, var(--success) 46%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--success) 20%, var(--card-bg)), color-mix(in srgb, var(--primary-b) 8%, var(--card-bg)));
+}
+
+.reader-source-badge--external {
+  border-color: color-mix(in srgb, var(--gold) 46%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--gold) 18%, var(--card-bg)), color-mix(in srgb, var(--accent-violet) 8%, var(--card-bg)));
+}
+
+.reader-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--card-border) 76%, transparent);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 86%, transparent), color-mix(in srgb, var(--primary-b) 6%, transparent));
+}
+
+.reader-toolbar > * {
+  min-width: 0;
+}
+
+.reader-frame-wrap {
+  margin-top: 0;
+  box-shadow: 0 18px 42px color-mix(in srgb, #000 24%, transparent);
+}
+
+.reader-unavailable {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--card-border));
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 96% 0%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 30%),
+    color-mix(in srgb, var(--card-bg) 88%, transparent);
+}
+
+.reader-unavailable h4 {
+  margin: 0;
+}
+
 .external-reading-panel {
   margin: 0.25rem 0 1rem;
   padding: 1rem;
@@ -3611,6 +3685,19 @@ body[data-theme="day"] .login-form {
   .external-reading-panel__head {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .reading-mode-stack {
+    justify-content: flex-start;
+  }
+
+  .reader-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .reader-toolbar > * {
+    width: 100%;
   }
 }
 
