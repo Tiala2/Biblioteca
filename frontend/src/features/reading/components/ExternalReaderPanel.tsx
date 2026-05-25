@@ -1,4 +1,5 @@
 import type { BookDetail } from "../types";
+import { ExternalLink, LoaderCircle, Save, Waypoints } from "lucide-react";
 
 type ExternalReaderPanelProps = {
   book: BookDetail;
@@ -32,6 +33,11 @@ export function ExternalReaderPanel({
       : hasEmbeddedReader
         ? "Fonte integrada"
         : "Fonte externa";
+  const readerStatusLabel = externalReaderLoading
+    ? "Buscando leitor autorizado"
+    : hasEmbeddedReader
+      ? "Leitor disponível no app"
+      : "Leitura autorizada em nova aba";
 
   return (
     <article className="card reader-panel reader-panel--external">
@@ -54,7 +60,15 @@ export function ExternalReaderPanel({
             <p className="eyebrow">Leitura externa guiada</p>
             <h4>Continue a leitura sem perder seu progresso</h4>
           </div>
-          <span className="external-source-pill">{sourceLabel}</span>
+          <span className="external-source-pill">
+            <Waypoints aria-hidden="true" />
+            {sourceLabel}
+          </span>
+        </div>
+
+        <div className="reader-status-line" role="status">
+          {externalReaderLoading ? <LoaderCircle aria-hidden="true" className="spin-icon" /> : <ExternalLink aria-hidden="true" />}
+          <span>{readerStatusLabel}</span>
         </div>
 
         <p className="section-sub">
@@ -80,16 +94,23 @@ export function ExternalReaderPanel({
         {externalReaderFallbackUrl ? (
           <div className="card-actions external-reading-actions">
             <a className="btn-link external-reading-primary" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
+              <ExternalLink aria-hidden="true" />
               {externalSourceActionLabel}
             </a>
             <button type="button" className="btn-muted" onClick={onSyncReading} disabled={saving}>
+              <Save aria-hidden="true" />
               {saving ? "Salvando..." : "Salvar página atual"}
             </button>
           </div>
         ) : null}
       </div>
 
-      {externalReaderLoading ? <p className="section-sub">Preparando leitor online...</p> : null}
+      {externalReaderLoading ? (
+        <div className="reader-loading-state" role="status">
+          <LoaderCircle aria-hidden="true" className="spin-icon" />
+          <span>Preparando leitor online...</span>
+        </div>
+      ) : null}
 
       {!externalReaderLoading && externalReaderEmbedUrl ? (
         <div className="external-reader-wrap reader-frame-wrap">

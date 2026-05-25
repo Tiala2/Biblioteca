@@ -1,3 +1,5 @@
+import { Download, ExternalLink, Save } from "lucide-react";
+
 type InternalPdfReaderPanelProps = {
   bookTitle: string;
   internalPdfUrl: string | null;
@@ -29,12 +31,15 @@ export function InternalPdfReaderPanel({
         <>
           <div className="reader-toolbar" aria-label="Ações do leitor interno">
             <button type="button" onClick={onSyncReading} disabled={saving}>
+              <Save aria-hidden="true" />
               {saving ? "Salvando..." : "Salvar página atual"}
             </button>
             <a className="btn-muted btn-link" href={internalPdfUrl} target="_blank" rel="noreferrer">
+              <ExternalLink aria-hidden="true" />
               Abrir em nova aba
             </a>
             <a className="btn-muted btn-link" href={`${internalPdfUrl}?download=true`}>
+              <Download aria-hidden="true" />
               Baixar PDF
             </a>
           </div>

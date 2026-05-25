@@ -1,3 +1,5 @@
+import { Save } from "lucide-react";
+
 type ManualReaderPanelProps = {
   bookTitle: string;
   saving: boolean;
@@ -29,6 +31,7 @@ export function ManualReaderPanel({ bookTitle, saving, onSyncReading }: ManualRe
 
       <div className="reader-toolbar" aria-label="Ações da leitura manual">
         <button type="button" onClick={onSyncReading} disabled={saving}>
+          <Save aria-hidden="true" />
           {saving ? "Salvando..." : "Salvar página atual"}
         </button>
       </div>

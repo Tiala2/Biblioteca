@@ -2889,7 +2889,16 @@ textarea:focus-visible {
 }
 
 .reader-toolbar > * {
+  flex: 1 1 180px;
   min-width: 0;
+  max-width: 100%;
+}
+
+.reader-toolbar svg,
+.external-reading-actions svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
 }
 
 .reader-frame-wrap {
@@ -2937,6 +2946,7 @@ textarea:focus-visible {
 .external-source-pill {
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
   justify-content: center;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
@@ -2946,6 +2956,43 @@ textarea:focus-visible {
   background: color-mix(in srgb, var(--primary-b) 16%, var(--card-bg));
   border: 1px solid color-mix(in srgb, var(--primary-b) 24%, transparent);
   white-space: nowrap;
+}
+
+.external-source-pill svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
+.reader-status-line,
+.reader-loading-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 36px;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary-b) 24%, transparent);
+  background: color-mix(in srgb, var(--primary-b) 10%, var(--card-bg));
+  color: var(--text-main);
+  font-size: 0.84rem;
+  font-weight: 750;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.reader-status-line svg,
+.reader-loading-state svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--primary-b);
+}
+
+.spin-icon {
+  animation: spin 900ms linear infinite;
 }
 
 .external-reading-steps {
@@ -2983,6 +3030,11 @@ textarea:focus-visible {
 
 .external-reading-primary {
   box-shadow: 0 14px 28px color-mix(in srgb, var(--primary-b) 24%, transparent);
+}
+
+.external-reading-actions > * {
+  flex: 1 1 190px;
+  max-width: 100%;
 }
 
 .flashcards {
@@ -3188,6 +3240,12 @@ body[data-theme="day"] .login-form {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

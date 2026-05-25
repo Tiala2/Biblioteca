@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { BookDetail } from "../types";
+import { humanizeNarrativeText } from "../lib/readingPresentation";
 
 type ReadingHeroPanelProps = {
   book: BookDetail;
@@ -81,7 +82,11 @@ export function ReadingHeroPanel({
         </div>
       </div>
 
-      <p className="quote">{plotState ?? "Acompanhe sua narrativa por trecho lido."}</p>
+      <p className="quote">
+        {plotState
+          ? `No trecho atual: ${humanizeNarrativeText(plotState)}`
+          : "Acompanhe sua narrativa por trecho lido."}
+      </p>
 
       <div className="card-actions">
         <button type="button" onClick={onSyncReading} disabled={saving}>

@@ -1,4 +1,4 @@
-import { formatDateLabel } from "../lib/readingPresentation";
+import { formatDateLabel, humanizeNarrativeText } from "../lib/readingPresentation";
 import type { HomeReading, NarrativeInsight, ReadingSyncResponse } from "../types";
 
 type ReadingProgressPanelProps = {
@@ -118,7 +118,10 @@ export function ReadingProgressPanel({
       </div>
 
       <p className="section-sub">
-        Trecho atual: {insight?.beatTitle ?? "A curadoria narrativa ainda não chegou a esta página."}
+        Trecho atual:{" "}
+        {insight?.beatTitle
+          ? humanizeNarrativeText(insight.beatTitle)
+          : "A curadoria narrativa ainda não chegou a esta página."}
       </p>
     </article>
   );
