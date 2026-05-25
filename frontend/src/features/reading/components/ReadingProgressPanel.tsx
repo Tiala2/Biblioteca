@@ -62,7 +62,15 @@ export function ReadingProgressPanel({
         </div>
       </div>
 
-      <div className="progress-track aura-progress" aria-hidden="true">
+      <div
+        className="progress-track aura-progress"
+        role="progressbar"
+        aria-label="Progresso de leitura"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={progressPercent}
+        aria-valuetext={`${progressPercent}% concluído`}
+      >
         <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
       </div>
 
@@ -75,6 +83,7 @@ export function ReadingProgressPanel({
             min={1}
             max={totalPages}
             value={currentPage}
+            aria-valuetext={`Página ${currentPage} de ${totalPages}`}
             onChange={(event) => onUpdateCurrentPage(Number(event.target.value))}
           />
         </div>
@@ -87,6 +96,7 @@ export function ReadingProgressPanel({
             min={1}
             max={totalPages}
             value={currentPage}
+            aria-label={`Página atual de ${totalPages}`}
             onChange={(event) => onUpdateCurrentPage(Number(event.target.value))}
           />
         </div>

@@ -104,6 +104,7 @@ describe("ReadingExperiencePage", () => {
 
     expect(await screen.findByRole("heading", { name: "Livro de Leitura" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Painel de progresso" })).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Progresso de leitura" })).toHaveAttribute("aria-valuenow", "20");
 
     await user.click(screen.getByRole("button", { name: "Salvar progresso" }));
 
