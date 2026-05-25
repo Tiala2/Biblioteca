@@ -35,6 +35,12 @@ public class OpenLibraryClient {
     @Value("${app.integrations.open-library.timeout-ms:10000}")
     private int timeoutMs;
 
+    @Value("${app.integrations.open-library.retry-attempts:2}")
+    private int retryAttempts;
+
+    @Value("${app.integrations.open-library.retry-backoff-ms:350}")
+    private long retryBackoffMs;
+
     @Value("${app.integrations.open-library.archive-base-url:https://archive.org}")
     private String archiveBaseUrl;
 
@@ -124,7 +130,7 @@ public class OpenLibraryClient {
                 .build();
 
         try {
-            HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            HttpResponse<byte[]> response = sendWithRetry(request, HttpResponse.BodyHandlers.ofByteArray(), "download external file");
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 throw new IllegalStateException("Download failed: HTTP " + response.statusCode());
             }
@@ -138,10 +144,10 @@ public class OpenLibraryClient {
 
             String contentType = response.headers().firstValue("Content-Type").orElse("application/pdf");
             return new DownloadedBinary(bytes, contentType);
-        } catch (IOException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Failed to download external file", e);
+        } catch (IOException e) {
             throw new IllegalStateException("Failed to download external file", e);
         }
     }
@@ -214,16 +220,68 @@ public class OpenLibraryClient {
                 .build();
 
         try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = sendWithRetry(request, HttpResponse.BodyHandlers.ofString(), "call Open Library API");
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 throw new IllegalStateException("Open Library request failed: HTTP " + response.statusCode());
             }
             return objectMapper.readValue(response.body(), responseType);
-        } catch (IOException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new IllegalStateException("Failed to call Open Library API", e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to call Open Library API", e);
+        }
+    }
+
+    private <T> HttpResponse<T> sendWithRetry(HttpRequest request,
+                                              HttpResponse.BodyHandler<T> bodyHandler,
+                                              String operation)
+            throws IOException, InterruptedException {
+        int attempts = Math.max(1, retryAttempts + 1);
+        IOException lastIOException = null;
+        HttpResponse<T> lastResponse = null;
+
+        for (int attempt = 1; attempt <= attempts; attempt++) {
+            try {
+                HttpResponse<T> response = httpClient.send(request, bodyHandler);
+                if (!isRetryableStatus(response.statusCode()) || attempt == attempts) {
+                    return response;
+                }
+                lastResponse = response;
+                log.debug("Temporary Open Library failure while trying to {}: HTTP {} on attempt {}/{}",
+                        operation,
+                        response.statusCode(),
+                        attempt,
+                        attempts);
+            } catch (IOException ex) {
+                lastIOException = ex;
+                if (attempt == attempts) {
+                    throw ex;
+                }
+                log.debug("Temporary Open Library I/O failure while trying to {} on attempt {}/{}: {}",
+                        operation,
+                        attempt,
+                        attempts,
+                        ex.getMessage());
+            }
+
+            sleepBeforeRetry(attempt);
+        }
+
+        if (lastIOException != null) {
+            throw lastIOException;
+        }
+        return lastResponse;
+    }
+
+    private boolean isRetryableStatus(int statusCode) {
+        return statusCode == 429 || statusCode >= 500;
+    }
+
+    private void sleepBeforeRetry(int attempt) throws InterruptedException {
+        long waitMs = Math.max(0, retryBackoffMs) * attempt;
+        if (waitMs > 0) {
+            Thread.sleep(waitMs);
         }
     }
 
