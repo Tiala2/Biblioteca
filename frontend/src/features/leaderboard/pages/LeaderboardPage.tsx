@@ -176,14 +176,29 @@ export function LeaderboardPage() {
             Livros concluídos
           </button>
         </div>
-        <div className="card-actions">
-          <button type="button" className={limit === 10 ? "btn-muted active" : "btn-muted"} onClick={() => changeLimit(10)}>
+        <div className="card-actions" role="group" aria-label="Quantidade de participantes exibidos">
+          <button
+            type="button"
+            className={limit === 10 ? "btn-muted active" : "btn-muted"}
+            aria-pressed={limit === 10}
+            onClick={() => changeLimit(10)}
+          >
             Top 10
           </button>
-          <button type="button" className={limit === 20 ? "btn-muted active" : "btn-muted"} onClick={() => changeLimit(20)}>
+          <button
+            type="button"
+            className={limit === 20 ? "btn-muted active" : "btn-muted"}
+            aria-pressed={limit === 20}
+            onClick={() => changeLimit(20)}
+          >
             Top 20
           </button>
-          <button type="button" className={limit === 50 ? "btn-muted active" : "btn-muted"} onClick={() => changeLimit(50)}>
+          <button
+            type="button"
+            className={limit === 50 ? "btn-muted active" : "btn-muted"}
+            aria-pressed={limit === 50}
+            onClick={() => changeLimit(50)}
+          >
             Top 50
           </button>
         </div>
