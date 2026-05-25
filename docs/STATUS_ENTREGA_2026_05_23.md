@@ -8,7 +8,7 @@
 
 ## Validacao automatizada recente
 
-Registrada em `docs/VALIDACAO_FINAL_2026_05_23.md`.
+Registrada em `docs/VALIDACAO_FINAL_2026_05_24.md`.
 
 Resumo:
 

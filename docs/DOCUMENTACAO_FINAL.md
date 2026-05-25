@@ -126,7 +126,7 @@ Cobertura de integracao inclui:
 - `docs/APRESENTACAO_COMPUTADOR_TIALA.md`
 - `docs/PLANO_RETA_FINAL.md`
 - `docs/ROTEIRO_APRESENTACAO.md`
-- `docs/VALIDACAO_FINAL_2026_05_23.md`
+- `docs/VALIDACAO_FINAL_2026_05_24.md`
 - `docs/STATUS_ENTREGA_2026_05_23.md`
 - `docs/RESUMO_PARA_COLEGA.md`
 - `docs/GUIA_MERGE_MAIN.md`

@@ -1,6 +1,6 @@
 # Checklist De Validacao Autenticada
 
-Use este checklist com backend, banco e frontend rodando. Ele complementa a checagem automatizada de 2026-05-23.
+Use este checklist com backend, banco e frontend rodando. Ele complementa a checagem automatizada de 2026-05-24.
 
 ## Preparacao
 
@@ -52,7 +52,7 @@ Use este checklist com backend, banco e frontend rodando. Ele complementa a chec
 - Print das avaliacoes.
 - Print das metas/conquistas/ranking.
 - Print do painel admin.
-- Resultado do comando de validacao final em `docs/VALIDACAO_FINAL_2026_05_23.md`.
+- Resultado do comando de validacao final em `docs/VALIDACAO_FINAL_2026_05_24.md`.
 
 ## Criterio de fechamento
 
