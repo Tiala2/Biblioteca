@@ -20,6 +20,8 @@ public interface BookRepository {
 
     Optional<Book> findByIsbn(String isbn);
 
+    Optional<Book> findOpenLibraryBookByTitle(String title);
+
     List<Book> findByIds(Iterable<UUID> ids);
 
     boolean existsBookByIsbn(String isbn);

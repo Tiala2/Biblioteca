@@ -18,6 +18,18 @@ public interface BookJpaRepository extends JpaRepository<Book, UUID> {
 
     java.util.Optional<Book> findByIsbn(String isbn);
 
+    @Query(value = """
+            SELECT *
+            FROM books b
+            WHERE b.source = 'OPEN'
+              AND LOWER(TRIM(b.title)) = LOWER(TRIM(:title))
+            ORDER BY
+              CASE WHEN b.number_of_pages >= 10 THEN 0 ELSE 1 END,
+              b.last_seen_at DESC NULLS LAST
+            LIMIT 1
+            """, nativeQuery = true)
+    java.util.Optional<Book> findOpenLibraryBookByTitle(@Param("title") String title);
+
     List<Book> findByIdIn(Iterable<UUID> ids);
 
     Page<Book> findBooksByAvailableTrueAndHasPdfTrue(Pageable pageable);

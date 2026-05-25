@@ -64,16 +64,11 @@ public class BookService {
     public Book upsertOpenLibraryBook(String title, String author, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl) {
         LocalDateTime now = LocalDateTime.now();
         var existing = bookRepository.findByIsbn(isbn);
+        if (existing.isEmpty()) {
+            existing = bookRepository.findOpenLibraryBookByTitle(title);
+        }
         if (existing.isPresent()) {
-            Book book = existing.get();
-            book.setLastSeenAt(now);
-            if ((book.getAuthor() == null || book.getAuthor().isBlank()) && author != null && !author.isBlank()) {
-                book.setAuthor(author);
-            }
-            if ((book.getCoverUrl() == null || book.getCoverUrl().isBlank()) && coverUrl != null && !coverUrl.isBlank()) {
-                book.setCoverUrl(coverUrl);
-            }
-            return save(book);
+            return updateOpenLibraryMetadata(existing.get(), author, numberOfPages, coverUrl, now);
         }
 
         Book created = Book.builder()
@@ -89,6 +84,26 @@ public class BookService {
                 .categories(Set.of())
                 .build();
         return save(created);
+    }
+
+    private Book updateOpenLibraryMetadata(Book book,
+                                           String author,
+                                           Integer numberOfPages,
+                                           String coverUrl,
+                                           LocalDateTime lastSeenAt) {
+        book.setLastSeenAt(lastSeenAt);
+        if ((book.getAuthor() == null || book.getAuthor().isBlank()) && author != null && !author.isBlank()) {
+            book.setAuthor(author);
+        }
+        if ((book.getCoverUrl() == null || book.getCoverUrl().isBlank()) && coverUrl != null && !coverUrl.isBlank()) {
+            book.setCoverUrl(coverUrl);
+        }
+        if (book.getSource() == BookSource.OPEN
+                && isSuspiciousPageCount(book.getNumberOfPages())
+                && !isSuspiciousPageCount(numberOfPages)) {
+            book.setNumberOfPages(numberOfPages);
+        }
+        return save(book);
     }
 
     public void updateBook(UUID bookId, String title, String author, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl, Boolean available, Set<Category> categories) {
@@ -133,6 +148,10 @@ public class BookService {
         if (changed) {
             save(book);
         }
+    }
+
+    private boolean isSuspiciousPageCount(Integer numberOfPages) {
+        return numberOfPages == null || numberOfPages < 10;
     }
 
     private void validateISBNUnique(String isbn) {

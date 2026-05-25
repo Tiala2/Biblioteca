@@ -41,6 +41,11 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    public Optional<Book> findOpenLibraryBookByTitle(String title) {
+        return bookJpaRepository.findOpenLibraryBookByTitle(title);
+    }
+
+    @Override
     public List<Book> findByIds(Iterable<UUID> ids) {
         return bookJpaRepository.findByIdIn(ids);
     }
