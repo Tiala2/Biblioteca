@@ -50,7 +50,7 @@ public class BookImportUseCase {
                 docs = result.docs() == null ? List.of() : result.docs();
             } catch (Exception ex) {
                 failed++;
-                addMessage(messages, "Failed fetching Open Library page %d: %s".formatted(page, ex.getMessage()));
+                addMessage(messages, "Não foi possível consultar a página %d da Open Library. Tente novamente em instantes.".formatted(page));
                 continue;
             }
             if (docs.isEmpty()) {
@@ -65,20 +65,20 @@ public class BookImportUseCase {
                 try {
                     if (doc == null || isBlank(doc.title())) {
                         skipped++;
-                        addMessage(messages, "Skipped item without title");
+                        addMessage(messages, "Um item foi ignorado porque veio sem título.");
                         continue;
                     }
 
                     if (readableOnly && !openLibraryClient.hasEmbeddableReader(doc)) {
                         skipped++;
-                        addMessage(messages, "Skipped '%s': no embeddable reader".formatted(doc.title()));
+                        addMessage(messages, "Livro '%s' ignorado: não há leitor incorporável disponível.".formatted(doc.title()));
                         continue;
                     }
 
                     Optional<String> normalizedIsbn = extractIsbn13(doc.isbn());
                     if (normalizedIsbn.isEmpty()) {
                         skipped++;
-                        addMessage(messages, "Skipped '%s': no valid ISBN-13".formatted(doc.title()));
+                        addMessage(messages, "Livro '%s' ignorado: ISBN-13 não informado pela Open Library.".formatted(doc.title()));
                         continue;
                     }
 
@@ -108,9 +108,8 @@ public class BookImportUseCase {
                     skipped++;
                 } catch (Exception ex) {
                     failed++;
-                    addMessage(messages, "Failed importing '%s': %s".formatted(
-                            doc != null ? Objects.toString(doc.title(), "<no-title>") : "<null-doc>",
-                            ex.getMessage()));
+                    addMessage(messages, "Não foi possível importar '%s'. Verifique os dados do livro e tente novamente.".formatted(
+                            doc != null ? Objects.toString(doc.title(), "<sem-titulo>") : "<item-vazio>"));
                 }
             }
         }

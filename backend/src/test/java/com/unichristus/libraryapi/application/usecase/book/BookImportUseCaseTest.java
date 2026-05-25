@@ -85,7 +85,7 @@ class BookImportUseCaseTest {
         assertThat(response.fetched()).isEqualTo(1);
         assertThat(response.imported()).isEqualTo(1);
         assertThat(response.failed()).isEqualTo(1);
-        assertThat(response.messages()).anyMatch(message -> message.contains("Failed fetching Open Library page 2"));
+        assertThat(response.messages()).anyMatch(message -> message.contains("Não foi possível consultar a página 2 da Open Library"));
 
         verify(bookService).upsertOpenLibraryBook(
                 eq("Effective Java"),
@@ -151,6 +151,7 @@ class BookImportUseCaseTest {
         assertThat(response.fetched()).isEqualTo(2);
         assertThat(response.imported()).isEqualTo(1);
         assertThat(response.skipped()).isEqualTo(1);
+        assertThat(response.messages()).anyMatch(message -> message.contains("não há leitor incorporável disponível"));
         verify(openLibraryClient).searchReadable("subject:fiction", 1, 2);
         verify(openLibraryClient, never()).search("subject:fiction", 1, 2);
     }

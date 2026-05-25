@@ -63,12 +63,12 @@ describe("BookPanel", () => {
       imported: 80,
       skipped: 5,
       failed: 1,
-      messages: ["Failed fetching Open Library page 2: Failed to call Open Library API"],
+      messages: ["Não foi possível consultar a página 2 da Open Library. Tente novamente em instantes."],
     });
 
     expect(screen.getByRole("heading", { name: "Importação parcial" })).toBeInTheDocument();
     expect(screen.getByText("80")).toBeInTheDocument();
     expect(screen.getByText("importados")).toBeInTheDocument();
-    expect(screen.getByText("Failed fetching Open Library page 2: Failed to call Open Library API")).toBeInTheDocument();
+    expect(screen.getByText("Não foi possível consultar a página 2 da Open Library. Tente novamente em instantes.")).toBeInTheDocument();
   });
 });
