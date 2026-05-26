@@ -4,6 +4,8 @@ set -euo pipefail
 api_url="${API_URL:-http://localhost:8080}"
 email="${ADMIN_EMAIL:-}"
 password="${ADMIN_PASSWORD:-}"
+query="fiction"
+pages=10
 target_count=10
 
 usage() {
@@ -14,6 +16,8 @@ Options:
   --api-url URL        API base URL. Default: http://localhost:8080
   --email EMAIL        Admin email. Can also use ADMIN_EMAIL.
   --password PASSWORD  Admin password. Can also use ADMIN_PASSWORD.
+  --query QUERY        Gutendex/Gutenberg search. Default: fiction
+  --pages NUMBER       Gutendex pages to scan. Default: 10
   --target-count NUM   Target imported books. Default: 10
   -h, --help           Show this help.
 EOF
@@ -31,6 +35,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --password)
       password="${2:-}"
+      shift 2
+      ;;
+    --query)
+      query="${2:-}"
+      shift 2
+      ;;
+    --pages)
+      pages="${2:-}"
       shift 2
       ;;
     --target-count)
@@ -72,6 +84,7 @@ api_url="${api_url%/}"
 
 echo "== Project Gutenberg internal reader import =="
 echo "API: $api_url"
+echo "Query: $query"
 echo "Target: $target_count book(s) with internal reading"
 
 login_body="$(
@@ -108,13 +121,13 @@ print(token)
 )"
 
 import_body="$(
-  TARGET_COUNT="$target_count" python3 - <<'PY'
+  QUERY="$query" PAGES="$pages" TARGET_COUNT="$target_count" python3 - <<'PY'
 import json
 import os
 
 print(json.dumps({
-    "query": "project-gutenberg-curated",
-    "pages": 1,
+    "query": os.environ["QUERY"],
+    "pages": int(os.environ["PAGES"]),
     "pageSize": 100,
     "readableOnly": True,
     "targetImportCount": int(os.environ["TARGET_COUNT"]),

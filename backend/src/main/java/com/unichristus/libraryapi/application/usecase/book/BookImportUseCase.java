@@ -129,15 +129,19 @@ public class BookImportUseCase {
         int skipped = 0;
         int failed = 0;
         List<String> messages = new ArrayList<>();
-        int targetImportCount = Math.min(request.resolvedTargetImportCount(), gutenbergClient.curatedBooks().size());
+        int targetImportCount = request.resolvedTargetImportCount();
+        List<GutenbergClient.GutenbergBook> candidates = gutenbergClient.searchReadableBooks(
+                request.query(),
+                request.pages(),
+                targetImportCount);
 
-        for (GutenbergClient.GutenbergBook candidate : gutenbergClient.curatedBooks()) {
+        for (GutenbergClient.GutenbergBook candidate : candidates) {
             if (imported >= targetImportCount) {
                 break;
             }
             fetched++;
             try {
-                String text = gutenbergClient.downloadPlainText(candidate.id());
+                String text = gutenbergClient.downloadPlainText(candidate.textUrl(), candidate.id());
                 if (text.isBlank()) {
                     skipped++;
                     addMessage(messages, "Livro '%s' ignorado: texto nao encontrado no Project Gutenberg.".formatted(candidate.title()));

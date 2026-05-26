@@ -9,6 +9,12 @@ param(
   [string]$Password = $env:ADMIN_PASSWORD,
 
   [Parameter(Mandatory = $false)]
+  [string]$Query = "fiction",
+
+  [Parameter(Mandatory = $false)]
+  [int]$Pages = 10,
+
+  [Parameter(Mandatory = $false)]
   [int]$TargetCount = 10
 )
 
@@ -28,6 +34,7 @@ $ApiUrl = $ApiUrl.TrimEnd("/")
 
 Write-Host "== Project Gutenberg internal reader import ==" -ForegroundColor Cyan
 Write-Host "API: $ApiUrl"
+Write-Host "Query: $Query"
 Write-Host "Target: $TargetCount book(s) with internal reading"
 
 $loginBody = @{
@@ -46,8 +53,8 @@ $headers = @{
 }
 
 $importBody = @{
-  query = "project-gutenberg-curated"
-  pages = 1
+  query = $Query
+  pages = $Pages
   pageSize = 100
   readableOnly = $true
   targetImportCount = $TargetCount

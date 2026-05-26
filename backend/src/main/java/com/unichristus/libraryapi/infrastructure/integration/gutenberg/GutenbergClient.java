@@ -1,5 +1,7 @@
 package com.unichristus.libraryapi.infrastructure.integration.gutenberg;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +10,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class GutenbergClient {
@@ -32,15 +37,65 @@ public class GutenbergClient {
     );
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final ObjectMapper objectMapper;
+
+    public GutenbergClient(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Value("${app.integrations.gutenberg.base-url:https://www.gutenberg.org}")
     private String baseUrl;
 
+    @Value("${app.integrations.gutendex.base-url:https://gutendex.com}")
+    private String gutendexBaseUrl;
+
     @Value("${app.integrations.gutenberg.timeout-ms:15000}")
     private int timeoutMs;
 
+    @Value("${app.integrations.gutendex.timeout-ms:120000}")
+    private int gutendexTimeoutMs;
+
     public List<GutenbergBook> curatedBooks() {
         return CURATED_BOOKS;
+    }
+
+    public List<GutenbergBook> searchReadableBooks(String query, int pages, int targetCount) {
+        List<GutenbergBook> books = new ArrayList<>();
+        String normalizedQuery = query == null || query.isBlank() || query.equals("project-gutenberg-curated")
+                ? "fiction"
+                : query.trim();
+
+        for (int page = 1; page <= pages && books.size() < targetCount; page++) {
+            try {
+                URI uri = URI.create("%s/books/?languages=en&topic=%s&page=%d"
+                        .formatted(gutendexBaseUrl, urlEncode(normalizedQuery), page));
+                HttpRequest request = HttpRequest.newBuilder(uri)
+                        .timeout(Duration.ofMillis(gutendexTimeoutMs))
+                        .GET()
+                        .build();
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                    break;
+                }
+
+                JsonNode results = objectMapper.readTree(response.body()).path("results");
+                if (!results.isArray() || results.isEmpty()) {
+                    break;
+                }
+
+                for (JsonNode node : results) {
+                    Optional<GutenbergBook> maybeBook = toBook(node);
+                    maybeBook.ifPresent(books::add);
+                    if (books.size() >= targetCount) {
+                        break;
+                    }
+                }
+            } catch (Exception ex) {
+                break;
+            }
+        }
+
+        return books.isEmpty() ? curatedBooks().stream().limit(targetCount).toList() : books;
     }
 
     public String downloadPlainText(int gutenbergId) {
@@ -68,6 +123,81 @@ public class GutenbergClient {
         throw lastError != null ? lastError : new IllegalStateException("Texto do Project Gutenberg nao encontrado.");
     }
 
+    public String downloadPlainText(String url, int fallbackGutenbergId) {
+        if (url != null && !url.isBlank()) {
+            try {
+                HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+                        .timeout(Duration.ofMillis(timeoutMs))
+                        .GET()
+                        .build();
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() >= 200 && response.statusCode() < 300 && response.body() != null && !response.body().isBlank()) {
+                    return cleanGutenbergText(response.body());
+                }
+            } catch (Exception ignored) {
+                // Falls back to standard Project Gutenberg file patterns.
+            }
+        }
+        return downloadPlainText(fallbackGutenbergId);
+    }
+
+    private Optional<GutenbergBook> toBook(JsonNode node) {
+        int id = node.path("id").asInt(0);
+        String title = node.path("title").asText("");
+        String author = firstAuthor(node.path("authors"));
+        String textUrl = formatUrl(node.path("formats"), "text/plain");
+        if (id <= 0 || title.isBlank() || textUrl == null || textUrl.isBlank()) {
+            return Optional.empty();
+        }
+
+        int year = firstYear(node.path("authors"));
+        String coverUrl = formatUrl(node.path("formats"), "image/jpeg");
+        int pages = estimatePages(node.path("summaries").isArray() ? node.path("summaries").path(0).asText("") : title);
+        return Optional.of(new GutenbergBook(id, title, author, pages, year, coverUrl, textUrl));
+    }
+
+    private String firstAuthor(JsonNode authors) {
+        if (!authors.isArray() || authors.isEmpty()) {
+            return "Autor nao informado";
+        }
+        String name = authors.path(0).path("name").asText("");
+        return name.isBlank() ? "Autor nao informado" : name;
+    }
+
+    private int firstYear(JsonNode authors) {
+        if (!authors.isArray() || authors.isEmpty()) {
+            return 1900;
+        }
+        int year = authors.path(0).path("birth_year").asInt(0);
+        return year > 0 ? year : 1900;
+    }
+
+    private String formatUrl(JsonNode formats, String prefix) {
+        if (!formats.isObject()) {
+            return null;
+        }
+        var fields = formats.fields();
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> field = fields.next();
+            if (field.getKey().startsWith(prefix)) {
+                String url = field.getValue().asText("");
+                if (!url.isBlank()) {
+                    return url;
+                }
+            }
+        }
+        return null;
+    }
+
+    private int estimatePages(String value) {
+        int words = value == null || value.isBlank() ? 45_000 : Math.max(12_000, value.split("\\s+").length * 8);
+        return Math.max(40, Math.min(650, words / 260));
+    }
+
+    private String urlEncode(String value) {
+        return java.net.URLEncoder.encode(value, java.nio.charset.StandardCharsets.UTF_8);
+    }
+
     private String cleanGutenbergText(String rawText) {
         String text = rawText.replace("\r\n", "\n").replace('\r', '\n');
         int start = text.indexOf("*** START");
@@ -84,6 +214,9 @@ public class GutenbergClient {
         return text.trim();
     }
 
-    public record GutenbergBook(int id, String title, String author, int pages, int year, String coverUrl) {
+    public record GutenbergBook(int id, String title, String author, int pages, int year, String coverUrl, String textUrl) {
+        public GutenbergBook(int id, String title, String author, int pages, int year, String coverUrl) {
+            this(id, title, author, pages, year, coverUrl, null);
+        }
     }
 }

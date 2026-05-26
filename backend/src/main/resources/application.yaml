@@ -71,3 +71,9 @@ app:
       archive-base-url: ${OPEN_LIBRARY_ARCHIVE_BASE_URL:https://archive.org}
       timeout-ms: ${OPEN_LIBRARY_TIMEOUT_MS:10000}
       max-download-bytes: ${OPEN_LIBRARY_MAX_DOWNLOAD_BYTES:52428800}
+    gutenberg:
+      base-url: ${GUTENBERG_BASE_URL:https://www.gutenberg.org}
+      timeout-ms: ${GUTENBERG_TIMEOUT_MS:15000}
+    gutendex:
+      base-url: ${GUTENDEX_BASE_URL:https://gutendex.com}
+      timeout-ms: ${GUTENDEX_TIMEOUT_MS:120000}

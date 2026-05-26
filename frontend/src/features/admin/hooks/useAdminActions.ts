@@ -307,8 +307,8 @@ export function useAdminActions({
       const response = await api.post<ImportResult>(
         "/api/admin/books/import/gutenberg",
         {
-          query: "project-gutenberg-curated",
-          pages: 1,
+          query: importQuery.trim() || "fiction",
+          pages: Number(importPages),
           pageSize: Number(importPageSize),
           readableOnly: true,
           targetImportCount: Number(importTargetCount),
