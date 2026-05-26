@@ -6,11 +6,15 @@ import com.unichristus.libraryapi.application.dto.response.ExternalBooksImportRe
 import com.unichristus.libraryapi.domain.book.exception.BookIsbnConflict;
 import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.book.BookService;
+import com.unichristus.libraryapi.domain.book.BookSource;
+import com.unichristus.libraryapi.infrastructure.integration.gutenberg.GutenbergClient;
 import com.unichristus.libraryapi.infrastructure.integration.openlibrary.OpenLibraryClient;
+import com.unichristus.libraryapi.infrastructure.pdf.TextPdfRenderer;
 import com.unichristus.libraryapi.infrastructure.storage.MinioFileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +29,8 @@ public class BookImportUseCase {
     private static final int MESSAGE_LIMIT = 40;
 
     private final OpenLibraryClient openLibraryClient;
+    private final GutenbergClient gutenbergClient;
+    private final TextPdfRenderer textPdfRenderer;
     private final BookService bookService;
     private final MinioFileStorageService minioFileStorageService;
 
@@ -117,6 +123,54 @@ public class BookImportUseCase {
         return new ExternalBooksImportResponse(fetched, imported, skipped, failed, messages);
     }
 
+    public ExternalBooksImportResponse importFromGutenberg(ExternalBooksImportRequest request) {
+        int fetched = 0;
+        int imported = 0;
+        int skipped = 0;
+        int failed = 0;
+        List<String> messages = new ArrayList<>();
+        int targetImportCount = Math.min(request.resolvedTargetImportCount(), gutenbergClient.curatedBooks().size());
+
+        for (GutenbergClient.GutenbergBook candidate : gutenbergClient.curatedBooks()) {
+            if (imported >= targetImportCount) {
+                break;
+            }
+            fetched++;
+            try {
+                String text = gutenbergClient.downloadPlainText(candidate.id());
+                if (text.isBlank()) {
+                    skipped++;
+                    addMessage(messages, "Livro '%s' ignorado: texto nao encontrado no Project Gutenberg.".formatted(candidate.title()));
+                    continue;
+                }
+
+                Book book = bookService.upsertGutenbergBook(
+                        candidate.title(),
+                        candidate.author(),
+                        gutenbergIsbn(candidate.id()),
+                        candidate.pages(),
+                        LocalDate.of(candidate.year(), 1, 1),
+                        candidate.coverUrl());
+
+                byte[] pdf = textPdfRenderer.render(book.getTitle(), book.getAuthor(), text);
+                minioFileStorageService.uploadPdf(pdf, book.getId().toString(), "application/pdf");
+                book.setHasPdf(true);
+                book.setSource(BookSource.GUTENBERG);
+                bookService.save(book);
+
+                imported++;
+                addMessage(messages, "Livro '%s' importado com leitura interna.".formatted(book.getTitle()));
+            } catch (BookIsbnConflict conflict) {
+                skipped++;
+            } catch (Exception ex) {
+                failed++;
+                addMessage(messages, "Nao foi possivel importar '%s' do Project Gutenberg.".formatted(candidate.title()));
+            }
+        }
+
+        return new ExternalBooksImportResponse(fetched, imported, skipped, failed, messages);
+    }
+
     private Optional<String> extractIsbn13(List<String> isbns) {
         if (isbns == null || isbns.isEmpty()) {
             return Optional.empty();
@@ -170,5 +224,9 @@ public class BookImportUseCase {
                 .filter(name -> !name.isBlank())
                 .findFirst()
                 .orElse("Autor não informado");
+    }
+
+    private String gutenbergIsbn(int gutenbergId) {
+        return "9789" + "%09d".formatted(gutenbergId);
     }
 }

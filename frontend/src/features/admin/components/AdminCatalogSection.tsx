@@ -41,6 +41,7 @@ type AdminCatalogSectionProps = {
   onSubmitUpload: (event: FormEvent) => Promise<void>;
   onSubmitCover: (event: FormEvent) => Promise<void>;
   onSubmitImport: (event: FormEvent) => Promise<void>;
+  onSubmitGutenbergImport: () => Promise<void>;
   onBookFormChange: (updater: (previous: BookForm) => BookForm) => void;
   onResetBook: () => void;
   onEditBook: (book: Book) => void;
@@ -95,6 +96,7 @@ export function AdminCatalogSection({
   onSubmitUpload,
   onSubmitCover,
   onSubmitImport,
+  onSubmitGutenbergImport,
   onBookFormChange,
   onResetBook,
   onEditBook,
@@ -151,6 +153,7 @@ export function AdminCatalogSection({
         onSubmitUpload={onSubmitUpload}
         onSubmitCover={onSubmitCover}
         onSubmitImport={onSubmitImport}
+        onSubmitGutenbergImport={onSubmitGutenbergImport}
         onFormChange={onBookFormChange}
         onReset={onResetBook}
         onEdit={onEditBook}

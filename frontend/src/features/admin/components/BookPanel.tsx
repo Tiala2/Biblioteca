@@ -66,6 +66,7 @@ type BookPanelProps = {
   onSubmitUpload: (event: FormEvent) => Promise<void>;
   onSubmitCover: (event: FormEvent) => Promise<void>;
   onSubmitImport: (event: FormEvent) => Promise<void>;
+  onSubmitGutenbergImport: () => Promise<void>;
   onFormChange: (updater: (previous: BookForm) => BookForm) => void;
   onReset: () => void;
   onEdit: (book: Book) => void;
@@ -100,6 +101,7 @@ export function BookPanel({
   onSubmitUpload,
   onSubmitCover,
   onSubmitImport,
+  onSubmitGutenbergImport,
   onFormChange,
   onReset,
   onEdit,
@@ -289,8 +291,8 @@ export function BookPanel({
         <div className="admin-form-title">
           <LibraryBig aria-hidden="true" />
           <div>
-            <strong>Importação Open Library</strong>
-            <span>Traga livros legíveis sem cadastrar item por item.</span>
+            <strong>Importação de acervo externo</strong>
+            <span>Use Open Library para catálogo e Gutenberg para leitura interna.</span>
           </div>
         </div>
         <label className="field-stack">
@@ -311,11 +313,15 @@ export function BookPanel({
         </label>
         <label className="check-inline">
           <input type="checkbox" checked={importReadableOnly} onChange={(event) => onImportReadableOnlyChange(event.target.checked)} />
-          Apenas livros com leitor no app
+          Apenas livros com leitor externo
         </label>
         <button type="submit" disabled={busyKey === "book-import"}>
           <LibraryBig aria-hidden="true" />
-          {busyKey === "book-import" ? "Importando..." : "Importar legíveis"}
+          {busyKey === "book-import" ? "Importando..." : "Importar Open Library"}
+        </button>
+        <button type="button" className="btn-muted" disabled={busyKey === "book-import-gutenberg"} onClick={() => void onSubmitGutenbergImport()}>
+          <BookPlus aria-hidden="true" />
+          {busyKey === "book-import-gutenberg" ? "Gerando PDFs..." : "Importar leitura interna"}
         </button>
       </form>
 

@@ -23,7 +23,7 @@ type BookDetails = {
   coverUrl?: string | null;
   hasPdf: boolean;
   hasNarrative?: boolean;
-  source?: "LOCAL" | "OPEN";
+  source?: "LOCAL" | "OPEN" | "GUTENBERG";
   averageRating?: number | null;
   totalReviews?: number | null;
   pdfUrl?: string | null;
@@ -130,7 +130,7 @@ export function BookDetailsPage() {
     return [
       { label: "Páginas", value: `${book.numberOfPages}` },
       { label: "Autor", value: book.author || "Autoria ainda não informada" },
-      { label: "Origem", value: book.source === "OPEN" ? "Open Library" : "Acervo interno" },
+      { label: "Origem", value: formatBookSource(book.source) },
       { label: "Dinâmica", value: book.hasNarrative ? "Disponível" : "Em breve" },
       { label: "ISBN", value: book.isbn || "ISBN não cadastrado" },
       {

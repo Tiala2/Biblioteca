@@ -6,7 +6,7 @@ export type BookDetail = {
   coverUrl?: string | null;
   numberOfPages: number;
   hasPdf: boolean;
-  source?: "LOCAL" | "OPEN";
+  source?: "LOCAL" | "OPEN" | "GUTENBERG";
 };
 
 export type NarrativeCharacter = {
@@ -85,7 +85,7 @@ export type CachedReaderLookup = {
 
 export type ExternalReaderLookup = {
   bookId: string;
-  source: "LOCAL" | "OPEN" | string;
+  source: "LOCAL" | "OPEN" | "GUTENBERG" | string;
   availableInsideApp: boolean;
   embedUrl: string | null;
   fallbackUrl: string | null;

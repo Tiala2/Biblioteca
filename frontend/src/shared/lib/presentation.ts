@@ -9,7 +9,9 @@ const READING_STATUS_LABELS: Record<string, string> = {
 };
 
 export function formatBookSource(source?: BookSource) {
-  return source === "OPEN" ? "Open Library" : "Acervo interno";
+  if (source === "GUTENBERG") return "Gutenberg";
+  if (source === "OPEN") return "Open Library";
+  return "Acervo interno";
 }
 
 export function formatReadingStatus(status?: string | null) {

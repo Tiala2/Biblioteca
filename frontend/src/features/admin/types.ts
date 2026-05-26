@@ -75,7 +75,7 @@ export type FavoriteAdmin = {
   bookTitle: string;
   bookIsbn?: string | null;
   coverUrl?: string | null;
-  source?: "LOCAL" | "OPEN";
+  source?: "LOCAL" | "OPEN" | "GUTENBERG";
   createdAt?: string | null;
 };
 

@@ -14,7 +14,7 @@ type HomeBook = {
   title: string;
   isbn?: string | null;
   coverUrl?: string | null;
-  source?: "LOCAL" | "OPEN";
+  source?: "LOCAL" | "OPEN" | "GUTENBERG";
   favorite?: boolean;
   numberOfPages?: number;
   averageRating?: number | null;

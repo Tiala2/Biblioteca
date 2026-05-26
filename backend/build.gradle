@@ -50,6 +50,7 @@ dependencies {
     // General
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     implementation 'io.minio:minio:8.5.10'
+    implementation 'org.apache.pdfbox:pdfbox:3.0.3'
 
     // AOP para interceptar métodos
     implementation 'org.springframework.boot:spring-boot-starter-aop'

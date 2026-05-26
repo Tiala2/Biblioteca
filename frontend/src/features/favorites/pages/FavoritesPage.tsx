@@ -15,12 +15,12 @@ type Favorite = {
   bookTitle: string;
   bookIsbn: string;
   coverUrl?: string | null;
-  source?: "LOCAL" | "OPEN";
+  source?: "LOCAL" | "OPEN" | "GUTENBERG";
   createdAt: string;
 };
 
 const getFavoriteSourceDescription = (source?: Favorite["source"]) =>
-  source === "OPEN" ? "Leitura externa com progresso manual" : "Leitura local no app";
+  source === "OPEN" ? "Leitura externa com progresso manual" : "Leitura no app";
 
 export function FavoritesPage() {
   const headers = useAuthHeaders();

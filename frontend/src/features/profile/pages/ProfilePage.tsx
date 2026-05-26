@@ -33,7 +33,7 @@ type HomeBook = {
   title: string;
   isbn?: string | null;
   coverUrl?: string | null;
-  source?: "LOCAL" | "OPEN";
+  source?: "LOCAL" | "OPEN" | "GUTENBERG";
 };
 
 type Reading = {

@@ -160,6 +160,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onSubmitUpload={actions.uploadPdf}
         onSubmitCover={actions.updateCover}
         onSubmitImport={actions.importBooks}
+        onSubmitGutenbergImport={actions.importGutenbergBooks}
         onBookFormChange={setBookForm}
         onResetBook={() => setBookForm(EMPTY_BOOK)}
         onEditBook={actions.fillBookFormFromBook}

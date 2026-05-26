@@ -299,6 +299,38 @@ export function useAdminActions({
     }
   };
 
+  const importGutenbergBooks = async (event?: FormEvent) => {
+    event?.preventDefault();
+    if (!headers) return;
+    setBusyKey("book-import-gutenberg");
+    try {
+      const response = await api.post<ImportResult>(
+        "/api/admin/books/import/gutenberg",
+        {
+          query: "project-gutenberg-curated",
+          pages: 1,
+          pageSize: Number(importPageSize),
+          readableOnly: true,
+          targetImportCount: Number(importTargetCount),
+        },
+        { headers }
+      );
+      setImportResult(response.data);
+      await reloadStaticData();
+      if (response.data.imported > 0 && response.data.failed > 0) {
+        showToast("Alguns clássicos entraram com leitura interna, mas parte da curadoria falhou.", "info");
+      } else if (response.data.failed > 0) {
+        showToast("Não foi possível importar os clássicos do Project Gutenberg agora.", "error");
+      } else {
+        showToast("Clássicos importados com leitura interna.", "success");
+      }
+    } catch {
+      showToast("Não foi possível importar clássicos do Project Gutenberg.", "error");
+    } finally {
+      setBusyKey(null);
+    }
+  };
+
   const fillBookFormFromBook = (book: Book) => {
     setBookForm({
       id: book.id,
@@ -365,6 +397,7 @@ export function useAdminActions({
     uploadPdf,
     updateCover,
     importBooks,
+    importGutenbergBooks,
     fillBookFormFromBook,
     fillCategoryFormFromCategory,
     fillTagFormFromTag,

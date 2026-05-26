@@ -86,6 +86,43 @@ public class BookService {
         return save(created);
     }
 
+    @Transactional
+    public Book upsertGutenbergBook(String title, String author, String isbn, Integer numberOfPages, LocalDate publicationDate, String coverUrl) {
+        LocalDateTime now = LocalDateTime.now();
+        var existing = bookRepository.findByIsbn(isbn);
+        if (existing.isPresent()) {
+            Book book = existing.get();
+            book.setLastSeenAt(now);
+            if (book.getSource() != BookSource.LOCAL) {
+                book.setSource(BookSource.GUTENBERG);
+            }
+            if ((book.getAuthor() == null || book.getAuthor().isBlank()) && author != null && !author.isBlank()) {
+                book.setAuthor(author);
+            }
+            if ((book.getCoverUrl() == null || book.getCoverUrl().isBlank()) && coverUrl != null && !coverUrl.isBlank()) {
+                book.setCoverUrl(coverUrl);
+            }
+            if (isSuspiciousPageCount(book.getNumberOfPages()) && !isSuspiciousPageCount(numberOfPages)) {
+                book.setNumberOfPages(numberOfPages);
+            }
+            return save(book);
+        }
+
+        Book created = Book.builder()
+                .title(title)
+                .author(author)
+                .coverUrl(coverUrl)
+                .isbn(isbn)
+                .numberOfPages(numberOfPages)
+                .publicationDate(publicationDate)
+                .available(true)
+                .source(BookSource.GUTENBERG)
+                .lastSeenAt(now)
+                .categories(Set.of())
+                .build();
+        return save(created);
+    }
+
     private Book updateOpenLibraryMetadata(Book book,
                                            String author,
                                            Integer numberOfPages,

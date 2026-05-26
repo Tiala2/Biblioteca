@@ -1,0 +1,89 @@
+package com.unichristus.libraryapi.infrastructure.integration.gutenberg;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.List;
+
+@Component
+public class GutenbergClient {
+
+    private static final List<GutenbergBook> CURATED_BOOKS = List.of(
+            new GutenbergBook(84, "Frankenstein", "Mary Shelley", 280, 1818, "https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg"),
+            new GutenbergBook(1342, "Pride and Prejudice", "Jane Austen", 279, 1813, "https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg"),
+            new GutenbergBook(11, "Alice's Adventures in Wonderland", "Lewis Carroll", 96, 1865, "https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg"),
+            new GutenbergBook(345, "Dracula", "Bram Stoker", 418, 1897, "https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg"),
+            new GutenbergBook(1661, "The Adventures of Sherlock Holmes", "Arthur Conan Doyle", 307, 1892, "https://www.gutenberg.org/cache/epub/1661/pg1661.cover.medium.jpg"),
+            new GutenbergBook(174, "The Picture of Dorian Gray", "Oscar Wilde", 254, 1890, "https://www.gutenberg.org/cache/epub/174/pg174.cover.medium.jpg"),
+            new GutenbergBook(98, "A Tale of Two Cities", "Charles Dickens", 489, 1859, "https://www.gutenberg.org/cache/epub/98/pg98.cover.medium.jpg"),
+            new GutenbergBook(76, "Adventures of Huckleberry Finn", "Mark Twain", 366, 1884, "https://www.gutenberg.org/cache/epub/76/pg76.cover.medium.jpg"),
+            new GutenbergBook(5200, "Metamorphosis", "Franz Kafka", 70, 1915, "https://www.gutenberg.org/cache/epub/5200/pg5200.cover.medium.jpg"),
+            new GutenbergBook(844, "The Importance of Being Earnest", "Oscar Wilde", 90, 1895, "https://www.gutenberg.org/cache/epub/844/pg844.cover.medium.jpg"),
+            new GutenbergBook(1952, "The Yellow Wallpaper", "Charlotte Perkins Gilman", 35, 1892, "https://www.gutenberg.org/cache/epub/1952/pg1952.cover.medium.jpg"),
+            new GutenbergBook(46, "A Christmas Carol", "Charles Dickens", 112, 1843, "https://www.gutenberg.org/cache/epub/46/pg46.cover.medium.jpg"),
+            new GutenbergBook(1232, "The Prince", "Niccolo Machiavelli", 140, 1532, "https://www.gutenberg.org/cache/epub/1232/pg1232.cover.medium.jpg"),
+            new GutenbergBook(408, "The Souls of Black Folk", "W. E. B. Du Bois", 240, 1903, "https://www.gutenberg.org/cache/epub/408/pg408.cover.medium.jpg"),
+            new GutenbergBook(2701, "Moby-Dick", "Herman Melville", 635, 1851, "https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg")
+    );
+
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    @Value("${app.integrations.gutenberg.base-url:https://www.gutenberg.org}")
+    private String baseUrl;
+
+    @Value("${app.integrations.gutenberg.timeout-ms:15000}")
+    private int timeoutMs;
+
+    public List<GutenbergBook> curatedBooks() {
+        return CURATED_BOOKS;
+    }
+
+    public String downloadPlainText(int gutenbergId) {
+        List<String> candidates = List.of(
+                "%s/files/%d/%d-0.txt".formatted(baseUrl, gutenbergId, gutenbergId),
+                "%s/files/%d/%d.txt".formatted(baseUrl, gutenbergId, gutenbergId),
+                "%s/cache/epub/%d/pg%d.txt".formatted(baseUrl, gutenbergId, gutenbergId)
+        );
+
+        RuntimeException lastError = null;
+        for (String url : candidates) {
+            try {
+                HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+                        .timeout(Duration.ofMillis(timeoutMs))
+                        .GET()
+                        .build();
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() >= 200 && response.statusCode() < 300 && response.body() != null && !response.body().isBlank()) {
+                    return cleanGutenbergText(response.body());
+                }
+            } catch (Exception ex) {
+                lastError = new IllegalStateException("Falha ao baixar texto do Gutenberg.", ex);
+            }
+        }
+        throw lastError != null ? lastError : new IllegalStateException("Texto do Project Gutenberg nao encontrado.");
+    }
+
+    private String cleanGutenbergText(String rawText) {
+        String text = rawText.replace("\r\n", "\n").replace('\r', '\n');
+        int start = text.indexOf("*** START");
+        if (start >= 0) {
+            int startLineEnd = text.indexOf('\n', start);
+            if (startLineEnd >= 0) {
+                text = text.substring(startLineEnd + 1);
+            }
+        }
+        int end = text.indexOf("*** END");
+        if (end >= 0) {
+            text = text.substring(0, end);
+        }
+        return text.trim();
+    }
+
+    public record GutenbergBook(int id, String title, String author, int pages, int year, String coverUrl) {
+    }
+}

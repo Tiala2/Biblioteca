@@ -20,7 +20,7 @@ type Book = {
   numberOfPages: number;
   hasPdf: boolean;
   hasNarrative?: boolean;
-  source?: "LOCAL" | "OPEN";
+  source?: "LOCAL" | "OPEN" | "GUTENBERG";
   coverUrl?: string | null;
 };
 type Paged<T> = { content: T[]; page: { size: number; number: number; totalElements: number; totalPages: number } };
@@ -482,7 +482,7 @@ export function BooksPage() {
           <article key={book.id} className="card aura-book-card">
             <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             <div className="book-card-badges">
-              {book.source === "OPEN" && <span className="import-badge">{formatBookSource(book.source)}</span>}
+              {book.source && book.source !== "LOCAL" && <span className="import-badge">{formatBookSource(book.source)}</span>}
               {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">Progresso manual</span>}
               {book.hasNarrative && <span className="favorite-badge">Dinâmica</span>}
               {favoriteBookIds.has(book.id) && <span className="favorite-badge">Favorito</span>}

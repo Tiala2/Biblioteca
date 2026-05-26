@@ -59,6 +59,18 @@ public class BookAdminController {
         return bookImportUseCase.importFromOpenLibrary(request);
     }
 
+    @Operation(summary = "Importar classicos com leitura interna", description = "Importa uma curadoria do Project Gutenberg e gera PDFs internos para leitura no app")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Importacao executada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Payload invalido"),
+            @ApiResponse(responseCode = "401", description = "Nao autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acesso proibido")
+    })
+    @PostMapping("/import/gutenberg")
+    public ExternalBooksImportResponse importFromGutenberg(@RequestBody @Valid ExternalBooksImportRequest request) {
+        return bookImportUseCase.importFromGutenberg(request);
+    }
+
     @Operation(summary = "Atualizar um livro", description = "Atualiza as informações de um livro existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Livro atualizado com sucesso"),

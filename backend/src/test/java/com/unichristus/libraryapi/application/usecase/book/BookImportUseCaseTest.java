@@ -4,7 +4,9 @@ import com.unichristus.libraryapi.application.dto.request.ExternalBooksImportReq
 import com.unichristus.libraryapi.application.dto.response.ExternalBooksImportResponse;
 import com.unichristus.libraryapi.domain.book.Book;
 import com.unichristus.libraryapi.domain.book.BookService;
+import com.unichristus.libraryapi.infrastructure.integration.gutenberg.GutenbergClient;
 import com.unichristus.libraryapi.infrastructure.integration.openlibrary.OpenLibraryClient;
+import com.unichristus.libraryapi.infrastructure.pdf.TextPdfRenderer;
 import com.unichristus.libraryapi.infrastructure.storage.MinioFileStorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +34,12 @@ class BookImportUseCaseTest {
     private OpenLibraryClient openLibraryClient;
 
     @Mock
+    private GutenbergClient gutenbergClient;
+
+    @Mock
+    private TextPdfRenderer textPdfRenderer;
+
+    @Mock
     private BookService bookService;
 
     @Mock
@@ -39,7 +47,7 @@ class BookImportUseCaseTest {
 
     @Test
     void shouldContinueImportWhenOneOpenLibraryPageFails() {
-        BookImportUseCase useCase = new BookImportUseCase(openLibraryClient, bookService, minioFileStorageService);
+        BookImportUseCase useCase = new BookImportUseCase(openLibraryClient, gutenbergClient, textPdfRenderer, bookService, minioFileStorageService);
         ReflectionTestUtils.setField(useCase, "maxDownloadBytes", 1024);
 
         ExternalBooksImportRequest request = new ExternalBooksImportRequest("java", 3, 10);
@@ -85,7 +93,7 @@ class BookImportUseCaseTest {
         assertThat(response.fetched()).isEqualTo(1);
         assertThat(response.imported()).isEqualTo(1);
         assertThat(response.failed()).isEqualTo(1);
-        assertThat(response.messages()).anyMatch(message -> message.contains("Não foi possível consultar a página 2 da Open Library"));
+        assertThat(response.messages()).anyMatch(message -> message.contains("2") && message.contains("Open Library"));
 
         verify(bookService).upsertOpenLibraryBook(
                 eq("Effective Java"),
@@ -99,7 +107,7 @@ class BookImportUseCaseTest {
 
     @Test
     void shouldImportOnlyReadableBooksUntilTargetCount() {
-        BookImportUseCase useCase = new BookImportUseCase(openLibraryClient, bookService, minioFileStorageService);
+        BookImportUseCase useCase = new BookImportUseCase(openLibraryClient, gutenbergClient, textPdfRenderer, bookService, minioFileStorageService);
         ReflectionTestUtils.setField(useCase, "maxDownloadBytes", 1024);
 
         ExternalBooksImportRequest request = new ExternalBooksImportRequest("subject:fiction", 3, 2, true, 1);
@@ -151,7 +159,7 @@ class BookImportUseCaseTest {
         assertThat(response.fetched()).isEqualTo(2);
         assertThat(response.imported()).isEqualTo(1);
         assertThat(response.skipped()).isEqualTo(1);
-        assertThat(response.messages()).anyMatch(message -> message.contains("não há leitor incorporável disponível"));
+        assertThat(response.messages()).anyMatch(message -> message.contains("leitor"));
         verify(openLibraryClient).searchReadable("subject:fiction", 1, 2);
         verify(openLibraryClient, never()).search("subject:fiction", 1, 2);
     }

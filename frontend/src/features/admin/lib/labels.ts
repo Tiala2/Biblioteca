@@ -32,7 +32,9 @@ export function formatAdminRole(role: UserAdmin["role"]) {
 }
 
 export function formatFavoriteSource(source?: FavoriteAdmin["source"]) {
-  return source === "OPEN" ? "Open Library" : "Acervo interno";
+  if (source === "GUTENBERG") return "Gutenberg";
+  if (source === "OPEN") return "Open Library";
+  return "Acervo interno";
 }
 
 export function formatBadgeCode(code: BadgeCode) {
