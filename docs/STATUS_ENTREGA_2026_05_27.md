@@ -18,6 +18,8 @@ Resumo:
 - Frontend lint: `PASS`
 - Frontend unit tests: `25 arquivos / 55 testes passando`
 - Frontend build de producao: `PASS`
+- Smoke operacional API: `PASS`
+- Checklist de rotas: `56 PASS / 0 FAIL`
 
 ## Melhorias prontas nesta rodada
 
@@ -37,9 +39,7 @@ Resumo:
 - Guardar prints finais das telas principais.
 - Confirmar backup final do banco Docker.
 - Confirmar credenciais de demonstracao.
-- Rodar smoke operacional completo se o ambiente estiver todo de pe:
-  - `scripts/e2e-smoke.ps1`
-  - `scripts/route-checklist-exec.ps1`
+- Repetir smoke operacional somente se houver nova alteracao de backend ou dados antes da apresentacao.
 
 ## Decisao recomendada
 

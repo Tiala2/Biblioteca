@@ -379,7 +379,11 @@ if (-not [string]::IsNullOrWhiteSpace($reportDirectory) -and -not (Test-Path -Pa
     New-Item -ItemType Directory -Path $reportDirectory -Force | Out-Null
 }
 
-Set-Content -Path $ReportPath -Value ($lines -join "`r`n") -Encoding UTF8
+try {
+    Set-Content -Path $ReportPath -Value ($lines -join "`r`n") -Encoding utf8NoBOM
+} catch {
+    Set-Content -Path $ReportPath -Value ($lines -join "`r`n") -Encoding UTF8
+}
 
 Write-Host "Relatorio gerado em $ReportPath"
 Write-Host "PASS=$passed FAIL=$failed TOTAL=$total"

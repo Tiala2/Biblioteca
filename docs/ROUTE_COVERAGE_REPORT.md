@@ -1,6 +1,6 @@
-# Relatorio de Cobertura de Rotas
+﻿# Relatorio de Cobertura de Rotas
 
-Data/hora: 2026-03-11 22:29:16 -03:00
+Data/hora: 2026-05-27 15:25:32 -03:00
 
 Resumo:
 - Total de operacoes executadas: 56
@@ -20,12 +20,12 @@ Resumo:
 | PUT | /api/admin/categories/{categoryId} | 200 | 200 | PASS |  |
 | DELETE | /api/admin/categories/{categoryId} | 204 | 204,400 | PASS | pode falhar se referenciado |
 | PUT | /api/admin/badges/{id} | 200 | 200 | PASS |  |
-| DELETE | /api/admin/badges/{id} | 400 | 204,400,404 | PASS | depende de FK/user_badges |
+| DELETE | /api/admin/badges/{id} | 204 | 204 | PASS | excluir badge para recriacao controlada |
 | POST | /api/v1/users | 201 | 201,409 | PASS |  |
 | GET | /api/v1/users/me/favorites | 200 | 200 | PASS |  |
 | POST | /api/v1/users/me/favorites | 409 | 201,409 | PASS |  |
 | GET | /api/v1/reviews | 200 | 200 | PASS |  |
-| POST | /api/v1/reviews | 400 | 201,400,409 | PASS | duplicidade/regra de negocio pode bloquear review |
+| POST | /api/v1/reviews | 409 | 201,400,409 | PASS | duplicidade/regra de negocio pode bloquear review |
 | POST | /api/v1/readings | 200 | 200 | PASS |  |
 | POST | /api/v1/auth/login | 200 | 200,401 | PASS |  |
 | GET | /api/admin/tags | 200 | 200 | PASS |  |
@@ -35,10 +35,10 @@ Resumo:
 | POST | /api/admin/books | 201 | 201,409,404 | PASS |  |
 | POST | /api/admin/books/{bookId}/upload | 204 | 204,400,413,415 | PASS | upload multipart com pdf temporario |
 | GET | /api/admin/badges | 200 | 200 | PASS |  |
-| POST | /api/admin/badges | 400 | 201,400,409 | PASS | restricoes de enum/duplicidade |
-| GET | /api/v1/reviews/{reviewId} | 404 | 404 | PASS | sem review id disponivel no bootstrap |
-| DELETE | /api/v1/reviews/{reviewId} | 404 | 404 | PASS | sem review id disponivel no bootstrap |
-| PATCH | /api/v1/reviews/{reviewId} | 404 | 404 | PASS | sem review id disponivel no bootstrap |
+| POST | /api/admin/badges | 201 | 201 | PASS | recriar badge apos exclusao controlada |
+| GET | /api/v1/reviews/{reviewId} | 200 | 200 | PASS |  |
+| PATCH | /api/v1/reviews/{reviewId} | 200 | 200 | PASS |  |
+| DELETE | /api/v1/reviews/{reviewId} | 204 | 204 | PASS |  |
 | DELETE | /api/admin/books/{bookId} | 204 | 204 | PASS |  |
 | PATCH | /api/admin/books/{bookId} | 204 | 204,404 | PASS | livro pode ter sido removido |
 | GET | /api/v1/users/me/streak | 200 | 200 | PASS |  |

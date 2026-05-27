@@ -105,6 +105,7 @@ $category = Invoke-Api -Method POST -Path "/api/admin/categories" -Token $adminT
 Write-Step "Criar livro admin"
 $book = Invoke-Api -Method POST -Path "/api/admin/books" -Token $adminToken -Body @{
     title = "Livro Smoke $stamp"
+    author = "Autor Smoke"
     isbn = $isbn
     numberOfPages = 320
     publicationDate = "2020-01-01"

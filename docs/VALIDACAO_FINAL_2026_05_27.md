@@ -21,6 +21,8 @@ Etapas validadas:
 - Frontend lint: **PASS**
 - Frontend unit tests: **25 arquivos / 55 testes passando**
 - Frontend build de producao: **PASS**
+- Smoke operacional API: **PASS**
+- Checklist de rotas API: **56 PASS / 0 FAIL**
 
 ## Checagens complementares recentes
 
@@ -30,13 +32,13 @@ Etapas validadas:
 - Contrato atualizado em `docs/openapi-lock.json`.
 - Frontend respondendo em `http://localhost:5173`.
 - Rodada visual autenticada em telas principais sem overflow horizontal detectado.
+- Smoke operacional validando login admin, CRUD basico, cadastro de usuario, favoritos, leitura, meta, alertas e ranking.
+- Relatorio de rotas atualizado em `docs/ROUTE_COVERAGE_REPORT.md`.
 
 ## Observacao
 
-Esta checagem confirma que a base atual compila, testa e gera build de producao para a apresentacao no computador principal. Ela nao substitui a validacao autenticada completa com navegador, banco Docker, dados finais e smoke operacional.
+Esta checagem confirma que a base atual compila, testa, gera build de producao e passa no smoke operacional de API. Ela nao substitui a validacao autenticada completa com navegador, banco Docker e dados finais.
 
 Para validacao completa, usar tambem:
 
-- `scripts/e2e-smoke.ps1`
-- `scripts/route-checklist-exec.ps1`
 - teste manual autenticado seguindo `docs/CHECKLIST_VALIDACAO_AUTENTICADA.md`
