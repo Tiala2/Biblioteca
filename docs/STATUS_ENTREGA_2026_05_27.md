@@ -18,6 +18,7 @@ Resumo:
 - Frontend lint: `PASS`
 - Frontend unit tests: `25 arquivos / 55 testes passando`
 - Frontend build de producao: `PASS`
+- Frontend E2E Playwright: `13 testes passando`
 - Smoke operacional API: `PASS`
 - Checklist de rotas: `56 PASS / 0 FAIL`
 
@@ -39,7 +40,8 @@ Resumo:
 - Guardar prints finais das telas principais.
 - Confirmar backup final do banco Docker.
 - Confirmar credenciais de demonstracao.
-- Repetir smoke operacional somente se houver nova alteracao de backend ou dados antes da apresentacao.
+- Conferir manualmente os prints locais em `docs/generated/evidencias-2026-05-27`.
+- Repetir smoke operacional/E2E somente se houver nova alteracao de backend, frontend ou dados antes da apresentacao.
 
 ## Decisao recomendada
 

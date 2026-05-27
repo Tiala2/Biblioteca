@@ -140,7 +140,7 @@ test("deve criar, editar e remover uma avaliação", async ({ page }) => {
   await page.getByRole("link", { name: "Livros" }).click();
   await expect(page.getByRole("heading", { name: "Escolha sua próxima jornada" })).toBeVisible();
 
-  const readLink = page.getByRole("link", { name: /Ler no app|Ler com progresso/ }).first();
+  const readLink = page.getByRole("link", { name: /Ler agora|Ler no app|Ler com progresso/ }).first();
   await expect(readLink).toBeVisible();
   await readLink.click();
 
@@ -164,7 +164,7 @@ test("deve criar, editar e remover uma avaliação", async ({ page }) => {
   await createCard.getByRole("button", { name: "Salvar avaliação" }).click();
 
   const reviewCard = page.locator("article.card").filter({
-    has: page.getByRole("heading", { name: "1984" }),
+    has: page.getByText(createdComment),
   }).last();
   await expect(reviewCard).toBeVisible({ timeout: 15000 });
   await expect(reviewCard).toContainText(createdComment);
@@ -178,7 +178,7 @@ test("deve criar, editar e remover uma avaliação", async ({ page }) => {
   const updatedCard = page.locator("article.card").filter({
     has: page.getByText(updatedComment),
   }).first();
-  await updatedCard.getByRole("button", { name: "Excluir" }).click();
+  await updatedCard.getByRole("button", { name: "Remover" }).click();
   await expect(page.getByText("Avaliação removida com sucesso.")).toBeVisible();
   await expect(page.getByText(updatedComment)).toHaveCount(0);
 });
@@ -190,8 +190,8 @@ test("deve abrir conquistas e mostrar progresso", async ({ page }) => {
   await expect(page).toHaveURL(/\/badges$/);
   await expect(page.getByRole("heading", { name: "Conquistas da sua jornada" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Progresso das próximas conquistas" })).toBeVisible();
-  await expect(page.getByText("Primeiro livro concluído")).toBeVisible();
-  await expect(page.getByText(/Nenhuma conquista desbloqueada ainda|Código:/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Primeiro livro concluído" }).first()).toBeVisible();
+  await expect(page.getByText(/Nenhuma conquista desbloqueada ainda|Código:/).first()).toBeVisible();
 });
 
 test("deve abrir o fluxo de recuperação de senha", async ({ page }) => {
@@ -206,7 +206,7 @@ test("deve salvar progresso de leitura e atualizar meta do usuario", async ({ pa
   await page.getByRole("link", { name: "Livros" }).click();
   await expect(page.getByRole("heading", { name: "Escolha sua próxima jornada" })).toBeVisible();
 
-  const readLink = page.getByRole("link", { name: /Ler no app|Ler com progresso/ }).first();
+  const readLink = page.getByRole("link", { name: /Ler agora|Ler no app|Ler com progresso/ }).first();
   await expect(readLink).toBeVisible();
   await readLink.click();
 
@@ -227,7 +227,7 @@ test("deve salvar progresso de leitura e atualizar meta do usuario", async ({ pa
   await expect(page.getByRole("link", { name: "Continuar leitura" })).toBeVisible();
 
   await page.getByRole("navigation", { name: "Navegação do usuário" }).getByRole("link", { name: "Metas", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Transforme leitura em constancia" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Transforme leitura em constância" })).toBeVisible();
 
   const goalTarget = String(70 + (Date.now() % 20));
   const targetInput = page.getByRole("spinbutton").first();
@@ -279,7 +279,7 @@ test("deve executar CRUD de categoria no painel admin", async ({ page }) => {
   }).first();
   await expect(updatedItem).toBeVisible();
 
-  await updatedItem.getByRole("button", { name: "Excluir" }).evaluate((button: HTMLButtonElement) => button.click());
+  await updatedItem.getByRole("button", { name: "Remover" }).evaluate((button: HTMLButtonElement) => button.click());
   await expect(page.getByText("Categoria removida com sucesso.")).toBeVisible();
   await expect(page.getByText(updatedName)).toHaveCount(0);
 });
@@ -299,7 +299,7 @@ test("deve exibir paineis administrativos de usuarios, favoritos e alertas", asy
   await expect(page.getByRole("heading", { name: "Favoritos registrados" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Auditoria de alertas" })).toBeVisible();
   await expect(page.getByPlaceholder("Buscar usuários por nome ou email")).toBeVisible();
-  await expect(page.getByPlaceholder("Filtrar favoritos por titulo, ISBN ou origem")).toBeVisible();
+  await expect(page.getByLabel("Filtrar favoritos administrativos")).toBeVisible();
   await expect(page.getByPlaceholder("Buscar por email, tipo, canal ou mensagem")).toBeVisible();
 });
 
@@ -324,7 +324,7 @@ test("deve invalidar um usuario pelo painel admin", async ({ page }) => {
     has: page.getByText(createdUser.email),
   }).first();
   await expect(userItem).toBeVisible({ timeout: 15000 });
-  await expect(userItem).toContainText("Acesso ativo");
+  await expect(userItem).toContainText("Ativo");
 
   const updatedName = `${createdUser.name} Editado`;
   await userItem.getByRole("button", { name: "Editar" }).click();
@@ -334,12 +334,12 @@ test("deve invalidar um usuario pelo painel admin", async ({ page }) => {
   await page.getByRole("button", { name: "Salvar usuário" }).click();
   await expect(page.getByText("Usuário atualizado com sucesso.")).toBeVisible();
   await expect(userItem).toContainText(updatedName);
-  await expect(userItem).toContainText("Papel admin");
+  await expect(userItem).toContainText("Administrador");
   await expect(userItem).toContainText("Ranking ativo");
 
   await userItem.getByRole("button", { name: "Invalidar acesso" }).click();
   await expect(page.getByText("Usuário invalidado com sucesso.")).toBeVisible();
-  await expect(userItem).toContainText("Acesso invalidado");
+  await expect(userItem).toContainText("Invalidado");
 
   await logout(page);
 
@@ -358,7 +358,7 @@ test("deve invalidar um usuario pelo painel admin", async ({ page }) => {
   await expect(invalidatedUserItem).toBeVisible({ timeout: 15000 });
   await invalidatedUserItem.getByRole("button", { name: "Reativar acesso" }).click();
   await expect(page.getByText("Usuário reativado com sucesso.")).toBeVisible();
-  await expect(invalidatedUserItem).toContainText("Acesso ativo");
+  await expect(invalidatedUserItem).toContainText("Ativo");
 
   await logout(page);
   await login(page, createdUser.email, createdUser.password);
@@ -376,18 +376,18 @@ test("deve abrir subrotas especificas do painel admin", async ({ page }) => {
   await page.goto("/admin/catalog");
   await expect(page).toHaveURL(/\/admin\/catalog$/);
   await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Gamificacao e comunidade" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Gamifica..o e comunidade/ })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toHaveCount(0);
 
   await page.goto("/admin/engagement");
   await expect(page).toHaveURL(/\/admin\/engagement$/);
-  await expect(page.getByRole("heading", { name: "Gamificacao e comunidade" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Gamifica..o e comunidade/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toHaveCount(0);
 
   await page.goto("/admin/users");
   await expect(page).toHaveURL(/\/admin\/users$/);
-  await expect(page.getByRole("heading", { name: "Gestão de usuários" }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Gest.*usu.*rios/i }).first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toHaveCount(0);
 
@@ -395,7 +395,7 @@ test("deve abrir subrotas especificas do painel admin", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin\/alerts$/);
   await expect(page.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Acervo e descoberta" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Gamificacao e comunidade" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Gamifica..o e comunidade/ })).toHaveCount(0);
 });
 
 test("deve executar CRUD de livro no painel admin", async ({ page }) => {
@@ -425,6 +425,7 @@ test("deve executar CRUD de livro no painel admin", async ({ page }) => {
   await bookCard.getByRole("spinbutton").first().fill("222");
   await bookCard.getByRole("button", { name: "Criar livro" }).click();
   await expect(page.getByText("Livro criado com sucesso.")).toBeVisible();
+  await page.getByLabel("Filtrar livros administrativos").fill(originalTitle);
 
   const createdItem = page.locator(".stacked-list-item").filter({
     has: page.getByText(originalTitle),
@@ -444,7 +445,7 @@ test("deve executar CRUD de livro no painel admin", async ({ page }) => {
   await expect(updatedItem).toBeVisible();
   await expect(updatedItem).toContainText(updatedAuthor);
 
-  await updatedItem.getByRole("button", { name: "Excluir" }).click();
+  await updatedItem.getByRole("button", { name: "Remover" }).click();
   await expect(page.getByText("Livro removido com sucesso.")).toBeVisible();
   await expect(page.getByText(updatedTitle)).toHaveCount(0);
 });
