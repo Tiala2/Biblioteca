@@ -26,6 +26,7 @@ import {
   type BookForm,
   type CategoryForm,
   type CollectionForm,
+  type ImportProvider,
   type ImportResult,
   type TagForm,
   type UserForm,
@@ -55,6 +56,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
   const [importReadableOnly, setImportReadableOnly] = useState(true);
   const [importTargetCount, setImportTargetCount] = useState(100);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [importProvider, setImportProvider] = useState<ImportProvider>("open-library");
   const staticData = useAdminStaticData({ headers });
   const userAdmin = useAdminUsers({ headers });
   const alertAdmin = useAdminAlerts({ headers });
@@ -100,6 +102,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
     importReadableOnly,
     importTargetCount,
     setImportResult,
+    setImportProvider,
     emptyCategory: EMPTY_CATEGORY,
     emptyTag: EMPTY_TAG,
     emptyCollection: EMPTY_COLLECTION,
@@ -156,6 +159,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         importReadableOnly={importReadableOnly}
         importTargetCount={importTargetCount}
         importResult={importResult}
+        importProvider={importProvider}
         onSubmitBook={actions.submitBook}
         onSubmitUpload={actions.uploadPdf}
         onSubmitCover={actions.updateCover}

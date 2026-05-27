@@ -8,23 +8,23 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "Parametros para importacao de livros de API externa")
 public record ExternalBooksImportRequest(
-        @Schema(description = "Termo de busca na Open Library", example = "subject:fiction")
+        @Schema(description = "Termo de busca. Na Open Library pode usar subject:fiction; no Gutenberg use temas como fiction, adventure ou mystery.", example = "fiction")
         @NotBlank
         String query,
 
-        @Schema(description = "Quantidade de paginas da API para importar", example = "10")
+        @Schema(description = "Quantidade de paginas da fonte externa para consultar antes de parar", example = "5")
         @NotNull
         @Min(1)
         @Max(20)
         Integer pages,
 
-        @Schema(description = "Quantidade de itens por pagina na API externa", example = "100")
+        @Schema(description = "Quantidade de itens por pagina na API externa. No Gutenberg este valor e mantido por compatibilidade.", example = "100")
         @NotNull
         @Min(1)
         @Max(100)
         Integer pageSize,
 
-        @Schema(description = "Importar apenas livros com leitor incorporavel via Archive/Open Library", example = "true")
+        @Schema(description = "Na Open Library importa apenas livros com leitor externo incorporavel. No Gutenberg a leitura interna e sempre priorizada.", example = "true")
         Boolean readableOnly,
 
         @Schema(description = "Quantidade alvo de livros importados antes de parar", example = "100")

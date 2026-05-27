@@ -22,14 +22,15 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
   }, [favorites, normalizedSearch]);
   const favoriteInsights = useMemo(() => {
     const openCount = favorites.filter((favorite) => favorite.source === "OPEN").length;
-    const localCount = favorites.length - openCount;
+    const gutenbergCount = favorites.filter((favorite) => favorite.source === "GUTENBERG").length;
+    const localCount = favorites.length - openCount - gutenbergCount;
     const latest = favorites.reduce<FavoriteAdmin | null>((current, favorite) => {
       if (!favorite.createdAt) return current;
       if (!current?.createdAt) return favorite;
       return new Date(favorite.createdAt).getTime() > new Date(current.createdAt).getTime() ? favorite : current;
     }, null);
 
-    return { latest, localCount, openCount };
+    return { latest, gutenbergCount, localCount, openCount };
   }, [favorites]);
   const totalPages = Math.max(1, Math.ceil(filteredFavorites.length / pageSize));
   const visibleFavorites = filteredFavorites.slice(page * pageSize, page * pageSize + pageSize);
@@ -51,6 +52,10 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
         <div className="stat-box admin-list-stat">
           <strong>{favoriteInsights.openCount}</strong>
           <span>Open Library</span>
+        </div>
+        <div className="stat-box admin-list-stat">
+          <strong>{favoriteInsights.gutenbergCount}</strong>
+          <span>Gutenberg</span>
         </div>
         <div className="stat-box admin-list-stat">
           <strong>{favoriteInsights.latest ? formatDateTimeBr(favoriteInsights.latest.createdAt) : "Ainda sem favorito"}</strong>

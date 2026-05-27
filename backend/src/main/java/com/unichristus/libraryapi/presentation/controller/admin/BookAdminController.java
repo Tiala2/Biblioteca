@@ -47,7 +47,7 @@ public class BookAdminController {
         return CreatedResponses.createdCurrentResource(response.getId(), response);
     }
 
-    @Operation(summary = "Importar livros da Open Library", description = "Importa metadados de livros da Open Library e cadastra no catálogo sem PDF")
+    @Operation(summary = "Importar livros da Open Library", description = "Importa metadados de livros da Open Library. Quando readableOnly=true, prioriza itens com leitor externo incorporavel.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Importação executada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Payload inválido"),
@@ -59,7 +59,7 @@ public class BookAdminController {
         return bookImportUseCase.importFromOpenLibrary(request);
     }
 
-    @Operation(summary = "Importar classicos com leitura interna", description = "Importa uma curadoria do Project Gutenberg e gera PDFs internos para leitura no app")
+    @Operation(summary = "Importar livros do Project Gutenberg com leitura interna", description = "Busca livros no Gutendex/Project Gutenberg, baixa texto publico, ignora entradas fracas de catalogo e gera PDFs internos para leitura no app.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Importacao executada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Payload invalido"),

@@ -91,7 +91,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, ServiceURI.REVIEWS_RESOURCE, ServiceURI.REVIEWS_RESOURCE + "/*").permitAll()
                         .requestMatchers(HttpMethod.GET, ServiceURI.USERS_RESOURCE + "/leaderboard").permitAll()
                         .requestMatchers(HttpMethod.POST, ServiceURI.USERS_RESOURCE).permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").access((authentication, context) ->
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").access((authentication, context) ->
                                 new org.springframework.security.authorization.AuthorizationDecision(apiDocsEnabled))
                         .anyRequest().authenticated()
                 )

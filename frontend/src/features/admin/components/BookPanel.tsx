@@ -2,7 +2,7 @@ import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BookPlus, Edit3, ImagePlus, LibraryBig, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
 import { BookCover } from "@shared/ui/books/BookCover";
-import type { Book, BookForm, Category, ImportResult } from "../types";
+import type { Book, BookForm, Category, ImportProvider, ImportResult } from "../types";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 function normalizeIsbn(isbn?: string | null) {
@@ -47,6 +47,37 @@ function getImportStatus(result: ImportResult | null) {
   };
 }
 
+function getImportStatusForProvider(result: ImportResult | null, provider: ImportProvider) {
+  const status = getImportStatus(result);
+  if (!result || !status) {
+    return null;
+  }
+  const sourceName = provider === "gutenberg" ? "Project Gutenberg" : "Open Library";
+
+  if (result.imported > 0 && result.failed > 0) {
+    return {
+      ...status,
+      title: "Importação parcial",
+      description: `Alguns livros entraram pelo ${sourceName}, mas parte da busca falhou. Você pode tentar novamente sem perder o que já foi importado.`,
+    };
+  }
+  if (result.imported > 0 && provider === "gutenberg") {
+    return {
+      ...status,
+      title: "Importação concluída",
+      description: "Os livros encontrados foram adicionados com PDF gerado para leitura interna no app.",
+    };
+  }
+  if (result.failed > 0 && provider === "gutenberg") {
+    return {
+      ...status,
+      title: "Importação não concluída",
+      description: "O Project Gutenberg demorou ou não retornou livros elegíveis. Tente uma busca menor ou outro tema.",
+    };
+  }
+  return status;
+}
+
 type BookPanelProps = {
   form: BookForm;
   books: Book[];
@@ -62,6 +93,7 @@ type BookPanelProps = {
   importReadableOnly: boolean;
   importTargetCount: number;
   importResult: ImportResult | null;
+  importProvider: ImportProvider;
   onSubmitBook: (event: FormEvent) => Promise<void>;
   onSubmitUpload: (event: FormEvent) => Promise<void>;
   onSubmitCover: (event: FormEvent) => Promise<void>;
@@ -97,6 +129,7 @@ export function BookPanel({
   importReadableOnly,
   importTargetCount,
   importResult,
+  importProvider,
   onSubmitBook,
   onSubmitUpload,
   onSubmitCover,
@@ -132,8 +165,10 @@ export function BookPanel({
   const selectedUploadBook = books.find((book) => book.id === uploadBookId) ?? null;
   const formCoverUrlFromIsbn = buildOpenLibraryCoverUrl(form.isbn);
   const selectedCoverUrlFromIsbn = buildOpenLibraryCoverUrl(selectedCoverBook?.isbn);
-  const importStatus = getImportStatus(importResult);
+  const importStatus = getImportStatusForProvider(importResult, importProvider);
   const importMessages = importResult?.messages?.filter(Boolean).slice(0, 4) ?? [];
+  const isImportingBooks = busyKey === "book-import" || busyKey === "book-import-gutenberg";
+  const resultSourceLabel = importProvider === "gutenberg" ? "Project Gutenberg" : "Open Library";
   const hasBooks = books.length > 0;
   const toggleCategory = (categoryId: string) => {
     onFormChange((prev) => {
@@ -292,12 +327,12 @@ export function BookPanel({
           <LibraryBig aria-hidden="true" />
           <div>
             <strong>Importação de acervo externo</strong>
-            <span>Use Open Library para catálogo e Gutenberg para leitura interna.</span>
+            <span>Use Open Library para catálogo e Gutenberg quando precisar de leitura interna.</span>
           </div>
         </div>
         <label className="field-stack">
-          <span>Busca na Open Library</span>
-          <input aria-label="Busca na Open Library" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Ex.: subject:fiction" />
+          <span>Termo de busca</span>
+          <input aria-label="Termo de busca da importação" value={importQuery} onChange={(event) => onImportQueryChange(event.target.value)} placeholder="Ex.: fiction ou subject:fiction" />
         </label>
         <label className="field-stack">
           <span>Páginas externas</span>
@@ -315,11 +350,14 @@ export function BookPanel({
           <input type="checkbox" checked={importReadableOnly} onChange={(event) => onImportReadableOnlyChange(event.target.checked)} />
           Apenas livros com leitor externo
         </label>
-        <button type="submit" disabled={busyKey === "book-import"}>
+        <p className="section-sub admin-import-hint">
+          Gutenberg pode demorar alguns minutos porque baixa texto, gera PDF e salva o arquivo no leitor interno.
+        </p>
+        <button type="submit" disabled={isImportingBooks}>
           <LibraryBig aria-hidden="true" />
           {busyKey === "book-import" ? "Importando..." : "Importar Open Library"}
         </button>
-        <button type="button" className="btn-muted" disabled={busyKey === "book-import-gutenberg"} onClick={() => void onSubmitGutenbergImport()}>
+        <button type="button" className="btn-muted" disabled={isImportingBooks} onClick={() => void onSubmitGutenbergImport()}>
           <BookPlus aria-hidden="true" />
           {busyKey === "book-import-gutenberg" ? "Gerando PDFs..." : "Importar leitura interna"}
         </button>
@@ -328,7 +366,7 @@ export function BookPanel({
       {importResult && importStatus && (
         <section className={`admin-import-summary admin-import-summary--${importStatus.tone}`} aria-live="polite">
           <div>
-            <p className="eyebrow">Resultado da Open Library</p>
+            <p className="eyebrow">Resultado: {resultSourceLabel}</p>
             <h4>{importStatus.title}</h4>
             <p className="section-sub">{importStatus.description}</p>
           </div>

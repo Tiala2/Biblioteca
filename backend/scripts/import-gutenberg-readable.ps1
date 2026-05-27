@@ -69,6 +69,11 @@ Write-Host "Imported: $($result.imported)"
 Write-Host "Skipped:  $($result.skipped)"
 Write-Host "Failed:   $($result.failed)"
 
+if ($result.imported -eq 0) {
+  Write-Host ""
+  Write-Host "No books were imported. Try a broader query, more pages, or a smaller target count for a quick validation." -ForegroundColor Yellow
+}
+
 if ($result.messages -and @($result.messages).Count -gt 0) {
   Write-Host ""
   Write-Host "Messages:" -ForegroundColor Yellow

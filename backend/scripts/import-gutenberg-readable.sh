@@ -156,6 +156,10 @@ print(f"Imported: {payload.get('imported', 0)}")
 print(f"Skipped:  {payload.get('skipped', 0)}")
 print(f"Failed:   {payload.get('failed', 0)}")
 
+if int(payload.get("imported", 0)) == 0:
+    print()
+    print("No books were imported. Try a broader query, more pages, or a smaller target count for a quick validation.")
+
 messages = payload.get("messages") or []
 if messages:
     print()

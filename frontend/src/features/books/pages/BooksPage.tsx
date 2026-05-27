@@ -8,7 +8,7 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
-import { formatBookSource } from "@shared/lib/presentation";
+import { formatBookSource, formatReadingMode } from "@shared/lib/presentation";
 
 type Category = { id: string; name: string };
 type Tag = { id: string; name: string };
@@ -112,6 +112,7 @@ export function BooksPage() {
   }, [applied, categories, tags]);
   const catalogInsights = useMemo(() => {
     const openCount = books.filter((book) => book.source === "OPEN").length;
+    const gutenbergCount = books.filter((book) => book.source === "GUTENBERG").length;
     const pdfCount = books.filter((book) => book.hasPdf).length;
     const narrativeCount = books.filter((book) => book.hasNarrative).length;
     const favoriteCount = books.filter((book) => favoriteBookIds.has(book.id)).length;
@@ -120,7 +121,8 @@ export function BooksPage() {
     return {
       averagePages: books.length > 0 ? Math.round(totalPagesVisible / books.length) : 0,
       favoriteCount,
-      localCount: books.length - openCount,
+      gutenbergCount,
+      localCount: books.length - openCount - gutenbergCount,
       narrativeCount,
       openCount,
       pdfCount,
@@ -455,6 +457,10 @@ export function BooksPage() {
               <span>Open Library</span>
             </div>
             <div className="stat-box">
+              <strong>{catalogInsights.gutenbergCount}</strong>
+              <span>Gutenberg</span>
+            </div>
+            <div className="stat-box">
               <strong>{catalogInsights.narrativeCount}</strong>
               <span>com dinâmica</span>
             </div>
@@ -483,7 +489,7 @@ export function BooksPage() {
             <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             <div className="book-card-badges">
               {book.source && book.source !== "LOCAL" && <span className="import-badge">{formatBookSource(book.source)}</span>}
-              {!book.hasPdf && book.source !== "OPEN" && <span className="import-badge">Progresso manual</span>}
+              <span className={book.hasPdf ? "favorite-badge" : "import-badge"}>{formatReadingMode(book.hasPdf, book.source)}</span>
               {book.hasNarrative && <span className="favorite-badge">Dinâmica</span>}
               {favoriteBookIds.has(book.id) && <span className="favorite-badge">Favorito</span>}
             </div>

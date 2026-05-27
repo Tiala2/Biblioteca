@@ -8,6 +8,7 @@ import type {
   CategoryForm,
   Collection,
   CollectionForm,
+  ImportProvider,
   ImportResult,
   Tag,
   TagForm,
@@ -45,6 +46,7 @@ type UseAdminActionsParams = {
   importReadableOnly: boolean;
   importTargetCount: number;
   setImportResult: Dispatch<SetStateAction<ImportResult | null>>;
+  setImportProvider: Dispatch<SetStateAction<ImportProvider>>;
   emptyCategory: CategoryForm;
   emptyTag: TagForm;
   emptyCollection: CollectionForm;
@@ -83,6 +85,7 @@ export function useAdminActions({
   importReadableOnly,
   importTargetCount,
   setImportResult,
+  setImportProvider,
   emptyCategory,
   emptyTag,
   emptyCollection,
@@ -272,6 +275,7 @@ export function useAdminActions({
     if (!headers || !importQuery.trim()) return;
     setBusyKey("book-import");
     try {
+      setImportProvider("open-library");
       const response = await api.post<ImportResult>(
         "/api/admin/books/import/open-library",
         {
@@ -304,6 +308,7 @@ export function useAdminActions({
     if (!headers) return;
     setBusyKey("book-import-gutenberg");
     try {
+      setImportProvider("gutenberg");
       const response = await api.post<ImportResult>(
         "/api/admin/books/import/gutenberg",
         {

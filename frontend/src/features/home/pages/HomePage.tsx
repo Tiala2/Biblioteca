@@ -140,14 +140,15 @@ export function HomePage() {
   const progressPercent = Math.max(0, Math.min(100, Number(home.readingProgress.goal?.progressPercent ?? 0)));
   const recommendationInsights = useMemo(() => {
     const openCount = home.recommendations.filter((book) => book.source === "OPEN").length;
-    const localCount = home.recommendations.length - openCount;
+    const gutenbergCount = home.recommendations.filter((book) => book.source === "GUTENBERG").length;
+    const localCount = home.recommendations.length - openCount - gutenbergCount;
     const ratedBooks = home.recommendations.filter((book) => typeof book.averageRating === "number");
     const averageRating =
       ratedBooks.length > 0
         ? ratedBooks.reduce((total, book) => total + Number(book.averageRating ?? 0), 0) / ratedBooks.length
         : 0;
 
-    return { averageRating, localCount, openCount };
+    return { averageRating, gutenbergCount, localCount, openCount };
   }, [home.recommendations]);
   const collectionInsights = useMemo(() => {
     const totalBooks = home.collections.reduce((total, collection) => total + (collection.books?.length ?? 0), 0);
@@ -265,7 +266,7 @@ export function HomePage() {
               />
               <div>
                 <p><strong>{currentReading.book.title}</strong></p>
-                {currentReading.book.source === "OPEN" && <p className="section-sub">Origem: Open Library</p>}
+                {currentReading.book.source !== "LOCAL" && <p className="section-sub">Origem: {formatBookSource(currentReading.book.source)}</p>}
                 <p className="section-sub">
                   Página {currentReading.currentPage} · {formatReadingStatus(currentReading.status)}
                 </p>
@@ -327,6 +328,10 @@ export function HomePage() {
               <div className="stat-box">
                 <strong>{recommendationInsights.openCount}</strong>
                 <span>Open Library</span>
+              </div>
+              <div className="stat-box">
+                <strong>{recommendationInsights.gutenbergCount}</strong>
+                <span>Gutenberg</span>
               </div>
               <div className="stat-box">
                 <strong>{recommendationInsights.averageRating.toFixed(1)}</strong>

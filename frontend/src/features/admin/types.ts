@@ -106,6 +106,7 @@ export type ImportResult = {
   failed: number;
   messages?: string[];
 };
+export type ImportProvider = "open-library" | "gutenberg";
 
 export type CategoryForm = { id: string | null; name: string; description: string };
 export type TagForm = { id: string | null; name: string };

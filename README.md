@@ -21,6 +21,7 @@ Projeto de biblioteca virtual publica com foco em engajamento, com backend em Sp
 - [Validacao Final 2026-05-24](docs/VALIDACAO_FINAL_2026_05_24.md)
 - [Status de Entrega 2026-05-24](docs/STATUS_ENTREGA_2026_05_24.md)
 - [Resumo Para Repassar Ao Colega](docs/RESUMO_PARA_COLEGA.md)
+- [Importacao de Leitura Interna Gutenberg](docs/IMPORTACAO_LEITURA_INTERNA_GUTENBERG.md)
 - [Guia de Merge para Main](docs/GUIA_MERGE_MAIN.md)
 - [Mapa de Rotas Frontend x Backend](docs/FRONT_ROUTES_MAP.md)
 - [Matriz de Rastreabilidade](docs/MATRIZ_RASTREABILIDADE.md)

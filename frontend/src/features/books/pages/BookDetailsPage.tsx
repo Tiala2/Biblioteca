@@ -8,7 +8,7 @@ import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
 import { formatDateBr, formatDateTimeBr, formatDecimal, formatInteger } from "@shared/lib/formatters";
-import { formatBookSource, pluralizePt } from "@shared/lib/presentation";
+import { formatBookSource, formatReadingMode, pluralizePt } from "@shared/lib/presentation";
 
 type Category = { id: string; name: string };
 type Tag = { id: string; name: string };
@@ -251,7 +251,7 @@ export function BookDetailsPage() {
             <span>origem</span>
           </div>
           <div className="stat-box">
-            <strong>{book?.hasPdf ? "Leitura no app" : "Progresso manual"}</strong>
+            <strong>{formatReadingMode(book?.hasPdf, book?.source)}</strong>
             <span>modo de leitura</span>
           </div>
           <div className="stat-box">

@@ -7,7 +7,7 @@ import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
-import { formatBookSource } from "@shared/lib/presentation";
+import { formatBookSource, formatReadingMode } from "@shared/lib/presentation";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 
 type Favorite = {
@@ -20,7 +20,7 @@ type Favorite = {
 };
 
 const getFavoriteSourceDescription = (source?: Favorite["source"]) =>
-  source === "OPEN" ? "Leitura externa com progresso manual" : "Leitura no app";
+  source === "OPEN" ? "Leitura externa com progresso manual" : `${formatReadingMode(true, source)} com progresso salvo`;
 
 export function FavoritesPage() {
   const headers = useAuthHeaders();
@@ -51,13 +51,14 @@ export function FavoritesPage() {
 
   const favoriteInsights = useMemo(() => {
     const openCount = favorites.filter((item) => item.source === "OPEN").length;
-    const localCount = favorites.length - openCount;
+    const gutenbergCount = favorites.filter((item) => item.source === "GUTENBERG").length;
+    const localCount = favorites.length - openCount - gutenbergCount;
     const latest = favorites.reduce<Favorite | null>((current, item) => {
       if (!current) return item;
       return new Date(item.createdAt).getTime() > new Date(current.createdAt).getTime() ? item : current;
     }, null);
 
-    return { latest, localCount, openCount };
+    return { latest, gutenbergCount, localCount, openCount };
   }, [favorites]);
 
   const removeFavorite = async (bookId: string) => {
@@ -122,6 +123,11 @@ export function FavoritesPage() {
               <Sparkles aria-hidden="true" />
               <strong>{favoriteInsights.openCount}</strong>
               <span>Open Library</span>
+            </div>
+            <div className="stat-box">
+              <BookOpen aria-hidden="true" />
+              <strong>{favoriteInsights.gutenbergCount}</strong>
+              <span>Gutenberg</span>
             </div>
           </div>
           {favoriteInsights.latest && (

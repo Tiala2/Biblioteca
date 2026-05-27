@@ -207,6 +207,106 @@
                                                                            }
                                                          }
                                              },
+                  "/api/admin/users/{userId}":  {
+                                                    "get":  {
+                                                                "tags":  [
+                                                                             "[Admin]"
+                                                                         ],
+                                                                "summary":  "Buscar usuÃ¡rio por ID (admin)",
+                                                                "operationId":  "getUserById",
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "userId",
+                                                                                       "in":  "path",
+                                                                                       "required":  true,
+                                                                                       "schema":  {
+                                                                                                      "type":  "string",
+                                                                                                      "format":  "uuid"
+                                                                                                  }
+                                                                                   }
+                                                                               ],
+                                                                "responses":  {
+                                                                                  "200":  {
+                                                                                              "description":  "UsuÃ¡rio encontrado com sucesso",
+                                                                                              "content":  {
+                                                                                                              "*/*":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "$ref":  "#/components/schemas/UserResponse"
+                                                                                                                                     }
+                                                                                                                      }
+                                                                                                          }
+                                                                                          },
+                                                                                  "404":  {
+                                                                                              "description":  "UsuÃ¡rio nÃ£o encontrado",
+                                                                                              "content":  {
+                                                                                                              "*/*":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "$ref":  "#/components/schemas/UserResponse"
+                                                                                                                                     }
+                                                                                                                      }
+                                                                                                          }
+                                                                                          }
+                                                                              }
+                                                            },
+                                                    "put":  {
+                                                                "tags":  [
+                                                                             "[Admin]"
+                                                                         ],
+                                                                "summary":  "Invalidar usuÃ¡rio por ID (admin)",
+                                                                "operationId":  "updateUser",
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "userId",
+                                                                                       "in":  "path",
+                                                                                       "required":  true,
+                                                                                       "schema":  {
+                                                                                                      "type":  "string",
+                                                                                                      "format":  "uuid"
+                                                                                                  }
+                                                                                   }
+                                                                               ],
+                                                                "requestBody":  {
+                                                                                    "content":  {
+                                                                                                    "application/json":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "$ref":  "#/components/schemas/UserUpdateRequest"
+                                                                                                                                        }
+                                                                                                                         }
+                                                                                                },
+                                                                                    "required":  true
+                                                                                },
+                                                                "responses":  {
+                                                                                  "204":  {
+                                                                                              "description":  "UsuÃ¡rio invalidado com sucesso"
+                                                                                          },
+                                                                                  "404":  {
+                                                                                              "description":  "UsuÃ¡rio nÃ£o encontrado"
+                                                                                          }
+                                                                              }
+                                                            },
+                                                    "delete":  {
+                                                                   "tags":  [
+                                                                                "[Admin]"
+                                                                            ],
+                                                                   "operationId":  "invalidateUser",
+                                                                   "parameters":  [
+                                                                                      {
+                                                                                          "name":  "userId",
+                                                                                          "in":  "path",
+                                                                                          "required":  true,
+                                                                                          "schema":  {
+                                                                                                         "type":  "string",
+                                                                                                         "format":  "uuid"
+                                                                                                     }
+                                                                                      }
+                                                                                  ],
+                                                                   "responses":  {
+                                                                                     "204":  {
+                                                                                                 "description":  "No Content"
+                                                                                             }
+                                                                                 }
+                                                               }
+                                                },
                   "/api/admin/tags/{tagId}":  {
                                                   "put":  {
                                                               "tags":  [
@@ -811,6 +911,34 @@
                                                                       }
                                                     }
                                        },
+                  "/api/v1/auth/reset-password":  {
+                                                      "post":  {
+                                                                   "tags":  [
+                                                                                "AutenticaÃ§Ã£o"
+                                                                            ],
+                                                                   "summary":  "Redefinir senha",
+                                                                   "description":  "Redefine a senha com token de recuperaÃ§Ã£o vÃ¡lido",
+                                                                   "operationId":  "resetPassword",
+                                                                   "requestBody":  {
+                                                                                       "content":  {
+                                                                                                       "application/json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/ResetPasswordRequest"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                   },
+                                                                                       "required":  true
+                                                                                   },
+                                                                   "responses":  {
+                                                                                     "204":  {
+                                                                                                 "description":  "Senha redefinida com sucesso"
+                                                                                             },
+                                                                                     "400":  {
+                                                                                                 "description":  "Token invÃ¡lido/expirado ou dados invÃ¡lidos"
+                                                                                             }
+                                                                                 }
+                                                               }
+                                                  },
                   "/api/v1/auth/login":  {
                                              "post":  {
                                                           "tags":  [
@@ -860,6 +988,16 @@
                                                                                                                 }
                                                                                                     }
                                                                                     },
+                                                                            "429":  {
+                                                                                        "description":  "Muitas tentativas de login",
+                                                                                        "content":  {
+                                                                                                        "*/*":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "$ref":  "#/components/schemas/AuthResponse"
+                                                                                                                               }
+                                                                                                                }
+                                                                                                    }
+                                                                                    },
                                                                             "404":  {
                                                                                         "description":  "UsuÃ¡rio nÃ£o encontrado",
                                                                                         "content":  {
@@ -873,6 +1011,37 @@
                                                                         }
                                                       }
                                          },
+                  "/api/v1/auth/forgot-password":  {
+                                                       "post":  {
+                                                                    "tags":  [
+                                                                                 "AutenticaÃ§Ã£o"
+                                                                             ],
+                                                                    "summary":  "Esqueci minha senha",
+                                                                    "description":  "Dispara email de recuperaÃ§Ã£o de senha quando o email existe",
+                                                                    "operationId":  "forgotPassword",
+                                                                    "requestBody":  {
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/ForgotPasswordRequest"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    },
+                                                                                        "required":  true
+                                                                                    },
+                                                                    "responses":  {
+                                                                                      "204":  {
+                                                                                                  "description":  "SolicitaÃ§Ã£o recebida"
+                                                                                              },
+                                                                                      "400":  {
+                                                                                                  "description":  "Dados invÃ¡lidos"
+                                                                                              },
+                                                                                      "429":  {
+                                                                                                  "description":  "Muitas solicitaÃ§Ãµes de recuperaÃ§Ã£o"
+                                                                                              }
+                                                                                  }
+                                                                }
+                                                   },
                   "/api/admin/tags":  {
                                           "get":  {
                                                       "tags":  [
@@ -981,6 +1150,29 @@
                                                           }
                                              },
                   "/api/admin/categories":  {
+                                                "get":  {
+                                                            "tags":  [
+                                                                         "[Admin]"
+                                                                     ],
+                                                            "summary":  "Listar categorias",
+                                                            "description":  "Retorna a lista completa de categorias para administraÃ§Ã£o",
+                                                            "operationId":  "getAllCategories",
+                                                            "responses":  {
+                                                                              "200":  {
+                                                                                          "description":  "Lista de categorias retornada com sucesso",
+                                                                                          "content":  {
+                                                                                                          "*/*":  {
+                                                                                                                      "schema":  {
+                                                                                                                                     "type":  "array",
+                                                                                                                                     "items":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/CategoryResponse"
+                                                                                                                                               }
+                                                                                                                                 }
+                                                                                                                  }
+                                                                                                      }
+                                                                                      }
+                                                                          }
+                                                        },
                                                 "post":  {
                                                              "tags":  [
                                                                           "[Admin]"
@@ -1160,6 +1352,130 @@
                                                                                       }
                                                                     }
                                                        },
+                  "/api/admin/books/import/open-library":  {
+                                                               "post":  {
+                                                                            "tags":  [
+                                                                                         "[Admin]"
+                                                                                     ],
+                                                                            "summary":  "Importar livros da Open Library",
+                                                                            "description":  "Importa metadados de livros da Open Library. Quando readableOnly=true, prioriza itens com leitor externo incorporavel.",
+                                                                            "operationId":  "importFromOpenLibrary",
+                                                                            "requestBody":  {
+                                                                                                "content":  {
+                                                                                                                "application/json":  {
+                                                                                                                                         "schema":  {
+                                                                                                                                                        "$ref":  "#/components/schemas/ExternalBooksImportRequest"
+                                                                                                                                                    }
+                                                                                                                                     }
+                                                                                                            },
+                                                                                                "required":  true
+                                                                                            },
+                                                                            "responses":  {
+                                                                                              "200":  {
+                                                                                                          "description":  "ImportaÃ§Ã£o executada com sucesso",
+                                                                                                          "content":  {
+                                                                                                                          "*/*":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                                      }
+                                                                                                      },
+                                                                                              "400":  {
+                                                                                                          "description":  "Payload invÃ¡lido",
+                                                                                                          "content":  {
+                                                                                                                          "*/*":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                                      }
+                                                                                                      },
+                                                                                              "401":  {
+                                                                                                          "description":  "NÃ£o autorizado",
+                                                                                                          "content":  {
+                                                                                                                          "*/*":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                                      }
+                                                                                                      },
+                                                                                              "403":  {
+                                                                                                          "description":  "Acesso proibido",
+                                                                                                          "content":  {
+                                                                                                                          "*/*":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                                      }
+                                                                                                      }
+                                                                                          }
+                                                                        }
+                                                           },
+                  "/api/admin/books/import/gutenberg":  {
+                                                            "post":  {
+                                                                         "tags":  [
+                                                                                      "[Admin]"
+                                                                                  ],
+                                                                         "summary":  "Importar livros do Project Gutenberg com leitura interna",
+                                                                         "description":  "Busca livros no Gutendex/Project Gutenberg, baixa texto publico, ignora entradas fracas de catalogo e gera PDFs internos para leitura no app.",
+                                                                         "operationId":  "importFromGutenberg",
+                                                                         "requestBody":  {
+                                                                                             "content":  {
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/ExternalBooksImportRequest"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                         },
+                                                                                             "required":  true
+                                                                                         },
+                                                                         "responses":  {
+                                                                                           "200":  {
+                                                                                                       "description":  "Importacao executada com sucesso",
+                                                                                                       "content":  {
+                                                                                                                       "*/*":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                              }
+                                                                                                                               }
+                                                                                                                   }
+                                                                                                   },
+                                                                                           "400":  {
+                                                                                                       "description":  "Payload invalido",
+                                                                                                       "content":  {
+                                                                                                                       "*/*":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                              }
+                                                                                                                               }
+                                                                                                                   }
+                                                                                                   },
+                                                                                           "401":  {
+                                                                                                       "description":  "Nao autorizado",
+                                                                                                       "content":  {
+                                                                                                                       "*/*":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                              }
+                                                                                                                               }
+                                                                                                                   }
+                                                                                                   },
+                                                                                           "403":  {
+                                                                                                       "description":  "Acesso proibido",
+                                                                                                       "content":  {
+                                                                                                                       "*/*":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/ExternalBooksImportResponse"
+                                                                                                                                              }
+                                                                                                                               }
+                                                                                                                   }
+                                                                                                   }
+                                                                                       }
+                                                                     }
+                                                        },
                   "/api/admin/badges":  {
                                             "get":  {
                                                         "tags":  [
@@ -1169,32 +1485,11 @@
                                                         "operationId":  "list",
                                                         "parameters":  [
                                                                            {
-                                                                               "name":  "page",
+                                                                               "name":  "pageable",
                                                                                "in":  "query",
-                                                                               "required":  false,
+                                                                               "required":  true,
                                                                                "schema":  {
-                                                                                              "type":  "integer",
-                                                                                              "format":  "int32",
-                                                                                              "default":  0
-                                                                                          }
-                                                                           },
-                                                                           {
-                                                                               "name":  "size",
-                                                                               "in":  "query",
-                                                                               "required":  false,
-                                                                               "schema":  {
-                                                                                              "type":  "integer",
-                                                                                              "format":  "int32",
-                                                                                              "default":  20
-                                                                                          }
-                                                                           },
-                                                                           {
-                                                                               "name":  "sort",
-                                                                               "in":  "query",
-                                                                               "required":  false,
-                                                                               "schema":  {
-                                                                                              "type":  "string",
-                                                                                              "default":  "code"
+                                                                                              "$ref":  "#/components/schemas/Pageable"
                                                                                           }
                                                                            }
                                                                        ],
@@ -1384,6 +1679,30 @@
                                                                                  }
                                                                }
                                                  },
+                  "/api/admin/users/{userId}/reactivate":  {
+                                                               "patch":  {
+                                                                             "tags":  [
+                                                                                          "[Admin]"
+                                                                                      ],
+                                                                             "operationId":  "reactivateUser",
+                                                                             "parameters":  [
+                                                                                                {
+                                                                                                    "name":  "userId",
+                                                                                                    "in":  "path",
+                                                                                                    "required":  true,
+                                                                                                    "schema":  {
+                                                                                                                   "type":  "string",
+                                                                                                                   "format":  "uuid"
+                                                                                                               }
+                                                                                                }
+                                                                                            ],
+                                                                             "responses":  {
+                                                                                               "204":  {
+                                                                                                           "description":  "No Content"
+                                                                                                       }
+                                                                                           }
+                                                                         }
+                                                           },
                   "/api/admin/books/{bookId}":  {
                                                     "delete":  {
                                                                    "tags":  [
@@ -1600,23 +1919,11 @@
                                                               "operationId":  "getMyBadges",
                                                               "parameters":  [
                                                                                  {
-                                                                                     "name":  "page",
+                                                                                     "name":  "pageable",
                                                                                      "in":  "query",
-                                                                                     "required":  false,
+                                                                                     "required":  true,
                                                                                      "schema":  {
-                                                                                                    "type":  "integer",
-                                                                                                    "format":  "int32",
-                                                                                                    "default":  0
-                                                                                                }
-                                                                                 },
-                                                                                 {
-                                                                                     "name":  "size",
-                                                                                     "in":  "query",
-                                                                                     "required":  false,
-                                                                                     "schema":  {
-                                                                                                    "type":  "integer",
-                                                                                                    "format":  "int32",
-                                                                                                    "default":  20
+                                                                                                    "$ref":  "#/components/schemas/Pageable"
                                                                                                 }
                                                                                  }
                                                                              ],
@@ -1779,6 +2086,93 @@
                                                                        }
                                                      }
                                          },
+                  "/api/v1/readings/{bookId}/narrative":  {
+                                                              "get":  {
+                                                                          "tags":  [
+                                                                                       "Readings"
+                                                                                   ],
+                                                                          "summary":  "Obter estado da trama",
+                                                                          "description":  "Retorna beat narrativo, personagens conhecidos, quizzes e conquistas para a pÃ¡gina atual",
+                                                                          "operationId":  "getNarrativeInsight",
+                                                                          "parameters":  [
+                                                                                             {
+                                                                                                 "name":  "bookId",
+                                                                                                 "in":  "path",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "string",
+                                                                                                                "format":  "uuid"
+                                                                                                            }
+                                                                                             },
+                                                                                             {
+                                                                                                 "name":  "currentPage",
+                                                                                                 "in":  "query",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "integer",
+                                                                                                                "format":  "int32"
+                                                                                                            }
+                                                                                             }
+                                                                                         ],
+                                                                          "responses":  {
+                                                                                            "200":  {
+                                                                                                        "description":  "Insights narrativos retornados com sucesso",
+                                                                                                        "content":  {
+                                                                                                                        "*/*":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/ReadingNarrativeInsightResponse"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "400":  {
+                                                                                                        "description":  "PÃ¡gina atual invÃ¡lida",
+                                                                                                        "content":  {
+                                                                                                                        "*/*":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/ReadingNarrativeInsightResponse"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "404":  {
+                                                                                                        "description":  "Livro ou usuÃ¡rio nÃ£o encontrado",
+                                                                                                        "content":  {
+                                                                                                                        "*/*":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/ReadingNarrativeInsightResponse"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                                    }
+                                                                                                    }
+                                                                                        }
+                                                                      }
+                                                          },
+                  "/api/v1/readings/me":  {
+                                              "get":  {
+                                                          "tags":  [
+                                                                       "Readings"
+                                                                   ],
+                                                          "summary":  "Listar histÃ³rico de leituras",
+                                                          "description":  "Retorna as leituras do usuÃ¡rio logado ordenadas pela Ãºltima atualizaÃ§Ã£o",
+                                                          "operationId":  "listMyReadings",
+                                                          "responses":  {
+                                                                            "200":  {
+                                                                                        "description":  "HistÃ³rico retornado com sucesso",
+                                                                                        "content":  {
+                                                                                                        "*/*":  {
+                                                                                                                    "schema":  {
+                                                                                                                                   "type":  "array",
+                                                                                                                                   "items":  {
+                                                                                                                                                 "$ref":  "#/components/schemas/ReadingResponse"
+                                                                                                                                             }
+                                                                                                                               }
+                                                                                                                }
+                                                                                                    }
+                                                                                    }
+                                                                        }
+                                                      }
+                                          },
                   "/api/v1/home/resume":  {
                                               "get":  {
                                                           "tags":  [
@@ -2013,6 +2407,14 @@
                                                                                       }
                                                                        },
                                                                        {
+                                                                           "name":  "author",
+                                                                           "in":  "query",
+                                                                           "required":  false,
+                                                                           "schema":  {
+                                                                                          "type":  "string"
+                                                                                      }
+                                                                       },
+                                                                       {
                                                                            "name":  "categoryIds",
                                                                            "in":  "query",
                                                                            "required":  false,
@@ -2070,6 +2472,15 @@
                                                                            "schema":  {
                                                                                           "type":  "string",
                                                                                           "format":  "date"
+                                                                                      }
+                                                                       },
+                                                                       {
+                                                                           "name":  "includeWithoutPdf",
+                                                                           "in":  "query",
+                                                                           "required":  false,
+                                                                           "schema":  {
+                                                                                          "type":  "boolean",
+                                                                                          "default":  false
                                                                                       }
                                                                        },
                                                                        {
@@ -2152,6 +2563,103 @@
                                                                            }
                                                          }
                                              },
+                  "/api/v1/books/{bookId}/pdf":  {
+                                                     "get":  {
+                                                                 "tags":  [
+                                                                              "Books"
+                                                                          ],
+                                                                 "summary":  "Ler PDF do livro",
+                                                                 "description":  "Retorna o PDF do livro para leitura no navegador ou download",
+                                                                 "operationId":  "readBookPdf",
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "bookId",
+                                                                                        "in":  "path",
+                                                                                        "required":  true,
+                                                                                        "schema":  {
+                                                                                                       "type":  "string",
+                                                                                                       "format":  "uuid"
+                                                                                                   }
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "download",
+                                                                                        "in":  "query",
+                                                                                        "required":  false,
+                                                                                        "schema":  {
+                                                                                                       "type":  "boolean",
+                                                                                                       "default":  false
+                                                                                                   }
+                                                                                    }
+                                                                                ],
+                                                                 "responses":  {
+                                                                                   "200":  {
+                                                                                               "description":  "PDF retornado com sucesso",
+                                                                                               "content":  {
+                                                                                                               "*/*":  {
+                                                                                                                           "schema":  {
+                                                                                                                                          "type":  "string",
+                                                                                                                                          "format":  "binary"
+                                                                                                                                      }
+                                                                                                                       }
+                                                                                                           }
+                                                                                           },
+                                                                                   "404":  {
+                                                                                               "description":  "PDF nÃ£o encontrado",
+                                                                                               "content":  {
+                                                                                                               "*/*":  {
+                                                                                                                           "schema":  {
+                                                                                                                                          "type":  "string",
+                                                                                                                                          "format":  "binary"
+                                                                                                                                      }
+                                                                                                                       }
+                                                                                                           }
+                                                                                           }
+                                                                               }
+                                                             }
+                                                 },
+                  "/api/v1/books/{bookId}/external-reader":  {
+                                                                 "get":  {
+                                                                             "tags":  [
+                                                                                          "Books"
+                                                                                      ],
+                                                                             "summary":  "Resolver leitor externo",
+                                                                             "description":  "Retorna URL incorporÃ¡vel quando o livro externo permite leitura dentro da plataforma",
+                                                                             "operationId":  "getExternalReader",
+                                                                             "parameters":  [
+                                                                                                {
+                                                                                                    "name":  "bookId",
+                                                                                                    "in":  "path",
+                                                                                                    "required":  true,
+                                                                                                    "schema":  {
+                                                                                                                   "type":  "string",
+                                                                                                                   "format":  "uuid"
+                                                                                                               }
+                                                                                                }
+                                                                                            ],
+                                                                             "responses":  {
+                                                                                               "200":  {
+                                                                                                           "description":  "Leitor externo resolvido",
+                                                                                                           "content":  {
+                                                                                                                           "*/*":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/ExternalReaderResponse"
+                                                                                                                                                  }
+                                                                                                                                   }
+                                                                                                                       }
+                                                                                                       },
+                                                                                               "404":  {
+                                                                                                           "description":  "Livro nÃ£o encontrado",
+                                                                                                           "content":  {
+                                                                                                                           "*/*":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/ExternalReaderResponse"
+                                                                                                                                                  }
+                                                                                                                                   }
+                                                                                                                       }
+                                                                                                       }
+                                                                                           }
+                                                                         }
+                                                             },
                   "/api/v1/books/recommendations":  {
                                                         "get":  {
                                                                     "tags":  [
@@ -2207,6 +2715,34 @@
                                                        "operationId":  "getAllUsers",
                                                        "parameters":  [
                                                                           {
+                                                                              "name":  "q",
+                                                                              "in":  "query",
+                                                                              "required":  false,
+                                                                              "schema":  {
+                                                                                             "type":  "string"
+                                                                                         }
+                                                                          },
+                                                                          {
+                                                                              "name":  "active",
+                                                                              "in":  "query",
+                                                                              "required":  false,
+                                                                              "schema":  {
+                                                                                             "type":  "boolean"
+                                                                                         }
+                                                                          },
+                                                                          {
+                                                                              "name":  "role",
+                                                                              "in":  "query",
+                                                                              "required":  false,
+                                                                              "schema":  {
+                                                                                             "type":  "string",
+                                                                                             "enum":  [
+                                                                                                          "USER",
+                                                                                                          "ADMIN"
+                                                                                                      ]
+                                                                                         }
+                                                                          },
+                                                                          {
                                                                               "name":  "pageable",
                                                                               "in":  "query",
                                                                               "required":  true,
@@ -2229,74 +2765,6 @@
                                                                      }
                                                    }
                                        },
-                  "/api/admin/users/{userId}":  {
-                                                    "get":  {
-                                                                "tags":  [
-                                                                             "[Admin]"
-                                                                         ],
-                                                                "summary":  "Buscar usuÃ¡rio por ID (admin)",
-                                                                "operationId":  "getUserById",
-                                                                "parameters":  [
-                                                                                   {
-                                                                                       "name":  "userId",
-                                                                                       "in":  "path",
-                                                                                       "required":  true,
-                                                                                       "schema":  {
-                                                                                                      "type":  "string",
-                                                                                                      "format":  "uuid"
-                                                                                                  }
-                                                                                   }
-                                                                               ],
-                                                                "responses":  {
-                                                                                  "200":  {
-                                                                                              "description":  "UsuÃ¡rio encontrado com sucesso",
-                                                                                              "content":  {
-                                                                                                              "*/*":  {
-                                                                                                                          "schema":  {
-                                                                                                                                         "$ref":  "#/components/schemas/UserResponse"
-                                                                                                                                     }
-                                                                                                                      }
-                                                                                                          }
-                                                                                          },
-                                                                                  "404":  {
-                                                                                              "description":  "UsuÃ¡rio nÃ£o encontrado",
-                                                                                              "content":  {
-                                                                                                              "*/*":  {
-                                                                                                                          "schema":  {
-                                                                                                                                         "$ref":  "#/components/schemas/UserResponse"
-                                                                                                                                     }
-                                                                                                                      }
-                                                                                                          }
-                                                                                          }
-                                                                              }
-                                                            },
-                                                    "delete":  {
-                                                                   "tags":  [
-                                                                                "[Admin]"
-                                                                            ],
-                                                                   "summary":  "Invalidar usuÃ¡rio por ID (admin)",
-                                                                   "operationId":  "invalidateUser",
-                                                                   "parameters":  [
-                                                                                      {
-                                                                                          "name":  "userId",
-                                                                                          "in":  "path",
-                                                                                          "required":  true,
-                                                                                          "schema":  {
-                                                                                                         "type":  "string",
-                                                                                                         "format":  "uuid"
-                                                                                                     }
-                                                                                      }
-                                                                                  ],
-                                                                   "responses":  {
-                                                                                     "204":  {
-                                                                                                 "description":  "UsuÃ¡rio invalidado com sucesso"
-                                                                                             },
-                                                                                     "404":  {
-                                                                                                 "description":  "UsuÃ¡rio nÃ£o encontrado"
-                                                                                             }
-                                                                                 }
-                                                               }
-                                                },
                   "/api/admin/metrics":  {
                                              "get":  {
                                                          "tags":  [
@@ -2379,6 +2847,14 @@
                                                                    "description":  "Lista envios de alertas por e-mail com filtros opcionais",
                                                                    "operationId":  "listDeliveries",
                                                                    "parameters":  [
+                                                                                      {
+                                                                                          "name":  "q",
+                                                                                          "in":  "query",
+                                                                                          "required":  false,
+                                                                                          "schema":  {
+                                                                                                         "type":  "string"
+                                                                                                     }
+                                                                                      },
                                                                                       {
                                                                                           "name":  "userId",
                                                                                           "in":  "query",
@@ -2489,7 +2965,16 @@
                                                                                                         "type":  "boolean",
                                                                                                         "description":  "Receber alertas internos de leitura",
                                                                                                         "example":  true
-                                                                                                    }
+                                                                                                    },
+                                                                                    "role":  {
+                                                                                                 "type":  "string",
+                                                                                                 "description":  "Papel do usuÃ¡rio",
+                                                                                                 "enum":  [
+                                                                                                              "USER",
+                                                                                                              "ADMIN"
+                                                                                                          ],
+                                                                                                 "example":  "ADMIN"
+                                                                                             }
                                                                                 }
                                                              },
                                        "ReadingGoalRequest":  {
@@ -2600,32 +3085,32 @@
                                                        },
                                        "CollectionUpsertRequest":  {
                                                                        "type":  "object",
-                                                                       "description":  "Dados para criar ou atualizar uma coleÃ§Ã£o",
+                                                                       "description":  "Dados para criar ou atualizar uma colecao",
                                                                        "properties":  {
                                                                                           "title":  {
                                                                                                         "type":  "string",
-                                                                                                        "description":  "TÃ­tulo da coleÃ§Ã£o",
-                                                                                                        "example":  "ClÃ¡ssicos brasileiros",
+                                                                                                        "description":  "Titulo da colecao",
+                                                                                                        "example":  "Classicos brasileiros",
                                                                                                         "maxLength":  120,
                                                                                                         "minLength":  0
                                                                                                     },
                                                                                           "description":  {
                                                                                                               "type":  "string",
-                                                                                                              "description":  "DescriÃ§Ã£o da coleÃ§Ã£o",
-                                                                                                              "example":  "SeleÃ§Ã£o de obras clÃ¡ssicas",
+                                                                                                              "description":  "Descricao da colecao",
+                                                                                                              "example":  "Selecao de obras classicas",
                                                                                                               "maxLength":  500,
                                                                                                               "minLength":  0
                                                                                                           },
                                                                                           "coverUrl":  {
                                                                                                            "type":  "string",
-                                                                                                           "description":  "URL da capa da coleÃ§Ã£o",
+                                                                                                           "description":  "URL da capa da colecao",
                                                                                                            "example":  "https://cdn.exemplo.com/capas/classicos.jpg",
                                                                                                            "maxLength":  512,
                                                                                                            "minLength":  0
                                                                                                        },
                                                                                           "bookIds":  {
                                                                                                           "type":  "array",
-                                                                                                          "description":  "IDs de livros que pertencem Ã  coleÃ§Ã£o",
+                                                                                                          "description":  "IDs de livros que pertencem a colecao",
                                                                                                           "items":  {
                                                                                                                         "type":  "string",
                                                                                                                         "format":  "uuid"
@@ -2647,6 +3132,9 @@
                                                                                    "title":  {
                                                                                                  "type":  "string"
                                                                                              },
+                                                                                   "author":  {
+                                                                                                  "type":  "string"
+                                                                                              },
                                                                                    "isbn":  {
                                                                                                 "type":  "string"
                                                                                             },
@@ -2663,6 +3151,17 @@
                                                                                                 },
                                                                                    "hasPdf":  {
                                                                                                   "type":  "boolean"
+                                                                                              },
+                                                                                   "hasNarrative":  {
+                                                                                                        "type":  "boolean"
+                                                                                                    },
+                                                                                   "source":  {
+                                                                                                  "type":  "string",
+                                                                                                  "enum":  [
+                                                                                                               "LOCAL",
+                                                                                                               "OPEN",
+                                                                                                               "GUTENBERG"
+                                                                                                           ]
                                                                                               },
                                                                                    "categories":  {
                                                                                                       "type":  "array",
@@ -2962,12 +3461,22 @@
                                                                                "email":  {
                                                                                              "type":  "string"
                                                                                          },
+                                                                               "active":  {
+                                                                                              "type":  "boolean"
+                                                                                          },
                                                                                "leaderboardOptIn":  {
                                                                                                         "type":  "boolean"
                                                                                                     },
                                                                                "alertsOptIn":  {
                                                                                                    "type":  "boolean"
                                                                                                },
+                                                                               "role":  {
+                                                                                            "type":  "string",
+                                                                                            "enum":  [
+                                                                                                         "USER",
+                                                                                                         "ADMIN"
+                                                                                                     ]
+                                                                                        },
                                                                                "badges":  {
                                                                                               "type":  "array",
                                                                                               "items":  {
@@ -3004,6 +3513,17 @@
                                                                                    "bookIsbn":  {
                                                                                                     "type":  "string"
                                                                                                 },
+                                                                                   "coverUrl":  {
+                                                                                                    "type":  "string"
+                                                                                                },
+                                                                                   "source":  {
+                                                                                                  "type":  "string",
+                                                                                                  "enum":  [
+                                                                                                               "LOCAL",
+                                                                                                               "OPEN",
+                                                                                                               "GUTENBERG"
+                                                                                                           ]
+                                                                                              },
                                                                                    "createdAt":  {
                                                                                                      "type":  "string",
                                                                                                      "format":  "date-time"
@@ -3108,6 +3628,9 @@
                                                                                "title":  {
                                                                                              "type":  "string"
                                                                                          },
+                                                                               "author":  {
+                                                                                              "type":  "string"
+                                                                                          },
                                                                                "isbn":  {
                                                                                             "type":  "string"
                                                                                         },
@@ -3124,6 +3647,17 @@
                                                                                             },
                                                                                "hasPdf":  {
                                                                                               "type":  "boolean"
+                                                                                          },
+                                                                               "hasNarrative":  {
+                                                                                                    "type":  "boolean"
+                                                                                                },
+                                                                               "source":  {
+                                                                                              "type":  "string",
+                                                                                              "enum":  [
+                                                                                                           "LOCAL",
+                                                                                                           "OPEN",
+                                                                                                           "GUTENBERG"
+                                                                                                       ]
                                                                                           },
                                                                                "categories":  {
                                                                                                   "type":  "array",
@@ -3178,6 +3712,24 @@
                                                                                                  }
                                                                               }
                                                            },
+                                       "ResetPasswordRequest":  {
+                                                                    "type":  "object",
+                                                                    "properties":  {
+                                                                                       "token":  {
+                                                                                                     "type":  "string",
+                                                                                                     "minLength":  1
+                                                                                                 },
+                                                                                       "newPassword":  {
+                                                                                                           "type":  "string",
+                                                                                                           "maxLength":  2147483647,
+                                                                                                           "minLength":  6
+                                                                                                       }
+                                                                                   },
+                                                                    "required":  [
+                                                                                     "newPassword",
+                                                                                     "token"
+                                                                                 ]
+                                                                },
                                        "LoginRequest":  {
                                                             "type":  "object",
                                                             "description":  "Dados para login do usuÃ¡rio",
@@ -3221,6 +3773,24 @@
                                                                                          }
                                                                            }
                                                         },
+                                       "ForgotPasswordRequest":  {
+                                                                     "type":  "object",
+                                                                     "properties":  {
+                                                                                        "email":  {
+                                                                                                      "type":  "string",
+                                                                                                      "format":  "email",
+                                                                                                      "minLength":  1
+                                                                                                  },
+                                                                                        "baseUrl":  {
+                                                                                                        "type":  "string",
+                                                                                                        "maxLength":  255,
+                                                                                                        "minLength":  0
+                                                                                                    }
+                                                                                    },
+                                                                     "required":  [
+                                                                                      "email"
+                                                                                  ]
+                                                                 },
                                        "BookCreateRequest":  {
                                                                  "type":  "object",
                                                                  "description":  "Dados para criar um novo livro",
@@ -3231,6 +3801,12 @@
                                                                                                   "example":  "O Senhor dos AnÃ©is",
                                                                                                   "minLength":  1
                                                                                               },
+                                                                                    "author":  {
+                                                                                                   "type":  "string",
+                                                                                                   "description":  "Autor do livro",
+                                                                                                   "example":  "J. R. R. Tolkien",
+                                                                                                   "minLength":  1
+                                                                                               },
                                                                                     "isbn":  {
                                                                                                  "type":  "string",
                                                                                                  "description":  "ISBN do livro",
@@ -3252,7 +3828,9 @@
                                                                                     "coverUrl":  {
                                                                                                      "type":  "string",
                                                                                                      "description":  "URL da capa do livro",
-                                                                                                     "example":  "https://exemplo.com/capas/senhor-dos-aneis.jpg"
+                                                                                                     "example":  "https://exemplo.com/capas/senhor-dos-aneis.jpg",
+                                                                                                     "maxLength":  512,
+                                                                                                     "minLength":  0
                                                                                                  },
                                                                                     "categories":  {
                                                                                                        "type":  "array",
@@ -3267,12 +3845,92 @@
                                                                                                    }
                                                                                 },
                                                                  "required":  [
+                                                                                  "author",
                                                                                   "isbn",
                                                                                   "numberOfPages",
                                                                                   "publicationDate",
                                                                                   "title"
                                                                               ]
                                                              },
+                                       "ExternalBooksImportRequest":  {
+                                                                          "type":  "object",
+                                                                          "description":  "Parametros para importacao de livros de API externa",
+                                                                          "properties":  {
+                                                                                             "query":  {
+                                                                                                           "type":  "string",
+                                                                                                           "description":  "Termo de busca. Na Open Library pode usar subject:fiction; no Gutenberg use temas como fiction, adventure ou mystery.",
+                                                                                                           "example":  "fiction",
+                                                                                                           "minLength":  1
+                                                                                                       },
+                                                                                             "pages":  {
+                                                                                                           "type":  "integer",
+                                                                                                           "format":  "int32",
+                                                                                                           "description":  "Quantidade de paginas da fonte externa para consultar antes de parar",
+                                                                                                           "example":  5,
+                                                                                                           "maximum":  20,
+                                                                                                           "minimum":  1
+                                                                                                       },
+                                                                                             "pageSize":  {
+                                                                                                              "type":  "integer",
+                                                                                                              "format":  "int32",
+                                                                                                              "description":  "Quantidade de itens por pagina na API externa. No Gutenberg este valor e mantido por compatibilidade.",
+                                                                                                              "example":  100,
+                                                                                                              "maximum":  100,
+                                                                                                              "minimum":  1
+                                                                                                          },
+                                                                                             "readableOnly":  {
+                                                                                                                  "type":  "boolean",
+                                                                                                                  "description":  "Na Open Library importa apenas livros com leitor externo incorporavel. No Gutenberg a leitura interna e sempre priorizada.",
+                                                                                                                  "example":  true
+                                                                                                              },
+                                                                                             "targetImportCount":  {
+                                                                                                                       "type":  "integer",
+                                                                                                                       "format":  "int32",
+                                                                                                                       "description":  "Quantidade alvo de livros importados antes de parar",
+                                                                                                                       "example":  100,
+                                                                                                                       "maximum":  500,
+                                                                                                                       "minimum":  1
+                                                                                                                   }
+                                                                                         },
+                                                                          "required":  [
+                                                                                           "pageSize",
+                                                                                           "pages",
+                                                                                           "query"
+                                                                                       ]
+                                                                      },
+                                       "ExternalBooksImportResponse":  {
+                                                                           "type":  "object",
+                                                                           "description":  "Resultado da importaÃ§Ã£o de livros de API externa",
+                                                                           "properties":  {
+                                                                                              "fetched":  {
+                                                                                                              "type":  "integer",
+                                                                                                              "format":  "int32",
+                                                                                                              "description":  "Quantidade total de registros lidos da API"
+                                                                                                          },
+                                                                                              "imported":  {
+                                                                                                               "type":  "integer",
+                                                                                                               "format":  "int32",
+                                                                                                               "description":  "Quantidade de livros importados no banco"
+                                                                                                           },
+                                                                                              "skipped":  {
+                                                                                                              "type":  "integer",
+                                                                                                              "format":  "int32",
+                                                                                                              "description":  "Quantidade de registros pulados por validaÃ§Ã£o ou duplicidade"
+                                                                                                          },
+                                                                                              "failed":  {
+                                                                                                             "type":  "integer",
+                                                                                                             "format":  "int32",
+                                                                                                             "description":  "Quantidade de falhas inesperadas"
+                                                                                                         },
+                                                                                              "messages":  {
+                                                                                                               "type":  "array",
+                                                                                                               "description":  "Mensagens de processamento (limitadas)",
+                                                                                                               "items":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                           }
+                                                                                          }
+                                                                       },
                                        "ReviewUpdateRequest":  {
                                                                    "type":  "object",
                                                                    "description":  "Dados para criar uma avaliaÃ§Ã£o",
@@ -3306,6 +3964,11 @@
                                                                                                   "description":  "TÃ­tulo do livro",
                                                                                                   "example":  "O Senhor dos AnÃ©is"
                                                                                               },
+                                                                                    "author":  {
+                                                                                                   "type":  "string",
+                                                                                                   "description":  "Autor do livro",
+                                                                                                   "example":  "J. R. R. Tolkien"
+                                                                                               },
                                                                                     "isbn":  {
                                                                                                  "type":  "string",
                                                                                                  "description":  "ISBN do livro",
@@ -3324,6 +3987,13 @@
                                                                                                             "example":  "1954-07-29",
                                                                                                             "pattern":  "yyyy-MM-dd"
                                                                                                         },
+                                                                                    "coverUrl":  {
+                                                                                                     "type":  "string",
+                                                                                                     "description":  "URL da capa do livro",
+                                                                                                     "example":  "https://exemplo.com/capas/senhor-dos-aneis.jpg",
+                                                                                                     "maxLength":  512,
+                                                                                                     "minLength":  0
+                                                                                                 },
                                                                                     "available":  {
                                                                                                       "type":  "boolean",
                                                                                                       "description":  "Livro disponÃ­vel",
@@ -3407,6 +4077,27 @@
                                                                                                         }
                                                                                          }
                                                                       },
+                                       "Pageable":  {
+                                                        "type":  "object",
+                                                        "properties":  {
+                                                                           "page":  {
+                                                                                        "type":  "integer",
+                                                                                        "format":  "int32",
+                                                                                        "minimum":  0
+                                                                                    },
+                                                                           "size":  {
+                                                                                        "type":  "integer",
+                                                                                        "format":  "int32",
+                                                                                        "minimum":  1
+                                                                                    },
+                                                                           "sort":  {
+                                                                                        "type":  "array",
+                                                                                        "items":  {
+                                                                                                      "type":  "string"
+                                                                                                  }
+                                                                                    }
+                                                                       }
+                                                    },
                                        "PageMetadata":  {
                                                             "type":  "object",
                                                             "properties":  {
@@ -3461,27 +4152,6 @@
                                                                                                       }
                                                                                        }
                                                                     },
-                                       "Pageable":  {
-                                                        "type":  "object",
-                                                        "properties":  {
-                                                                           "page":  {
-                                                                                        "type":  "integer",
-                                                                                        "format":  "int32",
-                                                                                        "minimum":  0
-                                                                                    },
-                                                                           "size":  {
-                                                                                        "type":  "integer",
-                                                                                        "format":  "int32",
-                                                                                        "minimum":  1
-                                                                                    },
-                                                                           "sort":  {
-                                                                                        "type":  "array",
-                                                                                        "items":  {
-                                                                                                      "type":  "string"
-                                                                                                  }
-                                                                                    }
-                                                                       }
-                                                    },
                                        "PagedModelReviewResponse":  {
                                                                         "type":  "object",
                                                                         "properties":  {
@@ -3496,6 +4166,112 @@
                                                                                                     }
                                                                                        }
                                                                     },
+                                       "NarrativeAchievementResponse":  {
+                                                                            "type":  "object",
+                                                                            "properties":  {
+                                                                                               "code":  {
+                                                                                                            "type":  "string"
+                                                                                                        },
+                                                                                               "title":  {
+                                                                                                             "type":  "string"
+                                                                                                         },
+                                                                                               "description":  {
+                                                                                                                   "type":  "string"
+                                                                                                               },
+                                                                                               "flashcardSymbol":  {
+                                                                                                                       "type":  "string"
+                                                                                                                   },
+                                                                                               "unlockPage":  {
+                                                                                                                  "type":  "integer",
+                                                                                                                  "format":  "int32"
+                                                                                                              },
+                                                                                               "unlocked":  {
+                                                                                                                "type":  "boolean"
+                                                                                                            }
+                                                                                           }
+                                                                        },
+                                       "NarrativeCharacterResponse":  {
+                                                                          "type":  "object",
+                                                                          "properties":  {
+                                                                                             "name":  {
+                                                                                                          "type":  "string"
+                                                                                                      },
+                                                                                             "role":  {
+                                                                                                          "type":  "string"
+                                                                                                      },
+                                                                                             "note":  {
+                                                                                                          "type":  "string"
+                                                                                                      }
+                                                                                         }
+                                                                      },
+                                       "NarrativeQuizResponse":  {
+                                                                     "type":  "object",
+                                                                     "properties":  {
+                                                                                        "id":  {
+                                                                                                   "type":  "string"
+                                                                                               },
+                                                                                        "question":  {
+                                                                                                         "type":  "string"
+                                                                                                     },
+                                                                                        "options":  {
+                                                                                                        "type":  "array",
+                                                                                                        "items":  {
+                                                                                                                      "type":  "string"
+                                                                                                                  }
+                                                                                                    },
+                                                                                        "correctOption":  {
+                                                                                                              "type":  "string"
+                                                                                                          },
+                                                                                        "explanation":  {
+                                                                                                            "type":  "string"
+                                                                                                        }
+                                                                                    }
+                                                                 },
+                                       "ReadingNarrativeInsightResponse":  {
+                                                                               "type":  "object",
+                                                                               "properties":  {
+                                                                                                  "bookId":  {
+                                                                                                                 "type":  "string",
+                                                                                                                 "format":  "uuid"
+                                                                                                             },
+                                                                                                  "currentPage":  {
+                                                                                                                      "type":  "integer",
+                                                                                                                      "format":  "int32"
+                                                                                                                  },
+                                                                                                  "phase":  {
+                                                                                                                "type":  "string",
+                                                                                                                "enum":  [
+                                                                                                                             "BEGINNING",
+                                                                                                                             "MIDDLE",
+                                                                                                                             "CLIMAX"
+                                                                                                                         ]
+                                                                                                            },
+                                                                                                  "beatTitle":  {
+                                                                                                                    "type":  "string"
+                                                                                                                },
+                                                                                                  "plotState":  {
+                                                                                                                    "type":  "string"
+                                                                                                                },
+                                                                                                  "knownCharacters":  {
+                                                                                                                          "type":  "array",
+                                                                                                                          "items":  {
+                                                                                                                                        "$ref":  "#/components/schemas/NarrativeCharacterResponse"
+                                                                                                                                    }
+                                                                                                                      },
+                                                                                                  "quizzes":  {
+                                                                                                                  "type":  "array",
+                                                                                                                  "items":  {
+                                                                                                                                "$ref":  "#/components/schemas/NarrativeQuizResponse"
+                                                                                                                            }
+                                                                                                              },
+                                                                                                  "achievements":  {
+                                                                                                                       "type":  "array",
+                                                                                                                       "items":  {
+                                                                                                                                     "$ref":  "#/components/schemas/NarrativeAchievementResponse"
+                                                                                                                                 }
+                                                                                                                   }
+                                                                                              }
+                                                                           },
                                        "BookHomeResponse":  {
                                                                 "type":  "object",
                                                                 "properties":  {
@@ -3506,6 +4282,20 @@
                                                                                    "title":  {
                                                                                                  "type":  "string"
                                                                                              },
+                                                                                   "isbn":  {
+                                                                                                "type":  "string"
+                                                                                            },
+                                                                                   "coverUrl":  {
+                                                                                                    "type":  "string"
+                                                                                                },
+                                                                                   "source":  {
+                                                                                                  "type":  "string",
+                                                                                                  "enum":  [
+                                                                                                               "LOCAL",
+                                                                                                               "OPEN",
+                                                                                                               "GUTENBERG"
+                                                                                                           ]
+                                                                                              },
                                                                                    "favorite":  {
                                                                                                     "type":  "boolean"
                                                                                                 }
@@ -3615,6 +4405,9 @@
                                                                                      "bookTitle":  {
                                                                                                        "type":  "string"
                                                                                                    },
+                                                                                     "bookIsbn":  {
+                                                                                                      "type":  "string"
+                                                                                                  },
                                                                                      "bookCoverUrl":  {
                                                                                                           "type":  "string"
                                                                                                       },
@@ -3693,6 +4486,9 @@
                                                                                   "title":  {
                                                                                                 "type":  "string"
                                                                                             },
+                                                                                  "author":  {
+                                                                                                 "type":  "string"
+                                                                                             },
                                                                                   "isbn":  {
                                                                                                "type":  "string"
                                                                                            },
@@ -3709,6 +4505,17 @@
                                                                                                },
                                                                                   "hasPdf":  {
                                                                                                  "type":  "boolean"
+                                                                                             },
+                                                                                  "hasNarrative":  {
+                                                                                                       "type":  "boolean"
+                                                                                                   },
+                                                                                  "source":  {
+                                                                                                 "type":  "string",
+                                                                                                 "enum":  [
+                                                                                                              "LOCAL",
+                                                                                                              "OPEN",
+                                                                                                              "GUTENBERG"
+                                                                                                          ]
                                                                                              },
                                                                                   "categories":  {
                                                                                                      "type":  "array",
@@ -3735,6 +4542,30 @@
                                                                                              }
                                                                               }
                                                            },
+                                       "ExternalReaderResponse":  {
+                                                                      "type":  "object",
+                                                                      "properties":  {
+                                                                                         "bookId":  {
+                                                                                                        "type":  "string",
+                                                                                                        "format":  "uuid"
+                                                                                                    },
+                                                                                         "source":  {
+                                                                                                        "type":  "string"
+                                                                                                    },
+                                                                                         "availableInsideApp":  {
+                                                                                                                    "type":  "boolean"
+                                                                                                                },
+                                                                                         "embedUrl":  {
+                                                                                                          "type":  "string"
+                                                                                                      },
+                                                                                         "fallbackUrl":  {
+                                                                                                             "type":  "string"
+                                                                                                         },
+                                                                                         "message":  {
+                                                                                                         "type":  "string"
+                                                                                                     }
+                                                                                     }
+                                                                  },
                                        "PagedModelUserResponse":  {
                                                                       "type":  "object",
                                                                       "properties":  {

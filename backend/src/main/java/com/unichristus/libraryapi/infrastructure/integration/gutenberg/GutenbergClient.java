@@ -11,9 +11,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class GutenbergClient {
@@ -64,6 +66,7 @@ public class GutenbergClient {
         String normalizedQuery = query == null || query.isBlank() || query.equals("project-gutenberg-curated")
                 ? "fiction"
                 : query.trim();
+        Set<Integer> seenIds = new HashSet<>();
 
         for (int page = 1; page <= pages && books.size() < targetCount; page++) {
             try {
@@ -85,7 +88,11 @@ public class GutenbergClient {
 
                 for (JsonNode node : results) {
                     Optional<GutenbergBook> maybeBook = toBook(node);
-                    maybeBook.ifPresent(books::add);
+                    maybeBook.ifPresent(book -> {
+                        if (seenIds.add(book.id())) {
+                            books.add(book);
+                        }
+                    });
                     if (books.size() >= targetCount) {
                         break;
                     }
@@ -146,7 +153,13 @@ public class GutenbergClient {
         String title = node.path("title").asText("");
         String author = firstAuthor(node.path("authors"));
         String textUrl = formatUrl(node.path("formats"), "text/plain");
-        if (id <= 0 || title.isBlank() || textUrl == null || textUrl.isBlank()) {
+        String mediaType = node.path("media_type").asText("");
+        if (id <= 0
+                || title.isBlank()
+                || textUrl == null
+                || textUrl.isBlank()
+                || !mediaType.equalsIgnoreCase("Text")
+                || isLowQualityCatalogTitle(title)) {
             return Optional.empty();
         }
 
@@ -192,6 +205,22 @@ public class GutenbergClient {
     private int estimatePages(String value) {
         int words = value == null || value.isBlank() ? 45_000 : Math.max(12_000, value.split("\\s+").length * 8);
         return Math.max(40, Math.min(650, words / 260));
+    }
+
+    private boolean isLowQualityCatalogTitle(String title) {
+        String normalized = title.toLowerCase();
+        return normalized.contains("linked index")
+                || normalized.contains("project gutenberg works")
+                || normalized.contains("project gutenberg complete works")
+                || normalized.contains("complete project gutenberg")
+                || normalized.contains("catalogue")
+                || normalized.contains("catalog ")
+                || normalized.contains("index of ")
+                || normalized.contains("bibliography")
+                || normalized.contains("audio reading")
+                || normalized.contains("illustrated index")
+                || normalized.contains("errata")
+                || normalized.contains("transcriber's note");
     }
 
     private String urlEncode(String value) {

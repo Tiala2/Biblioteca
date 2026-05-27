@@ -1879,9 +1879,9 @@ label {
 .rating-picker__star {
   display: inline-grid;
   place-items: center;
-  flex: 0 0 38px;
-  width: 38px;
-  height: 38px;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border-radius: 8px;
   border: 1px solid color-mix(in srgb, var(--gold) 28%, var(--card-border));
@@ -1913,7 +1913,7 @@ label {
 
 .aura-panel > form .rating-picker__star,
 .card > form:not(.login-form) .rating-picker__star {
-  width: 38px;
+  width: 44px;
   justify-self: auto;
 }
 
@@ -2073,6 +2073,11 @@ form {
 
 .admin-selected-book strong {
   color: var(--text-main);
+}
+
+.admin-import-hint {
+  grid-column: 1 / -1;
+  margin: 0;
 }
 
 .admin-import-summary {
@@ -3791,10 +3796,10 @@ body[data-theme="day"] .login-form {
 
   .aura-panel > form .rating-picker__star,
   .card > form:not(.login-form) .rating-picker__star {
-    flex: 0 0 38px;
-    width: 38px;
-    min-width: 38px;
-    max-width: 38px;
+    flex: 0 0 44px;
+    width: 44px;
+    min-width: 44px;
+    max-width: 44px;
     justify-self: auto;
   }
 

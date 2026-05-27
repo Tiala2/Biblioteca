@@ -317,7 +317,7 @@ export function ReviewsPage() {
                 </strong>
                 <small>
                   {selectedBook.author ?? "Autoria ainda não informada"}
-                  {selectedBook.source === "OPEN" ? " · Open Library" : ""}
+                  {selectedBook.source && selectedBook.source !== "LOCAL" ? ` · ${formatBookSource(selectedBook.source)}` : ""}
                 </small>
                 <div className="review-book-badges">
                   <span className={selectedBook.source === "OPEN" ? "import-badge" : "favorite-badge"}>

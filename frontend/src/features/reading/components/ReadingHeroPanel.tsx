@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { BookCover } from "@shared/ui/books/BookCover";
+import { formatReadingMode } from "@shared/lib/presentation";
 import type { BookDetail } from "../types";
 import { humanizeNarrativeText } from "../lib/readingPresentation";
 
@@ -38,13 +39,11 @@ export function ReadingHeroPanel({
   onSyncReading,
   onToggleFavorite,
 }: ReadingHeroPanelProps) {
-  const readingModeLabel = book.hasPdf
-    ? "PDF no app"
-    : book.source === "OPEN"
-      ? "Open Library"
-      : "Progresso manual";
+  const readingModeLabel = formatReadingMode(book.hasPdf, book.source);
   const description = book.hasPdf
-    ? "Leia no app, acompanhe a fase narrativa e salve o progresso sem sair da experiência."
+    ? book.source === "GUTENBERG"
+      ? "Leia o texto importado do Project Gutenberg dentro do app, com progresso, metas e contexto narrativo no mesmo fluxo."
+      : "Leia no app, acompanhe a fase narrativa e salve o progresso sem sair da experiência."
     : book.source === "OPEN"
       ? "Leia na fonte oficial e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
       : "Registre manualmente a página atual enquanto o PDF local não está disponível no app.";

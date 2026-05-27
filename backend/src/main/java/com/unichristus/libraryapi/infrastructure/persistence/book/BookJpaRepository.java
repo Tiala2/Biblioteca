@@ -38,13 +38,24 @@ public interface BookJpaRepository extends JpaRepository<Book, UUID> {
     Page<Book> findBooksByAvailableTrueAndHasPdfTrue(Pageable pageable);
 
     @Query(value = """
-            SELECT DISTINCT b.*
+            SELECT DISTINCT b.*,
+                   (SELECT CASE WHEN COUNT(nb.id) > 0 THEN TRUE ELSE FALSE END
+                    FROM book_narrative_beats nb
+                    WHERE nb.book_id = b.id) AS hasNarrative
             FROM books b
             INNER JOIN book_categories bc ON b.id = bc.book_id
             WHERE bc.category_id = :categoryId
             AND b.available = true
             ORDER BY b.title
-            """, nativeQuery = true)
+            """,
+            countQuery = """
+            SELECT COUNT(DISTINCT b.id)
+            FROM books b
+            INNER JOIN book_categories bc ON b.id = bc.book_id
+            WHERE bc.category_id = :categoryId
+            AND b.available = true
+            """,
+            nativeQuery = true)
     Page<Book> findBooksByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
         @Query(value = """

@@ -1,8 +1,12 @@
 package com.unichristus.libraryapi;
 
 import com.unichristus.libraryapi.infrastructure.integration.openlibrary.OpenLibraryClient;
+import com.unichristus.libraryapi.infrastructure.integration.gutenberg.GutenbergClient;
+import com.unichristus.libraryapi.infrastructure.persistence.book.BookJpaRepository;
+import io.minio.MinioClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -18,8 +22,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminBookImportIntegrationTest extends IntegrationTestSupport {
 
+    @Autowired
+    private BookJpaRepository bookJpaRepository;
+
     @MockitoBean
     private OpenLibraryClient openLibraryClient;
+
+    @MockitoBean
+    private GutenbergClient gutenbergClient;
+
+    @MockitoBean
+    private MinioClient minioClient;
 
     @Test
     @DisplayName("Deve importar livros da Open Library como admin")
@@ -107,6 +120,51 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
+    @DisplayName("Deve importar livro do Project Gutenberg com leitura interna como admin")
+    void shouldImportGutenbergBookWithInternalReadingAsAdmin() throws Exception {
+        String adminToken = registerPromoteAndLoginAdmin("Admin Gutenberg Import", "admin-gutenberg" + System.nanoTime() + "@email.com", "StrongPass123");
+        String importedTitle = "Gutenberg Import Test " + System.nanoTime();
+        GutenbergClient.GutenbergBook candidate = new GutenbergClient.GutenbergBook(
+                775_001,
+                importedTitle,
+                "Jane Example",
+                30,
+                1890,
+                "https://example.com/gutenberg-cover.jpg",
+                "https://www.gutenberg.org/cache/epub/775001/pg775001.txt"
+        );
+
+        when(gutenbergClient.searchReadableBooks(eq("fiction"), eq(1), eq(3)))
+                .thenReturn(List.of(candidate));
+        when(gutenbergClient.downloadPlainText(eq(candidate.textUrl()), eq(candidate.id())))
+                .thenReturn("word ".repeat(3_000));
+
+        String responseBody = mockMvc.perform(post("/api/admin/books/import/gutenberg")
+                        .header("Authorization", bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "query": "fiction",
+                                  "pages": 1,
+                                  "pageSize": 100,
+                                  "readableOnly": true,
+                                  "targetImportCount": 1
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        assertThat(responseBody).contains("\"imported\":1");
+
+        var savedBook = bookJpaRepository.findByIsbn("9789000775001").orElseThrow();
+        assertThat(savedBook.getTitle()).isEqualTo(importedTitle);
+        assertThat(savedBook.isHasPdf()).isTrue();
+        assertThat(savedBook.getSource().name()).isEqualTo("GUTENBERG");
+    }
+
+    @Test
     @DisplayName("Deve retornar resultado parcial quando uma pagina externa falha na importacao admin")
     void shouldReturnPartialImportWhenExternalPageFails() throws Exception {
         String adminToken = registerPromoteAndLoginAdmin("Admin Import Partial", "admin-import-partial" + System.nanoTime() + "@email.com", "StrongPass123");
@@ -144,7 +202,7 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
 
         assertThat(responseBody).contains("\"imported\":1");
         assertThat(responseBody).contains("\"failed\":1");
-        assertThat(responseBody).contains("Failed fetching Open Library page 2");
+        assertThat(responseBody).contains("página 2 da Open Library");
 
         String listBody = mockMvc.perform(get("/api/v1/books")
                         .param("includeWithoutPdf", "true")

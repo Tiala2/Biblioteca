@@ -12,6 +12,7 @@ import type {
   CategoryForm,
   Collection,
   CollectionForm,
+  ImportProvider,
   ImportResult,
   Tag,
   TagForm,
@@ -37,6 +38,7 @@ type AdminCatalogSectionProps = {
   importReadableOnly: boolean;
   importTargetCount: number;
   importResult: ImportResult | null;
+  importProvider: ImportProvider;
   onSubmitBook: (event: FormEvent) => Promise<void>;
   onSubmitUpload: (event: FormEvent) => Promise<void>;
   onSubmitCover: (event: FormEvent) => Promise<void>;
@@ -92,6 +94,7 @@ export function AdminCatalogSection({
   importReadableOnly,
   importTargetCount,
   importResult,
+  importProvider,
   onSubmitBook,
   onSubmitUpload,
   onSubmitCover,
@@ -149,6 +152,7 @@ export function AdminCatalogSection({
         importReadableOnly={importReadableOnly}
         importTargetCount={importTargetCount}
         importResult={importResult}
+        importProvider={importProvider}
         onSubmitBook={onSubmitBook}
         onSubmitUpload={onSubmitUpload}
         onSubmitCover={onSubmitCover}

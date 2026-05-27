@@ -6,6 +6,7 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { useToast } from "@shared/ui/toast/ToastContext";
 import { StateCard } from "@shared/ui/feedback/StateCard";
+import { formatReadingMode } from "@shared/lib/presentation";
 import { readReaderCache, writeReaderCache } from "../lib/readerCache";
 import { clampPage, formatStatusLabel, getPhaseLabel } from "../lib/readingPresentation";
 import { AchievementsPanel } from "../components/AchievementsPanel";
@@ -50,7 +51,7 @@ export function ReadingExperiencePage() {
 
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
   const isExternalReading = Boolean(book && !book.hasPdf && book.source === "OPEN");
-  const sourceLabel = book?.source === "OPEN" ? "Open Library" : book?.hasPdf ? "Leitura no app" : "Catálogo com progresso";
+  const sourceLabel = formatReadingMode(book?.hasPdf, book?.source);
   const derivedProgress = Math.round((currentPage / totalPages) * 100);
   const progressPercent = Math.max(0, Math.min(100, readingSnapshot?.progress ?? derivedProgress));
   const pagesRemaining = Math.max(totalPages - currentPage, 0);

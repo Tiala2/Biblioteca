@@ -27,6 +27,10 @@ import java.util.Set;
 public class BookImportUseCase {
 
     private static final int MESSAGE_LIMIT = 40;
+    private static final int MIN_GUTENBERG_WORDS = 2_000;
+    private static final int GUTENBERG_CANDIDATE_BUFFER_MULTIPLIER = 3;
+    private static final int MAX_GUTENBERG_CANDIDATES = 500;
+    private static final int WORDS_PER_PAGE = 260;
 
     private final OpenLibraryClient openLibraryClient;
     private final GutenbergClient gutenbergClient;
@@ -130,10 +134,11 @@ public class BookImportUseCase {
         int failed = 0;
         List<String> messages = new ArrayList<>();
         int targetImportCount = request.resolvedTargetImportCount();
+        int candidateLimit = resolveGutenbergCandidateLimit(targetImportCount);
         List<GutenbergClient.GutenbergBook> candidates = gutenbergClient.searchReadableBooks(
-                request.query(),
+                normalizeGutenbergQuery(request.query()),
                 request.pages(),
-                targetImportCount);
+                candidateLimit);
 
         for (GutenbergClient.GutenbergBook candidate : candidates) {
             if (imported >= targetImportCount) {
@@ -147,14 +152,22 @@ public class BookImportUseCase {
                     addMessage(messages, "Livro '%s' ignorado: texto nao encontrado no Project Gutenberg.".formatted(candidate.title()));
                     continue;
                 }
+                int wordCount = countWords(text);
+                if (wordCount < MIN_GUTENBERG_WORDS) {
+                    skipped++;
+                    addMessage(messages, "Livro '%s' ignorado: texto muito curto para leitura interna completa.".formatted(candidate.title()));
+                    continue;
+                }
+                int estimatedPages = estimatePagesFromWordCount(wordCount);
 
                 Book book = bookService.upsertGutenbergBook(
                         candidate.title(),
                         candidate.author(),
                         gutenbergIsbn(candidate.id()),
-                        candidate.pages(),
+                        estimatedPages,
                         LocalDate.of(candidate.year(), 1, 1),
                         candidate.coverUrl());
+                book.setNumberOfPages(estimatedPages);
 
                 byte[] pdf = textPdfRenderer.render(book.getTitle(), book.getAuthor(), text);
                 minioFileStorageService.uploadPdf(pdf, book.getId().toString(), "application/pdf");
@@ -232,5 +245,42 @@ public class BookImportUseCase {
 
     private String gutenbergIsbn(int gutenbergId) {
         return "9789" + "%09d".formatted(gutenbergId);
+    }
+
+    private int resolveGutenbergCandidateLimit(int targetImportCount) {
+        if (targetImportCount == Integer.MAX_VALUE) {
+            return MAX_GUTENBERG_CANDIDATES;
+        }
+        long buffered = (long) targetImportCount * GUTENBERG_CANDIDATE_BUFFER_MULTIPLIER;
+        return (int) Math.max(1, Math.min(MAX_GUTENBERG_CANDIDATES, buffered));
+    }
+
+    private String normalizeGutenbergQuery(String query) {
+        if (query == null || query.isBlank() || query.equals("project-gutenberg-curated")) {
+            return "fiction";
+        }
+        String normalized = query.trim();
+        if (normalized.regionMatches(true, 0, "subject:", 0, "subject:".length())) {
+            normalized = normalized.substring("subject:".length()).trim();
+        }
+        return normalized.isBlank() ? "fiction" : normalized;
+    }
+
+    private int estimatePagesFromText(String text) {
+        if (text == null || text.isBlank()) {
+            return 40;
+        }
+        return estimatePagesFromWordCount(countWords(text));
+    }
+
+    private int estimatePagesFromWordCount(int wordCount) {
+        return Math.max(20, Math.min(900, (int) Math.ceil(wordCount / (double) WORDS_PER_PAGE)));
+    }
+
+    private int countWords(String text) {
+        if (text == null || text.isBlank()) {
+            return 0;
+        }
+        return text.trim().split("\\s+").length;
     }
 }
