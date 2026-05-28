@@ -38,10 +38,16 @@ Resumo:
 
 - Executar validacao autenticada tela por tela no computador da apresentacao.
 - Guardar prints finais das telas principais.
-- Confirmar backup final do banco Docker.
 - Confirmar credenciais de demonstracao.
 - Conferir manualmente os prints locais em `docs/generated/evidencias-2026-05-27`.
 - Repetir smoke operacional/E2E somente se houver nova alteracao de backend, frontend ou dados antes da apresentacao.
+
+## Backup local
+
+- Backup final gerado em `backend/backups/20260527-225728`.
+- Arquivo compactado para compartilhamento local: `backend/backups/20260527-225728.zip`.
+- Conteudo: dump PostgreSQL e volume MinIO.
+- Observacao: a pasta `backend/backups` e ignorada pelo Git; guardar o zip fora do repositorio antes da apresentacao.
 
 ## Decisao recomendada
 
