@@ -227,7 +227,7 @@ export function LeaderboardPage() {
         <div className="stats-grid aura-stats">
           <div className="stat-box">
             <Crown aria-hidden="true" />
-            <strong>{topEntry ? topEntry.name : "Classificação aguardando participantes"}</strong>
+            <strong>{topEntry ? topEntry.name : "Aguardando leitores"}</strong>
             <span>líder atual</span>
           </div>
           <div className="stat-box">

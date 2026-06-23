@@ -8,7 +8,6 @@ import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
-import { formatBookSource, formatReadingMode } from "@shared/lib/presentation";
 
 type Category = { id: string; name: string };
 type Tag = { id: string; name: string };
@@ -106,7 +105,7 @@ export function BooksPage() {
     if (applied.minPages) filters.push({ key: "minPages", label: `Mínimo: ${applied.minPages} páginas` });
     if (applied.maxPages) filters.push({ key: "maxPages", label: `Máximo: ${applied.maxPages} páginas` });
     if (applied.sort !== DEFAULT_SORT) filters.push({ key: "sort", label: `Ordem: ${formatSort(applied.sort)}` });
-    if (applied.onlyWithPdf) filters.push({ key: "withPdf", label: "Somente leitura disponível" });
+    if (applied.onlyWithPdf) filters.push({ key: "withPdf", label: "Leitura disponível" });
 
     return filters;
   }, [applied, categories, tags]);
@@ -386,13 +385,14 @@ export function BooksPage() {
             <option value="TRENDING_WEEK">Tendência semanal</option>
             <option value="TRENDING_MONTH">Tendência mensal</option>
           </select>
-          <label className="check-inline">
+          <label className={onlyWithPdfInput ? "availability-toggle active" : "availability-toggle"}>
             <input
               type="checkbox"
               checked={onlyWithPdfInput}
               onChange={(event) => onWithPdfChange(event.target.checked)}
             />
-            Somente leitura disponível
+            <BookOpen aria-hidden="true" />
+            <span>Leitura disponível</span>
           </label>
           <div className="filter-actions">
             <button type="submit">
@@ -490,26 +490,11 @@ export function BooksPage() {
               <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
             </Link>
             <div className="book-card-content">
-              <div className="book-card-badges">
-                {book.source && book.source !== "LOCAL" && <span className="import-badge">{formatBookSource(book.source)}</span>}
-                <span className={book.hasPdf ? "favorite-badge" : "import-badge"}>{formatReadingMode(book.hasPdf, book.source)}</span>
-                {book.hasNarrative && <span className="favorite-badge">Recursos interativos</span>}
-                {favoriteBookIds.has(book.id) && <span className="favorite-badge">Na estante</span>}
-              </div>
               <h3>
                 <Link to={`/books/${book.id}`} className="text-link">
                   {book.title}
                 </Link>
               </h3>
-              <p>{book.author || "Autor não informado"}</p>
-              <p className="book-card-meta">{book.numberOfPages} páginas</p>
-              <small>
-                {book.hasPdf
-                  ? "Leitura integrada"
-                  : book.source === "OPEN"
-                    ? "Atualização manual"
-                    : "Atualização manual"}
-              </small>
             </div>
             <div className="card-actions">
               <Link to={`/books/${book.id}`} className="btn-muted btn-link" aria-label={`Abrir detalhes de ${book.title}`}>

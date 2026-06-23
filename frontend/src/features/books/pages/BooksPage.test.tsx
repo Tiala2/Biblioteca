@@ -85,7 +85,8 @@ describe("BooksPage", () => {
     expect(screen.getByText(/Total visível:/)).toBeInTheDocument();
     expect(screen.getByText("320")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
-    expect(screen.getByText("Recursos interativos")).toBeInTheDocument();
+    expect(screen.queryByText("Recursos interativos")).not.toBeInTheDocument();
+    expect(screen.queryByText("Autor não informado")).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Livro B" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Abrir Livro A" })).toHaveAttribute("href", "/books/1/read");
     expect(screen.getByRole("link", { name: "Abrir Livro B" })).toHaveAttribute("href", "/books/2/read");
@@ -219,7 +220,7 @@ describe("BooksPage", () => {
     );
 
     expect(await screen.findByText("Busca: Hobbit")).toBeInTheDocument();
-    expect(screen.getAllByText("Somente leitura disponível").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText("Leitura disponível").length).toBeGreaterThanOrEqual(2);
     expect(screen.getByText("Ordem: Lançamentos")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Remover filtro Busca: Hobbit" }));
