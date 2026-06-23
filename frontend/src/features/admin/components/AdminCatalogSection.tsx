@@ -30,6 +30,7 @@ type AdminCatalogSectionProps = {
   busyKey: string | null;
   uploadBookId: string;
   uploadFile: File | null;
+  createBookFile: File | null;
   coverBookId: string;
   coverBookUrl: string;
   importQuery: string;
@@ -37,6 +38,7 @@ type AdminCatalogSectionProps = {
   importPageSize: number;
   importReadableOnly: boolean;
   importTargetCount: number;
+  importLanguage: "pt" | "en";
   importResult: ImportResult | null;
   importProvider: ImportProvider;
   onSubmitBook: (event: FormEvent) => Promise<void>;
@@ -52,11 +54,13 @@ type AdminCatalogSectionProps = {
   onCoverBookChange: (bookId: string) => void;
   onCoverUrlChange: (value: string) => void;
   onUploadFileChange: (file: File | null) => void;
+  onCreateBookFileChange: (file: File | null) => void;
   onImportQueryChange: (value: string) => void;
   onImportPagesChange: (value: number) => void;
   onImportPageSizeChange: (value: number) => void;
   onImportReadableOnlyChange: (value: boolean) => void;
   onImportTargetCountChange: (value: number) => void;
+  onImportLanguageChange: (value: "pt" | "en") => void;
   onSubmitCategory: (event: FormEvent) => Promise<void>;
   onCategoryFormChange: (updater: (previous: CategoryForm) => CategoryForm) => void;
   onEditCategory: (category: Category) => void;
@@ -86,6 +90,7 @@ export function AdminCatalogSection({
   busyKey,
   uploadBookId,
   uploadFile,
+  createBookFile,
   coverBookId,
   coverBookUrl,
   importQuery,
@@ -93,6 +98,7 @@ export function AdminCatalogSection({
   importPageSize,
   importReadableOnly,
   importTargetCount,
+  importLanguage,
   importResult,
   importProvider,
   onSubmitBook,
@@ -108,11 +114,13 @@ export function AdminCatalogSection({
   onCoverBookChange,
   onCoverUrlChange,
   onUploadFileChange,
+  onCreateBookFileChange,
   onImportQueryChange,
   onImportPagesChange,
   onImportPageSizeChange,
   onImportReadableOnlyChange,
   onImportTargetCountChange,
+  onImportLanguageChange,
   onSubmitCategory,
   onCategoryFormChange,
   onEditCategory,
@@ -131,7 +139,7 @@ export function AdminCatalogSection({
 }: AdminCatalogSectionProps) {
   return (
     <AdminSection
-      eyebrow="Catálogo"
+      eyebrow="Gestão do Catálogo"
       title="Acervo e descoberta"
       description="Cadastre livros, organize categorias, tags e coleções sem sair do mesmo fluxo."
       icon={<LibraryBig aria-hidden="true" />}
@@ -144,6 +152,7 @@ export function AdminCatalogSection({
         busyKey={busyKey}
         uploadBookId={uploadBookId}
         uploadFile={uploadFile}
+        createBookFile={createBookFile}
         coverBookId={coverBookId}
         coverBookUrl={coverBookUrl}
         importQuery={importQuery}
@@ -151,6 +160,7 @@ export function AdminCatalogSection({
         importPageSize={importPageSize}
         importReadableOnly={importReadableOnly}
         importTargetCount={importTargetCount}
+        importLanguage={importLanguage}
         importResult={importResult}
         importProvider={importProvider}
         onSubmitBook={onSubmitBook}
@@ -166,11 +176,13 @@ export function AdminCatalogSection({
         onCoverBookChange={onCoverBookChange}
         onCoverUrlChange={onCoverUrlChange}
         onUploadFileChange={onUploadFileChange}
+        onCreateBookFileChange={onCreateBookFileChange}
         onImportQueryChange={onImportQueryChange}
         onImportPagesChange={onImportPagesChange}
         onImportPageSizeChange={onImportPageSizeChange}
         onImportReadableOnlyChange={onImportReadableOnlyChange}
         onImportTargetCountChange={onImportTargetCountChange}
+        onImportLanguageChange={onImportLanguageChange}
       />
 
       <CategoryPanel
@@ -203,6 +215,7 @@ export function AdminCatalogSection({
         onSubmit={onSubmitCollection}
         onFormChange={onCollectionFormChange}
         onEdit={onEditCollection}
+        onEditBook={onEditBook}
         onReset={onResetCollection}
         onDelete={onDeleteCollection}
       />

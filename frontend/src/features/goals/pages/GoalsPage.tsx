@@ -1,5 +1,5 @@
 import type { FormEvent } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BellRing, CalendarClock, Flame, Gauge, Target } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
@@ -75,15 +75,18 @@ function formatAlertSeverity(severity: string) {
 export function GoalsPage() {
   const headers = useAuthHeaders();
   const { showToast } = useToast();
-  const [targetPages, setTargetPages] = useState(120);
+  const [targetPages, setTargetPages] = useState("120");
   const [goal, setGoal] = useState<GoalResponse | null>(null);
   const [alerts, setAlerts] = useState<AlertResponse[]>([]);
   const [streak, setStreak] = useState<number>(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const goalFormRef = useRef<HTMLFormElement | null>(null);
 
   const period = useMemo(() => parsePeriod(searchParams.get("period")), [searchParams]);
+  const requestedAction = searchParams.get("action") ?? "";
 
   const loadAll = useCallback(async (selectedPeriod: Period) => {
     if (!headers) return;
@@ -98,7 +101,7 @@ export function GoalsPage() {
       const nextGoal = normalizeGoal(goalRes.data);
       setGoal(nextGoal);
       if (nextGoal) {
-        setTargetPages(nextGoal.targetPages);
+        setTargetPages(String(nextGoal.targetPages));
       }
 
       setAlerts(Array.isArray(alertsRes.data) ? alertsRes.data : []);
@@ -115,6 +118,15 @@ export function GoalsPage() {
     void loadAll(period);
   }, [loadAll, period]);
 
+  useEffect(() => {
+    if (!loading && requestedAction === "config") {
+      window.requestAnimationFrame(() => {
+        goalFormRef.current?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+        goalFormRef.current?.querySelector<HTMLElement>("input, select, button")?.focus();
+      });
+    }
+  }, [loading, requestedAction]);
+
   const onPeriodChange = (nextPeriod: Period) => {
     const params = new URLSearchParams(searchParams);
     if (nextPeriod === "MONTHLY") {
@@ -128,12 +140,14 @@ export function GoalsPage() {
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!headers) return;
+    const normalizedTargetPages = Math.max(1, Number(targetPages) || 1);
+    setSaving(true);
     try {
-      const response = await api.put<GoalResponse>("/api/v1/users/me/goals", { period, targetPages: Number(targetPages) }, { headers });
+      const response = await api.put<GoalResponse>("/api/v1/users/me/goals", { period, targetPages: normalizedTargetPages }, { headers });
       const nextGoal = normalizeGoal(response.data);
       setGoal(nextGoal);
       if (nextGoal) {
-        setTargetPages(nextGoal.targetPages);
+        setTargetPages(String(nextGoal.targetPages));
       }
 
       const [alertsResult, streakResult] = await Promise.allSettled([
@@ -155,10 +169,14 @@ export function GoalsPage() {
       const message = extractApiErrorMessage(error, "Não foi possível salvar a meta.");
       setError(message);
       showToast(message, "error");
+    } finally {
+      setSaving(false);
     }
   };
 
-  const progressPercent = Math.max(0, Math.min(100, Number(goal?.progressPercent ?? 0)));
+  const progressPercent = goal
+    ? Math.max(0, Math.min(100, (goal.progressPages / Math.max(goal.targetPages, 1)) * 100))
+    : 0;
   const suggestedDailyPages = goal && goal.expiresInDays > 0 ? Math.ceil(goal.remainingPages / goal.expiresInDays) : goal?.remainingPages ?? 0;
   const paceLabel = goal?.paceWarning ? "Ajuste necessário" : "Bom ritmo";
   const goalInsights = useMemo(() => {
@@ -183,7 +201,7 @@ export function GoalsPage() {
   }
 
   return (
-    <section className="grid aura-page">
+    <section className="grid aura-page aura-page--goals">
       <article className="card hero aura-hero aura-hero--goals">
         <div className="aura-hero__content">
           <div>
@@ -199,12 +217,12 @@ export function GoalsPage() {
         </div>
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-panel--goal-form">
         <div className="section-head">
-          <h3><Target aria-hidden="true" /> Configurar meta</h3>
+          <h3><Target aria-hidden="true" /> {goal ? "Ajustar meta" : "Nova meta"}</h3>
           <span className="kpi">{period === "WEEKLY" ? "Semanal" : "Mensal"}</span>
         </div>
-        <form id="goal-form" onSubmit={onSubmit}>
+        <form id="goal-form" ref={goalFormRef} onSubmit={onSubmit}>
           <label>Período</label>
           <select aria-label="Período da meta" value={period} onChange={(event) => onPeriodChange(event.target.value as Period)}>
             <option value="WEEKLY">Semanal</option>
@@ -217,16 +235,16 @@ export function GoalsPage() {
             type="number"
             min={1}
             value={targetPages}
-            onChange={(event) => setTargetPages(Number(event.target.value))}
+            onChange={(event) => setTargetPages(event.target.value)}
           />
-          <button type="submit">Salvar meta</button>
+          <button type="submit" disabled={saving}>{saving ? "Salvando..." : "Salvar meta"}</button>
         </form>
       </article>
 
-      <article className="card aura-panel aura-panel--focus">
+      <article className="card aura-panel aura-panel--focus aura-panel--goal-progress">
         <div className="section-head">
-          <h3><Gauge aria-hidden="true" /> Resumo</h3>
-          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} páginas` : "Sem meta ativa"}</span>
+          <h3><Gauge aria-hidden="true" /> Progresso da meta</h3>
+          <span className="kpi">{goal ? `${goal.progressPages}/${goal.targetPages} páginas` : "Nenhuma meta definida"}</span>
         </div>
         {goal ? (
           <>
@@ -263,7 +281,7 @@ export function GoalsPage() {
                   ? `${pluralizePt(goalInsights.highPriorityAlerts, "alerta prioritário", "alertas prioritários")}`
                   : "Sem alerta prioritário"}
               </span>
-              <span className="section-sub">Meta {formatReadingStatus(goal.status).toLowerCase()}</span>
+              <span className="section-sub">{goal.status === "COMPLETED" ? "Meta alcançada" : `Meta ${formatReadingStatus(goal.status).toLowerCase()}`}</span>
             </div>
             <p>Leitura acumulada: {goal.progressPages} páginas de {goal.targetPages} planejadas.</p>
             <div className="goal-plan-note">
@@ -295,15 +313,15 @@ export function GoalsPage() {
               <Link to="/books" className="btn-muted btn-link">
                 Escolher livro
               </Link>
-              <button type="submit" form="goal-form">
-                Criar meta
+              <button type="submit" form="goal-form" disabled={saving}>
+                {saving ? "Salvando..." : "Definir meta"}
               </button>
             </div>
           </>
         )}
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-panel--goal-alerts">
         <div className="section-head">
           <h3><BellRing aria-hidden="true" /> Alertas</h3>
           <span className="kpi">{pluralizePt(alerts.length, "aviso", "avisos")}</span>
@@ -322,7 +340,7 @@ export function GoalsPage() {
                     <strong>{formatAlertSeverity(alert.severity)}</strong>
                     <span className="import-badge">{formatAlertType(alert.type)}</span>
                   </div>
-                  <p className="section-sub">{alert.message}</p>
+                  <p className="section-sub text-break">{alert.message}</p>
                 </div>
                 {alert.suggestedDailyPages ? (
                   <span className="kpi">{alert.suggestedDailyPages} páginas/dia</span>

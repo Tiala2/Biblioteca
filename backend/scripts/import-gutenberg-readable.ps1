@@ -15,7 +15,11 @@ param(
   [int]$Pages = 10,
 
   [Parameter(Mandatory = $false)]
-  [int]$TargetCount = 10
+  [int]$TargetCount = 10,
+
+  [Parameter(Mandatory = $false)]
+  [ValidateSet("pt", "en")]
+  [string]$Language = "pt"
 )
 
 $ErrorActionPreference = "Stop"
@@ -35,6 +39,7 @@ $ApiUrl = $ApiUrl.TrimEnd("/")
 Write-Host "== Project Gutenberg internal reader import ==" -ForegroundColor Cyan
 Write-Host "API: $ApiUrl"
 Write-Host "Query: $Query"
+Write-Host "Language: $Language"
 Write-Host "Target: $TargetCount book(s) with internal reading"
 
 $loginBody = @{
@@ -58,6 +63,7 @@ $importBody = @{
   pageSize = 100
   readableOnly = $true
   targetImportCount = $TargetCount
+  language = $Language
 } | ConvertTo-Json
 
 $result = Invoke-RestMethod -Method POST -Uri "$ApiUrl/api/admin/books/import/gutenberg" -Headers $headers -ContentType "application/json" -Body $importBody

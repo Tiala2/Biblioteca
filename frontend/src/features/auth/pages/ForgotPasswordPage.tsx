@@ -2,7 +2,7 @@ import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { isAxiosError } from "axios";
-import { BookOpen, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { extractApiErrorMessage, extractFieldErrorMessages } from "@shared/api/errors";
 import { api } from "@shared/api/http";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -25,6 +25,8 @@ export function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resetDone, setResetDone] = useState(false);
   const [tokenInvalid, setTokenInvalid] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,7 +42,7 @@ export function ForgotPasswordPage() {
         baseUrl: window.location.origin,
       });
       setSubmitted(true);
-      showToast("Solicitacao registrada. Verifique seu email.", "info");
+      showToast("Solicitação registrada. Verifique seu email.", "info");
     } catch (err: unknown) {
       if (!isAxiosError(err)) {
         setError("Não foi possível enviar o email de recuperação.");
@@ -104,11 +106,17 @@ export function ForgotPasswordPage() {
       <section className="login-shell">
         <form className="login-form ds-glass-card" onSubmit={isResetFlow ? onSubmitReset : onSubmitRequest}>
           <div className="login-logo">
-            <BookOpen size={28} strokeWidth={2.2} />
-            <span>Library</span>
+            <img src="/assets/brand/library-journey-icon.png" alt="" aria-hidden="true" />
+            <span className="login-brand-text">
+              <strong>Library</strong>
+            </span>
           </div>
-          <h2 className="login-title">{isResetFlow ? "Definir nova senha" : "Recuperar senha"}</h2>
-          <p className="login-subtitle">{isResetFlow ? "Defina sua nova senha pelo link enviado no email" : "Recuperação de senha"}</p>
+          <h2 className="login-title">{isResetFlow ? "Criar nova senha" : "Recuperar acesso"}</h2>
+          <p className="login-subtitle">
+            {isResetFlow
+              ? "Defina uma senha segura para continuar sua jornada."
+              : "Informe seu email e enviaremos um link seguro para você voltar à leitura."}
+          </p>
 
           {!isResetFlow && (
             <>
@@ -120,6 +128,7 @@ export function ForgotPasswordPage() {
                   className="login-input ds-input"
                   type="email"
                   placeholder="Digite seu email"
+                  autoComplete="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   required
@@ -132,37 +141,55 @@ export function ForgotPasswordPage() {
             <>
               {tokenInvalid && (
                 <p className="login-footnote">
-                  Link inválido ou expirado. Você pode solicitar um novo link para continuar.
+                  Link inválido ou expirado. Solicite um novo link para continuar.
                 </p>
               )}
               <label htmlFor="reset-password">Nova senha</label>
-              <div className="login-input-wrap ds-input-wrap">
+              <div className="login-input-wrap login-input-wrap--password ds-input-wrap">
                 <span className="login-input-icon ds-input-icon" aria-hidden="true"><Lock size={18} /></span>
                 <input
                   id="reset-password"
                   className="login-input ds-input"
-                  type="password"
+                  type={showNewPassword ? "text" : "password"}
                   placeholder="Mínimo de 6 caracteres"
+                  autoComplete="new-password"
                   value={newPassword}
                   onChange={(event) => setNewPassword(event.target.value)}
                   required
                   minLength={6}
                 />
+                <button
+                  type="button"
+                  className="login-password-toggle"
+                  aria-label={showNewPassword ? "Ocultar nova senha" : "Mostrar nova senha"}
+                  onClick={() => setShowNewPassword((current) => !current)}
+                >
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
 
               <label htmlFor="reset-confirm-password">Confirmar nova senha</label>
-              <div className="login-input-wrap ds-input-wrap">
+              <div className="login-input-wrap login-input-wrap--password ds-input-wrap">
                 <span className="login-input-icon ds-input-icon" aria-hidden="true"><Lock size={18} /></span>
                 <input
                   id="reset-confirm-password"
                   className="login-input ds-input"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Repita a nova senha"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   required
                   minLength={6}
                 />
+                <button
+                  type="button"
+                  className="login-password-toggle"
+                  aria-label={showConfirmPassword ? "Ocultar confirmação de senha" : "Mostrar confirmação de senha"}
+                  onClick={() => setShowConfirmPassword((current) => !current)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </>
           )}
@@ -188,7 +215,7 @@ export function ForgotPasswordPage() {
           {isResetFlow && (
             <button
               type="button"
-              className="login-submit login-submit--secondary ds-btn-primary"
+              className="login-submit login-submit--secondary btn-muted"
               onClick={() => navigate("/forgot-password")}
               disabled={loading}
             >

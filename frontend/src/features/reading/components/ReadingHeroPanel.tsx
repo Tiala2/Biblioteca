@@ -1,3 +1,4 @@
+import { BookOpen, ExternalLink, Heart, Library, MessageCircle, Save } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { formatReadingMode } from "@shared/lib/presentation";
@@ -10,6 +11,7 @@ type ReadingHeroPanelProps = {
   totalPages: number;
   pagesRemaining: number;
   progressPercent: number;
+  phaseLabel: string;
   readingStatusLabel: string;
   isExternalReading: boolean;
   plotState?: string | null;
@@ -28,6 +30,7 @@ export function ReadingHeroPanel({
   totalPages,
   pagesRemaining,
   progressPercent,
+  phaseLabel,
   readingStatusLabel,
   isExternalReading,
   plotState,
@@ -40,12 +43,16 @@ export function ReadingHeroPanel({
   onToggleFavorite,
 }: ReadingHeroPanelProps) {
   const readingModeLabel = formatReadingMode(book.hasPdf, book.source);
+  const internalReaderUrl = internalPdfUrl ? `${internalPdfUrl}#page=${currentPage}` : null;
+  const estimatedMinutes = Math.max(1, Math.ceil(pagesRemaining * 2));
+  const estimatedReadingTimeLabel =
+    estimatedMinutes >= 60 ? `${Math.floor(estimatedMinutes / 60)}h ${estimatedMinutes % 60}min` : `${estimatedMinutes}min`;
   const description = book.hasPdf
     ? book.source === "GUTENBERG"
-      ? "Leia o texto importado do Project Gutenberg dentro do app, com progresso, metas e contexto narrativo no mesmo fluxo."
-      : "Leia no app, acompanhe a fase narrativa e salve o progresso sem sair da experiência."
+      ? "Leia, salve seu progresso e continue de onde parou."
+      : "Leia, salve seu progresso e continue de onde parou."
     : book.source === "OPEN"
-      ? "Leia na fonte oficial e registre aqui a página atual para manter metas, ranking e continuidade da leitura."
+      ? "Leia na fonte oficial e registre aqui a página atual para manter metas, classificação e continuidade da leitura."
       : "Registre manualmente a página atual enquanto o PDF local não está disponível no app.";
 
   return (
@@ -58,37 +65,64 @@ export function ReadingHeroPanel({
         </div>
         <div className="reading-mode-stack">
           <span className="kpi reader-source-badge">{readingModeLabel}</span>
-          <span className="kpi">{progressPercent}% concluído</span>
+          <span className="kpi">{progressPercent}% lido</span>
         </div>
       </div>
 
       <div className="stats-grid">
         <div className="stat-box">
           <strong>{currentPage}</strong>
-          <span>página atual</span>
+          <span>Página atual</span>
         </div>
         <div className="stat-box">
           <strong>{totalPages}</strong>
-          <span>páginas totais</span>
+          <span>Total de páginas</span>
         </div>
         <div className="stat-box">
           <strong>{pagesRemaining}</strong>
-          <span>páginas restantes</span>
+          <span>Páginas restantes</span>
+        </div>
+        <div className="stat-box">
+          <strong>{estimatedReadingTimeLabel}</strong>
+          <span>Tempo estimado</span>
+        </div>
+        <div className="stat-box">
+          <strong>{phaseLabel}</strong>
+          <span>Trecho atual</span>
         </div>
         <div className="stat-box">
           <strong>{readingStatusLabel}</strong>
-          <span>status da leitura</span>
+          <span>Status</span>
         </div>
       </div>
 
       <p className="quote">
         {plotState
-          ? `No trecho atual: ${humanizeNarrativeText(plotState)}`
+          ? `Trecho atual: ${humanizeNarrativeText(plotState)}`
           : "Acompanhe sua narrativa por trecho lido."}
       </p>
 
-      <div className="card-actions">
-        <button type="button" onClick={onSyncReading} disabled={saving}>
+      <div className="card-actions reading-focus-actions">
+        {book.hasPdf && internalReaderUrl ? (
+          <a className="btn-link" href={internalReaderUrl} target="_blank" rel="noreferrer">
+            <BookOpen aria-hidden="true" />
+            Abrir leitura
+          </a>
+        ) : null}
+        {isExternalReading && externalReaderFallbackUrl ? (
+          <a className="btn-link" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
+            <ExternalLink aria-hidden="true" />
+            Abrir fonte externa
+          </a>
+        ) : null}
+        <button
+          type="button"
+          className="btn-muted"
+          aria-label="Salvar progresso pelo resumo da leitura"
+          onClick={onSyncReading}
+          disabled={saving}
+        >
+          <Save aria-hidden="true" />
           {saving ? "Salvando..." : "Salvar progresso"}
         </button>
         <button
@@ -98,21 +132,17 @@ export function ReadingHeroPanel({
           onClick={onToggleFavorite}
           disabled={favoriteLoading}
         >
-          {favoriteLoading ? "Salvando..." : isFavorite ? "Nos favoritos" : "Salvar nos favoritos"}
+          <Heart aria-hidden="true" />
+          {favoriteLoading ? "Salvando..." : isFavorite ? "Na estante" : "Adicionar à estante"}
         </button>
-        <Link to="/books" className="btn-link">
-          Voltar ao catálogo
+        <Link to={`/reviews?bookId=${book.id}&action=create`} className="btn-muted btn-link" aria-label="Avaliar livro">
+          <MessageCircle aria-hidden="true" />
+          Avaliar livro
         </Link>
-        {book.hasPdf && internalPdfUrl ? (
-          <a className="btn-link" href={internalPdfUrl} target="_blank" rel="noreferrer">
-            Abrir leitor
-          </a>
-        ) : null}
-        {isExternalReading && externalReaderFallbackUrl ? (
-          <a className="btn-link" href={externalReaderFallbackUrl} target="_blank" rel="noreferrer">
-            Abrir fonte externa
-          </a>
-        ) : null}
+        <Link to={`/books/${book.id}`} className="btn-muted btn-link">
+          <Library aria-hidden="true" />
+          Ver detalhes
+        </Link>
       </div>
     </article>
   );

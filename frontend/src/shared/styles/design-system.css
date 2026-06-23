@@ -1,31 +1,47 @@
 ﻿:root {
-  --ds-font-family: var(--font-primary, "Manrope", sans-serif);
-  --ds-font-accent: var(--font-display, "Space Grotesk", "Manrope", sans-serif);
+  --ds-font-family: var(--font-primary, "Plus Jakarta Sans", system-ui, sans-serif);
+  --ds-font-accent: var(--font-display, "Plus Jakarta Sans", system-ui, sans-serif);
   --ds-radius-md: var(--radius, 8px);
   --ds-radius-lg: var(--radius-lg, 8px);
-  --ds-galaxy-image:
-    radial-gradient(circle at 12% 16%, rgba(45, 212, 255, 0.28) 0 14rem, transparent 30rem),
-    radial-gradient(circle at 88% 12%, rgba(109, 93, 252, 0.34) 0 16rem, transparent 34rem),
-    radial-gradient(circle at 76% 86%, rgba(255, 95, 158, 0.18) 0 14rem, transparent 30rem),
-    linear-gradient(135deg, #111047 0%, #090b1f 52%, #062f3d 100%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  --ds-galaxy-image: url("/assets/theme/library-night-wide.png");
 
-  --ds-surface-glass: rgba(12, 16, 38, 0.76);
-  --ds-surface-border: rgba(198, 216, 255, 0.2);
-  --ds-surface-shadow: 0 28px 70px rgba(0, 0, 0, 0.36), 0 0 44px rgba(45, 212, 255, 0.12);
+  --ds-surface-glass: rgba(12, 12, 36, 0.74);
+  --ds-surface-border: rgba(212, 210, 255, 0.22);
+  --ds-surface-shadow: 0 30px 80px rgba(0, 0, 0, 0.42), 0 0 54px rgba(139, 92, 246, 0.18);
 
   --ds-text-on-dark: #ffffff;
   --ds-text-on-dark-soft: rgba(233, 233, 255, 0.86);
   --ds-text-on-dark-muted: rgba(240, 240, 255, 0.7);
 
-  --ds-input-bg: rgba(255, 255, 255, 0.08);
-  --ds-input-border: rgba(255, 255, 255, 0.15);
-  --ds-input-focus: var(--primary-b, #5eead4);
+  --ds-input-bg: rgba(255, 255, 255, 0.09);
+  --ds-input-border: rgba(255, 255, 255, 0.16);
+  --ds-input-focus: #2dd4ff;
 
-  --ds-gradient-primary: linear-gradient(90deg, #8b7cff, #2dd4ff);
-  --ds-gradient-overlay: linear-gradient(rgba(9, 11, 31, 0.55), rgba(6, 47, 61, 0.74));
-  --ds-shadow-button: 0 16px 34px rgba(45, 212, 255, 0.24), 0 0 26px rgba(139, 124, 255, 0.16);
+  --ds-gradient-primary:
+    radial-gradient(circle at 16% 22%, rgba(255, 255, 255, 0.82) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 20%, rgba(255, 255, 255, 0.62) 0 1px, transparent 2px),
+    linear-gradient(100deg, #0f3f96 0%, #1d4ed8 42%, #4f46e5 76%, #8b5cf6 100%);
+  --ds-gradient-overlay: linear-gradient(120deg, rgba(5, 7, 26, 0.72), rgba(18, 12, 56, 0.36) 48%, rgba(5, 7, 26, 0.68));
+  --ds-shadow-button: 0 18px 42px rgba(124, 58, 237, 0.34), 0 0 32px rgba(45, 212, 255, 0.18);
+}
+
+body[data-theme="day"] {
+  --ds-galaxy-image: url("/assets/theme/library-day-wide.png");
+  --ds-gradient-overlay: linear-gradient(120deg, rgba(255, 255, 255, 0.38), rgba(255, 248, 232, 0.54) 50%, rgba(255, 255, 255, 0.4));
+  --ds-surface-glass: rgba(255, 255, 255, 0.78);
+  --ds-surface-border: rgba(210, 142, 28, 0.18);
+  --ds-surface-shadow: 0 30px 86px rgba(108, 76, 28, 0.16), 0 0 46px rgba(255, 184, 65, 0.2);
+  --ds-text-on-dark: #172033;
+  --ds-text-on-dark-soft: #607086;
+  --ds-text-on-dark-muted: #7a8798;
+  --ds-input-bg: rgba(255, 255, 255, 0.82);
+  --ds-input-border: rgba(84, 71, 57, 0.14);
+  --ds-input-focus: #0ea5e9;
+  --ds-gradient-primary:
+    radial-gradient(circle at 16% 22%, rgba(255, 255, 255, 0.82) 0 1px, transparent 2px),
+    radial-gradient(circle at 82% 26%, rgba(255, 255, 255, 0.58) 0 1px, transparent 2px),
+    linear-gradient(100deg, #0284c7 0%, #2563eb 44%, #4f46e5 74%, #22d3ee 100%);
+  --ds-shadow-button: 0 18px 36px rgba(37, 99, 235, 0.24), 0 0 28px rgba(34, 211, 238, 0.18);
 }
 
 body {
@@ -34,7 +50,7 @@ body {
 
 .ds-page-bg-galaxy {
   background-image: var(--ds-gradient-overlay), var(--ds-galaxy-image);
-  background-size: cover, auto, auto, auto, auto, 56px 56px, 56px 56px;
+  background-size: cover, cover;
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -77,6 +93,14 @@ body {
   color: rgba(255, 255, 255, 0.6);
 }
 
+body[data-theme="day"] .ds-input::placeholder {
+  color: #7a8798;
+}
+
+body[data-theme="day"] .ds-input-icon {
+  color: #8a6b3d;
+}
+
 .ds-input:focus {
   outline: none;
   border-color: var(--ds-input-focus);
@@ -87,11 +111,21 @@ body {
   border: 0;
   color: #fff;
   background: var(--ds-gradient-primary);
-  border-radius: var(--ds-radius-md);
+  border-radius: 999px;
   transition: all 0.25s ease;
 }
 
 .ds-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: var(--ds-shadow-button);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --ds-galaxy-image: url("/assets/theme/library-night-mobile.png");
+  }
+
+  body[data-theme="day"] {
+    --ds-galaxy-image: url("/assets/theme/library-day-mobile.png");
+  }
 }

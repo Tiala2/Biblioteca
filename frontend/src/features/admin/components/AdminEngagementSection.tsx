@@ -30,7 +30,7 @@ export function AdminEngagementSection({
 }: AdminEngagementSectionProps) {
   return (
     <AdminSection
-      eyebrow="Engajamento"
+      eyebrow="Conquistas e engajamento"
       title="Gamificação e comunidade"
       description="Acompanhe mecanismos de permanência, reputação social e uso real da plataforma."
       icon={<Sparkles aria-hidden="true" />}

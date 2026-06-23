@@ -32,6 +32,9 @@ describe("LeaderboardPage", () => {
       } as never)
       .mockResolvedValueOnce({
         data: { leaderboardOptIn: true },
+      } as never)
+      .mockResolvedValueOnce({
+        data: { readings: [{ book: { id: "book-1" } }] },
       } as never);
 
     render(
@@ -52,6 +55,7 @@ describe("LeaderboardPage", () => {
     expect(screen.getByText("Líder")).toBeInTheDocument();
     expect(screen.getByText("Faltam 30 páginas")).toBeInTheDocument();
     expect(screen.getAllByText("57% do volume").length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: "Continuar lendo" })).toHaveAttribute("href", "/books/book-1/read");
   });
 
   it("deve trocar a metrica ao clicar na aba de livros", async () => {
@@ -63,10 +67,16 @@ describe("LeaderboardPage", () => {
         data: { leaderboardOptIn: false },
       } as never)
       .mockResolvedValueOnce({
+        data: { readings: [] },
+      } as never)
+      .mockResolvedValueOnce({
         data: [{ userId: "3", name: "Carla", value: 4, metric: "BOOKS" }],
       } as never)
       .mockResolvedValueOnce({
         data: { leaderboardOptIn: false },
+      } as never)
+      .mockResolvedValueOnce({
+        data: { readings: [] },
       } as never);
 
     const user = userEvent.setup();
@@ -85,5 +95,25 @@ describe("LeaderboardPage", () => {
       expect(vi.mocked(api.get)).toHaveBeenCalledWith("/api/v1/users/leaderboard?limit=10&metric=BOOKS")
     );
     expect(await screen.findAllByRole("heading", { name: "Carla" })).not.toHaveLength(0);
+  });
+
+  it("deve mostrar podio motivacional quando ranking estiver vazio", async () => {
+    vi.mocked(api.get)
+      .mockResolvedValueOnce({ data: [] } as never)
+      .mockResolvedValueOnce({ data: { leaderboardOptIn: false } } as never)
+      .mockResolvedValueOnce({ data: { readings: [] } } as never);
+
+    render(
+      <MemoryRouter initialEntries={["/leaderboard"]}>
+        <Routes>
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: "Pódio aguardando leitores" })).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { name: "Posição disponível" })).toHaveLength(3);
+    expect(screen.getAllByRole("link", { name: "Começar leitura" })[0]).toHaveAttribute("href", "/books");
+    expect(screen.getAllByRole("link", { name: "Ajustar preferências" })[0]).toHaveAttribute("href", "/profile?action=preferences");
   });
 });

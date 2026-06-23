@@ -31,6 +31,16 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_root="$(cd "$script_dir/.." && pwd)"
 cd "$project_root"
 
+if [[ ! -f .env ]]; then
+  if [[ ! -f .env.example ]]; then
+    echo "Missing .env and .env.example in backend directory." >&2
+    exit 1
+  fi
+
+  cp .env.example .env
+  echo "Created backend/.env from .env.example. Review secrets before production use."
+fi
+
 compose_file="docker-compose.dev.yml"
 if [[ "$mode" == "prod" ]]; then
   compose_file="docker-compose.prod.yml"

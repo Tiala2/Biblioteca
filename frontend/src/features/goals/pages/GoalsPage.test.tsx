@@ -117,4 +117,21 @@ describe("GoalsPage", () => {
     );
     expect(showToast).toHaveBeenCalledWith("Meta atualizada com sucesso.", "success");
   });
+
+  it("deve abrir o formulario de meta direto quando a URL pede configuracao", async () => {
+    mockGoalLoad();
+
+    render(
+      <MemoryRouter initialEntries={["/goals?action=config"]}>
+        <Routes>
+          <Route path="/goals" element={<GoalsPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: /Transforme leitura em/i })).toBeInTheDocument();
+
+    await waitFor(() => expect(screen.getByLabelText(/Per.odo da meta/i)).toHaveFocus());
+    expect(screen.getByRole("button", { name: "Salvar meta" })).toBeInTheDocument();
+  });
 });

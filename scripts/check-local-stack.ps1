@@ -16,14 +16,37 @@ $targets = @(
     @{ Name = "mailpit"; Url = $MailpitUrl }
 )
 
+function Test-HttpTarget {
+    param(
+        [Parameter(Mandatory = $true)][string]$Url
+    )
+
+    $curl = Get-Command curl.exe -ErrorAction SilentlyContinue
+    if ($curl) {
+        $tempFile = New-TemporaryFile
+        try {
+            $statusText = & curl.exe -L -s -o $tempFile.FullName -w "%{http_code}" --max-time 10 $Url
+            if ($statusText -match '^\d+$') {
+                return [int]$statusText
+            }
+        } finally {
+            Remove-Item -LiteralPath $tempFile.FullName -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    $response = Invoke-WebRequest -Uri $Url -Method GET -TimeoutSec 10 -UseBasicParsing
+    return [int]$response.StatusCode
+}
+
 $results = foreach ($target in $targets) {
     try {
-        $response = Invoke-WebRequest -Uri $target.Url -Method GET -TimeoutSec 10
+        $statusCode = Test-HttpTarget -Url $target.Url
+        $isUp = $statusCode -ge 200 -and $statusCode -lt 400
         [pscustomobject]@{
             service = $target.Name
             url = $target.Url
-            status = "UP"
-            httpStatus = [int]$response.StatusCode
+            status = if ($isUp) { "UP" } else { "DOWN" }
+            httpStatus = $statusCode
         }
     } catch {
         $statusCode = $null

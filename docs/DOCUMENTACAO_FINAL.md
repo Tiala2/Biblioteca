@@ -71,15 +71,14 @@ Opcional (sem variaveis de ambiente):
 - Defina `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` no `backend/.env`
 - Execute `./scripts/e2e-smoke.ps1`
 
-Resultados mais recentes:
+Resultados mais recentes desta rodada:
 
 - Backend `./gradlew.bat test --no-daemon`: **BUILD SUCCESSFUL**
-- Backend `./gradlew.bat integrationTest --no-daemon`: **BUILD SUCCESSFUL**
 - Frontend `npm run build`: **PASS**
-- Frontend `npm run test`: **54 passed**
+- Frontend `npm run test`: **57 passed**
 - Frontend `npm run test:e2e`: **13 passed** na ultima execucao completa
 - Smoke API (`scripts/e2e-smoke.ps1`): **PASS**
-- Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0** em 2026-05-02
+- Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0** em 2026-06-05
 
 Cobertura de integracao inclui:
 
@@ -128,6 +127,7 @@ Cobertura de integracao inclui:
 - `docs/ROTEIRO_APRESENTACAO.md`
 - `docs/VALIDACAO_FINAL_2026_05_24.md`
 - `docs/STATUS_ENTREGA_2026_05_24.md`
+- `docs/DDL_BANCO_DADOS.sql`
 - `docs/RESUMO_PARA_COLEGA.md`
 - `docs/GUIA_MERGE_MAIN.md`
 - `docs/FRONT_ROUTES_MAP.md`

@@ -39,6 +39,7 @@ cd "$project_root"
 resolved_backup_dir="$(cd "$backup_dir" && pwd)"
 db_file="$resolved_backup_dir/postgres-library.sql"
 minio_archive="$resolved_backup_dir/minio-data.tar.gz"
+checksums_file="$resolved_backup_dir/checksums.sha256"
 
 if [[ ! -f "$db_file" ]]; then
   echo "File not found: $db_file" >&2
@@ -48,6 +49,18 @@ fi
 if [[ ! -f "$minio_archive" ]]; then
   echo "File not found: $minio_archive" >&2
   exit 1
+fi
+
+if [[ ! -s "$db_file" || ! -s "$minio_archive" ]]; then
+  echo "Backup files must not be empty." >&2
+  exit 1
+fi
+
+if [[ -f "$checksums_file" ]]; then
+  (
+    cd "$resolved_backup_dir"
+    sha256sum --check checksums.sha256
+  )
 fi
 
 if ! docker ps --format '{{.Names}}' | grep -qx 'backend-library-1'; then

@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { BarChart3, BookOpen, Medal, Settings2, Sparkles, UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { BarChart3, Bell, BookOpen, Mail, Medal, Settings2, Sparkles, Trophy, UserRound } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
@@ -72,6 +72,7 @@ type Paged<T> = { content: T[] };
 export function ProfilePage() {
   const headers = useAuthHeaders();
   const { showToast } = useToast();
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [home, setHome] = useState<HomeResponse | null>(null);
   const [readings, setReadings] = useState<Reading[]>([]);
@@ -83,6 +84,8 @@ export function ProfilePage() {
   const [alertsOptIn, setAlertsOptIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const preferencesFormRef = useRef<HTMLFormElement | null>(null);
+  const requestedAction = searchParams.get("action") ?? "";
 
   useEffect(() => {
     if (!headers) return;
@@ -123,16 +126,26 @@ export function ProfilePage() {
     };
   }, [headers]);
 
+  useEffect(() => {
+    if (!loading && requestedAction === "preferences") {
+      window.requestAnimationFrame(() => {
+        preferencesFormRef.current?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+        preferencesFormRef.current?.querySelector<HTMLElement>("input, button")?.focus();
+      });
+    }
+  }, [loading, requestedAction]);
+
   const timeline = useMemo(() => {
     return readings.slice(0, 5).map((reading) => ({
       id: reading.id,
       title: reading.book.title,
       book: reading.book,
       progress: reading.progress,
+      status: reading.status,
       subtitle: `Página ${reading.currentPage} · ${reading.progress}% · ${formatReadingStatus(reading.status)}`,
       date: reading.lastReadedAt ?? reading.finishedAt ?? null,
-      link: `/books/${reading.book.id}`,
-      cta: "Abrir detalhes",
+      link: `/books/${reading.book.id}/read`,
+      cta: "Abrir livro",
     }));
   }, [readings]);
 
@@ -162,7 +175,7 @@ export function ProfilePage() {
   const filteredTimeline = useMemo(() => {
     return timeline.filter((item) => {
       if (readingFilter === "ALL") return true;
-      return item.subtitle.includes(readingFilter);
+      return item.status === readingFilter;
     });
   }, [readingFilter, timeline]);
 
@@ -217,7 +230,7 @@ export function ProfilePage() {
   if (loading) {
     return (
       <StateCard
-        title="Perfil em preparação"
+        title="Meu perfil em preparação"
         message="Estamos carregando seu histórico, conquistas e preferências para montar sua visão pessoal."
         variant="loading"
       />
@@ -225,12 +238,12 @@ export function ProfilePage() {
   }
 
   return (
-    <section className="grid aura-page">
+    <section className="grid aura-page aura-profile-page">
       <article className="card hero aura-hero aura-hero--profile">
         <div className="aura-hero__content">
           <div>
             <p className="eyebrow aura-eyebrow">Identidade leitora</p>
-            <h2>Perfil e histórico de leitura</h2>
+            <h2>Minha jornada de leitura</h2>
             <p>
               Seus números, escolhas e registros recentes em uma visão que mostra como seu hábito está crescendo.
             </p>
@@ -256,7 +269,7 @@ export function ProfilePage() {
           <div className="stat-box">
             <BarChart3 aria-hidden="true" />
             <strong>{formatInteger(home?.readingProgress.streakDays)}</strong>
-            <span>dias de streak</span>
+            <span>dias de sequência</span>
           </div>
           <div className="stat-box">
             <Medal aria-hidden="true" />
@@ -266,55 +279,59 @@ export function ProfilePage() {
         </div>
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-profile-performance-panel">
         <div className="section-head">
-          <h3>Ritmo da semana</h3>
-          <span className="kpi">Visão resumida</span>
+          <h3>Resumo da atividade</h3>
+          <span className="kpi">Seus resultados</span>
         </div>
         <div className="stats-grid">
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.activeReadings)}</strong>
-            <span>leituras ativas</span>
+            <span>Livros em andamento</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.pagesThisWeek)}</strong>
-            <span>páginas nesta semana</span>
+            <span>Páginas lidas esta semana</span>
           </div>
           <div className="stat-box">
             <strong>{formatDecimal(profileInsights.averagePagesPerSession)}</strong>
-            <span>média por sessão</span>
+            <span>Média por leitura</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.totalBadges)}</strong>
-            <span>conquistas acumuladas</span>
+            <span>Conquistas desbloqueadas</span>
           </div>
         </div>
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-profile-account-panel">
         <div className="section-head">
-          <h3><Settings2 aria-hidden="true" /> Conta</h3>
+          <h3><Settings2 aria-hidden="true" /> Informações da conta</h3>
           <span className="kpi">{pluralizePt(profile?.badges.length ?? 0, "conquista", "conquistas")}</span>
         </div>
-        <div className="stacked-list">
-          <div className="stacked-list-item">
+        <div className="stacked-list profile-account-list">
+          <div className="stacked-list-item profile-account-row">
+            <UserRound aria-hidden="true" />
             <strong>Nome</strong>
             <span>{profile?.name}</span>
           </div>
-          <div className="stacked-list-item">
+          <div className="stacked-list-item profile-account-row">
+            <Mail aria-hidden="true" />
             <strong>Email</strong>
             <span className="email-text">{profile?.email}</span>
           </div>
-          <div className="stacked-list-item profile-preference-row">
+          <div className="stacked-list-item profile-preference-row profile-account-row">
+            <Trophy aria-hidden="true" />
             <div>
-              <strong>Ranking semanal</strong>
+              <strong>Destaques da semana</strong>
               <p className="section-sub">Define se suas leituras entram na classificação pública.</p>
             </div>
             <span className={leaderboardOptIn ? "favorite-badge" : "import-badge"}>
               {leaderboardOptIn ? "Ativo" : "Desligado"}
             </span>
           </div>
-          <div className="stacked-list-item profile-preference-row">
+          <div className="stacked-list-item profile-preference-row profile-account-row">
+            <Bell aria-hidden="true" />
             <div>
               <strong>Alertas internos</strong>
               <p className="section-sub">Controla lembretes de ritmo, metas e continuidade.</p>
@@ -324,10 +341,10 @@ export function ProfilePage() {
             </span>
           </div>
         </div>
-        <form onSubmit={onSavePreferences}>
+        <form ref={preferencesFormRef} onSubmit={onSavePreferences}>
           <label className="check-inline">
             <input type="checkbox" checked={leaderboardOptIn} onChange={(event) => setLeaderboardOptIn(event.target.checked)} />
-            Participar do ranking semanal
+            Participar da classificação semanal
           </label>
           <label className="check-inline">
             <input type="checkbox" checked={alertsOptIn} onChange={(event) => setAlertsOptIn(event.target.checked)} />
@@ -339,30 +356,30 @@ export function ProfilePage() {
         </form>
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-profile-actions-panel">
         <div className="section-head">
-          <h3>Ações rápidas</h3>
-          <span className="kpi">Atalhos</span>
+          <h3>Atalhos rápidos</h3>
+          <span className="kpi">Ações diretas</span>
         </div>
         <div className="quick-links-grid">
           <Link to="/books" className="btn-muted btn-link">
-            Explorar catálogo
+            Explorar livros
           </Link>
-          <Link to="/goals" className="btn-muted btn-link">
-            Revisar metas
+          <Link to="/goals?action=config" className="btn-muted btn-link">
+            Ver metas
           </Link>
           <Link to="/reviews" className="btn-muted btn-link">
-            Gerenciar avaliações
+            Minhas avaliações
           </Link>
           <Link to="/leaderboard" className="btn-muted btn-link">
-            Abrir ranking
+            Ver classificação
           </Link>
         </div>
       </article>
 
-      <article className="card aura-panel aura-panel--wide">
+      <article className="card aura-panel aura-panel--wide aura-profile-history-panel">
         <div className="section-head">
-          <h3>Histórico recente</h3>
+          <h3>Últimas leituras</h3>
           <span className="kpi">{pluralizePt(filteredTimeline.length, "registro", "registros")}</span>
         </div>
         <select aria-label="Filtrar histórico de leitura" value={readingFilter} onChange={(event) => setReadingFilter(event.target.value as "ALL" | "IN_PROGRESS" | "FINISHED")}>
@@ -373,10 +390,12 @@ export function ProfilePage() {
         {filteredTimeline.length > 0 ? (
           <ul className="stacked-list">
             {filteredTimeline.map((item) => (
-              <li key={item.id} className="stacked-list-item">
+              <li key={item.id} className="stacked-list-item profile-history-item">
                 <BookCover title={item.book.title} coverUrl={item.book.coverUrl} isbn={item.book.isbn} size="small" />
-                <div>
-                  <strong>{item.title}</strong>
+                <div className="profile-history-content">
+                  <Link to={item.link} className="text-link">
+                    <strong>{item.title}</strong>
+                  </Link>
                   <p className="section-sub">{item.subtitle}</p>
                   <div className="book-card-badges">
                     <span className={item.book.source === "OPEN" ? "import-badge" : "favorite-badge"}>
@@ -391,7 +410,7 @@ export function ProfilePage() {
                   </div>
                   <small>{formatDateTimeBr(item.date)}</small>
                 </div>
-                <Link to={item.link} className="btn-muted btn-link">
+                <Link to={item.link} className="btn-muted btn-link profile-history-action">
                   {item.cta}
                 </Link>
               </li>
@@ -402,10 +421,10 @@ export function ProfilePage() {
         )}
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-profile-badges-panel">
         <div className="section-head">
           <h3>Conquistas recentes</h3>
-          <span className="kpi">{pluralizePt(profileInsights.recentBadges.length, "destaque", "destaques")}</span>
+          <span className="kpi">{pluralizePt(profileInsights.recentBadges.length, "conquista", "conquistas")}</span>
         </div>
         {profileInsights.recentBadges.length > 0 ? (
           <ul className="stacked-list">
@@ -423,38 +442,39 @@ export function ProfilePage() {
             ))}
           </ul>
         ) : (
-          <p className="section-sub">Suas próximas conquistas vão aparecer aqui conforme o hábito de leitura evoluir.</p>
+          <p className="section-sub">Suas conquistas desbloqueadas aparecerão aqui conforme o hábito de leitura evoluir.</p>
         )}
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-profile-reviews-panel">
         <div className="section-head">
-          <h3>Avaliações recentes</h3>
+          <h3>Minhas avaliações</h3>
           <span className="kpi">{pluralizePt(filteredReviews.length, "avaliação", "avaliações")}</span>
         </div>
         <div className="profile-review-insights">
           <div className="stat-box">
             <strong>{formatDecimal(profileInsights.averageRating)}</strong>
-            <span>média das notas</span>
+            <span>Avaliação média</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.highReviews)}</strong>
-            <span>notas 4 e 5</span>
+            <span>4 e 5 estrelas</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(profileInsights.lowReviews)}</strong>
-            <span>notas 1 a 3</span>
+            <span>1 a 3 estrelas</span>
           </div>
         </div>
         {profileInsights.latestReview ? (
           <p className="profile-review-latest">
-            Última avaliação: <strong>{formatDateTimeBr(profileInsights.latestReview.updatedAt)}</strong>
+            <span>Última avaliação</span>
+            <strong>{formatDateTimeBr(profileInsights.latestReview.updatedAt)}</strong>
           </p>
         ) : null}
         <select aria-label="Filtrar avaliações por nota" value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as "ALL" | "HIGH" | "LOW")}>
           <option value="ALL">Todas as avaliações</option>
-          <option value="HIGH">Notas 4 e 5</option>
-          <option value="LOW">Notas 1 a 3</option>
+          <option value="HIGH">4 e 5 estrelas</option>
+          <option value="LOW">1 a 3 estrelas</option>
         </select>
         {filteredReviews.length > 0 ? (
           <ul className="stacked-list">
@@ -462,21 +482,21 @@ export function ProfilePage() {
               const reviewBook = readingBookById[review.bookId];
 
               return (
-                <li key={review.id} className="stacked-list-item">
+                <li key={review.id} className="stacked-list-item profile-review-item">
                   <div className="book-list-row">
                     <BookCover title={reviewBook?.title ?? "Livro avaliado"} coverUrl={reviewBook?.coverUrl} isbn={reviewBook?.isbn} size="small" />
-                    <div>
-                      <strong>{reviewBook?.title ?? "Livro avaliado"}</strong>
-                      <p className="section-sub">Nota {review.rating}. {review.comment}</p>
-                      <small>{formatDateTimeBr(review.updatedAt)}</small>
-                    </div>
+                  <div className="profile-review-content">
+                    <strong>{reviewBook?.title ?? "Livro avaliado"}</strong>
+                    <p className="section-sub text-break">{review.rating} estrelas. {review.comment || "Comentário ainda não registrado."}</p>
+                    <small>{formatDateTimeBr(review.updatedAt)}</small>
                   </div>
-                  <div className="card-actions">
+                </div>
+                  <div className="card-actions profile-review-actions">
                     <Link to={`/books/${review.bookId}`} className="btn-muted btn-link">
-                      Ver livro
+                      Abrir livro
                     </Link>
-                    <Link to="/reviews" className="btn-muted btn-link">
-                      Abrir avaliações
+                    <Link to={`/reviews?editReview=${review.id}`} className="btn-muted btn-link" aria-label="Editar avaliação">
+                      Editar
                     </Link>
                   </div>
                 </li>

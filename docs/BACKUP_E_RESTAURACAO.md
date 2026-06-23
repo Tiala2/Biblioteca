@@ -1,6 +1,6 @@
 # Backup E Restauracao
 
-Data de referencia: 2026-04-04
+Data de referencia: 2026-06-05
 
 ## Objetivo
 
@@ -15,15 +15,41 @@ O procedimento cobre:
 - restauracao do banco
 - restauracao do volume de arquivos
 
-## Gerar Backup
+## Gerar Backup No Windows
 
-No diretorio `backend`:
+No diretorio raiz do projeto:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\backup-volumes.ps1
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File backend\scripts\backup-volumes.ps1 -OutputDir ..\backups
+```
+
+## Gerar Backup No Linux/macOS
+
+No diretorio raiz do projeto:
+
+```bash
+cd backend
+chmod +x scripts/backup-volumes.sh scripts/restore-volumes.sh
+./scripts/backup-volumes.sh --output-dir ../backups
 ```
 
 Saida esperada:
+
+- `backups/<timestamp>/postgres-library.sql`
+- `backups/<timestamp>/minio-data.tar.gz`
+- `backups/<timestamp>/checksums.sha256`
+- `backups/<timestamp>/backup-metadata.json` no Windows
+- `backups/<timestamp>/backup-metadata.txt` no Linux/macOS
+
+Tambem e possivel gerar dentro da pasta `backend` usando o padrao do script:
+
+```powershell
+cd backend
+powershell -ExecutionPolicy Bypass -File .\scripts\backup-volumes.ps1
+```
+
+Nesse caso, a saida sera:
 
 - `backend\backups\<timestamp>\postgres-library.sql`
 - `backend\backups\<timestamp>\minio-data.tar.gz`
@@ -49,6 +75,7 @@ chmod +x ./scripts/restore-volumes.sh
 - o parametro `-Force` existe para evitar restauracao acidental
 - a restauracao substitui o schema atual do banco
 - a restauracao do MinIO substitui os arquivos atuais do volume
+- os scripts validam containers, volume, tamanho dos arquivos e checksums antes de concluir/restaurar
 
 ## Periodicidade Recomendada
 
@@ -61,5 +88,6 @@ Para o contexto atual de uso e laboratorio:
 ## Evidencia No Projeto
 
 - script de backup: [backup-volumes.ps1](../backend/scripts/backup-volumes.ps1)
+- script de backup Linux/macOS: [backup-volumes.sh](../backend/scripts/backup-volumes.sh)
 - script de restauracao: [restore-volumes.ps1](../backend/scripts/restore-volumes.ps1)
 - volumes persistentes: [docker-compose.dev.yml](../backend/docker-compose.dev.yml)

@@ -1,8 +1,10 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BookPlus, Edit3, ImagePlus, LibraryBig, RotateCcw, Save, Search, Trash2, Upload } from "lucide-react";
+import { formatBookSource, formatReadingMode } from "@shared/lib/presentation";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { Book, BookForm, Category, ImportProvider, ImportResult } from "../types";
+import { focusAdminPanelForm } from "../lib/focus";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 function normalizeIsbn(isbn?: string | null) {
@@ -65,7 +67,7 @@ function getImportStatusForProvider(result: ImportResult | null, provider: Impor
     return {
       ...status,
       title: "Importação concluída",
-      description: "Os livros encontrados foram adicionados com PDF gerado para leitura interna no app.",
+      description: "Os livros encontrados foram adicionados com arquivo gerado para leitura integrada no app.",
     };
   }
   if (result.failed > 0 && provider === "gutenberg") {
@@ -78,6 +80,17 @@ function getImportStatusForProvider(result: ImportResult | null, provider: Impor
   return status;
 }
 
+function BookAdminBadges({ book }: { book: Book }) {
+  return (
+    <span className="book-card-badges admin-book-badges" aria-label={`Origem e leitura de ${book.title}`}>
+      <span className="import-badge">{formatBookSource(book.source)}</span>
+      <span className={book.hasPdf ? "favorite-badge" : "import-badge"}>
+        {formatReadingMode(book.hasPdf, book.source)}
+      </span>
+    </span>
+  );
+}
+
 type BookPanelProps = {
   form: BookForm;
   books: Book[];
@@ -85,6 +98,7 @@ type BookPanelProps = {
   busyKey: string | null;
   uploadBookId: string;
   uploadFile: File | null;
+  createBookFile: File | null;
   coverBookId: string;
   coverBookUrl: string;
   importQuery: string;
@@ -92,6 +106,7 @@ type BookPanelProps = {
   importPageSize: number;
   importReadableOnly: boolean;
   importTargetCount: number;
+  importLanguage: "pt" | "en";
   importResult: ImportResult | null;
   importProvider: ImportProvider;
   onSubmitBook: (event: FormEvent) => Promise<void>;
@@ -107,11 +122,13 @@ type BookPanelProps = {
   onCoverBookChange: (value: string) => void;
   onCoverUrlChange: (value: string) => void;
   onUploadFileChange: (file: File | null) => void;
+  onCreateBookFileChange: (file: File | null) => void;
   onImportQueryChange: (value: string) => void;
   onImportPagesChange: (value: number) => void;
   onImportPageSizeChange: (value: number) => void;
   onImportReadableOnlyChange: (value: boolean) => void;
   onImportTargetCountChange: (value: number) => void;
+  onImportLanguageChange: (value: "pt" | "en") => void;
 };
 
 export function BookPanel({
@@ -121,6 +138,7 @@ export function BookPanel({
   busyKey,
   uploadBookId,
   uploadFile,
+  createBookFile,
   coverBookId,
   coverBookUrl,
   importQuery,
@@ -128,6 +146,7 @@ export function BookPanel({
   importPageSize,
   importReadableOnly,
   importTargetCount,
+  importLanguage,
   importResult,
   importProvider,
   onSubmitBook,
@@ -143,15 +162,20 @@ export function BookPanel({
   onCoverBookChange,
   onCoverUrlChange,
   onUploadFileChange,
+  onCreateBookFileChange,
   onImportQueryChange,
   onImportPagesChange,
   onImportPageSizeChange,
   onImportReadableOnlyChange,
   onImportTargetCountChange,
+  onImportLanguageChange,
 }: BookPanelProps) {
   const [search, setSearch] = useState("");
+  const [uploadSearch, setUploadSearch] = useState({ bookId: "", value: "" });
+  const [coverSearch, setCoverSearch] = useState({ bookId: "", value: "" });
   const [page, setPage] = useState(0);
   const pageSize = 4;
+  const pickerLimit = 6;
   const normalizedSearch = search.trim().toLowerCase();
   const filteredBooks = useMemo(() => {
     if (!normalizedSearch) return books;
@@ -163,6 +187,18 @@ export function BookPanel({
   const visibleBooks = filteredBooks.slice(page * pageSize, page * pageSize + pageSize);
   const selectedCoverBook = books.find((book) => book.id === coverBookId) ?? null;
   const selectedUploadBook = books.find((book) => book.id === uploadBookId) ?? null;
+  const coverSearchValue = coverSearch.bookId === coverBookId ? coverSearch.value : selectedCoverBook?.title ?? "";
+  const normalizedCoverSearch = coverSearchValue.trim().toLowerCase();
+  const coverBookOptions = normalizedCoverSearch
+    ? books.filter((book) => `${book.title} ${book.author ?? ""} ${book.isbn ?? ""}`.toLowerCase().includes(normalizedCoverSearch))
+    : books;
+  const visibleCoverBookOptions = coverBookOptions.slice(0, pickerLimit);
+  const uploadSearchValue = uploadSearch.bookId === uploadBookId ? uploadSearch.value : selectedUploadBook?.title ?? "";
+  const normalizedUploadSearch = uploadSearchValue.trim().toLowerCase();
+  const uploadBookOptions = normalizedUploadSearch
+    ? books.filter((book) => `${book.title} ${book.author ?? ""} ${book.isbn ?? ""}`.toLowerCase().includes(normalizedUploadSearch))
+    : books;
+  const visibleUploadBookOptions = uploadBookOptions.slice(0, pickerLimit);
   const formCoverUrlFromIsbn = buildOpenLibraryCoverUrl(form.isbn);
   const selectedCoverUrlFromIsbn = buildOpenLibraryCoverUrl(selectedCoverBook?.isbn);
   const importStatus = getImportStatusForProvider(importResult, importProvider);
@@ -170,6 +206,19 @@ export function BookPanel({
   const isImportingBooks = busyKey === "book-import" || busyKey === "book-import-gutenberg";
   const resultSourceLabel = importProvider === "gutenberg" ? "Project Gutenberg" : "Open Library";
   const hasBooks = books.length > 0;
+
+  const editBook = (book: Book) => {
+    onEdit(book);
+    focusAdminPanelForm("admin-books");
+  };
+  const selectUploadBook = (book: Book) => {
+    onUploadBookChange(book.id);
+    setUploadSearch({ bookId: book.id, value: book.title });
+  };
+  const selectCoverBook = (book: Book) => {
+    onCoverBookChange(book.id);
+    setCoverSearch({ bookId: book.id, value: book.title });
+  };
   const toggleCategory = (categoryId: string) => {
     onFormChange((prev) => {
       const selected = new Set(prev.categoryIds);
@@ -184,7 +233,7 @@ export function BookPanel({
 
   return (
     <article id="admin-books" className="card admin-panel admin-panel--wide">
-      <h3>{form.id ? "Editar livro" : "Novo livro"}</h3>
+      <h3>{form.id ? "Editar livro" : "Cadastrar livro"}</h3>
       <form className="admin-form" onSubmit={onSubmitBook}>
         <div className="admin-form-title">
           <BookPlus aria-hidden="true" />
@@ -217,7 +266,7 @@ export function BookPanel({
           onClick={() => onFormChange((prev) => ({ ...prev, coverUrl: buildOpenLibraryCoverUrl(prev.isbn) }))}
         >
           <Search aria-hidden="true" />
-          Buscar capa por ISBN
+          Buscar capa automaticamente
         </button>
         <fieldset className="admin-choice-list">
           <legend>Categorias do livro</legend>
@@ -238,13 +287,31 @@ export function BookPanel({
             <p className="section-sub">Cadastre categorias para classificar o livro.</p>
           )}
         </fieldset>
-        <button type="submit" disabled={busyKey === "book-create" || busyKey === `book-save-${form.id}`}>
+        {!form.id && (
+          <>
+            <label className="file-picker">
+              <span>Arquivo de leitura</span>
+              <strong>{createBookFile?.name ?? "Selecione o PDF do livro"}</strong>
+              <input
+                className="sr-only"
+                aria-label="Arquivo de leitura do novo livro"
+                type="file"
+                accept="application/pdf"
+                onChange={(event) => onCreateBookFileChange(event.target.files?.[0] ?? null)}
+              />
+            </label>
+            <p className="section-sub">
+              Para evitar livros sem leitura integrada, o cadastro local só é concluído quando o arquivo é enviado com sucesso.
+            </p>
+          </>
+        )}
+        <button type="submit" disabled={busyKey === "book-create" || busyKey === `book-save-${form.id}` || (!form.id && !createBookFile)}>
           <Save aria-hidden="true" />
           {busyKey === "book-create" || busyKey === `book-save-${form.id}`
             ? "Salvando..."
             : form.id
               ? "Salvar livro"
-              : "Criar livro"}
+              : "Publicar livro"}
         </button>
         {form.id && (
           <button type="button" className="btn-muted" onClick={onReset}>
@@ -264,15 +331,52 @@ export function BookPanel({
         </div>
         <label className="field-stack">
           <span>Livro da capa</span>
-          <select aria-label="Livro para atualizar capa" value={coverBookId} disabled={!hasBooks} onChange={(event) => onCoverBookChange(event.target.value)}>
-            {!hasBooks && <option value="">Nenhum livro cadastrado</option>}
-            {books.map((book) => (
-              <option key={book.id} value={book.id}>
-                {book.title}
-              </option>
-            ))}
-          </select>
+          <input
+            aria-label="Buscar livro para atualizar capa"
+            value={coverSearchValue}
+            disabled={!hasBooks}
+            onChange={(event) => setCoverSearch({ bookId: coverBookId, value: event.target.value })}
+            placeholder="Digite o título, autor ou ISBN"
+          />
         </label>
+        <div className="admin-book-picker" aria-label="Livros existentes para atualizar capa">
+          <span className="sr-only">Resultados da busca de livros para capa</span>
+          <div hidden>
+            <select aria-label="Livro para atualizar capa" value={coverBookId} disabled={!hasBooks} onChange={(event) => onCoverBookChange(event.target.value)}>
+              {!hasBooks && <option value="">Nenhum livro cadastrado</option>}
+              {hasBooks && coverBookOptions.length === 0 && <option value="">Nenhum livro encontrado</option>}
+              {selectedCoverBook && !visibleCoverBookOptions.some((book) => book.id === selectedCoverBook.id) && (
+                <option value={selectedCoverBook.id}>{selectedCoverBook.title}</option>
+              )}
+              {visibleCoverBookOptions.map((book) => (
+                <option key={book.id} value={book.id}>
+                  {book.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          {!hasBooks && <p className="section-sub">Nenhum livro cadastrado.</p>}
+          {hasBooks && coverBookOptions.length === 0 && <p className="section-sub">Nenhum livro encontrado.</p>}
+          {visibleCoverBookOptions.map((book) => (
+            <button
+              key={book.id}
+              type="button"
+              className={book.id === coverBookId ? "admin-book-picker__item active" : "admin-book-picker__item"}
+              aria-pressed={book.id === coverBookId}
+              onClick={() => selectCoverBook(book)}
+            >
+              <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
+              <span className="admin-book-picker__body">
+                <strong className="admin-book-title">{book.title}</strong>
+                <small className="admin-book-meta">{book.author ?? "Autoria ainda não informada"} · {book.isbn ?? "sem ISBN"}</small>
+                <BookAdminBadges book={book} />
+              </span>
+            </button>
+          ))}
+          {coverBookOptions.length > visibleCoverBookOptions.length && (
+            <small className="section-sub">Mostrando os primeiros {pickerLimit} resultados. Refine a busca para encontrar mais rápido.</small>
+          )}
+        </div>
         <label className="field-stack">
           <span>URL da nova capa</span>
           <input aria-label="Nova URL da capa" value={coverBookUrl} onChange={(event) => onCoverUrlChange(event.target.value)} placeholder="Cole a URL da imagem" />
@@ -283,7 +387,7 @@ export function BookPanel({
         </button>
         <button type="submit" disabled={!hasBooks || busyKey === "book-cover"}>
           <Save aria-hidden="true" />
-          {busyKey === "book-cover" ? "Atualizando..." : "Atualizar capa"}
+          {busyKey === "book-cover" ? "Atualizando..." : "Atualizar imagem"}
         </button>
       </form>
 
@@ -292,28 +396,68 @@ export function BookPanel({
           <Upload aria-hidden="true" />
           <div>
             <strong>Arquivo de leitura</strong>
-            <span>Envie o PDF para liberar leitura interna no app.</span>
+            <span>Envie o arquivo para liberar leitura integrada no app.</span>
           </div>
         </div>
         <label className="field-stack">
           <span>Livro para arquivo de leitura</span>
-          <select aria-label="Livro para enviar arquivo PDF" value={uploadBookId} disabled={!hasBooks} onChange={(event) => onUploadBookChange(event.target.value)}>
+          <input
+            aria-label="Buscar livro para enviar arquivo de leitura"
+            value={uploadSearchValue}
+            disabled={!hasBooks}
+            onChange={(event) => setUploadSearch({ bookId: uploadBookId, value: event.target.value })}
+            placeholder="Digite o título, autor ou ISBN"
+          />
+        </label>
+        <div className="admin-book-picker" aria-label="Livros existentes para anexar arquivo de leitura">
+          <span className="sr-only">Resultados da busca de livros</span>
+          <div hidden>
+            <select aria-label="Livro para enviar arquivo de leitura" value={uploadBookId} disabled={!hasBooks} onChange={(event) => onUploadBookChange(event.target.value)}>
             {!hasBooks && <option value="">Nenhum livro cadastrado</option>}
-            {books.map((book) => (
+            {hasBooks && uploadBookOptions.length === 0 && <option value="">Nenhum livro encontrado</option>}
+            {selectedUploadBook && !visibleUploadBookOptions.some((book) => book.id === selectedUploadBook.id) && (
+              <option value={selectedUploadBook.id}>{selectedUploadBook.title}</option>
+            )}
+            {visibleUploadBookOptions.map((book) => (
               <option key={book.id} value={book.id}>
                 {book.title}
               </option>
             ))}
-          </select>
-        </label>
+            </select>
+          </div>
+          {!hasBooks && <p className="section-sub">Nenhum livro cadastrado.</p>}
+          {hasBooks && uploadBookOptions.length === 0 && <p className="section-sub">Nenhum livro encontrado.</p>}
+          {visibleUploadBookOptions.map((book) => (
+            <button
+              key={book.id}
+              type="button"
+              className={book.id === uploadBookId ? "admin-book-picker__item active" : "admin-book-picker__item"}
+              aria-pressed={book.id === uploadBookId}
+              onClick={() => selectUploadBook(book)}
+            >
+              <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
+              <span className="admin-book-picker__body">
+                <strong className="admin-book-title">{book.title}</strong>
+                <small className="admin-book-meta">{book.author ?? "Autoria ainda não informada"} · {book.isbn ?? "sem ISBN"}</small>
+                <BookAdminBadges book={book} />
+              </span>
+            </button>
+          ))}
+          {uploadBookOptions.length > visibleUploadBookOptions.length && (
+            <small className="section-sub">Mostrando os primeiros {pickerLimit} resultados. Refine a busca para encontrar mais rápido.</small>
+          )}
+        </div>
         <label className="file-picker">
-          <span>Selecionar arquivo PDF</span>
+          <span>Selecionar arquivo de leitura</span>
           <strong>{uploadFile?.name ?? "Nenhum arquivo selecionado"}</strong>
-          <input className="sr-only" aria-label="Arquivo PDF do livro" type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
+          <input className="sr-only" aria-label="Arquivo de leitura do livro" type="file" accept="application/pdf" onChange={(event) => onUploadFileChange(event.target.files?.[0] ?? null)} />
         </label>
         {selectedUploadBook && (
           <p className="section-sub admin-selected-book">
             Arquivo selecionado para <strong>{selectedUploadBook.title}</strong>.
+            <span className={selectedUploadBook.hasPdf ? "favorite-badge" : "import-badge"}>
+              {selectedUploadBook.hasPdf ? "Substitui arquivo atual" : "Primeiro arquivo deste livro"}
+            </span>
           </p>
         )}
         <button type="submit" disabled={!hasBooks || !uploadFile || busyKey === "book-upload"}>
@@ -327,7 +471,7 @@ export function BookPanel({
           <LibraryBig aria-hidden="true" />
           <div>
             <strong>Importação de acervo externo</strong>
-            <span>Use Open Library para catálogo e Gutenberg quando precisar de leitura interna.</span>
+            <span>Use Open Library para descoberta e Gutenberg quando precisar de leitura integrada.</span>
           </div>
         </div>
         <label className="field-stack">
@@ -346,6 +490,13 @@ export function BookPanel({
           <span>Alvo importado</span>
           <input aria-label="Quantidade alvo de livros importados" type="number" min={1} max={500} value={importTargetCount} onChange={(event) => onImportTargetCountChange(Number(event.target.value))} />
         </label>
+        <label className="field-stack">
+          <span>Idioma do acervo</span>
+          <select aria-label="Idioma da importação" value={importLanguage} onChange={(event) => onImportLanguageChange(event.target.value as "pt" | "en")}>
+            <option value="pt">Português</option>
+            <option value="en">Inglês</option>
+          </select>
+        </label>
         <label className="check-inline">
           <input type="checkbox" checked={importReadableOnly} onChange={(event) => onImportReadableOnlyChange(event.target.checked)} />
           Apenas livros com leitor externo
@@ -359,7 +510,7 @@ export function BookPanel({
         </button>
         <button type="button" className="btn-muted" disabled={isImportingBooks} onClick={() => void onSubmitGutenbergImport()}>
           <BookPlus aria-hidden="true" />
-          {busyKey === "book-import-gutenberg" ? "Gerando PDFs..." : "Importar leitura interna"}
+          {busyKey === "book-import-gutenberg" ? "Gerando arquivos..." : "Importar leitura integrada"}
         </button>
       </form>
 
@@ -399,24 +550,25 @@ export function BookPanel({
       )}
 
       <div className="section-head">
-        <h4>Lista de livros</h4>
+        <h4>Acervo cadastrado</h4>
         <span className="kpi">{filteredBooks.length}</span>
       </div>
-      <input aria-label="Filtrar livros administrativos" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Filtrar por título, autor ou ISBN" />
+      <input aria-label="Filtrar livros administrativos" value={search} onChange={(event) => { setSearch(event.target.value); setPage(0); }} placeholder="Buscar no acervo por título, autor ou ISBN" />
       <ul className="stacked-list">
         {visibleBooks.map((book) => (
-          <li key={book.id} className="stacked-list-item">
-            <div className="book-list-row">
+          <li key={book.id} className="stacked-list-item admin-book-list-item">
+            <button type="button" className="book-list-row book-list-row--action" onClick={() => editBook(book)}>
               <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
-              <div>
-                <strong>{book.title}</strong>
-                <p className="section-sub">
-                  {book.author ?? "Autoria ainda não informada"} · {book.isbn}
+              <div className="admin-book-row__body">
+                <strong className="admin-book-title">{book.title}</strong>
+                <p className="section-sub admin-book-meta">
+                  {book.author ?? "Autoria ainda não informada"} · {book.isbn ?? "sem ISBN"}
                 </p>
+                <BookAdminBadges book={book} />
               </div>
-            </div>
-            <div className="card-actions">
-              <button type="button" className="btn-muted" onClick={() => onEdit(book)}>
+            </button>
+            <div className="card-actions admin-list-actions">
+              <button type="button" className="btn-muted" onClick={() => editBook(book)}>
                 <Edit3 aria-hidden="true" />
                 Editar
               </button>

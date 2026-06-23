@@ -2,6 +2,8 @@
 
 Este roteiro ajuda a demonstrar o projeto em uma sequencia segura, sem pular funcionalidades importantes.
 
+Para uma fala mais pronta, use tambem: `docs/ROTEIRO_FALA_APRESENTACAO.md`.
+
 ## Antes de apresentar
 
 - Subir backend, banco e frontend.

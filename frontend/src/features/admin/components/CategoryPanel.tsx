@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import type { Category, CategoryForm } from "../types";
+import { focusAdminPanelForm } from "../lib/focus";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type CategoryPanelProps = {
@@ -47,10 +48,14 @@ export function CategoryPanel({
   const totalPages = Math.max(1, Math.ceil(filteredCategories.length / pageSize));
   const visibleCategories = filteredCategories.slice(page * pageSize, page * pageSize + pageSize);
   const saving = busyKey === "category-create" || busyKey === `category-save-${form.id}`;
+  const editCategory = (category: Category) => {
+    onEdit(category);
+    focusAdminPanelForm("admin-categories");
+  };
 
   return (
     <article id="admin-categories" className="card admin-panel">
-      <h3>{form.id ? "Editar categoria" : "Nova categoria"}</h3>
+      <h3>{form.id ? "Editar categoria" : "Organizar categoria"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
         <input
           aria-label="Nome da categoria"
@@ -75,7 +80,7 @@ export function CategoryPanel({
         )}
       </form>
       <div className="section-head">
-        <h4>Lista de categorias</h4>
+        <h4>Categorias do acervo</h4>
         <span className="kpi">{filteredCategories.length}</span>
       </div>
       <div className="admin-taxonomy-summary">
@@ -99,12 +104,12 @@ export function CategoryPanel({
           setSearch(event.target.value);
           setPage(0);
         }}
-        placeholder="Filtrar categorias"
+        placeholder="Buscar categoria"
       />
       <ul className="stacked-list">
         {visibleCategories.map((category) => (
           <li key={category.id} className="stacked-list-item">
-            <div>
+            <button type="button" className="admin-row-action" onClick={() => editCategory(category)}>
               <div className="admin-taxonomy-title-row">
                 <strong>{category.name}</strong>
                 <span className={category.description ? "import-badge" : "status-pill status-pill--muted"}>
@@ -112,9 +117,9 @@ export function CategoryPanel({
                 </span>
               </div>
               <p className="section-sub">{category.description || "Adicione uma descrição para orientar melhor a descoberta."}</p>
-            </div>
-            <div className="card-actions">
-              <button type="button" className="btn-muted" onClick={() => onEdit(category)}>
+            </button>
+            <div className="card-actions admin-list-actions">
+              <button type="button" className="btn-muted" onClick={() => editCategory(category)}>
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `category-delete-${category.id}`} onClick={() => onDelete(category.id)}>

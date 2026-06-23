@@ -39,6 +39,7 @@ describe("ReadingExperiencePage", () => {
     vi.mocked(api.get).mockReset();
     vi.mocked(api.post).mockReset();
     vi.mocked(api.delete).mockReset();
+    window.localStorage.clear();
   });
 
   it("deve carregar leitura e salvar progresso", async () => {
@@ -103,8 +104,18 @@ describe("ReadingExperiencePage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Livro de Leitura" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Painel de progresso" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Seu progresso" })).toBeInTheDocument();
     expect(screen.getByRole("progressbar", { name: "Progresso de leitura" })).toHaveAttribute("aria-valuenow", "20");
+    expect(screen.getByTitle("Leitor PDF - Livro de Leitura")).toHaveAttribute(
+      "src",
+      "http://localhost:8080/api/v1/books/book-1/pdf#page=40"
+    );
+    expect(screen.getAllByRole("link", { name: "Abrir leitura" })[0]).toHaveAttribute(
+      "href",
+      "http://localhost:8080/api/v1/books/book-1/pdf#page=40"
+    );
+    expect(screen.getByRole("link", { name: "Avaliar livro" })).toHaveAttribute("href", "/reviews?bookId=book-1&action=create");
+    expect(screen.getByRole("link", { name: "Ver detalhes" })).toHaveAttribute("href", "/books/book-1");
 
     await user.click(screen.getByRole("button", { name: "Salvar progresso" }));
 
@@ -204,16 +215,16 @@ describe("ReadingExperiencePage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Quem é quem" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Personagens deste trecho" })).toBeInTheDocument();
     expect(await screen.findByText("Aliado")).toBeInTheDocument();
     expect(screen.getByText("Atua com estratégia e adaptação.")).toBeInTheDocument();
-    expect(screen.getByText("Traições e alianças temporarias alteram o equilíbrio entre os protagonistas.")).toBeInTheDocument();
+    expect(screen.getAllByText(/Traições e alianças temporárias alteram o equilíbrio entre os protagonistas/).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Alianças instáveis" })).toBeInTheDocument();
     expect(screen.getByText("Chegou ao clímax e concluiu os principais arcos da obra.")).toBeInTheDocument();
-    expect(screen.getByText("Bloqueado até página 694")).toBeInTheDocument();
+    expect(screen.getByText("Continue lendo para desbloquear")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Alianças instáveis" }));
-    await user.click(screen.getByRole("button", { name: "Verificar resposta" }));
+    await user.click(screen.getByRole("button", { name: "Confirmar resposta" }));
 
     expect(screen.getByText(/Correto\./)).toBeInTheDocument();
     expect(screen.getByText(/As relações mudam constantemente/)).toBeInTheDocument();
@@ -292,12 +303,12 @@ describe("ReadingExperiencePage", () => {
     expect(await screen.findByRole("heading", { name: "Livro Externo" })).toBeInTheDocument();
     expect(await screen.findByText("Open Library externo")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Leitura fora do app" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Continuar na Open Library" })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: "Abrir na Open Library" })).toHaveAttribute(
       "href",
       "https://openlibrary.org/books/OL1M/Livro_Externo"
     );
 
-    await user.click(screen.getByRole("button", { name: "Salvar página atual" }));
+    await user.click(screen.getByRole("button", { name: "Salvar progresso" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.post)).toHaveBeenCalledWith(
@@ -357,7 +368,7 @@ describe("ReadingExperiencePage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Livro Local Sem PDF" })).toBeInTheDocument();
-    expect(screen.getAllByText("Progresso manual").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Atualização manual").length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Leitura manual do acervo" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "PDF ainda não cadastrado" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Abrir fonte externa" })).not.toBeInTheDocument();

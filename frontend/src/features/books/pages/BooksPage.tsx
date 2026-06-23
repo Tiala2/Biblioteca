@@ -53,7 +53,7 @@ function parsePage(value: string | null): number {
 
 function formatSort(sort: BookSort): string {
   const labels: Record<BookSort, string> = {
-    BEST_RATED: "Melhor avaliação",
+    BEST_RATED: "Avaliação",
     NEW_RELEASES: "Lançamentos",
     TRENDING_WEEK: "Tendência semanal",
     TRENDING_MONTH: "Tendência mensal",
@@ -106,7 +106,7 @@ export function BooksPage() {
     if (applied.minPages) filters.push({ key: "minPages", label: `Mínimo: ${applied.minPages} páginas` });
     if (applied.maxPages) filters.push({ key: "maxPages", label: `Máximo: ${applied.maxPages} páginas` });
     if (applied.sort !== DEFAULT_SORT) filters.push({ key: "sort", label: `Ordem: ${formatSort(applied.sort)}` });
-    if (applied.onlyWithPdf) filters.push({ key: "withPdf", label: "Somente com PDF" });
+    if (applied.onlyWithPdf) filters.push({ key: "withPdf", label: "Somente leitura disponível" });
 
     return filters;
   }, [applied, categories, tags]);
@@ -298,7 +298,7 @@ export function BooksPage() {
           next.delete(bookId);
           return next;
         });
-        showToast("Livro removido dos favoritos.", "success");
+        showToast("Livro removido da estante.", "success");
       } else {
         await api.post(
           "/api/v1/users/me/favorites",
@@ -306,22 +306,22 @@ export function BooksPage() {
           { headers }
         );
         setFavoriteBookIds((previous) => new Set(previous).add(bookId));
-        showToast("Livro adicionado aos favoritos.", "success");
+        showToast("Livro adicionado à estante.", "success");
       }
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
+        showToast(extractApiErrorMessage(error, "Não foi possível atualizar sua estante."), "error");
     } finally {
       setFavoriteLoadingBookId(null);
     }
   };
 
   return (
-    <section className="aura-page">
+    <section className="aura-page aura-catalog-page">
       <div className="card hero aura-hero aura-hero--catalog">
         <div>
           <p className="eyebrow aura-eyebrow">Vitrine viva</p>
           <h2>Escolha sua próxima jornada</h2>
-          <p>Explore livros locais e descobertas importadas com filtros rápidos, favoritos e leitura guiada.</p>
+          <p>Explore livros locais e descobertas importadas com filtros rápidos, estante e leitura guiada.</p>
         </div>
         <div className="aura-hero__signal">
           <Sparkles aria-hidden="true" />
@@ -332,32 +332,32 @@ export function BooksPage() {
 
       <article className="card aura-panel aura-filter-panel">
         <div className="section-head">
-          <h3><Filter aria-hidden="true" /> Afinar descoberta</h3>
+          <h3><Filter aria-hidden="true" /> Encontrar livros</h3>
           <span className="kpi">{formatSort(applied.sort)}</span>
         </div>
         <form className="filters-grid" onSubmit={onSearch}>
           <input
-            aria-label="Pesquisar livros por título ou autor"
-            placeholder="Pesquisar por título ou autor"
+            aria-label="Buscar livro ou autor"
+            placeholder="Buscar livro ou autor"
             value={queryInput}
             onChange={(event) => setQueryInput(event.target.value)}
           />
           <input
-            aria-label="Filtrar livros por autor"
-            placeholder="Filtrar por autor"
+            aria-label="Autor"
+            placeholder="Autor"
             value={authorInput}
             onChange={(event) => setAuthorInput(event.target.value)}
           />
-          <select aria-label="Filtrar por categoria" value={selectedCategoryId} onChange={(event) => setSelectedCategoryId(event.target.value)}>
-            <option value="">Todas as categorias</option>
+          <select aria-label="Categoria" value={selectedCategoryId} onChange={(event) => setSelectedCategoryId(event.target.value)}>
+            <option value="">Categoria</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
           </select>
-          <select aria-label="Filtrar por tag" value={selectedTagId} onChange={(event) => setSelectedTagId(event.target.value)}>
-            <option value="">Todas as tags</option>
+          <select aria-label="Etiquetas" value={selectedTagId} onChange={(event) => setSelectedTagId(event.target.value)}>
+            <option value="">Etiquetas</option>
             {tags.map((tag) => (
               <option key={tag.id} value={tag.id}>
                 {tag.name}
@@ -365,23 +365,23 @@ export function BooksPage() {
             ))}
           </select>
           <input
-            aria-label="Quantidade mínima de páginas"
+            aria-label="Páginas mínimas"
             type="number"
             min={1}
-            placeholder="Mín. páginas"
+            placeholder="Páginas mínimas"
             value={minPagesInput}
             onChange={(event) => setMinPagesInput(event.target.value)}
           />
           <input
-            aria-label="Quantidade máxima de páginas"
+            aria-label="Páginas máximas"
             type="number"
             min={1}
-            placeholder="Máx. páginas"
+            placeholder="Páginas máximas"
             value={maxPagesInput}
             onChange={(event) => setMaxPagesInput(event.target.value)}
           />
-          <select aria-label="Ordenação do catálogo" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
-            <option value="BEST_RATED">Melhor avaliação</option>
+          <select aria-label="Avaliação" value={sortInput} onChange={(event) => onSortChange(event.target.value as BookSort)}>
+            <option value="BEST_RATED">Avaliação</option>
             <option value="NEW_RELEASES">Lançamentos</option>
             <option value="TRENDING_WEEK">Tendência semanal</option>
             <option value="TRENDING_MONTH">Tendência mensal</option>
@@ -392,15 +392,15 @@ export function BooksPage() {
               checked={onlyWithPdfInput}
               onChange={(event) => onWithPdfChange(event.target.checked)}
             />
-            Apenas com PDF
+            Somente leitura disponível
           </label>
           <div className="filter-actions">
             <button type="submit">
               <Search aria-hidden="true" />
-              Pesquisar
+              Buscar
             </button>
             <button type="button" className="btn-muted" onClick={clearFilters}>
-              Limpar
+              Limpar filtros
             </button>
           </div>
         </form>
@@ -427,30 +427,30 @@ export function BooksPage() {
 
       {loading && (
         <StateCard
-          title="Catálogo em carregamento"
-          message="Estamos reunindo livros, filtros e destaques para sua próxima leitura."
+          title="Livros em carregamento"
+          message="Estamos reunindo livros, filtros e sugestões para sua próxima leitura."
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Não foi possível carregar o catálogo" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Não foi possível carregar os livros" message={error} variant="error" />}
 
       {!loading && !error && books.length > 0 && (
         <article className="card aura-panel aura-panel--wide">
           <div className="section-head">
             <div>
-              <h3>Resumo da vitrine</h3>
-              <p className="section-sub">Uma leitura rápida do resultado atual antes de escolher o próximo livro.</p>
+              <h3>Resumo da biblioteca</h3>
+              <p className="section-sub">Veja os principais números do catálogo.</p>
             </div>
             <span className="kpi">Página {applied.page + 1}</span>
           </div>
           <div className="catalog-insights">
             <div className="stat-box">
               <strong>{books.length}</strong>
-              <span>livros nesta página</span>
+              <span>Livros encontrados</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.pdfCount}</strong>
-              <span>com PDF</span>
+              <span>Disponíveis para leitura</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.openCount}</strong>
@@ -458,23 +458,23 @@ export function BooksPage() {
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.gutenbergCount}</strong>
-              <span>Gutenberg</span>
+              <span>Projeto Gutenberg</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.narrativeCount}</strong>
-              <span>com dinâmica</span>
+              <span>Com recursos interativos</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.localCount}</strong>
-              <span>catálogo local</span>
+              <span>Livros cadastrados</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.favoriteCount}</strong>
-              <span>favoritos</span>
+              <span>na estante</span>
             </div>
             <div className="stat-box">
               <strong>{catalogInsights.averagePages}</strong>
-              <span>média de páginas</span>
+              <span>Média de páginas</span>
             </div>
           </div>
           <p className="catalog-total-pages">
@@ -486,43 +486,45 @@ export function BooksPage() {
       {!loading && !error && <div className="grid aura-catalog-grid">
         {books.map((book) => (
           <article key={book.id} className="card aura-book-card">
-            <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
-            <div className="book-card-badges">
-              {book.source && book.source !== "LOCAL" && <span className="import-badge">{formatBookSource(book.source)}</span>}
-              <span className={book.hasPdf ? "favorite-badge" : "import-badge"}>{formatReadingMode(book.hasPdf, book.source)}</span>
-              {book.hasNarrative && <span className="favorite-badge">Dinâmica</span>}
-              {favoriteBookIds.has(book.id) && <span className="favorite-badge">Favorito</span>}
+            <Link to={`/books/${book.id}`} className="book-cover-link" aria-label={`Abrir detalhes de ${book.title}`}>
+              <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="medium" />
+            </Link>
+            <div className="book-card-content">
+              <div className="book-card-badges">
+                {book.source && book.source !== "LOCAL" && <span className="import-badge">{formatBookSource(book.source)}</span>}
+                <span className={book.hasPdf ? "favorite-badge" : "import-badge"}>{formatReadingMode(book.hasPdf, book.source)}</span>
+                {book.hasNarrative && <span className="favorite-badge">Recursos interativos</span>}
+                {favoriteBookIds.has(book.id) && <span className="favorite-badge">Na estante</span>}
+              </div>
+              <h3>
+                <Link to={`/books/${book.id}`} className="text-link">
+                  {book.title}
+                </Link>
+              </h3>
+              <p>{book.author || "Autor não informado"}</p>
+              <p className="book-card-meta">{book.numberOfPages} páginas</p>
+              <small>
+                {book.hasPdf
+                  ? "Leitura integrada"
+                  : book.source === "OPEN"
+                    ? "Atualização manual"
+                    : "Atualização manual"}
+              </small>
             </div>
-            <h3>
-              <Link to={`/books/${book.id}`} className="btn-link">
-                {book.title}
-              </Link>
-            </h3>
-            <p>{book.author || "Autoria ainda não informada"}</p>
-            <p>{book.numberOfPages} páginas</p>
-            <small>
-              {book.hasPdf
-                ? "Leitura e progresso no app"
-                : book.source === "OPEN"
-                  ? "Leitura externa com progresso manual"
-                  : "Leitura com progresso manual"}
-            </small>
             <div className="card-actions">
-              <Link to={`/books/${book.id}`} className="btn-muted btn-link">
+              <Link to={`/books/${book.id}`} className="btn-muted btn-link" aria-label={`Abrir detalhes de ${book.title}`}>
                 <Eye aria-hidden="true" />
                 Ver detalhes
               </Link>
-              <Link
-                to={`/books/${book.id}/read`}
-                className={book.hasPdf ? "btn-link" : "btn-muted btn-link"}
-              >
+              <Link to={`/books/${book.id}/read`} className="btn-link" aria-label={`Abrir ${book.title}`}>
                 <BookOpen aria-hidden="true" />
-                Ler agora
+                Abrir livro
               </Link>
               <button
                 type="button"
                 className={favoriteBookIds.has(book.id) ? "favorite-toggle active" : "favorite-toggle"}
                 aria-pressed={favoriteBookIds.has(book.id)}
+                aria-label={favoriteBookIds.has(book.id) ? `${book.title} na estante` : `Adicionar ${book.title} à estante`}
                 onClick={() => toggleFavorite(book.id)}
                 disabled={favoriteLoadingBookId === book.id}
               >
@@ -530,8 +532,8 @@ export function BooksPage() {
                 {favoriteLoadingBookId === book.id
                   ? "Salvando..."
                   : favoriteBookIds.has(book.id)
-                    ? "Nos favoritos"
-                    : "Salvar nos favoritos"}
+                    ? "Na estante"
+                    : "Adicionar à estante"}
               </button>
             </div>
           </article>

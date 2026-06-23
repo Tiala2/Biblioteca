@@ -20,8 +20,13 @@ type UseAdminActionsParams = {
   headers?: Record<string, string>;
   showToast: (message: string, type: "success" | "error" | "info") => void;
   reloadAll: () => Promise<void>;
-  reloadStaticData: () => Promise<void>;
   reloadUsers: () => Promise<void>;
+  reloadMetrics: () => Promise<void>;
+  reloadCategories: () => Promise<void>;
+  reloadTags: () => Promise<void>;
+  reloadBooks: () => Promise<void>;
+  reloadCollections: () => Promise<void>;
+  reloadBadges: () => Promise<void>;
   setBusyKey: Dispatch<SetStateAction<string | null>>;
   categoryForm: CategoryForm;
   setCategoryForm: Dispatch<SetStateAction<CategoryForm>>;
@@ -38,13 +43,19 @@ type UseAdminActionsParams = {
   uploadBookId: string;
   coverBookId: string;
   coverBookUrl: string;
+  setUploadBookId: (value: string) => void;
+  setCoverBookId: (value: string) => void;
+  setCoverBookUrl: (value: string) => void;
   uploadFile: File | null;
   setUploadFile: Dispatch<SetStateAction<File | null>>;
+  createBookFile: File | null;
+  setCreateBookFile: Dispatch<SetStateAction<File | null>>;
   importQuery: string;
   importPages: number;
   importPageSize: number;
   importReadableOnly: boolean;
   importTargetCount: number;
+  importLanguage: "pt" | "en";
   setImportResult: Dispatch<SetStateAction<ImportResult | null>>;
   setImportProvider: Dispatch<SetStateAction<ImportProvider>>;
   emptyCategory: CategoryForm;
@@ -59,8 +70,13 @@ export function useAdminActions({
   headers,
   showToast,
   reloadAll,
-  reloadStaticData,
   reloadUsers,
+  reloadMetrics,
+  reloadCategories,
+  reloadTags,
+  reloadBooks,
+  reloadCollections,
+  reloadBadges,
   setBusyKey,
   categoryForm,
   setCategoryForm,
@@ -77,13 +93,19 @@ export function useAdminActions({
   uploadBookId,
   coverBookId,
   coverBookUrl,
+  setUploadBookId,
+  setCoverBookId,
+  setCoverBookUrl,
   uploadFile,
   setUploadFile,
+  createBookFile,
+  setCreateBookFile,
   importQuery,
   importPages,
   importPageSize,
   importReadableOnly,
   importTargetCount,
+  importLanguage,
   setImportResult,
   setImportProvider,
   emptyCategory,
@@ -93,20 +115,30 @@ export function useAdminActions({
   emptyBadge,
   emptyUser,
 }: UseAdminActionsParams) {
-  const runAction = async (
+  const reloadBooksAndMetrics = async () => {
+    await Promise.all([reloadBooks(), reloadMetrics()]);
+  };
+
+  const runAction = async <T = unknown>(
     key: string,
-    action: () => Promise<unknown>,
+    action: () => Promise<T>,
     successMessage: string,
     errorMessage: string,
     reload: () => Promise<void> = reloadAll
   ) => {
     setBusyKey(key);
     try {
-      await action();
-      await reload();
+      const result = await action();
       showToast(successMessage, "success");
+      try {
+        await reload();
+      } catch {
+        showToast("A ação foi concluída, mas a atualização da tela demorou. Recarregue se necessário.", "info");
+      }
+      return result;
     } catch {
       showToast(errorMessage, "error");
+      return undefined;
     } finally {
       setBusyKey(null);
     }
@@ -122,7 +154,10 @@ export function useAdminActions({
           ? api.put(`/api/admin/categories/${categoryForm.id}`, { name: categoryForm.name, description: categoryForm.description }, { headers })
           : api.post("/api/admin/categories", { name: categoryForm.name, description: categoryForm.description }, { headers }),
       categoryForm.id ? "Categoria atualizada com sucesso." : "Categoria criada com sucesso.",
-      categoryForm.id ? "Não foi possível atualizar a categoria." : "Não foi possível criar a categoria."
+      categoryForm.id ? "Não foi possível atualizar a categoria." : "Não foi possível criar a categoria.",
+      async () => {
+        await Promise.all([reloadCategories(), reloadMetrics()]);
+      }
     );
     setCategoryForm(emptyCategory);
   };
@@ -134,7 +169,10 @@ export function useAdminActions({
       tagForm.id ? `tag-save-${tagForm.id}` : "tag-create",
       () => (tagForm.id ? api.put(`/api/admin/tags/${tagForm.id}`, { name: tagForm.name }, { headers }) : api.post("/api/admin/tags", { name: tagForm.name }, { headers })),
       tagForm.id ? "Tag atualizada com sucesso." : "Tag criada com sucesso.",
-      tagForm.id ? "Não foi possível atualizar a tag." : "Não foi possível criar a tag."
+      tagForm.id ? "Não foi possível atualizar a tag." : "Não foi possível criar a tag.",
+      async () => {
+        await Promise.all([reloadTags(), reloadMetrics()]);
+      }
     );
     setTagForm(emptyTag);
   };
@@ -149,7 +187,10 @@ export function useAdminActions({
           ? api.put(`/api/admin/collections/${collectionForm.id}`, collectionForm, { headers })
           : api.post("/api/admin/collections", collectionForm, { headers }),
       collectionForm.id ? "Coleção atualizada com sucesso." : "Coleção criada com sucesso.",
-      collectionForm.id ? "Não foi possível atualizar a coleção." : "Não foi possível criar a coleção."
+      collectionForm.id ? "Não foi possível atualizar a coleção." : "Não foi possível criar a coleção.",
+      async () => {
+        await Promise.all([reloadCollections(), reloadMetrics()]);
+      }
     );
     setCollectionForm(emptyCollection);
   };
@@ -157,7 +198,65 @@ export function useAdminActions({
   const submitBook = async (event: FormEvent) => {
     event.preventDefault();
     if (!headers || !bookForm.title.trim() || !bookForm.isbn.trim()) return;
-    await runAction(
+    if (!bookForm.id) {
+      if (!createBookFile) {
+        showToast("Selecione um PDF para criar o livro com leitura interna.", "error");
+        return;
+      }
+
+      setBusyKey("book-create");
+      let createdBook: Book | undefined;
+      try {
+        const createResponse = await api.post(
+          "/api/admin/books",
+          {
+            title: bookForm.title,
+            author: bookForm.author,
+            isbn: bookForm.isbn,
+            numberOfPages: bookForm.numberOfPages,
+            publicationDate: bookForm.publicationDate,
+            coverUrl: bookForm.coverUrl.trim() || null,
+            categories: bookForm.categoryIds,
+          },
+          { headers }
+        );
+        createdBook = createResponse.data as Book;
+
+        const formData = new FormData();
+        formData.append("file", createBookFile);
+        await api.post(`/api/admin/books/${createdBook.id}/upload`, formData, { headers });
+
+        setUploadBookId(createdBook.id);
+        setCoverBookId(createdBook.id);
+        setCoverBookUrl(createdBook.coverUrl ?? "");
+        setBookForm(emptyBook);
+        setCreateBookFile(null);
+        showToast("Livro criado com PDF de leitura interna.", "success");
+        try {
+          await reloadBooksAndMetrics();
+        } catch {
+          showToast("O livro foi criado, mas a atualização da lista demorou. Recarregue se necessário.", "info");
+        }
+      } catch {
+        if (createdBook?.id) {
+          try {
+            await api.delete(`/api/admin/books/${createdBook.id}`, { headers });
+          } catch {
+            // Se a limpeza falhar, a recarga mostra o estado real para o admin.
+          }
+        }
+        try {
+          await reloadBooksAndMetrics();
+        } catch {
+          // A mensagem principal já informa a falha do cadastro.
+        }
+        showToast("Não foi possível criar o livro com PDF. O cadastro exige arquivo de leitura válido.", "error");
+      } finally {
+        setBusyKey(null);
+      }
+      return;
+    }
+    const response = await runAction(
       bookForm.id ? `book-save-${bookForm.id}` : "book-create",
       () =>
         bookForm.id
@@ -188,8 +287,15 @@ export function useAdminActions({
               { headers }
             ),
       bookForm.id ? "Livro atualizado com sucesso." : "Livro criado com sucesso.",
-      bookForm.id ? "Não foi possível atualizar o livro." : "Não foi possível criar o livro."
+      bookForm.id ? "Não foi possível atualizar o livro." : "Não foi possível criar o livro.",
+      reloadBooksAndMetrics
     );
+    const savedBook = response?.data as Book | undefined;
+    if (savedBook?.id) {
+      setUploadBookId(savedBook.id);
+      setCoverBookId(savedBook.id);
+      setCoverBookUrl(savedBook.coverUrl ?? "");
+    }
     setBookForm(emptyBook);
   };
 
@@ -200,7 +306,10 @@ export function useAdminActions({
       badgeForm.id ? `badge-save-${badgeForm.id}` : "badge-create",
       () => (badgeForm.id ? api.put(`/api/admin/badges/${badgeForm.id}`, badgeForm, { headers }) : api.post("/api/admin/badges", badgeForm, { headers })),
       badgeForm.id ? "Conquista atualizada com sucesso." : "Conquista criada com sucesso.",
-      badgeForm.id ? "Não foi possível atualizar a conquista." : "Não foi possível criar a conquista."
+      badgeForm.id ? "Não foi possível atualizar a conquista." : "Não foi possível criar a conquista.",
+      async () => {
+        await Promise.all([reloadBadges(), reloadMetrics()]);
+      }
     );
     setBadgeForm(emptyBadge);
   };
@@ -252,9 +361,10 @@ export function useAdminActions({
     formData.append("file", uploadFile);
     await runAction(
       "book-upload",
-      () => api.post(`/api/admin/books/${uploadBookId}/upload`, formData, { headers: { ...headers, "Content-Type": "multipart/form-data" } }),
+      () => api.post(`/api/admin/books/${uploadBookId}/upload`, formData, { headers }),
       "PDF enviado com sucesso.",
-      "Não foi possível enviar o arquivo do livro."
+      "Não foi possível enviar o arquivo do livro.",
+      reloadBooksAndMetrics
     );
     setUploadFile(null);
   };
@@ -266,7 +376,8 @@ export function useAdminActions({
       "book-cover",
       () => api.patch(`/api/admin/books/${coverBookId}`, { coverUrl: coverBookUrl }, { headers }),
       "Capa do livro atualizada com sucesso.",
-      "Não foi possível atualizar a capa do livro."
+      "Não foi possível atualizar a capa do livro.",
+      reloadBooksAndMetrics
     );
   };
 
@@ -284,11 +395,12 @@ export function useAdminActions({
           pageSize: Number(importPageSize),
           readableOnly: importReadableOnly,
           targetImportCount: Number(importTargetCount),
+          language: importLanguage,
         },
         { headers }
       );
       setImportResult(response.data);
-      await reloadStaticData();
+      await reloadBooksAndMetrics();
       if (response.data.imported > 0 && response.data.failed > 0) {
         showToast("Importação parcial: alguns livros entraram, mas a Open Library falhou em parte da busca.", "info");
       } else if (response.data.failed > 0) {
@@ -317,11 +429,12 @@ export function useAdminActions({
           pageSize: Number(importPageSize),
           readableOnly: true,
           targetImportCount: Number(importTargetCount),
+          language: importLanguage,
         },
         { headers }
       );
       setImportResult(response.data);
-      await reloadStaticData();
+      await reloadBooksAndMetrics();
       if (response.data.imported > 0 && response.data.failed > 0) {
         showToast("Alguns clássicos entraram com leitura interna, mas parte da curadoria falhou.", "info");
       } else if (response.data.failed > 0) {

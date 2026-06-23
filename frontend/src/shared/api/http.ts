@@ -5,12 +5,16 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localho
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 api.interceptors.request.use((config) => {
+  if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+    const headers = config.headers as typeof config.headers & {
+      delete?: (header: string) => void;
+    };
+    headers.delete?.("Content-Type");
+  }
+
   const token = readStoredToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

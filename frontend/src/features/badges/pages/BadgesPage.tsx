@@ -29,6 +29,11 @@ type HomeResponse = {
   readingProgress: {
     streakDays: number;
   };
+  readings?: Array<{
+    book?: {
+      id: string;
+    };
+  }>;
 };
 
 type ProgressCard = {
@@ -64,10 +69,20 @@ function formatBadgeCode(code: string) {
   );
 }
 
+function formatMissingProgress(missing: number, unit: string) {
+  if (missing === 1) {
+    const singularUnit = unit.endsWith("s") ? unit.slice(0, -1) : unit;
+    return `Falta 1 ${singularUnit}`;
+  }
+
+  return `Faltam ${missing} ${unit}`;
+}
+
 export function BadgesPage() {
   const headers = useAuthHeaders();
   const [badges, setBadges] = useState<Badge[]>([]);
   const [progressCards, setProgressCards] = useState<ProgressCard[]>([]);
+  const [currentReadingBookId, setCurrentReadingBookId] = useState("");
   const [totalPages, setTotalPages] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -112,6 +127,7 @@ export function BadgesPage() {
         setTotalPages(badgeResponse.data.page.totalPages);
 
         const stats = homeResponse.data;
+        setCurrentReadingBookId(stats.readings?.[0]?.book?.id ?? "");
         setProgressCards([
           {
             code: "FIRST_BOOK_FINISHED",
@@ -153,6 +169,7 @@ export function BadgesPage() {
         setError("");
       } catch (error) {
         if (!active) return;
+        setCurrentReadingBookId("");
         setError(extractApiErrorMessage(error, "Não foi possível carregar conquistas."));
       } finally {
         if (active) setLoading(false);
@@ -173,9 +190,10 @@ export function BadgesPage() {
     else params.set("page", String(nextPage));
     setSearchParams(params, { replace: true });
   };
+  const continueReadingUrl = currentReadingBookId ? `/books/${currentReadingBookId}/read` : "/books";
 
   return (
-    <section className="aura-page">
+    <section className="aura-page aura-badges-page">
       <div className="card hero aura-hero aura-hero--badges">
         <div>
           <p className="eyebrow aura-eyebrow">Coleção de momentos</p>
@@ -214,7 +232,7 @@ export function BadgesPage() {
             <strong>{progressInsights.nextUnlock?.name ?? "Tudo em dia"}</strong>
             <span>
               {progressInsights.nextUnlock
-                ? `Faltam ${progressInsights.nextUnlock.missing} ${progressInsights.nextUnlock.unit}`
+                ? formatMissingProgress(progressInsights.nextUnlock.missing, progressInsights.nextUnlock.unit)
                 : "Nenhuma pendência nas trilhas atuais"}
             </span>
           </div>
@@ -234,11 +252,19 @@ export function BadgesPage() {
                 </div>
                 <small>{percent}% concluído</small>
                 <span className={missing === 0 ? "favorite-badge" : "import-badge"}>
-                  {missing === 0 ? "Concluída" : `Faltam ${missing} ${card.unit}`}
+                  {missing === 0 ? "Concluída" : formatMissingProgress(missing, card.unit)}
                 </span>
               </article>
             );
           })}
+        </div>
+        <div className="card-actions badge-progress-actions">
+          <Link to={continueReadingUrl} className="btn-link">
+            Continuar lendo
+          </Link>
+          <Link to="/goals?action=config" className="btn-muted btn-link">
+            Ajustar meta
+          </Link>
         </div>
       </article>
 
@@ -255,36 +281,38 @@ export function BadgesPage() {
         ))}
       </div>
 
-      <div className="pagination-row">
-        <button
-          type="button"
-          className="btn-muted"
-          aria-label="Ir para a página anterior de conquistas"
-          disabled={page <= 0 || loading}
-          onClick={() => goToPage(page - 1)}
-        >
-          Anterior
-        </button>
-        <span className="section-sub">
-          Página {page + 1} de {Math.max(totalPages, 1)}
-        </span>
-        <button
-          type="button"
-          className="btn-muted"
-          aria-label="Ir para a próxima página de conquistas"
-          disabled={loading || page + 1 >= Math.max(totalPages, 1)}
-          onClick={() => goToPage(page + 1)}
-        >
-          Próxima
-        </button>
-      </div>
+      {totalPages > 1 && (
+        <div className="pagination-row">
+          <button
+            type="button"
+            className="btn-muted"
+            aria-label="Ir para a página anterior de conquistas"
+            disabled={page <= 0 || loading}
+            onClick={() => goToPage(page - 1)}
+          >
+            Anterior
+          </button>
+          <span className="section-sub">
+            Página {page + 1} de {totalPages}
+          </span>
+          <button
+            type="button"
+            className="btn-muted"
+            aria-label="Ir para a próxima página de conquistas"
+            disabled={loading || page + 1 >= totalPages}
+            onClick={() => goToPage(page + 1)}
+          >
+            Próxima
+          </button>
+        </div>
+      )}
 
       {!loading && !error && badges.length === 0 && (
         <StateCard
           title="Nenhuma conquista desbloqueada ainda"
           message="Continue lendo, salvando progresso e concluindo metas para liberar suas primeiras conquistas."
           action={
-            <Link to="/books" className="btn-link">
+            <Link to={continueReadingUrl} className="btn-link">
               Continuar lendo
             </Link>
           }

@@ -7,6 +7,7 @@ password="${ADMIN_PASSWORD:-}"
 query="fiction"
 pages=10
 target_count=10
+language="pt"
 
 usage() {
   cat <<'EOF'
@@ -19,6 +20,7 @@ Options:
   --query QUERY        Gutendex/Gutenberg search. Default: fiction
   --pages NUMBER       Gutendex pages to scan. Default: 10
   --target-count NUM   Target imported books. Default: 10
+  --language LANG      Preferred language: pt or en. Default: pt
   -h, --help           Show this help.
 EOF
 }
@@ -47,6 +49,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --target-count)
       target_count="${2:-}"
+      shift 2
+      ;;
+    --language)
+      language="${2:-}"
       shift 2
       ;;
     -h|--help)
@@ -80,11 +86,17 @@ if [[ -z "$password" ]]; then
   echo
 fi
 
+if [[ "$language" != "pt" && "$language" != "en" ]]; then
+  echo "Invalid language: $language. Use pt or en." >&2
+  exit 1
+fi
+
 api_url="${api_url%/}"
 
 echo "== Project Gutenberg internal reader import =="
 echo "API: $api_url"
 echo "Query: $query"
+echo "Language: $language"
 echo "Target: $target_count book(s) with internal reading"
 
 login_body="$(
@@ -121,7 +133,7 @@ print(token)
 )"
 
 import_body="$(
-  QUERY="$query" PAGES="$pages" TARGET_COUNT="$target_count" python3 - <<'PY'
+  QUERY="$query" PAGES="$pages" TARGET_COUNT="$target_count" LANGUAGE="$language" python3 - <<'PY'
 import json
 import os
 
@@ -131,6 +143,7 @@ print(json.dumps({
     "pageSize": 100,
     "readableOnly": True,
     "targetImportCount": int(os.environ["TARGET_COUNT"]),
+    "language": os.environ["LANGUAGE"],
 }))
 PY
 )"

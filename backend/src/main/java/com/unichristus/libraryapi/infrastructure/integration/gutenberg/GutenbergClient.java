@@ -61,17 +61,18 @@ public class GutenbergClient {
         return CURATED_BOOKS;
     }
 
-    public List<GutenbergBook> searchReadableBooks(String query, int pages, int targetCount) {
+    public List<GutenbergBook> searchReadableBooks(String query, String language, int pages, int targetCount) {
         List<GutenbergBook> books = new ArrayList<>();
         String normalizedQuery = query == null || query.isBlank() || query.equals("project-gutenberg-curated")
                 ? "fiction"
                 : query.trim();
+        String normalizedLanguage = normalizeLanguage(language);
         Set<Integer> seenIds = new HashSet<>();
 
         for (int page = 1; page <= pages && books.size() < targetCount; page++) {
             try {
-                URI uri = URI.create("%s/books/?languages=en&topic=%s&page=%d"
-                        .formatted(gutendexBaseUrl, urlEncode(normalizedQuery), page));
+                URI uri = URI.create("%s/books/?languages=%s&topic=%s&page=%d"
+                        .formatted(gutendexBaseUrl, normalizedLanguage, urlEncode(normalizedQuery), page));
                 HttpRequest request = HttpRequest.newBuilder(uri)
                         .timeout(Duration.ofMillis(gutendexTimeoutMs))
                         .GET()
@@ -102,7 +103,10 @@ public class GutenbergClient {
             }
         }
 
-        return books.isEmpty() ? curatedBooks().stream().limit(targetCount).toList() : books;
+        if (books.isEmpty() && normalizedLanguage.equals("en")) {
+            return curatedBooks().stream().limit(targetCount).toList();
+        }
+        return books;
     }
 
     public String downloadPlainText(int gutenbergId) {
@@ -225,6 +229,14 @@ public class GutenbergClient {
 
     private String urlEncode(String value) {
         return java.net.URLEncoder.encode(value, java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    private String normalizeLanguage(String language) {
+        if (language == null || language.isBlank()) {
+            return "en";
+        }
+        String normalized = language.trim().toLowerCase();
+        return normalized.equals("pt") || normalized.equals("por") || normalized.equals("portuguese") ? "pt" : "en";
     }
 
     private String cleanGutenbergText(String rawText) {

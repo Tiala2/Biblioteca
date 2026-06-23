@@ -176,13 +176,13 @@ Documento de apoio:
 - `./gradlew.bat integrationTest --no-daemon`: PASS
 - `scripts/e2e-smoke.ps1`: PASS
 - `scripts/route-checklist-exec.ps1`: PASS
-- checklist de rotas: `56 PASS / 0 FAIL` em 2026-05-02
+- checklist de rotas: `56 PASS / 0 FAIL` em 2026-06-05
 - `response time report`: login/list/books-search abaixo de `2s` na media
 
 ### Frontend
 
 - `npm run build`: PASS
-- `npm run test`: `54 passed`
+- `npm run test`: `57 passed`
 - `npm run test:e2e`: `13 passed` na ultima execucao completa
 
 ### Fluxos E2E validados

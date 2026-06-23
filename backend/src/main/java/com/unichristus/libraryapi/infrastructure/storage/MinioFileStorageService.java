@@ -132,6 +132,20 @@ public class MinioFileStorageService {
         }
     }
 
+    public boolean pdfExists(String bookKey) {
+        try {
+            minioClient.statObject(
+                    StatObjectArgs.builder()
+                            .bucket(filesBucket)
+                            .object(bookKey)
+                            .build()
+            );
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public StoredFile getPdfObject(String bookKey) {
         try {
             StatObjectResponse stat = minioClient.statObject(

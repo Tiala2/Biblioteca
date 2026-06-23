@@ -11,9 +11,9 @@ export function AdminHeroPanel({ metrics, error }: AdminHeroPanelProps) {
     <article id="admin-metrics" className="card hero aura-hero admin-hero">
       <div className="aura-hero__content">
         <div>
-          <p className="eyebrow aura-eyebrow">Central de operação</p>
-          <h2>Painel admin</h2>
-          <p>Controle acervo, engajamento, usuários e auditoria com visão rápida do estado da plataforma.</p>
+          <p className="eyebrow aura-eyebrow">Gestão da biblioteca</p>
+          <h2>Painel administrativo</h2>
+          <p>Organize acervo, leitores e engajamento com uma visão clara do que mantém a plataforma viva.</p>
         </div>
         <div className="aura-hero__signal">
           <LibraryBig aria-hidden="true" />

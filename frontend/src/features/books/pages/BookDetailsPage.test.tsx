@@ -75,7 +75,7 @@ describe("BookDetailsPage", () => {
               id: "review-2",
               bookId: "book-1",
               rating: 4,
-              comment: "Review da comunidade",
+              comment: "Review dos leitores",
               updatedAt: "2026-04-21T12:00:00",
             },
           ],
@@ -106,23 +106,23 @@ describe("BookDetailsPage", () => {
     expect(await screen.findByRole("heading", { name: "Livro Detalhado" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Fantasia" })).toHaveAttribute("href", "/books?categoryId=cat-1");
     expect(screen.getByRole("link", { name: "Aventura" })).toHaveAttribute("href", "/books?tagId=tag-1");
-    expect(screen.getByLabelText("Nota média 4,5 de 5")).toBeInTheDocument();
+    expect(screen.getByLabelText("Avaliação média 4,5 de 5")).toBeInTheDocument();
     expect(screen.getByText("origem")).toBeInTheDocument();
-    expect(screen.getByText("Dinâmica")).toBeInTheDocument();
-    expect(screen.getAllByText("Disponível").length).toBeGreaterThan(0);
-    expect(screen.getByText("Leitura no app")).toBeInTheDocument();
+    expect(screen.getAllByText("Experiência").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Experiência narrativa").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Leitura integrada").length).toBeGreaterThan(0);
     expect(screen.getByText("modo de leitura")).toBeInTheDocument();
-    expect(screen.getByText("favorito")).toBeInTheDocument();
-    expect(screen.getByText("categorias")).toBeInTheDocument();
-    expect(screen.getByText("tags")).toBeInTheDocument();
-    expect(screen.getByText("média dos destaques")).toBeInTheDocument();
-    expect(screen.getByText("Destaque mais recente:")).toBeInTheDocument();
-    expect(screen.getByText("Nota 4/5")).toBeInTheDocument();
-    expect(screen.getByText("Nota registrada: 5")).toBeInTheDocument();
+    expect(screen.getAllByText("Na estante").length).toBeGreaterThan(0);
+    expect(screen.getByText("Categorias cadastradas")).toBeInTheDocument();
+    expect(screen.getByText("Etiquetas cadastradas")).toBeInTheDocument();
+    expect(screen.getByText("avaliação média")).toBeInTheDocument();
+    expect(screen.getByText("Avaliação mais recente:")).toBeInTheDocument();
+    expect(screen.getByText("⭐ 4,0")).toBeInTheDocument();
+    expect(screen.getByText("Sua nota: 5,0")).toBeInTheDocument();
     expect(screen.getByText("Minha review")).toBeInTheDocument();
-    expect(screen.getByText("Review da comunidade")).toBeInTheDocument();
+    expect(screen.getByText("Review dos leitores")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Salvar nos favoritos" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar à estante" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.post)).toHaveBeenCalledWith(
@@ -131,6 +131,48 @@ describe("BookDetailsPage", () => {
         { headers: authHeaders }
       )
     );
-    expect(showToast).toHaveBeenCalledWith("Livro adicionado aos favoritos.", "success");
+    expect(showToast).toHaveBeenCalledWith("Livro adicionado à estante.", "success");
+  });
+
+  it("deve oferecer avaliacao direta quando o usuario ainda nao avaliou o livro", async () => {
+    vi.mocked(api.get)
+      .mockResolvedValueOnce({
+        data: {
+          id: "book-1",
+          title: "Livro Sem Review",
+          author: "Autora",
+          isbn: "9780000000001",
+          numberOfPages: 180,
+          coverUrl: null,
+          hasPdf: true,
+          hasNarrative: false,
+          source: "LOCAL",
+          averageRating: 0,
+          totalReviews: 0,
+          categories: [],
+          tags: [],
+        },
+      } as never)
+      .mockResolvedValueOnce({ data: false } as never)
+      .mockResolvedValueOnce({ data: { content: [] } } as never)
+      .mockResolvedValueOnce({ data: { content: [] } } as never)
+      .mockResolvedValueOnce({ data: [] } as never);
+
+    render(
+      <MemoryRouter initialEntries={["/books/book-1"]}>
+        <Routes>
+          <Route path="/books/:bookId" element={<BookDetailsPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("heading", { name: "Livro Sem Review" })).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Avaliar livro" })).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ href: expect.stringContaining("/reviews?bookId=book-1&action=create") }),
+      ])
+    );
+    expect(screen.getByRole("link", { name: "Registrar percepção" })).toHaveAttribute("href", "/reviews?bookId=book-1&action=create");
+    expect(screen.getByRole("link", { name: "Explorar livros" })).toHaveAttribute("href", "/books");
   });
 });

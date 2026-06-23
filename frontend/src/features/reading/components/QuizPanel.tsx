@@ -1,6 +1,7 @@
-import type { NarrativeQuiz } from "../types";
-import { humanizeNarrativeText } from "../lib/readingPresentation";
+import { FileQuestion } from "lucide-react";
 import { pluralizePt } from "@shared/lib/presentation";
+import { humanizeNarrativeText } from "../lib/readingPresentation";
+import type { NarrativeQuiz } from "../types";
 
 type QuizPanelProps = {
   quizzes: NarrativeQuiz[];
@@ -29,17 +30,11 @@ function getQuizOptionClassName(
   return selected ? "quiz-option selected" : "quiz-option";
 }
 
-export function QuizPanel({
-  quizzes,
-  selectedOptions,
-  revealed,
-  onSelectOption,
-  onCheckQuiz,
-}: QuizPanelProps) {
+export function QuizPanel({ quizzes, selectedOptions, revealed, onSelectOption, onCheckQuiz }: QuizPanelProps) {
   return (
     <article className="card narrative-panel">
       <div className="section-head">
-        <h3>Quiz do trecho</h3>
+        <h3>Desafio de leitura</h3>
         <span className="kpi">{pluralizePt(quizzes.length, "pergunta", "perguntas")}</span>
       </div>
       {quizzes.length ? (
@@ -67,7 +62,7 @@ export function QuizPanel({
                   onClick={() => onCheckQuiz(quiz.id)}
                   disabled={!selectedOptions[quiz.id]}
                 >
-                  Verificar resposta
+                  Confirmar resposta
                 </button>
               </div>
               {revealed[quiz.id] ? (
@@ -81,11 +76,10 @@ export function QuizPanel({
         </div>
       ) : (
         <div className="panel-inline-state narrative-empty" role="status">
-          <p className="eyebrow">Sem pergunta nesta página</p>
-          <h3>Quiz ainda não disponível</h3>
-          <p className="section-sub">
-            Quando este livro receber perguntas por trecho, elas aparecerão aqui conforme a página de leitura.
-          </p>
+          <FileQuestion aria-hidden="true" />
+          <p className="eyebrow">Sem desafio neste trecho</p>
+          <h3>Nenhuma pergunta cadastrada ainda.</h3>
+          <p className="section-sub">Quando houver quiz para esta página, ele aparece aqui automaticamente.</p>
         </div>
       )}
     </article>

@@ -134,7 +134,7 @@ class AdminBookImportIntegrationTest extends IntegrationTestSupport {
                 "https://www.gutenberg.org/cache/epub/775001/pg775001.txt"
         );
 
-        when(gutenbergClient.searchReadableBooks(eq("fiction"), eq(1), eq(3)))
+        when(gutenbergClient.searchReadableBooks(eq("fiction"), eq("en"), eq(1), eq(3)))
                 .thenReturn(List.of(candidate));
         when(gutenbergClient.downloadPlainText(eq(candidate.textUrl()), eq(candidate.id())))
                 .thenReturn("word ".repeat(3_000));

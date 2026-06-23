@@ -50,11 +50,13 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
   const [badgeForm, setBadgeForm] = useState<BadgeForm>(EMPTY_BADGE);
   const [userForm, setUserForm] = useState<UserForm>(EMPTY_USER);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [createBookFile, setCreateBookFile] = useState<File | null>(null);
   const [importQuery, setImportQuery] = useState("subject:fiction");
   const [importPages, setImportPages] = useState(10);
   const [importPageSize, setImportPageSize] = useState(100);
   const [importReadableOnly, setImportReadableOnly] = useState(true);
   const [importTargetCount, setImportTargetCount] = useState(100);
+  const [importLanguage, setImportLanguage] = useState<"pt" | "en">("pt");
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [importProvider, setImportProvider] = useState<ImportProvider>("open-library");
   const staticData = useAdminStaticData({ headers });
@@ -76,8 +78,13 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
     reloadAll: async () => {
       await loadAll();
     },
-    reloadStaticData: staticData.reload,
     reloadUsers: userAdmin.reload,
+    reloadMetrics: staticData.reloadMetrics,
+    reloadCategories: staticData.reloadCategories,
+    reloadTags: staticData.reloadTags,
+    reloadBooks: staticData.reloadBooks,
+    reloadCollections: staticData.reloadCollections,
+    reloadBadges: staticData.reloadBadges,
     setBusyKey,
     categoryForm,
     setCategoryForm,
@@ -94,13 +101,19 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
     uploadBookId: staticData.uploadBookId,
     coverBookId: staticData.coverBookId,
     coverBookUrl: staticData.coverBookUrl,
+    setUploadBookId: staticData.setUploadBookId,
+    setCoverBookId: staticData.setCoverBookId,
+    setCoverBookUrl: staticData.setCoverBookUrl,
     uploadFile,
     setUploadFile,
+    createBookFile,
+    setCreateBookFile,
     importQuery,
     importPages,
     importPageSize,
     importReadableOnly,
     importTargetCount,
+    importLanguage,
     setImportResult,
     setImportProvider,
     emptyCategory: EMPTY_CATEGORY,
@@ -118,23 +131,23 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
       <nav className="admin-quick-nav" aria-label="Atalhos do painel administrativo">
         <NavLink to="/admin/catalog" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <LibraryBig aria-hidden="true" />
-          Catálogo
+          Gestão de livros
         </NavLink>
         <NavLink to="/admin/engagement" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <Sparkles aria-hidden="true" />
-          Engajamento
+          Conquistas e engajamento
         </NavLink>
         <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <UsersRound aria-hidden="true" />
-          Usuários
+          Gestão de usuários
         </NavLink>
         <NavLink to="/admin/alerts" className={({ isActive }) => (isActive ? "active" : undefined)}>
           <Bell aria-hidden="true" />
-          Auditoria
+          Histórico de ações
         </NavLink>
         <NavLink to="/admin" end className={({ isActive }) => (isActive ? "active" : undefined)}>
           <Gauge aria-hidden="true" />
-          Visão geral
+          Dashboard
         </NavLink>
       </nav>
 
@@ -151,6 +164,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         busyKey={busyKey}
         uploadBookId={staticData.uploadBookId}
         uploadFile={uploadFile}
+        createBookFile={createBookFile}
         coverBookId={staticData.coverBookId}
         coverBookUrl={staticData.coverBookUrl}
         importQuery={importQuery}
@@ -158,6 +172,7 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         importPageSize={importPageSize}
         importReadableOnly={importReadableOnly}
         importTargetCount={importTargetCount}
+        importLanguage={importLanguage}
         importResult={importResult}
         importProvider={importProvider}
         onSubmitBook={actions.submitBook}
@@ -166,36 +181,80 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onSubmitImport={actions.importBooks}
         onSubmitGutenbergImport={actions.importGutenbergBooks}
         onBookFormChange={setBookForm}
-        onResetBook={() => setBookForm(EMPTY_BOOK)}
-        onEditBook={actions.fillBookFormFromBook}
-        onDeleteBook={(bookId) => void actions.removeItem(`book-delete-${bookId}`, `/api/admin/books/${bookId}`, "Livro removido com sucesso.", "Não foi possível remover o livro.")}
+        onResetBook={() => {
+          setBookForm(EMPTY_BOOK);
+          setCreateBookFile(null);
+        }}
+        onEditBook={(book) => {
+          setCreateBookFile(null);
+          actions.fillBookFormFromBook(book);
+        }}
+        onDeleteBook={(bookId) =>
+          void actions.removeItem(
+            `book-delete-${bookId}`,
+            `/api/admin/books/${bookId}`,
+            "Livro removido com sucesso.",
+            "Não foi possível remover o livro.",
+            async () => {
+              await Promise.all([staticData.reloadBooks(), staticData.reloadMetrics()]);
+            }
+          )
+        }
         onUploadBookChange={staticData.setUploadBookId}
         onCoverBookChange={staticData.setCoverBookId}
         onCoverUrlChange={staticData.setCoverBookUrl}
         onUploadFileChange={setUploadFile}
+        onCreateBookFileChange={setCreateBookFile}
         onImportQueryChange={setImportQuery}
         onImportPagesChange={setImportPages}
         onImportPageSizeChange={setImportPageSize}
         onImportReadableOnlyChange={setImportReadableOnly}
         onImportTargetCountChange={setImportTargetCount}
+        onImportLanguageChange={setImportLanguage}
         onSubmitCategory={actions.submitCategory}
         onCategoryFormChange={setCategoryForm}
         onEditCategory={actions.fillCategoryFormFromCategory}
         onResetCategory={() => setCategoryForm(EMPTY_CATEGORY)}
         onDeleteCategory={(categoryId) =>
-          void actions.removeItem(`category-delete-${categoryId}`, `/api/admin/categories/${categoryId}`, "Categoria removida com sucesso.", "Não foi possível remover a categoria.")
+          void actions.removeItem(
+            `category-delete-${categoryId}`,
+            `/api/admin/categories/${categoryId}`,
+            "Categoria removida com sucesso.",
+            "Não foi possível remover a categoria.",
+            async () => {
+              await Promise.all([staticData.reloadCategories(), staticData.reloadMetrics()]);
+            }
+          )
         }
         onSubmitTag={actions.submitTag}
         onTagFormChange={setTagForm}
         onEditTag={actions.fillTagFormFromTag}
         onResetTag={() => setTagForm(EMPTY_TAG)}
-        onDeleteTag={(tagId) => void actions.removeItem(`tag-delete-${tagId}`, `/api/admin/tags/${tagId}`, "Tag removida com sucesso.", "Não foi possível remover a tag.")}
+        onDeleteTag={(tagId) =>
+          void actions.removeItem(
+            `tag-delete-${tagId}`,
+            `/api/admin/tags/${tagId}`,
+            "Tag removida com sucesso.",
+            "Não foi possível remover a tag.",
+            async () => {
+              await Promise.all([staticData.reloadTags(), staticData.reloadMetrics()]);
+            }
+          )
+        }
         onSubmitCollection={actions.submitCollection}
         onCollectionFormChange={setCollectionForm}
         onEditCollection={actions.fillCollectionFormFromCollection}
         onResetCollection={() => setCollectionForm(EMPTY_COLLECTION)}
         onDeleteCollection={(collectionId) =>
-          void actions.removeItem(`collection-delete-${collectionId}`, `/api/admin/collections/${collectionId}`, "Coleção removida com sucesso.", "Não foi possível remover a coleção.")
+          void actions.removeItem(
+            `collection-delete-${collectionId}`,
+            `/api/admin/collections/${collectionId}`,
+            "Coleção removida com sucesso.",
+            "Não foi possível remover a coleção.",
+            async () => {
+              await Promise.all([staticData.reloadCollections(), staticData.reloadMetrics()]);
+            }
+          )
         }
       />
       )}
@@ -210,7 +269,17 @@ export function AdminPage({ visibleSections = ["catalog", "engagement", "users",
         onFormChange={setBadgeForm}
         onEdit={actions.fillBadgeFormFromBadge}
         onReset={() => setBadgeForm(EMPTY_BADGE)}
-        onDelete={(badgeId) => void actions.removeItem(`badge-delete-${badgeId}`, `/api/admin/badges/${badgeId}`, "Conquista removida com sucesso.", "Não foi possível remover a conquista.")}
+        onDelete={(badgeId) =>
+          void actions.removeItem(
+            `badge-delete-${badgeId}`,
+            `/api/admin/badges/${badgeId}`,
+            "Conquista removida com sucesso.",
+            "Não foi possível remover a conquista.",
+            async () => {
+              await Promise.all([staticData.reloadBadges(), staticData.reloadMetrics()]);
+            }
+          )
+        }
       />
       )}
 

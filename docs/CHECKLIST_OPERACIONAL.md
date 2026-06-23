@@ -1,14 +1,36 @@
 # Checklist Operacional
 
-Data de referencia: 2026-05-02
+Data de referencia: 2026-06-20
 
 ## 1) Subir ambiente
 
+Fluxo recomendado no Windows:
+
 ```powershell
-docker compose up -d --build
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
 ```
 
-Validar containers:
+Fluxo recomendado no Linux/macOS:
+
+```bash
+cd library-api-projeto
+chmod +x start-all.sh backend/scripts/*.sh frontend/scripts/*.sh
+./start-all.sh --build-backend
+```
+
+Se a porta `8080` estiver ocupada:
+
+```powershell
+$env:API_PORT="8081"
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1 -BuildBackend
+```
+
+```bash
+API_PORT=8081 ./start-all.sh --build-backend
+```
+
+Validar containers no diretorio `backend`:
 
 ```powershell
 docker compose ps
@@ -38,23 +60,26 @@ powershell -ExecutionPolicy Bypass -File .\scripts\test-check-local-stack.ps1
 ```
 
 ```powershell
-./gradlew.bat test integrationTest
+cd backend
+.\gradlew.bat test
 ```
 
-Validacao rapida usada na rodada final:
+Validacao rapida usada na rodada final, sem depender de E2E autenticado:
 
 ```powershell
-cd backend
 .\gradlew.bat test --no-daemon
-.\gradlew.bat integrationTest --no-daemon
 
 cd ..\frontend
+npm.cmd run lint
 npm.cmd run test
 npm.cmd run build
-npm.cmd run test:e2e
+```
 
-cd ..
-powershell -ExecutionPolicy Bypass -File .\scripts\route-checklist-exec.ps1
+Validacao completa antes da entrega, quando backend/front estiverem de pe e houver credenciais admin:
+
+```powershell
+cd C:\workspace\library-api-projeto
+powershell -ExecutionPolicy Bypass -File .\scripts\pre-delivery-check.ps1
 ```
 
 ## 4) Rodar smoke E2E no terminal
@@ -79,8 +104,11 @@ Opcao alternativa:
 
 ## 5) Evidencias minimas para validar
 
+- Status final registrado em `docs/STATUS_ENTREGA_2026_06_08.md`
+- Roteiro de fala pronto em `docs/ROTEIRO_FALA_APRESENTACAO.md`
 - Backend `test` verde
-- Frontend `test`, `build` e `test:e2e` verdes
+- Frontend `lint`, `test` e `build` verdes
+- Teste E2E/smoke autenticado executado quando houver backend, frontend e credenciais admin disponiveis
 - Checklist de rotas com `56 PASS / 0 FAIL`
 - Health `UP`
 - Login JWT funcionando
@@ -102,3 +130,11 @@ Opcao alternativa:
 - Badge code e enum fixo; para novos codigos e necessario evolucao do enum e regra.
 - Upload PDF pode falhar com `Maximum upload size exceeded` para arquivos acima do limite.
 - Alertas por e-mail sao sem custo usando Mailpit local ou SMTP configurado no ambiente.
+
+## 7) Backup final validado
+
+- Backup oficial: `backups/20260620-110534`
+- PostgreSQL em UTF-8 com checksum validado
+- MinIO com checksum validado e `959` entradas
+- Restauracao comprovada em banco temporario isolado
+- Evidencia completa: [STATUS_ENTREGA_2026_06_20.md](STATUS_ENTREGA_2026_06_20.md)

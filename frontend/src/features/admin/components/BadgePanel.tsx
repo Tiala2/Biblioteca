@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BADGE_CODES, BADGE_CRITERIA, type Badge, type BadgeCode, type BadgeCriteria, type BadgeForm } from "../types";
 import { formatBadgeCode, formatBadgeCriteria } from "../lib/labels";
+import { focusAdminPanelForm } from "../lib/focus";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type BadgePanelProps = {
@@ -48,10 +49,14 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
   const totalPages = Math.max(1, Math.ceil(filteredBadges.length / pageSize));
   const visibleBadges = filteredBadges.slice(page * pageSize, page * pageSize + pageSize);
   const saving = busyKey === "badge-create" || busyKey === `badge-save-${form.id}`;
+  const editBadge = (badge: Badge) => {
+    onEdit(badge);
+    focusAdminPanelForm("admin-badges");
+  };
 
   return (
     <article id="admin-badges" className="card admin-panel">
-      <h3>{form.id ? "Editar conquista" : "Nova conquista"}</h3>
+      <h3>{form.id ? "Editar conquista" : "Criar conquista"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
         <select
           aria-label="Código da conquista"
@@ -107,7 +112,7 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
         )}
       </form>
       <div className="section-head">
-        <h4>Lista de conquistas</h4>
+        <h4>Conquistas da jornada</h4>
         <span className="kpi">{filteredBadges.length}</span>
       </div>
       <div className="admin-badge-summary">
@@ -136,20 +141,18 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
       <ul className="stacked-list">
         {visibleBadges.map((badge) => (
           <li key={badge.id} className="stacked-list-item">
-            <div>
+            <button type="button" className="admin-row-action" onClick={() => editBadge(badge)}>
               <div className="admin-badge-title-row">
                 <strong>{badge.name}</strong>
-                <span className={badge.active ? "import-badge" : "status-pill status-pill--muted"}>
-                  {badge.active ? "Ativa" : "Inativa"}
-                </span>
+                <span className={badge.active ? "import-badge" : "status-pill status-pill--muted"}>{badge.active ? "Ativa" : "Inativa"}</span>
               </div>
               <p className="section-sub">
-                {formatBadgeCode(badge.code)} · {formatBadgeCriteria(badge.criteriaType)} · {badge.criteriaValue ?? "Valor não definido"}
+                {formatBadgeCode(badge.code)} - {formatBadgeCriteria(badge.criteriaType)} - {badge.criteriaValue ?? "Valor não definido"}
               </p>
               {badge.description && <small>{badge.description}</small>}
-            </div>
-            <div className="card-actions">
-              <button type="button" className="btn-muted" onClick={() => onEdit(badge)}>
+            </button>
+            <div className="card-actions admin-list-actions">
+              <button type="button" className="btn-muted" onClick={() => editBadge(badge)}>
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `badge-delete-${badge.id}`} onClick={() => onDelete(badge.id)}>
@@ -165,7 +168,9 @@ export function BadgePanel({ form, badges, busyKey, onSubmit, onFormChange, onEd
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Página {page + 1} de {totalPages}</span>
+          <span className="section-sub">
+            Página {page + 1} de {totalPages}
+          </span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
             Próxima
           </button>

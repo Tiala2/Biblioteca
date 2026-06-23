@@ -1,6 +1,6 @@
 ﻿# Relatorio de Cobertura de Rotas
 
-Data/hora: 2026-05-27 15:25:32 -03:00
+Data/hora: 2026-06-05 15:45:24 -03:00
 
 Resumo:
 - Total de operacoes executadas: 56
@@ -33,7 +33,7 @@ Resumo:
 | POST | /api/admin/collections | 201 | 201,404 | PASS |  |
 | POST | /api/admin/categories | 201 | 201,409 | PASS |  |
 | POST | /api/admin/books | 201 | 201,409,404 | PASS |  |
-| POST | /api/admin/books/{bookId}/upload | 204 | 204,400,413,415 | PASS | upload multipart com pdf temporario |
+| POST | /api/admin/books/{bookId}/upload | 400 | 204,400,413,415 | PASS | upload multipart com pdf temporario |
 | GET | /api/admin/badges | 200 | 200 | PASS |  |
 | POST | /api/admin/badges | 201 | 201 | PASS | recriar badge apos exclusao controlada |
 | GET | /api/v1/reviews/{reviewId} | 200 | 200 | PASS |  |

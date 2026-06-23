@@ -1,3 +1,4 @@
+import { ChevronsLeft, ChevronsRight, CornerDownLeft, CornerDownRight } from "lucide-react";
 import { formatDateLabel, humanizeNarrativeText } from "../lib/readingPresentation";
 import type { HomeReading, NarrativeInsight, ReadingSyncResponse } from "../types";
 
@@ -12,6 +13,22 @@ type ReadingProgressPanelProps = {
   onUpdateCurrentPage: (value: number) => void;
   onJumpPages: (delta: number) => void;
 };
+
+function ReadingDateValue({ value }: { value?: string | null }) {
+  const label = formatDateLabel(value);
+  const [date, time] = label.split(", ");
+
+  if (!time) {
+    return <strong>{label}</strong>;
+  }
+
+  return (
+    <strong className="reading-date-value" aria-label={label}>
+      <span>{date}</span>
+      <span>{time}</span>
+    </strong>
+  );
+}
 
 export function ReadingProgressPanel({
   hasPdf,
@@ -28,9 +45,9 @@ export function ReadingProgressPanel({
     <article className="card aura-panel aura-panel--focus reading-progress-panel">
       <div className="section-head">
         <div>
-          <h3>Painel de progresso</h3>
+          <h3>Seu progresso</h3>
           <p className="section-sub">
-            Ajuste a página atual e registre o que foi lido para refletir metas, ranking e conquistas.
+            Atualize sua página atual e salve seu avanço.
           </p>
         </div>
         <span className="kpi">Fase: {phaseLabel}</span>
@@ -38,7 +55,7 @@ export function ReadingProgressPanel({
 
       {!hasPdf ? (
         <p className="section-sub">
-          Mesmo sem leitura interna, você pode informar manualmente a página atual. Assim o livro continua contando em metas,
+          Mesmo sem leitura integrada, você pode informar manualmente a página atual. Assim o livro continua contando em metas,
           histórico e engajamento.
         </p>
       ) : null}
@@ -46,19 +63,19 @@ export function ReadingProgressPanel({
       <div className="stats-grid">
         <div className="stat-box">
           <strong>{readingSnapshot?.currentPage ?? currentPage}</strong>
-          <span>última página salva</span>
+          <span>Última página salva</span>
         </div>
         <div className="stat-box">
-          <strong>{formatDateLabel(readingSnapshot?.lastReadedAt)}</strong>
-          <span>última sincronização</span>
+          <ReadingDateValue value={readingSnapshot?.lastReadedAt} />
+          <span>Última atualização</span>
         </div>
         <div className="stat-box">
-          <strong>{formatDateLabel(readingSnapshot?.startedAt)}</strong>
-          <span>início da leitura</span>
+          <ReadingDateValue value={readingSnapshot?.startedAt} />
+          <span>Início da leitura</span>
         </div>
         <div className="stat-box">
-          <strong>{formatDateLabel(readingSnapshot?.finishedAt)}</strong>
-          <span>conclusão</span>
+          <ReadingDateValue value={readingSnapshot?.finishedAt} />
+          <span>{readingSnapshot?.finishedAt ? "Conclusão" : "Ainda sem conclusão"}</span>
         </div>
       </div>
 
@@ -69,14 +86,14 @@ export function ReadingProgressPanel({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={progressPercent}
-        aria-valuetext={`${progressPercent}% concluído`}
+        aria-valuetext={`${progressPercent}% lido`}
       >
         <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
       </div>
 
       <div className="reading-control-row">
         <div>
-          <label htmlFor="reading-range">Selecione a página lida</label>
+          <label htmlFor="reading-range">Atualizar página atual</label>
           <input
             id="reading-range"
             type="range"
@@ -89,7 +106,7 @@ export function ReadingProgressPanel({
         </div>
 
         <div className="reading-page-box">
-          <label htmlFor="reading-page-input">Página</label>
+          <label htmlFor="reading-page-input">Página atual</label>
           <input
             id="reading-page-input"
             type="number"
@@ -103,17 +120,21 @@ export function ReadingProgressPanel({
       </div>
 
       <div className="page-jump-grid">
-        <button type="button" className="btn-muted" onClick={() => onUpdateCurrentPage(1)}>
-          Ir para início
+        <button type="button" className="btn-muted" aria-label="Ir para o início do livro" onClick={() => onUpdateCurrentPage(1)}>
+          <CornerDownLeft aria-hidden="true" />
+          Início
         </button>
-        <button type="button" className="btn-muted" onClick={() => onJumpPages(-10)}>
-          Voltar 10 páginas
+        <button type="button" className="btn-muted" aria-label="Voltar 10 páginas" onClick={() => onJumpPages(-10)}>
+          <ChevronsLeft aria-hidden="true" />
+          -10 páginas
         </button>
-        <button type="button" className="btn-muted" onClick={() => onJumpPages(10)}>
-          Avançar 10 páginas
+        <button type="button" className="btn-muted" aria-label="Avançar 10 páginas" onClick={() => onJumpPages(10)}>
+          <ChevronsRight aria-hidden="true" />
+          +10 páginas
         </button>
-        <button type="button" className="btn-muted" onClick={() => onUpdateCurrentPage(totalPages)}>
-          Ir para final
+        <button type="button" className="btn-muted" aria-label="Ir para o final do livro" onClick={() => onUpdateCurrentPage(totalPages)}>
+          <CornerDownRight aria-hidden="true" />
+          Final
         </button>
       </div>
 

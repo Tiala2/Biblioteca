@@ -10,6 +10,7 @@ Manter banco e arquivos sempre persistidos, evitando perda de dados e erros ao s
 
 ## Arquivo `.env`
 - Para desenvolvimento local e apresentacao, copie `.env.example` para `.env`; ele usa Mailpit por padrao.
+- Os scripts `docker-up-safe.ps1` e `docker-up-safe.sh` tambem criam `.env` automaticamente a partir do `.env.example` quando o arquivo ainda nao existe.
 - Para envio real com Brevo, use `.env.brevo.example` como modelo e preencha as credenciais SMTP.
 - Nao compartilhe nem commite o `.env` com senhas reais.
 

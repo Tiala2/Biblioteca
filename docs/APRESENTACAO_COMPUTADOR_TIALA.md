@@ -69,7 +69,7 @@ Resultado esperado:
 
 - Backend unit tests: `BUILD SUCCESSFUL`
 - Frontend lint: `PASS`
-- Frontend unit tests: `54 passed`
+- Frontend unit tests: `57 passed`
 - Frontend build: `PASS`
 
 ## Fluxo de demonstracao
@@ -77,6 +77,7 @@ Resultado esperado:
 Seguir:
 
 - `docs/ROTEIRO_APRESENTACAO.md`
+- `docs/ROTEIRO_FALA_APRESENTACAO.md`
 - `docs/CHECKLIST_VALIDACAO_AUTENTICADA.md`
 
 ## Plano B
@@ -85,4 +86,5 @@ Seguir:
 - Se a porta `8080` estiver ocupada, usar `API_PORT=8081`.
 - Se recuperacao por email real falhar, explicar que o projeto tambem suporta Mailpit local.
 - Se algum dado sumir, restaurar backup do banco Docker.
+- Backup final validado nesta rodada: `backups/20260605-155841`.
 - Se a Open Library falhar, demonstrar livros locais e PDFs cadastrados.

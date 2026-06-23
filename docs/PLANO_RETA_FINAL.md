@@ -2,8 +2,13 @@
 
 Este guia resume o que precisa ser conferido antes da entrega e da apresentacao.
 
+Status da ultima rodada registrada: `docs/STATUS_ENTREGA_2026_06_08.md`.
+
+Plano das duas semanas finais: `docs/PLANO_2_SEMANAS_ENTREGA.md`.
+
 ## Prioridade 1 - Validacao funcional
 
+- Repetir a validacao rapida no computador da apresentacao antes da demonstracao.
 - Login, cadastro e recuperacao de senha no computador da apresentacao.
 - Catalogo com busca, filtros, paginacao, capa e detalhes do livro.
 - Favoritos: salvar, remover e abrir livro favorito.
@@ -15,6 +20,7 @@ Este guia resume o que precisa ser conferido antes da entrega e da apresentacao.
 
 ## Prioridade 2 - Validacao visual
 
+- Usar a rodada visual autenticada de 08/06 como base de referencia.
 - Verificar desktop e mobile nas telas principais.
 - Conferir textos quebrados, cards vazando, botoes desalinhados e capas grandes demais.
 - Conferir estados vazios: sem favoritos, sem avaliacoes, sem meta, sem conquistas e sem resultados no catalogo.
@@ -71,6 +77,7 @@ cd backend
 
 - Usar `docs/APRESENTACAO_COMPUTADOR_TIALA.md` como guia do ambiente principal.
 - Seguir o roteiro em `docs/ROTEIRO_APRESENTACAO.md`.
+- Usar `docs/ROTEIRO_FALA_APRESENTACAO.md` como texto de apoio para a fala.
 - Conferir o checklist autenticado em `docs/CHECKLIST_VALIDACAO_AUTENTICADA.md`.
 - Separar usuario e senha de demonstracao.
 - Deixar backup pronto para restaurar, se necessario.

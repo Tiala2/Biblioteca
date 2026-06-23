@@ -21,6 +21,14 @@ type UserProfile = {
   leaderboardOptIn: boolean;
 };
 
+type HomeResume = {
+  readings?: Array<{
+    book?: {
+      id: string;
+    };
+  }>;
+};
+
 function parseMetric(value: string | null): LeaderboardMetric {
   return value === "BOOKS" ? "BOOKS" : "PAGES";
 }
@@ -36,17 +44,17 @@ function metricCopy(metric: LeaderboardMetric) {
   if (metric === "BOOKS") {
     return {
       title: "Livros concluídos",
-      subtitle: "Ranking semanal por livros finalizados com participação ativa.",
+      subtitle: "Classificação semanal dos leitores por livros concluídos.",
       singular: "livro",
       plural: "livros",
     };
   }
 
   return {
-      title: "Páginas lidas",
-      subtitle: "Ranking semanal da comunidade por páginas lidas com participação ativa.",
-      singular: "página",
-      plural: "páginas",
+    title: "Páginas lidas",
+    subtitle: "Classificação semanal dos leitores por páginas lidas.",
+    singular: "página",
+    plural: "páginas",
   };
 }
 
@@ -61,6 +69,7 @@ export function LeaderboardPage() {
   const limit = useMemo(() => parseLimit(searchParams.get("limit")), [searchParams]);
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [leaderboardOptIn, setLeaderboardOptIn] = useState<boolean | null>(null);
+  const [currentReadingBookId, setCurrentReadingBookId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -72,15 +81,18 @@ export function LeaderboardPage() {
       try {
         const leaderboardRequest = api.get<LeaderboardEntry[]>(`/api/v1/users/leaderboard?limit=${limit}&metric=${metric}`);
         const profileRequest = headers ? api.get<UserProfile>("/api/v1/users/me", { headers }) : Promise.resolve(null);
-        const [leaderboardResponse, profileResponse] = await Promise.all([leaderboardRequest, profileRequest]);
+        const homeRequest = headers ? api.get<HomeResume>("/api/v1/home/resume", { headers }) : Promise.resolve(null);
+        const [leaderboardResponse, profileResponse, homeResponse] = await Promise.all([leaderboardRequest, profileRequest, homeRequest]);
         if (cancelled) return;
         setEntries(leaderboardResponse.data);
         setLeaderboardOptIn(profileResponse?.data.leaderboardOptIn ?? null);
+        setCurrentReadingBookId(homeResponse?.data.readings?.[0]?.book?.id ?? "");
         setError("");
       } catch (error) {
         if (cancelled) return;
         setEntries([]);
-        setError(extractApiErrorMessage(error, "Não foi possível carregar o ranking."));
+        setCurrentReadingBookId("");
+        setError(extractApiErrorMessage(error, "Não foi possível carregar a classificação."));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -112,23 +124,25 @@ export function LeaderboardPage() {
   const communityTotal = entries.reduce((total, entry) => total + entry.value, 0);
   const averageValue = entries.length > 0 ? Math.round(communityTotal / entries.length) : 0;
   const podium = entries.slice(0, 3);
+  const emptyPodiumSlots = ["Top 1", "Top 2", "Top 3"];
+  const continueReadingUrl = currentReadingBookId ? `/books/${currentReadingBookId}/read` : "/books";
 
   if (loading) {
     return (
       <StateCard
-        title="Ranking em atualização"
-        message="Estamos montando a classificação da comunidade com base nas leituras mais recentes."
+        title="Classificação em atualização"
+        message="Estamos montando a classificação dos leitores com base nas leituras mais recentes."
         variant="loading"
       />
     );
   }
 
   return (
-    <section className="aura-page">
+    <section className="aura-page aura-leaderboard-page">
       <div className="card hero aura-hero aura-hero--leaderboard">
         <div>
-          <p className="eyebrow aura-eyebrow">Energia da comunidade</p>
-          <h2>Ranking semanal da comunidade</h2>
+          <p className="eyebrow aura-eyebrow">Ritmo dos leitores</p>
+          <h2>Classificação dos leitores</h2>
           <p>{copy.subtitle}</p>
         </div>
         <div className="aura-hero__signal">
@@ -140,23 +154,26 @@ export function LeaderboardPage() {
 
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3><Settings2 aria-hidden="true" /> Seu status no ranking</h3>
+          <h3><Settings2 aria-hidden="true" /> Seu status na classificação</h3>
           <span className="kpi">{leaderboardOptIn ? "Participação ativa" : "Participação desligada"}</span>
         </div>
         <p className="section-sub">
           {leaderboardOptIn
-            ? "Seu progresso já pode entrar no ranking semanal."
-            : "Ative a participação no seu perfil para aparecer no ranking."}
+            ? "Seu progresso já pode entrar nos destaques da semana."
+            : "Ative a participação no seu perfil para aparecer na classificação."}
         </p>
         <div className="card-actions">
-          <Link to="/profile" className="btn-link">
-            Ajustar preferências
+          <Link to="/profile?action=preferences" className="btn-link">
+            {leaderboardOptIn ? "Abrir perfil" : "Ajustar preferências"}
+          </Link>
+          <Link to={continueReadingUrl} className="btn-muted btn-link">
+            Continuar lendo
           </Link>
         </div>
       </article>
 
       <article className="card tabs-card aura-panel aura-panel--wide">
-        <div className="tabs-row" role="tablist" aria-label="Métricas do ranking">
+        <div className="tabs-row" role="tablist" aria-label="Métricas da classificação">
           <button
             type="button"
             role="tab"
@@ -204,13 +221,13 @@ export function LeaderboardPage() {
         </div>
       </article>
 
-      {error && <StateCard title="Não foi possível carregar o ranking" message={error} variant="error" />}
+      {error && <StateCard title="Não foi possível carregar a classificação" message={error} variant="error" />}
 
       {!error && (
         <div className="stats-grid aura-stats">
           <div className="stat-box">
             <Crown aria-hidden="true" />
-            <strong>{topEntry ? topEntry.name : "Sem líder"}</strong>
+            <strong>{topEntry ? topEntry.name : "Classificação aguardando participantes"}</strong>
             <span>líder atual</span>
           </div>
           <div className="stat-box">
@@ -243,8 +260,11 @@ export function LeaderboardPage() {
             <span className="kpi">{copy.title}</span>
           </div>
           <div className="grid aura-podium-grid">
-            {podium.map((entry, index) => (
-              <article key={entry.userId} className="card aura-podium-card">
+            {podium.map((entry, index) => {
+              const gapToLeader = topEntry ? Math.max(0, topEntry.value - entry.value) : 0;
+
+              return (
+                <article key={entry.userId} className="card aura-podium-card">
                 <p className="eyebrow">Posição {index + 1}</p>
                 <h3>{entry.name}</h3>
                 <p className="section-sub">{copy.title}</p>
@@ -257,20 +277,53 @@ export function LeaderboardPage() {
                 <small>
                   {communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0}% do volume
                 </small>
+                  <span className={gapToLeader === 0 ? "favorite-badge" : "import-badge"}>
+                    {gapToLeader === 0 ? "Líder" : `Faltam ${formatMetricValue(gapToLeader, copy)}`}
+                  </span>
+                </article>
+              );
+            })}
+          </div>
+        </article>
+      )}
+
+      {!error && podium.length === 0 && (
+        <article className="card aura-panel aura-panel--wide leaderboard-empty-podium">
+          <div className="section-head">
+            <h3><Trophy aria-hidden="true" /> Pódio aguardando leitores</h3>
+            <span className="kpi">{copy.title}</span>
+          </div>
+          <div className="grid aura-podium-grid">
+            {emptyPodiumSlots.map((slot) => (
+              <article key={slot} className="card aura-podium-card aura-podium-card--empty">
+                <p className="eyebrow">{slot}</p>
+                <h3>Posição disponível</h3>
+                <p className="section-sub">
+                  Leia, salve seu progresso e volte para disputar esta posição.
+                </p>
+                <span className="import-badge">Aguardando participação</span>
               </article>
             ))}
+          </div>
+          <div className="card-actions leaderboard-empty-actions">
+            <Link to={continueReadingUrl} className="btn-link">
+              Começar leitura
+            </Link>
+            <Link to="/profile?action=preferences" className="btn-muted btn-link">
+              Ajustar preferências
+            </Link>
           </div>
         </article>
       )}
 
       <div className="grid aura-leaderboard-grid">
-        {entries.map((entry, index) => {
+        {entries.slice(3).map((entry, index) => {
           const gapToLeader = topEntry ? Math.max(0, topEntry.value - entry.value) : 0;
           const share = communityTotal > 0 ? Math.round((entry.value / communityTotal) * 100) : 0;
 
           return (
             <article key={entry.userId} className="card aura-leaderboard-card">
-              <p className="eyebrow">#{index + 1}</p>
+              <p className="eyebrow">#{index + 4}</p>
               <h3>{entry.name}</h3>
               <p className="section-sub">{copy.title}</p>
               <strong>
@@ -290,11 +343,11 @@ export function LeaderboardPage() {
 
       {!loading && !error && entries.length === 0 && (
         <StateCard
-          title="Nenhum participante elegível nesta semana"
-          message="Ative sua participação no perfil e continue lendo para aparecer na próxima atualização do ranking."
+          title="Ainda não há leitores classificados nesta semana."
+          message="A classificação desta semana ainda está começando. Continue lendo para aparecer entre os primeiros colocados."
           action={
-            <Link to="/profile" className="btn-link">
-              Ajustar preferências
+            <Link to={continueReadingUrl} className="btn-link">
+              Começar leitura
             </Link>
           }
         />

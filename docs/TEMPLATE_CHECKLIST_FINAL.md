@@ -1,13 +1,14 @@
 # Checklist Final De Aderencia Ao Template
 
-Data de referencia: 2026-05-02
+Data de referencia: 2026-06-08
 
 Observacao adicional:
 
 - o backend tambem recebeu validacao operacional real em 2026-04-08 para `health`, `login` e `forgot-password`, registrada em `docs/BACKEND_FINAL_VALIDACAO.md`
 - a rodada de retomada em 2026-04-28 confirmou backend unitario, backend integracao, frontend unitario, build de producao, E2E completo e checklist de rotas
 - a rodada de 2026-05-02 confirmou frontend unitario, build de producao e checklist de rotas apos as melhorias pos-main
-- resultados atuais: backend `test` PASS, backend `integrationTest` PASS, frontend `54 passed`, frontend E2E `13 passed` na ultima execucao completa, rotas `56 PASS / 0 FAIL`
+- resultados atuais: backend `test` PASS, frontend `57 passed`, frontend build PASS, smoke autenticado PASS, rotas `56 PASS / 0 FAIL`
+- rodada final de 2026-06-08 registrada em [STATUS_ENTREGA_2026_06_08.md](STATUS_ENTREGA_2026_06_08.md), com frontend completo, lint, build, backend test e validacao visual autenticada
 
 ## Requisitos Funcionais
 
@@ -83,6 +84,7 @@ Observacao adicional:
 | Java 21 + Spring Boot | OK | backend em [backend/](../backend) |
 | React + TypeScript + Vite | OK | frontend em [frontend/](../frontend) |
 | PostgreSQL | OK | stack em Docker e persistencia do backend |
+| DDL do banco | OK | [DDL_BANCO_DADOS.sql](DDL_BANCO_DADOS.sql) |
 | Liquibase | OK | migrations em [db.changelog-master.yaml](../backend/src/main/resources/db/changelog/db.changelog-master.yaml) |
 | OpenAPI/Swagger | OK | [openapi-lock.json](openapi-lock.json) e Swagger UI |
 | Docker/Docker Compose | OK | [docker-compose.dev.yml](../backend/docker-compose.dev.yml) |
@@ -119,3 +121,4 @@ Observacao adicional:
 | Manual do software | OK | [MANUAL_SOFTWARE_E_REQUISITOS_MINIMOS.md](MANUAL_SOFTWARE_E_REQUISITOS_MINIMOS.md) |
 | Recuperacao de senha | OK | [RECUPERACAO_SENHA_EMAIL.md](RECUPERACAO_SENHA_EMAIL.md) |
 | Scripts de inicializacao e validacao | OK | [CHECKLIST_OPERACIONAL.md](CHECKLIST_OPERACIONAL.md) |
+| Plano final de entrega | OK | [PLANO_2_SEMANAS_ENTREGA.md](PLANO_2_SEMANAS_ENTREGA.md) |

@@ -89,14 +89,59 @@ describe("ReviewsPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Livro Exibido" })).toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: "Livro Exibido" })[0]).toHaveAttribute("href", "/books/book-1");
-    expect(screen.getByText("Média das notas")).toBeInTheDocument();
+    expect(screen.getByText("Avaliação média")).toBeInTheDocument();
     expect(screen.getByText("5,0")).toBeInTheDocument();
-    expect(screen.getByText("Com comentário")).toBeInTheDocument();
+    expect(screen.getByText("Avaliações comentadas")).toBeInTheDocument();
     expect(screen.getByText("Última atualização")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library")).toHaveLength(2);
     expect(screen.getByText("9 caracteres")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Ver livro" })).toHaveAttribute("href", "/books/book-1");
+    expect(screen.getByRole("link", { name: "Abrir livro" })).toHaveAttribute("href", "/books/book-1");
     expect(screen.queryByText("Livro: book-1")).not.toBeInTheDocument();
+  });
+
+  it("deve abrir uma avaliação direto em modo de edição pela URL", async () => {
+    vi.mocked(api.get)
+      .mockResolvedValueOnce({
+        data: {
+          content: [
+            {
+              id: "review-1",
+              bookId: "book-1",
+              rating: 5,
+              comment: "Comentario original",
+              createdAt: "2026-04-03T00:00:00",
+              updatedAt: "2026-04-03T00:00:00",
+            },
+          ],
+          page: { size: 8, number: 0, totalElements: 1, totalPages: 1 },
+        },
+      } as never)
+      .mockResolvedValueOnce({
+        data: {
+          content: [{ id: "book-1", title: "Livro Exibido" }],
+          page: { size: 100, number: 0, totalElements: 1, totalPages: 1 },
+        },
+      } as never)
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: "reading-1",
+            status: "IN_PROGRESS",
+            book: { id: "book-1", title: "Livro Exibido" },
+          },
+        ],
+      } as never);
+
+    render(
+      <MemoryRouter initialEntries={["/reviews?editReview=review-1"]}>
+        <Routes>
+          <Route path="/reviews" element={<ReviewsPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("textbox", { name: "Comentário da avaliação em edição" })).toHaveValue("Comentario original");
+    expect(screen.getByRole("button", { name: "Salvar" })).toBeInTheDocument();
   });
 
   it("deve editar uma review existente", async () => {
@@ -177,7 +222,7 @@ describe("ReviewsPage", () => {
     const textInputs = screen.getAllByRole("textbox");
     await user.clear(textInputs[textInputs.length - 1]);
     await user.type(textInputs[textInputs.length - 1], "Comentario atualizado");
-    const editRatingPicker = screen.getByRole("radiogroup", { name: "Nota da avaliação em edição" });
+    const editRatingPicker = screen.getByRole("radiogroup", { name: "Avaliação em edição" });
     await user.click(within(editRatingPicker).getByRole("radio", { name: "4 estrelas" }));
     await user.click(screen.getByRole("button", { name: "Salvar" }));
 
@@ -189,5 +234,42 @@ describe("ReviewsPage", () => {
       )
     );
     expect(await screen.findByText("Comentario atualizado")).toBeInTheDocument();
+  });
+
+  it("deve preselecionar o livro informado na URL", async () => {
+    vi.mocked(api.get)
+      .mockResolvedValueOnce({
+        data: {
+          content: [],
+          page: { size: 8, number: 0, totalElements: 0, totalPages: 1 },
+        },
+      } as never)
+      .mockResolvedValueOnce({
+        data: {
+          content: [
+            { id: "book-1", title: "Primeiro Livro", author: "Autora A", source: "LOCAL" },
+            { id: "book-2", title: "Livro Escolhido", author: "Autora B", source: "GUTENBERG" },
+          ],
+          page: { size: 100, number: 0, totalElements: 2, totalPages: 1 },
+        },
+      } as never)
+      .mockResolvedValueOnce({
+        data: [
+          { id: "reading-1", status: "IN_PROGRESS", book: { id: "book-1", title: "Primeiro Livro" } },
+          { id: "reading-2", status: "IN_PROGRESS", book: { id: "book-2", title: "Livro Escolhido" } },
+        ],
+      } as never);
+
+    render(
+      <MemoryRouter initialEntries={["/reviews?bookId=book-2"]}>
+        <Routes>
+          <Route path="/reviews" element={<ReviewsPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByRole("textbox", { name: "Buscar livro para nova avaliação" })).toHaveValue("Livro Escolhido");
+    expect(screen.getByRole("button", { name: /Livro Escolhido/ })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("Elegível para avaliação")).toBeInTheDocument();
   });
 });

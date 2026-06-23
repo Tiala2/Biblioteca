@@ -3,6 +3,14 @@
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $projectRoot
 
+if (-not (Test-Path -LiteralPath "node_modules")) {
+  Write-Host "Installing frontend dependencies..."
+  npm.cmd ci
+  if ($LASTEXITCODE -ne 0) {
+    throw "npm ci failed"
+  }
+}
+
 $apiBaseUrl = if ($env:VITE_API_BASE_URL) {
   $env:VITE_API_BASE_URL
 } elseif ($env:API_PORT) {

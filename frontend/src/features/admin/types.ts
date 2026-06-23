@@ -21,6 +21,7 @@ export type Book = {
   coverUrl?: string | null;
   categories?: CategoryRef[];
   hasPdf?: boolean;
+  source?: "LOCAL" | "OPEN" | "GUTENBERG" | string | null;
 };
 
 export type Collection = {

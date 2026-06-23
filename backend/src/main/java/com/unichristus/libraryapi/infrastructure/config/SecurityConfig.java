@@ -51,15 +51,9 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
-                        .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; " +
-                                "frame-ancestors 'none'; " +
-                                "object-src 'none'; " +
-                                "base-uri 'self'; " +
-                                "form-action 'self'"
-                        ))
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(buildContentSecurityPolicy()))
                         .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER))
-                        .frameOptions(frame -> frame.deny())
+                        .frameOptions(frame -> frame.disable())
                         .addHeaderWriter(new StaticHeadersWriter("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()"))
                 )
                 .exceptionHandling(exceptions -> exceptions
@@ -117,6 +111,20 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private String buildContentSecurityPolicy() {
+        String frameAncestors = allowedOrigins.stream()
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .distinct()
+                .reduce("'self'", (current, origin) -> current + " " + origin);
+
+        return "default-src 'self'; " +
+                "frame-ancestors " + frameAncestors + "; " +
+                "object-src 'none'; " +
+                "base-uri 'self'; " +
+                "form-action 'self'";
     }
 
     @Bean

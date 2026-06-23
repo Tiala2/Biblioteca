@@ -20,11 +20,11 @@ import { ReadingHeroPanel } from "../components/ReadingHeroPanel";
 import { ReadingProgressPanel } from "../components/ReadingProgressPanel";
 import type {
   BookDetail,
+  ExternalReaderLookup,
   Favorite,
   HomeReading,
   HomeResumeResponse,
   NarrativeInsight,
-  ExternalReaderLookup,
   ReadingSyncResponse,
 } from "../types";
 
@@ -48,6 +48,7 @@ export function ReadingExperiencePage() {
   const [externalReaderMessage, setExternalReaderMessage] = useState<string | null>(null);
   const [externalReaderLoading, setExternalReaderLoading] = useState(false);
   const [error, setError] = useState("");
+  const [narrativeNotice, setNarrativeNotice] = useState("");
 
   const totalPages = Math.max(book?.numberOfPages ?? 1, 1);
   const isExternalReading = Boolean(book && !book.hasPdf && book.source === "OPEN");
@@ -57,7 +58,7 @@ export function ReadingExperiencePage() {
   const pagesRemaining = Math.max(totalPages - currentPage, 0);
   const phaseLabel = getPhaseLabel(insight?.phase);
   const externalSourceActionLabel =
-    book?.source === "OPEN" ? "Continuar na Open Library" : "Continuar na fonte externa";
+    book?.source === "OPEN" ? "Abrir na Open Library" : "Abrir fonte externa";
 
   const internalPdfUrl = useMemo(() => {
     if (!book?.id || !book.hasPdf) return null;
@@ -132,11 +133,19 @@ export function ReadingExperiencePage() {
         setInsight(response.data);
         setSelectedOptions({});
         setRevealed({});
-        setError("");
+        setNarrativeNotice("");
       })
-      .catch((error) =>
-        setError(extractApiErrorMessage(error, "Não foi possível carregar o estado narrativo para essa página."))
-      );
+      .catch((error) => {
+        setInsight(null);
+        setSelectedOptions({});
+        setRevealed({});
+        setNarrativeNotice(
+          extractApiErrorMessage(
+            error,
+            "A dinâmica narrativa ainda não está disponível para esta página. A leitura e o progresso continuam funcionando normalmente."
+          )
+        );
+      });
   }, [bookId, headers, currentPage, book]);
 
   useEffect(() => {
@@ -208,10 +217,7 @@ export function ReadingExperiencePage() {
     try {
       const response = await api.post<ReadingSyncResponse>(
         "/api/v1/readings",
-        {
-          bookId,
-          currentPage,
-        },
+        { bookId, currentPage },
         { headers }
       );
 
@@ -236,14 +242,14 @@ export function ReadingExperiencePage() {
       if (isFavorite) {
         await api.delete(`/api/v1/users/me/favorites/${bookId}`, { headers });
         setIsFavorite(false);
-        showToast("Livro removido dos favoritos.", "success");
+        showToast("Livro removido da estante.", "success");
       } else {
         await api.post("/api/v1/users/me/favorites", { bookId }, { headers });
         setIsFavorite(true);
-        showToast("Livro adicionado aos favoritos.", "success");
+        showToast("Livro adicionado à estante.", "success");
       }
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar sua estante."), "error");
     } finally {
       setFavoriteLoading(false);
     }
@@ -266,7 +272,7 @@ export function ReadingExperiencePage() {
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Voltar ao catálogo
+            Explorar livros
           </Link>
         }
       />
@@ -291,7 +297,7 @@ export function ReadingExperiencePage() {
         variant="error"
         action={
           <Link to="/books" className="btn-link">
-            Voltar ao catálogo
+            Explorar livros
           </Link>
         }
       />
@@ -303,16 +309,14 @@ export function ReadingExperiencePage() {
       <article className="card hero aura-hero aura-reading-intro">
         <div className="aura-hero__content">
           <div>
-            <p className="eyebrow aura-eyebrow">Modo imersão</p>
-            <h2>Sua leitura, no seu ritmo</h2>
-            <p>
-              Ajuste a página, acompanhe a fase narrativa e transforme cada sessão em progresso real.
-            </p>
+            <p className="eyebrow aura-eyebrow">Modo de leitura</p>
+            <h2>Continue sua leitura</h2>
+            <p>Acompanhe seu progresso e retome a leitura de onde parou.</p>
           </div>
           <div className="aura-hero__signal">
             <BookOpenCheck aria-hidden="true" />
             <strong>{progressPercent}%</strong>
-            <span>concluído</span>
+            <span>lido</span>
           </div>
         </div>
       </article>
@@ -323,6 +327,7 @@ export function ReadingExperiencePage() {
         totalPages={totalPages}
         pagesRemaining={pagesRemaining}
         progressPercent={progressPercent}
+        phaseLabel={phaseLabel}
         readingStatusLabel={formatStatusLabel(readingSnapshot?.status)}
         isExternalReading={isExternalReading}
         plotState={insight?.plotState}
@@ -339,6 +344,7 @@ export function ReadingExperiencePage() {
         <InternalPdfReaderPanel
           bookTitle={book.title}
           internalPdfUrl={internalPdfUrl}
+          currentPage={currentPage}
           saving={saving}
           onSyncReading={syncReading}
         />
@@ -385,6 +391,7 @@ export function ReadingExperiencePage() {
       />
       <AchievementsPanel achievements={insight?.achievements ?? []} />
 
+      {narrativeNotice ? <article className="card info">{narrativeNotice}</article> : null}
       {error ? <article className="card error">{error}</article> : null}
     </section>
   );

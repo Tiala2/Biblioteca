@@ -74,20 +74,21 @@ describe("BooksPage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Livro A" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Resumo da vitrine" })).toBeInTheDocument();
-    expect(screen.getByText("livros nesta página")).toBeInTheDocument();
-    expect(screen.getByText("com PDF")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Resumo da biblioteca" })).toBeInTheDocument();
+    expect(screen.getByText("Livros encontrados")).toBeInTheDocument();
+    expect(screen.getByText("Disponíveis para leitura")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
-    expect(screen.getByText("com dinâmica")).toBeInTheDocument();
-    expect(screen.getByText("catálogo local")).toBeInTheDocument();
-    expect(screen.getByText("favoritos")).toBeInTheDocument();
-    expect(screen.getByText("média de páginas")).toBeInTheDocument();
+    expect(screen.getByText("Com recursos interativos")).toBeInTheDocument();
+    expect(screen.getByText("Livros cadastrados")).toBeInTheDocument();
+    expect(screen.getByText("na estante")).toBeInTheDocument();
+    expect(screen.getByText("Média de páginas")).toBeInTheDocument();
     expect(screen.getByText(/Total visível:/)).toBeInTheDocument();
     expect(screen.getByText("320")).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
-    expect(screen.getByText("Dinâmica")).toBeInTheDocument();
+    expect(screen.getByText("Recursos interativos")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Livro B" })).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Ler agora" })).toHaveLength(2);
+    expect(screen.getByRole("link", { name: "Abrir Livro A" })).toHaveAttribute("href", "/books/1/read");
+    expect(screen.getByRole("link", { name: "Abrir Livro B" })).toHaveAttribute("href", "/books/2/read");
   });
 
   it("deve atualizar busca ao clicar em pesquisar", async () => {
@@ -121,9 +122,9 @@ describe("BooksPage", () => {
       </MemoryRouter>
     );
 
-    const input = await screen.findByPlaceholderText(/Pesquisar por título/i);
+    const input = await screen.findByPlaceholderText(/Buscar livro ou autor/i);
     await user.type(input, "Hobbit");
-    await user.click(screen.getByRole("button", { name: "Pesquisar" }));
+    await user.click(screen.getByRole("button", { name: "Buscar" }));
 
     await waitFor(() => expect(mockedGet).toHaveBeenCalled());
   });
@@ -161,11 +162,11 @@ describe("BooksPage", () => {
       </MemoryRouter>
     );
 
-    await screen.findByPlaceholderText(/Pesquisar por título/i);
+    await screen.findByPlaceholderText(/Buscar livro ou autor/i);
 
-    await user.selectOptions(screen.getByLabelText("Filtrar por categoria"), "cat-1");
-    await user.selectOptions(screen.getByLabelText("Filtrar por tag"), "tag-2");
-    await user.click(screen.getByRole("button", { name: "Pesquisar" }));
+    await user.selectOptions(screen.getByLabelText("Categoria"), "cat-1");
+    await user.selectOptions(screen.getByLabelText("Etiquetas"), "tag-2");
+    await user.click(screen.getByRole("button", { name: "Buscar" }));
 
     await waitFor(() =>
       expect(mockedGet).toHaveBeenCalledWith(
@@ -218,7 +219,7 @@ describe("BooksPage", () => {
     );
 
     expect(await screen.findByText("Busca: Hobbit")).toBeInTheDocument();
-    expect(screen.getByText("Somente com PDF")).toBeInTheDocument();
+    expect(screen.getAllByText("Somente leitura disponível").length).toBeGreaterThanOrEqual(2);
     expect(screen.getByText("Ordem: Lançamentos")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Remover filtro Busca: Hobbit" }));
@@ -253,7 +254,7 @@ describe("BooksPage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Não foi possível carregar o catálogo" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Não foi possível carregar os livros" })).toBeInTheDocument();
     expect(screen.getByText("Não foi possível conversar com o servidor. Verifique se o backend está ativo.")).toBeInTheDocument();
   });
 });

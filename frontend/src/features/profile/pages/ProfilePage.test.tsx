@@ -134,22 +134,25 @@ describe("ProfilePage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Perfil e histórico de leitura" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Minha jornada de leitura" })).toBeInTheDocument();
     expect(screen.getByText("320")).toBeInTheDocument();
     expect(screen.getByText("livros concluídos")).toBeInTheDocument();
     expect(screen.getAllByText("Livro em andamento").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Progresso de Livro em andamento: 30%")).toBeInTheDocument();
-    expect(screen.getByText("Ranking semanal")).toBeInTheDocument();
+    expect(screen.getByText("Destaques da semana")).toBeInTheDocument();
     expect(screen.getByText("Alertas internos")).toBeInTheDocument();
     expect(screen.getByText("Open Library")).toBeInTheDocument();
     expect(screen.getByText("Em progresso")).toBeInTheDocument();
-    expect(screen.getByText("média das notas")).toBeInTheDocument();
-    expect(screen.getByText("notas 4 e 5")).toBeInTheDocument();
-    expect(screen.getByText("notas 1 a 3")).toBeInTheDocument();
-    expect(screen.getByText(/Última avaliação:/)).toBeInTheDocument();
+    expect(screen.getByText("Avaliação média")).toBeInTheDocument();
+    expect(screen.getAllByText("4 e 5 estrelas").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText("1 a 3 estrelas").length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText("Última avaliação")).toBeInTheDocument();
     expect(screen.getByText("Primeira Review")).toBeInTheDocument();
-    expect(screen.getByText("Nota 5. Excelente leitura")).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Ver livro" })[0]).toHaveAttribute("href", "/books/book-1");
+    expect(screen.getByText("5 estrelas. Excelente leitura")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Livro em andamento" })).toHaveAttribute("href", "/books/book-1/read");
+    expect(
+      screen.getAllByRole("link", { name: "Abrir livro" }).some((link) => link.getAttribute("href") === "/books/book-1")
+    ).toBe(true);
   });
 
   it("deve salvar preferencias do usuario", async () => {
@@ -164,9 +167,9 @@ describe("ProfilePage", () => {
       </MemoryRouter>
     );
 
-    await screen.findByRole("heading", { name: "Perfil e histórico de leitura" });
+    await screen.findByRole("heading", { name: "Minha jornada de leitura" });
 
-    const rankingCheckbox = screen.getByRole("checkbox", { name: "Participar do ranking semanal" });
+    const rankingCheckbox = screen.getByRole("checkbox", { name: "Participar da classificação semanal" });
     expect(rankingCheckbox).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Receber alertas internos de leitura" })).not.toBeChecked();
 

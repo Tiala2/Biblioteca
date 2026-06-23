@@ -62,11 +62,11 @@ describe("FavoritesPage", () => {
 
     expect(await screen.findByRole("heading", { name: "Livro Favorito" })).toBeInTheDocument();
     expect(screen.getAllByText("Open Library").length).toBeGreaterThan(0);
-    expect(screen.getByText("favoritos salvos")).toBeInTheDocument();
+    expect(screen.getAllByText("livros salvos").length).toBeGreaterThan(0);
     expect(screen.getByText("Mais recente:")).toBeInTheDocument();
     expect(screen.getByText("Leitura externa com progresso manual")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Remover Livro Favorito dos favoritos" }));
+    await user.click(screen.getByRole("button", { name: "Remover Livro Favorito da estante" }));
 
     await waitFor(() =>
       expect(vi.mocked(api.delete)).toHaveBeenCalledWith(
@@ -74,7 +74,7 @@ describe("FavoritesPage", () => {
         { headers: { Authorization: "Bearer test-token" } }
       )
     );
-    expect(showToast).toHaveBeenCalledWith("Favorito removido com sucesso.", "success");
+    expect(showToast).toHaveBeenCalledWith("Livro removido da estante.", "success");
   });
 
   it("deve exibir erro amigavel quando a API de favoritos estiver indisponivel", async () => {
@@ -86,7 +86,7 @@ describe("FavoritesPage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Não foi possível carregar favoritos" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Não foi possível carregar sua estante" })).toBeInTheDocument();
     expect(screen.getByText("Não foi possível conversar com o servidor. Verifique se o backend está ativo.")).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Nenhum favorito salvo" })).not.toBeInTheDocument();
   });

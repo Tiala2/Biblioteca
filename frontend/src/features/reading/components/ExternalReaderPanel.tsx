@@ -1,5 +1,5 @@
-import type { BookDetail } from "../types";
 import { ExternalLink, LoaderCircle, Save, Waypoints } from "lucide-react";
+import type { BookDetail } from "../types";
 
 type ExternalReaderPanelProps = {
   book: BookDetail;
@@ -57,7 +57,7 @@ export function ExternalReaderPanel({
       <div className="external-reading-panel">
         <div className="external-reading-panel__head">
           <div>
-            <p className="eyebrow">Leitura externa guiada</p>
+          <p className="eyebrow">Leitura guiada</p>
             <h4>Continue a leitura sem perder seu progresso</h4>
           </div>
           <span className="external-source-pill">
@@ -73,7 +73,7 @@ export function ExternalReaderPanel({
 
         <p className="section-sub">
           {externalReaderMessage ??
-            "Quando a fonte oficial permite incorporação, abrimos o leitor aqui dentro. Quando não permite, você continua na fonte autorizada e mantém metas, ranking, histórico e favoritos no Library."}
+            "Quando a fonte oficial permite incorporação, abrimos o leitor aqui dentro. Quando não permite, você continua na fonte autorizada e mantém metas, classificação, histórico e estante no Library."}
         </p>
 
         <div className="external-reading-steps" aria-label="Como usar leitura externa">
@@ -99,7 +99,7 @@ export function ExternalReaderPanel({
             </a>
             <button type="button" className="btn-muted" onClick={onSyncReading} disabled={saving}>
               <Save aria-hidden="true" />
-              {saving ? "Salvando..." : "Salvar página atual"}
+              {saving ? "Salvando..." : "Salvar progresso"}
             </button>
           </div>
         ) : null}

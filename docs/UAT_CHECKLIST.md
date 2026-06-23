@@ -1,6 +1,6 @@
 # Checklist UAT - Library API
 
-Data base de execucao: 02/05/2026
+Data base de execucao: 20/06/2026
 
 ## Escopo
 
@@ -19,7 +19,7 @@ Este checklist cobre validacao funcional (RF) e nao funcional (RNF) do projeto.
 | RF06 | Avaliacao unica por livro | `POST /api/v1/reviews` | Primeira avaliacao aceita, duplicada rejeitada | Concluido (E2E + integrationTest) |
 | RF07 | Consultar leaderboard | `GET /api/v1/users/leaderboard` | Ranking retornado conforme regras | Concluido (E2E + integrationTest) |
 | RF08 | CRUD admin de livros/categorias/tags/colecoes/badges | `/api/admin/**` | Apenas ADMIN com acesso, operacoes funcionando | Concluido (E2E + integrationTest) |
-| RF09 | Smoke frontend completo | `npm run test:e2e` | Jornada principal de usuario e admin validada no navegador | Concluido (13 E2E passed) |
+| RF09 | Smoke frontend completo | `npm run test:e2e` | Jornada principal de usuario e admin validada no navegador | Concluido (23 E2E passed) |
 | RF10 | Aviso de API indisponivel | `ApiStatusBanner.test.tsx` | Front sinaliza falha de conexao com backend sem tela branca | Concluido (unitario) |
 | RNF09 | Checklist de seguranca pre-deploy | `docs/SECURITY_DEPLOY_CHECKLIST.md` | Seguranca operacional revisada antes de publicacao | Concluido (documentado) |
 
@@ -37,11 +37,18 @@ Este checklist cobre validacao funcional (RF) e nao funcional (RNF) do projeto.
 ## Evidencia da retomada final
 
 - Backend `.\gradlew.bat test --no-daemon`: PASS
-- Backend `.\gradlew.bat integrationTest --no-daemon`: PASS
-- Frontend `npm run test`: 54 passed
+- Frontend `npm run test`: 63 passed
 - Frontend `npm run build`: PASS
-- Frontend `npm run test:e2e`: 13 passed na ultima execucao completa
-- Checklist de rotas: 56 PASS / 0 FAIL em 02/05/2026
+- Frontend `npm run lint`: PASS
+- Frontend `npm run test:e2e`: 23 passed na ultima execucao completa
+- Backend `.\gradlew.bat integrationTest --no-daemon`: PASS
+- Smoke autenticado: PASS
+- Checklist de rotas: 56 PASS / 0 FAIL em 05/06/2026
+- Status final de entrega atualizado em 08/06/2026: [STATUS_ENTREGA_2026_06_08.md](STATUS_ENTREGA_2026_06_08.md)
+- Rodada visual autenticada em 08/06/2026: catalogo, favoritos, detalhes, leitura, avaliacoes, metas, ranking, conquistas, perfil e telas admin.
+- Leitura/narrativa revisada em 08/06/2026: fallbacks humanizados, sem texto suspeito de encoding, sem overflow e sem banner de API com backend ativo.
+- Backup oficial validado em 20/06/2026: `backups/20260620-110534`, com checksum e restauracao em banco temporario.
+- Status atualizado em 20/06/2026: [STATUS_ENTREGA_2026_06_20.md](STATUS_ENTREGA_2026_06_20.md)
 
 ## Criterio de aceite
 

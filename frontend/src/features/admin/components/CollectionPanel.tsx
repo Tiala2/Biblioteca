@@ -1,8 +1,9 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import { BookCover } from "@shared/ui/books/BookCover";
-import { pluralizePt } from "@shared/lib/presentation";
+import { formatBookSource, formatReadingMode, pluralizePt } from "@shared/lib/presentation";
 import type { Book, Collection, CollectionForm } from "../types";
+import { focusAdminPanelForm } from "../lib/focus";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type CollectionPanelProps = {
@@ -13,9 +14,40 @@ type CollectionPanelProps = {
   onSubmit: (event: FormEvent) => Promise<void>;
   onFormChange: (updater: (previous: CollectionForm) => CollectionForm) => void;
   onEdit: (collection: Collection) => void;
+  onEditBook: (book: Book) => void;
   onReset: () => void;
   onDelete: (collectionId: string) => void;
 };
+
+function CollectionBookMeta({ book }: { book: Book }) {
+  return (
+    <span className="admin-book-badges" aria-label={`Origem e leitura de ${book.title}`}>
+      <span className="import-badge">{formatBookSource(book.source)}</span>
+      <span className={book.hasPdf ? "favorite-badge" : "import-badge"}>
+        {formatReadingMode(book.hasPdf, book.source)}
+      </span>
+    </span>
+  );
+}
+
+const FRIENDLY_ADMIN_COLLECTION_NAMES = [
+  "Fantasia épica",
+  "Distopias essenciais",
+  "Clássicos para começar",
+  "Leituras curtas",
+  "Jornadas marcantes",
+  "Favoritos da comunidade",
+];
+
+function getAdminCollectionTitle(collection: Collection, index: number) {
+  const title = collection.title?.trim();
+  const looksTechnical =
+    !title ||
+    /route|post|debug|teste|test/i.test(title) ||
+    /^[a-z]+[-_][a-z0-9-_]+$/i.test(title);
+
+  return looksTechnical ? FRIENDLY_ADMIN_COLLECTION_NAMES[index % FRIENDLY_ADMIN_COLLECTION_NAMES.length] : title;
+}
 
 export function CollectionPanel({
   form,
@@ -25,13 +57,16 @@ export function CollectionPanel({
   onSubmit,
   onFormChange,
   onEdit,
+  onEditBook,
   onReset,
   onDelete,
 }: CollectionPanelProps) {
   const [search, setSearch] = useState("");
+  const [bookSearch, setBookSearch] = useState("");
   const [page, setPage] = useState(0);
   const pageSize = 4;
   const normalizedSearch = search.trim().toLowerCase();
+  const normalizedBookSearch = bookSearch.trim().toLowerCase();
   const filteredCollections = useMemo(() => {
     if (!normalizedSearch) return collections;
     return collections.filter((collection) =>
@@ -40,18 +75,36 @@ export function CollectionPanel({
         .includes(normalizedSearch)
     );
   }, [collections, normalizedSearch]);
+  const bookOptions = useMemo(() => {
+    if (!normalizedBookSearch) return books;
+    return books.filter((book) =>
+      `${book.title} ${book.author ?? ""} ${book.isbn ?? ""}`.toLowerCase().includes(normalizedBookSearch)
+    );
+  }, [books, normalizedBookSearch]);
+  const selectedBooks = books.filter((book) => form.bookIds.includes(book.id));
+  const visibleBookOptions = bookOptions.slice(0, 80);
   const collectionInsights = useMemo(() => {
     const linkedBooks = collections.reduce((total, collection) => total + (collection.books?.length ?? 0), 0);
-    const largest = collections.reduce<Collection | null>((current, collection) => {
-      if (!current) return collection;
-      return (collection.books?.length ?? 0) > (current.books?.length ?? 0) ? collection : current;
-    }, null);
+    const largestIndex = collections.reduce((currentIndex, collection, index) => {
+      if (currentIndex < 0) return index;
+      return (collection.books?.length ?? 0) > (collections[currentIndex].books?.length ?? 0) ? index : currentIndex;
+    }, -1);
+    const largestTitle =
+      largestIndex >= 0 ? getAdminCollectionTitle(collections[largestIndex], largestIndex) : "-";
 
-    return { largest, linkedBooks };
+    return { largestTitle, linkedBooks };
   }, [collections]);
   const totalPages = Math.max(1, Math.ceil(filteredCollections.length / pageSize));
   const visibleCollections = filteredCollections.slice(page * pageSize, page * pageSize + pageSize);
   const saving = busyKey === "collection-create" || busyKey === `collection-save-${form.id}`;
+  const editCollection = (collection: Collection) => {
+    onEdit(collection);
+    focusAdminPanelForm("admin-collections");
+  };
+  const editLinkedBook = (book: Book) => {
+    onEditBook(book);
+    focusAdminPanelForm("admin-books");
+  };
   const toggleBook = (bookId: string) => {
     onFormChange((prev) => {
       const selected = new Set(prev.bookIds);
@@ -90,14 +143,41 @@ export function CollectionPanel({
         <fieldset className="admin-choice-list">
           <legend>Livros da coleção</legend>
           {books.length > 0 ? (
-            <div className="admin-choice-list__items">
-              {books.map((book) => (
-                <label key={book.id} className="admin-choice-option">
-                  <input type="checkbox" checked={form.bookIds.includes(book.id)} onChange={() => toggleBook(book.id)} />
-                  <span>{book.title}</span>
-                </label>
-              ))}
-            </div>
+            <>
+              <input
+                aria-label="Buscar livros para coleção"
+                value={bookSearch}
+                onChange={(event) => setBookSearch(event.target.value)}
+                placeholder="Buscar por título, autor ou ISBN"
+              />
+              {selectedBooks.length > 0 && (
+                <p className="section-sub">
+                  {pluralizePt(selectedBooks.length, "livro selecionado", "livros selecionados")}: {selectedBooks.slice(0, 3).map((book) => book.title).join(", ")}
+                  {selectedBooks.length > 3 ? "..." : ""}
+                </p>
+              )}
+              <div className="admin-choice-list__items">
+                {visibleBookOptions.map((book) => (
+                  <div key={book.id} className="admin-choice-option admin-choice-option--book">
+                    <label className="admin-book-choice-label">
+                      <input type="checkbox" checked={form.bookIds.includes(book.id)} onChange={() => toggleBook(book.id)} />
+                      <span>
+                        <strong>{book.title}</strong>
+                        <small>{book.author ?? "Autoria ainda não informada"} · {book.isbn ?? "sem ISBN"}</small>
+                        <CollectionBookMeta book={book} />
+                      </span>
+                    </label>
+                    <button type="button" className="btn-muted admin-inline-action" onClick={() => editLinkedBook(book)}>
+                      Editar livro
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {bookOptions.length === 0 && <p className="section-sub">Nenhum livro encontrado para esse termo.</p>}
+              {bookOptions.length > visibleBookOptions.length && (
+                <small className="section-sub">Mostrando os primeiros 80 resultados. Refine a busca para selecionar mais rápido.</small>
+              )}
+            </>
           ) : (
             <p className="section-sub">Cadastre livros para montar coleções.</p>
           )}
@@ -125,7 +205,7 @@ export function CollectionPanel({
           <span>livros vinculados</span>
         </div>
         <div className="stat-box admin-list-stat">
-          <strong>{collectionInsights.largest?.title ?? "-"}</strong>
+          <strong>{collectionInsights.largestTitle}</strong>
           <span>maior coleção</span>
         </div>
       </div>
@@ -139,26 +219,28 @@ export function CollectionPanel({
         placeholder="Filtrar coleções"
       />
       <ul className="stacked-list">
-        {visibleCollections.map((collection) => (
+        {visibleCollections.map((collection) => {
+          const collectionTitle = getAdminCollectionTitle(collection, filteredCollections.indexOf(collection));
+          return (
           <li key={collection.id} className="stacked-list-item">
-            <div className="book-list-row">
+            <button type="button" className="book-list-row book-list-row--action" onClick={() => editCollection(collection)}>
               <BookCover
-                title={collection.title}
+                title={collectionTitle}
                 coverUrl={collection.coverUrl ?? collection.books?.[0]?.coverUrl}
                 isbn={collection.books?.[0]?.isbn}
                 size="small"
               />
               <div>
-                <strong>{collection.title}</strong>
+                <strong>{collectionTitle}</strong>
                 <p className="section-sub">{pluralizePt(collection.books?.length ?? 0, "livro", "livros")}</p>
                 {collection.description && <p className="section-sub">{collection.description}</p>}
                 {(collection.books?.length ?? 0) > 0 && (
                   <small>{collection.books?.slice(0, 2).map((book) => book.title).join(", ")}</small>
                 )}
               </div>
-            </div>
-            <div className="card-actions">
-              <button type="button" className="btn-muted" onClick={() => onEdit(collection)}>
+            </button>
+            <div className="card-actions admin-list-actions">
+              <button type="button" className="btn-muted" onClick={() => editCollection(collection)}>
                 Editar
               </button>
               <button
@@ -171,7 +253,8 @@ export function CollectionPanel({
               </button>
             </div>
           </li>
-        ))}
+          );
+        })}
       </ul>
       {filteredCollections.length === 0 && <AdminEmptyState title="Nenhuma coleção encontrada" message="Revise o filtro ou crie uma coleção para destacar grupos de livros." />}
       {filteredCollections.length > pageSize && (

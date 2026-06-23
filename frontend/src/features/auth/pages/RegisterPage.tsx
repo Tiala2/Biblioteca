@@ -2,7 +2,7 @@ import { isAxiosError } from "axios";
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BookOpen, Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { extractApiErrorMessage, extractFieldErrorMessages } from "@shared/api/errors";
 import { api } from "@shared/api/http";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -36,6 +36,7 @@ export function RegisterPage() {
   const [form, setForm] = useState<RegisterRequest>({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -44,7 +45,7 @@ export function RegisterPage() {
     try {
       await api.post("/api/v1/users", form);
       showToast("Conta criada com sucesso. Faça login para continuar.", "success");
-      navigate("/login");
+      navigate("/login", { replace: true });
     } catch (err: unknown) {
       const message = getRegisterErrorMessage(err);
       setError(message);
@@ -60,11 +61,13 @@ export function RegisterPage() {
       <section className="login-shell">
         <form className="login-form ds-glass-card" onSubmit={onSubmit}>
           <div className="login-logo">
-            <BookOpen size={28} strokeWidth={2.2} />
-            <span>Library</span>
+            <img src="/assets/brand/library-journey-icon.png" alt="" aria-hidden="true" />
+            <span className="login-brand-text">
+              <strong>Library</strong>
+            </span>
           </div>
-          <h2 className="login-title">Criar conta</h2>
-          <p className="login-subtitle">Biblioteca Pública Digital</p>
+          <h2 className="login-title">Criar sua conta</h2>
+          <p className="login-subtitle">Organize leituras, metas e descobertas em um só lugar.</p>
 
           <label htmlFor="register-name">Nome</label>
           <div className="login-input-wrap ds-input-wrap">
@@ -73,6 +76,7 @@ export function RegisterPage() {
               id="register-name"
               className="login-input ds-input"
               placeholder="Seu nome"
+              autoComplete="name"
               value={form.name}
               onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
               required
@@ -88,6 +92,7 @@ export function RegisterPage() {
               className="login-input ds-input"
               type="email"
               placeholder="seu@email.com"
+              autoComplete="email"
               value={form.email}
               onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
               required
@@ -95,18 +100,27 @@ export function RegisterPage() {
           </div>
 
           <label htmlFor="register-password">Senha</label>
-          <div className="login-input-wrap ds-input-wrap">
+          <div className="login-input-wrap login-input-wrap--password ds-input-wrap">
             <span className="login-input-icon ds-input-icon" aria-hidden="true"><Lock size={18} /></span>
             <input
               id="register-password"
               className="login-input ds-input"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Mínimo de 6 caracteres"
+              autoComplete="new-password"
               value={form.password}
               onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
               required
               minLength={6}
             />
+            <button
+              type="button"
+              className="login-password-toggle"
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              onClick={() => setShowPassword((current) => !current)}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           {error && <p className="login-error">{error}</p>}

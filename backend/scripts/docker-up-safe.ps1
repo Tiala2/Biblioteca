@@ -9,6 +9,17 @@ $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $projectRoot
 
+$envFile = Join-Path $projectRoot ".env"
+$envExampleFile = Join-Path $projectRoot ".env.example"
+if (-not (Test-Path -LiteralPath $envFile)) {
+  if (-not (Test-Path -LiteralPath $envExampleFile)) {
+    throw "Missing .env and .env.example in backend directory."
+  }
+
+  Copy-Item -LiteralPath $envExampleFile -Destination $envFile
+  Write-Host "Created backend/.env from .env.example. Review secrets before production use."
+}
+
 $composeFile = if ($Mode -eq "prod") { "docker-compose.prod.yml" } else { "docker-compose.dev.yml" }
 
 $apiPort = if ($env:API_PORT) { [int]$env:API_PORT } else { 8080 }

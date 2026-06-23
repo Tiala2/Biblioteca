@@ -107,18 +107,16 @@ export function AlertAuditPanel({
       <ul className="stacked-list">
         {deliveries.map((delivery) => (
           <li key={delivery.id} className="stacked-list-item">
-            <div>
+            <div className="admin-alert-row">
               <div className="admin-alert-title-row">
-                <strong>{delivery.email}</strong>
-                <span className={delivery.status === "SENT" ? "import-badge" : "status-pill status-pill--muted"}>
-                  {formatAlertStatus(delivery.status)}
-                </span>
+                <strong className="email-text">{delivery.email}</strong>
+                <span className={delivery.status === "SENT" ? "import-badge" : "status-pill status-pill--muted"}>{formatAlertStatus(delivery.status)}</span>
               </div>
               <p className="section-sub">
-                {formatAlertType(delivery.alertType)} por {formatChannel(delivery.channel)} · {formatAlertStatus(delivery.status)}
+                {formatAlertType(delivery.alertType)} por {formatChannel(delivery.channel)} - {formatAlertStatus(delivery.status)}
               </p>
-              <p>{delivery.message}</p>
-              <small>Registrado em {formatDateTimeBr(delivery.createdAt)}</small>
+              <p className="text-break">{delivery.message}</p>
+              <small className="text-break">Registrado em {formatDateTimeBr(delivery.createdAt)}</small>
             </div>
           </li>
         ))}

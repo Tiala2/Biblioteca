@@ -30,10 +30,17 @@ public record ExternalBooksImportRequest(
         @Schema(description = "Quantidade alvo de livros importados antes de parar", example = "100")
         @Min(1)
         @Max(500)
-        Integer targetImportCount
+        Integer targetImportCount,
+
+        @Schema(description = "Idioma preferencial da busca externa. Use pt para português e en para inglês.", example = "pt")
+        String language
 ) {
     public ExternalBooksImportRequest(String query, Integer pages, Integer pageSize) {
-        this(query, pages, pageSize, false, null);
+        this(query, pages, pageSize, false, null, null);
+    }
+
+    public ExternalBooksImportRequest(String query, Integer pages, Integer pageSize, Boolean readableOnly, Integer targetImportCount) {
+        this(query, pages, pageSize, readableOnly, targetImportCount, null);
     }
 
     public boolean shouldImportReadableOnly() {
@@ -42,5 +49,13 @@ public record ExternalBooksImportRequest(
 
     public int resolvedTargetImportCount() {
         return targetImportCount == null ? Integer.MAX_VALUE : targetImportCount;
+    }
+
+    public String resolvedLanguage() {
+        if (language == null || language.isBlank()) {
+            return "en";
+        }
+        String normalized = language.trim().toLowerCase();
+        return normalized.equals("pt") || normalized.equals("por") || normalized.equals("portuguese") ? "pt" : "en";
     }
 }

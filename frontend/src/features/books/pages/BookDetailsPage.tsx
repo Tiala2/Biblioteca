@@ -55,7 +55,6 @@ function buildRatingStars(rating?: number | null) {
   const filled = Math.max(0, Math.min(5, Math.round(rating ?? 0)));
   return Array.from({ length: 5 }, (_, index) => index < filled);
 }
-
 export function BookDetailsPage() {
   const { bookId } = useParams<{ bookId: string }>();
   const headers = useAuthHeaders();
@@ -129,12 +128,11 @@ export function BookDetailsPage() {
 
     return [
       { label: "Páginas", value: `${book.numberOfPages}` },
-      { label: "Autor", value: book.author || "Autoria ainda não informada" },
+      { label: "Autor", value: book.author || "Autor não informado" },
       { label: "Origem", value: formatBookSource(book.source) },
-      { label: "Dinâmica", value: book.hasNarrative ? "Disponível" : "Em breve" },
-      { label: "ISBN", value: book.isbn || "ISBN não cadastrado" },
+      { label: "Experiência", value: book.hasNarrative ? "Experiência narrativa" : "Leitura guiada" },
       {
-        label: "Publicação",
+        label: "Ano de publicação",
         value: book.publicationDate ? formatDateBr(book.publicationDate) : "Data não cadastrada",
       },
     ];
@@ -163,14 +161,14 @@ export function BookDetailsPage() {
       if (isFavorite) {
         await api.delete(`/api/v1/users/me/favorites/${bookId}`, { headers });
         setIsFavorite(false);
-        showToast("Livro removido dos favoritos.", "success");
+        showToast("Livro removido da estante.", "success");
       } else {
         await api.post("/api/v1/users/me/favorites", { bookId }, { headers });
         setIsFavorite(true);
-        showToast("Livro adicionado aos favoritos.", "success");
+        showToast("Livro adicionado à estante.", "success");
       }
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Não foi possível atualizar favorito."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível atualizar sua estante."), "error");
     } finally {
       setFavoriteLoading(false);
     }
@@ -180,7 +178,7 @@ export function BookDetailsPage() {
     return (
       <StateCard
         title="Livro não informado"
-        message="Abra um livro a partir do catálogo para visualizar os detalhes e os próximos passos."
+        message="Abra um livro a partir da biblioteca para visualizar detalhes e próximos passos."
         variant="error"
       />
     );
@@ -189,12 +187,16 @@ export function BookDetailsPage() {
   if (loading) {
     return (
       <StateCard
-        title="Detalhes em carregamento"
+        title="Informações do livro em carregamento"
         message="Estamos preparando os dados do livro, suas ações rápidas e as sugestões relacionadas."
         variant="loading"
       />
     );
   }
+
+  const reviewActionUrl = myReview?.id
+    ? `/reviews?editReview=${myReview.id}`
+    : `/reviews?bookId=${bookId}&action=create`;
 
   return (
     <section className="grid aura-page">
@@ -204,16 +206,16 @@ export function BookDetailsPage() {
         </div>
         <div className="aura-hero__content">
           <div>
-            <p className="eyebrow aura-eyebrow">Livro em foco</p>
-            <h2>{book?.title ?? "Detalhes do livro"}</h2>
+            <p className="eyebrow aura-eyebrow">Detalhes do livro</p>
+            <h2>{book?.title ?? "Informações do livro"}</h2>
             <p>
-              Uma página para sentir o livro antes de abrir: contexto, recepção, tags e próximos passos.
+              Conheça mais sobre a obra antes de começar sua leitura.
             </p>
           </div>
           <div className="aura-hero__signal">
             <BookMarked aria-hidden="true" />
-            <strong>{book?.hasPdf ? "Leitura" : "Guia"}</strong>
-            <span>{book?.hasPdf ? "no app" : "com progresso"}</span>
+            <strong>{book?.hasPdf ? "Leitura integrada" : "Atualização manual"}</strong>
+            <span>{book?.hasPdf ? "no Library" : "com progresso"}</span>
           </div>
         </div>
         {error && <p className="error">{error}</p>}
@@ -225,10 +227,10 @@ export function BookDetailsPage() {
             </div>
           ))}
         </div>
-        <div className="card-actions">
+        <div className="card-actions book-detail-actions">
           <Link to={`/books/${bookId}/read`} className="btn-link">
             <BookOpen aria-hidden="true" />
-            {book?.hasPdf ? "Ler no app" : "Ler com progresso"}
+            Começar leitura
           </Link>
           <button
             type="button"
@@ -238,11 +240,11 @@ export function BookDetailsPage() {
             disabled={!headers || favoriteLoading}
           >
             <Heart aria-hidden="true" />
-            {favoriteLoading ? "Salvando..." : isFavorite ? "Nos favoritos" : "Salvar nos favoritos"}
+            {favoriteLoading ? "Salvando..." : isFavorite ? "Na estante" : "Adicionar à estante"}
           </button>
-          <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
+          <Link to={reviewActionUrl} className="btn-muted btn-link">
             <MessageCircle aria-hidden="true" />
-            Ver avaliações
+            {myReview ? "Atualizar avaliação" : "Avaliar livro"}
           </Link>
         </div>
         <div className="book-detail-insights">
@@ -255,20 +257,20 @@ export function BookDetailsPage() {
             <span>modo de leitura</span>
           </div>
           <div className="stat-box">
-            <strong>{isFavorite ? "Salvo" : "Livre"}</strong>
-            <span>favorito</span>
+            <strong>{isFavorite ? "Na estante" : "Disponível"}</strong>
+            <span>Na estante</span>
           </div>
         </div>
       </article>
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3><Star aria-hidden="true" /> Recepção do catálogo</h3>
+          <h3><Star aria-hidden="true" /> Avaliação dos leitores</h3>
           <span className="kpi">
-            {formatDecimal(book?.averageRating)} / {pluralizePt(book?.totalReviews ?? 0, "avaliação", "avaliações")}
+            {formatDecimal(book?.averageRating)} • {pluralizePt(book?.totalReviews ?? 0, "avaliação", "avaliações")}
           </span>
         </div>
-        <div className="rating-summary" aria-label={`Nota média ${formatDecimal(book?.averageRating)} de 5`}>
+        <div className="rating-summary" aria-label={`Avaliação média ${formatDecimal(book?.averageRating)} de 5`}>
           {ratingStars.map((filled, index) => (
             <Star key={index} aria-hidden="true" className={filled ? "filled" : undefined} />
           ))}
@@ -280,15 +282,15 @@ export function BookDetailsPage() {
         <div className="book-detail-insights">
           <div className="stat-box">
             <strong>{formatInteger(detailInsights.categoryCount)}</strong>
-            <span>categorias</span>
+            <span>Categorias cadastradas</span>
           </div>
           <div className="stat-box">
             <strong>{formatInteger(detailInsights.tagCount)}</strong>
-            <span>tags</span>
+            <span>Etiquetas cadastradas</span>
           </div>
           <div className="stat-box">
             <strong>{formatDecimal(detailInsights.communityAverage)}</strong>
-            <span>média dos destaques</span>
+            <span>avaliação média</span>
           </div>
         </div>
         <div className="taxonomy-panel">
@@ -303,11 +305,11 @@ export function BookDetailsPage() {
                 ))}
               </div>
             ) : (
-              <p className="section-sub">Categorias ainda não cadastradas para este livro.</p>
+              <p className="section-sub">Nenhuma categoria cadastrada para este livro.</p>
             )}
           </div>
           <div>
-            <strong><Tags aria-hidden="true" /> Tags</strong>
+            <strong><Tags aria-hidden="true" /> Etiquetas</strong>
             {book?.tags?.length ? (
               <div className="taxonomy-chip-row">
                 {book.tags.map((item) => (
@@ -317,7 +319,7 @@ export function BookDetailsPage() {
                 ))}
               </div>
             ) : (
-              <p className="section-sub">Tags ainda não cadastradas para este livro.</p>
+              <p className="section-sub">Nenhuma etiqueta cadastrada para este livro.</p>
             )}
           </div>
         </div>
@@ -325,47 +327,55 @@ export function BookDetailsPage() {
 
       <article className="card aura-panel">
         <div className="section-head">
-          <h3><Sparkles aria-hidden="true" /> Seu contexto</h3>
-          <span className="kpi">{myReview ? "Com avaliação" : "Sem avaliação"}</span>
+          <h3><Sparkles aria-hidden="true" /> Sua avaliação</h3>
+          <span className="kpi">{myReview ? "Avaliado" : "Sem avaliação"}</span>
         </div>
         {myReview ? (
           <>
             <div className="book-detail-review-note">
               <Star aria-hidden="true" />
-              <strong>Nota registrada: {myReview.rating}</strong>
+              <strong>Sua nota: {myReview.rating.toLocaleString("pt-BR", { minimumFractionDigits: 1 })}</strong>
             </div>
             <p>{myReview.comment}</p>
             <small>Atualizado em {formatDateTimeBr(myReview.updatedAt)}</small>
           </>
         ) : (
-          <p className="section-sub">Você ainda não avaliou este livro. Quando terminar, registre uma avaliação para alimentar seu perfil.</p>
+          <>
+            <p className="section-sub">Você ainda não avaliou este livro. Quando terminar, registre uma avaliação para alimentar seu perfil.</p>
+            <div className="card-actions">
+              <Link to={reviewActionUrl} className="btn-link">
+                <MessageCircle aria-hidden="true" />
+                Avaliar livro
+              </Link>
+            </div>
+          </>
         )}
       </article>
 
       <article className="card aura-panel aura-panel--focus">
         <div className="section-head">
-          <h3><WandSparkles aria-hidden="true" /> Próximos passos</h3>
-          <span className="kpi">{isFavorite ? "Favorito ativo" : "Exploração"}</span>
+          <h3><WandSparkles aria-hidden="true" /> Continue sua leitura</h3>
+          <span className="kpi">{isFavorite ? "Na estante" : "Exploração"}</span>
         </div>
         <ul className="stacked-list">
           <li className="stacked-list-item">
             <div>
-              <strong>{book?.hasPdf ? "Ler no app" : "Ler com progresso"}</strong>
+              <strong>{book?.hasPdf ? "Leitura integrada" : "Atualização manual"}</strong>
               <p className="section-sub">Continue sua jornada com salvamento de progresso e metas.</p>
             </div>
             <Link to={`/books/${bookId}/read`} className="btn-link">
               <BookOpen aria-hidden="true" />
-              Abrir leitura
+              Começar leitura
             </Link>
           </li>
           <li className="stacked-list-item">
             <div>
-              <strong>{myReview ? "Atualizar avaliação" : "Registrar avaliação"}</strong>
-              <p className="section-sub">Use sua percepção para enriquecer o catálogo social da plataforma.</p>
+              <strong>{myReview ? "Atualizar avaliação" : "Avaliar livro"}</strong>
+              <p className="section-sub">Use sua percepção para registrar o que ficou da leitura.</p>
             </div>
-            <Link to={`/reviews?bookId=${bookId}`} className="btn-muted btn-link">
+            <Link to={reviewActionUrl} className="btn-muted btn-link">
               <MessageCircle aria-hidden="true" />
-              Abrir avaliações
+              {myReview ? "Atualizar avaliação" : "Avaliar livro"}
             </Link>
           </li>
         </ul>
@@ -373,14 +383,14 @@ export function BookDetailsPage() {
 
       <article className="card aura-panel aura-panel--wide">
         <div className="section-head">
-          <h3><MessageCircle aria-hidden="true" /> O que a comunidade achou</h3>
-          <span className="kpi">{pluralizePt(communityReviews.length, "destaque", "destaques")}</span>
+          <h3><MessageCircle aria-hidden="true" /> O que os leitores acharam</h3>
+          <span className="kpi">{pluralizePt(communityReviews.length, "avaliação", "avaliações")}</span>
         </div>
         {communityReviews.length > 0 ? (
           <>
             {detailInsights.latestCommunityReview ? (
               <p className="book-detail-latest-review">
-                Destaque mais recente: <strong>{formatDateTimeBr(detailInsights.latestCommunityReview.updatedAt)}</strong>
+                Avaliação mais recente: <strong>{formatDateTimeBr(detailInsights.latestCommunityReview.updatedAt)}</strong>
               </p>
             ) : null}
             <ul className="stacked-list">
@@ -389,9 +399,9 @@ export function BookDetailsPage() {
                   <div>
                     <div className="book-detail-review-title">
                       <strong>Leitor {index + 1}</strong>
-                      <span className={review.rating >= 4 ? "favorite-badge" : "import-badge"}>Nota {review.rating}/5</span>
+                      <span className={review.rating >= 4 ? "favorite-badge" : "import-badge"}>⭐ {review.rating.toLocaleString("pt-BR", { minimumFractionDigits: 1 })}</span>
                     </div>
-                    <p>{review.comment || "O leitor registrou apenas a nota, sem comentário adicional."}</p>
+                    <p>{review.comment || "O leitor registrou apenas a avaliação, sem comentário adicional."}</p>
                     <small>Atualizado em {formatDateTimeBr(review.updatedAt)}</small>
                   </div>
                 </li>
@@ -399,32 +409,49 @@ export function BookDetailsPage() {
             </ul>
           </>
         ) : (
-          <p className="section-sub">As primeiras opiniões da comunidade aparecerão aqui quando surgirem novas avaliações para este livro.</p>
+          <>
+            <p className="section-sub">As primeiras opiniões dos leitores aparecerão aqui quando surgirem novas avaliações para este livro.</p>
+            <div className="card-actions">
+              <Link to={reviewActionUrl} className="btn-muted btn-link">
+                <MessageCircle aria-hidden="true" />
+                Registrar percepção
+              </Link>
+            </div>
+          </>
         )}
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel book-detail-suggestions-panel">
         <div className="section-head">
-          <h3>Continuar explorando</h3>
+          <h3>Sugestões de leitura</h3>
           <span className="kpi">{pluralizePt(recommendations.length, "sugestão", "sugestões")}</span>
         </div>
         {recommendations.length > 0 ? (
           <ul className="stacked-list">
             {recommendations.map((item) => (
-              <li key={item.id} className="stacked-list-item">
+              <li key={item.id} className="stacked-list-item book-detail-recommendation-row">
                 <div>
-                  <strong>{item.title}</strong>
-                  <p className="section-sub">{item.author || "Autoria ainda não informada"}</p>
-                  <small>{formatDecimal(item.averageRating)} de média em {pluralizePt(item.totalReviews ?? 0, "avaliação", "avaliações")}</small>
+                  <Link to={`/books/${item.id}`} className="text-link">
+                    <strong>{item.title}</strong>
+                  </Link>
+                  <p className="section-sub">{item.author || "Autor não informado"}</p>
+                  <small>{formatDecimal(item.averageRating)} em {pluralizePt(item.totalReviews ?? 0, "avaliação", "avaliações")}</small>
                 </div>
                 <Link to={`/books/${item.id}`} className="btn-muted btn-link">
-                  Ver detalhes
+                  Ver livro
                 </Link>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="section-sub">As próximas sugestões aparecerão aqui conforme o catálogo e seu uso evoluírem.</p>
+          <>
+            <p className="section-sub">As próximas sugestões aparecerão aqui conforme a biblioteca e seu uso evoluírem.</p>
+            <div className="card-actions">
+              <Link to="/books" className="btn-muted btn-link">
+                Explorar livros
+              </Link>
+            </div>
+          </>
         )}
       </article>
     </section>

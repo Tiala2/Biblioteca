@@ -55,10 +55,10 @@ describe("AppLayout", () => {
 
     expect(screen.getByText("conteudo-inicio")).toBeInTheDocument();
     expect(screen.getByText("Usuario Teste")).toBeInTheDocument();
-    expect(screen.queryByText("Área Admin")).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Painel administrativo" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Catálogo" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Usuários" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Administração")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Administração" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Gestão do Catálogo" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Gestão de Usuários" })).not.toBeInTheDocument();
   });
 
   it("exibe subrotas admin para usuario administrador", () => {
@@ -70,12 +70,12 @@ describe("AppLayout", () => {
     renderLayout("/admin");
 
     expect(screen.getByText("conteudo-admin")).toBeInTheDocument();
-    expect(screen.getByText("Área Admin")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Painel administrativo" })).toHaveAttribute("href", "/admin");
-    expect(screen.getByRole("link", { name: "Catálogo" })).toHaveAttribute("href", "/admin/catalog");
-    expect(screen.getByRole("link", { name: "Engajamento" })).toHaveAttribute("href", "/admin/engagement");
-    expect(screen.getByRole("link", { name: "Usuários" })).toHaveAttribute("href", "/admin/users");
-    expect(screen.getByRole("link", { name: "Alertas" })).toHaveAttribute("href", "/admin/alerts");
+    expect(screen.getAllByText("Administração").length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: "Administração" })).toHaveAttribute("href", "/admin");
+    expect(screen.getByRole("link", { name: "Gestão do Catálogo" })).toHaveAttribute("href", "/admin/catalog");
+    expect(screen.getByRole("link", { name: "Conquistas e Engajamento" })).toHaveAttribute("href", "/admin/engagement");
+    expect(screen.getByRole("link", { name: "Gestão de Usuários" })).toHaveAttribute("href", "/admin/users");
+    expect(screen.getByRole("link", { name: "Central de Alertas" })).toHaveAttribute("href", "/admin/alerts");
   });
 
   it("faz logout e navega para login", async () => {

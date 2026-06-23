@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 import { formatDateTimeBr } from "@shared/lib/formatters";
 import { BookCover } from "@shared/ui/books/BookCover";
 import type { FavoriteAdmin } from "../types";
@@ -41,9 +43,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
         <h3>Favoritos registrados</h3>
         <span className="kpi">{filteredFavorites.length}</span>
       </div>
-      <p className="section-sub">
-        Visão consolidada dos livros mais salvos na plataforma.
-      </p>
+      <p className="section-sub">Visão consolidada dos livros mais salvos na plataforma.</p>
       <div className="admin-favorite-summary">
         <div className="stat-box admin-list-stat">
           <strong>{favoriteInsights.localCount}</strong>
@@ -57,7 +57,7 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
           <strong>{favoriteInsights.gutenbergCount}</strong>
           <span>Gutenberg</span>
         </div>
-        <div className="stat-box admin-list-stat">
+        <div className="stat-box admin-list-stat admin-list-stat--date">
           <strong>{favoriteInsights.latest ? formatDateTimeBr(favoriteInsights.latest.createdAt) : "Ainda sem favorito"}</strong>
           <span>último favorito</span>
         </div>
@@ -73,18 +73,24 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
       />
       <ul className="stacked-list">
         {visibleFavorites.map((favorite) => (
-          <li key={`${favorite.bookId}-${favorite.createdAt ?? "sem-data"}`} className="stacked-list-item">
-            <div className="book-list-row">
+          <li key={`${favorite.bookId}-${favorite.createdAt ?? "sem-data"}`} className="stacked-list-item admin-favorite-item">
+            <Link to={`/books/${favorite.bookId}`} className="book-list-row book-list-row--action">
               <BookCover title={favorite.bookTitle} coverUrl={favorite.coverUrl} isbn={favorite.bookIsbn} size="small" />
               <div>
-                <strong>{favorite.bookTitle}</strong>
+                <strong className="admin-favorite-title">{favorite.bookTitle}</strong>
                 <p className="section-sub">{favorite.bookIsbn || "ISBN não cadastrado"}</p>
                 <p className="section-sub">
                   Origem {formatFavoriteSource(favorite.source)}. Favoritado em {formatDateTimeBr(favorite.createdAt)}.
                 </p>
               </div>
+            </Link>
+            <div className="card-actions admin-list-actions">
+              <Link to={`/books/${favorite.bookId}`} className="btn-muted btn-link">
+                <ExternalLink aria-hidden="true" />
+                Abrir livro
+              </Link>
+              <span className="import-badge">{formatFavoriteSource(favorite.source)}</span>
             </div>
-            <span className="import-badge">{formatFavoriteSource(favorite.source)}</span>
           </li>
         ))}
       </ul>
@@ -94,7 +100,9 @@ export function FavoriteAdminPanel({ favorites }: FavoriteAdminPanelProps) {
           <button type="button" className="btn-muted" disabled={page <= 0} onClick={() => setPage((previous) => Math.max(0, previous - 1))}>
             Anterior
           </button>
-          <span className="section-sub">Página {page + 1} de {totalPages}</span>
+          <span className="section-sub">
+            Página {page + 1} de {totalPages}
+          </span>
           <button type="button" className="btn-muted" disabled={page + 1 >= totalPages} onClick={() => setPage((previous) => Math.min(totalPages - 1, previous + 1))}>
             Próxima
           </button>

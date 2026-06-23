@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, Flame, LibraryBig, Sparkles, Star, Target, Trophy } from "lucide-react";
+import { BookOpen, ChevronRight, Flame, LibraryBig, Sparkles, Star, Target, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@shared/api/http";
 import { extractApiErrorMessage } from "@shared/api/errors";
-import { useAuth } from "@features/auth/context/AuthContext";
 import { useAuthHeaders } from "@shared/hooks/useAuthHeaders";
 import { BookCover } from "@shared/ui/books/BookCover";
 import { StateCard } from "@shared/ui/feedback/StateCard";
@@ -73,6 +72,25 @@ type HomeResponse = {
   recentReviews: Review[];
 };
 
+const FRIENDLY_COLLECTION_NAMES = [
+  "Fantasia épica",
+  "Distopias essenciais",
+  "Clássicos para começar",
+  "Leituras curtas",
+  "Jornadas marcantes",
+  "Preferidos dos leitores",
+];
+
+function getFriendlyCollectionTitle(collection: Collection, index: number) {
+  const title = collection.title?.trim();
+  const looksTechnical =
+    !title ||
+    /route|post|debug|teste|test/i.test(title) ||
+    /^[a-z]+[-_][a-z0-9-_]+$/i.test(title);
+
+  return looksTechnical ? FRIENDLY_COLLECTION_NAMES[index % FRIENDLY_COLLECTION_NAMES.length] : title;
+}
+
 const EMPTY_HOME: HomeResponse = {
   userSummary: {
     totalInProgress: 0,
@@ -94,7 +112,7 @@ const EMPTY_HOME: HomeResponse = {
 
 function RatingStars({ value }: { value: number }) {
   return (
-    <span className="review-stars" aria-label={`Nota ${value} de 5`}>
+    <span className="review-stars" aria-label={`Avaliação ${value} de 5`}>
       {Array.from({ length: 5 }, (_, index) => (
         <Star
           key={index}
@@ -108,7 +126,6 @@ function RatingStars({ value }: { value: number }) {
 }
 
 export function HomePage() {
-  const { auth } = useAuth();
   const headers = useAuthHeaders();
   const [home, setHome] = useState<HomeResponse>(EMPTY_HOME);
   const [loading, setLoading] = useState(true);
@@ -152,12 +169,14 @@ export function HomePage() {
   }, [home.recommendations]);
   const collectionInsights = useMemo(() => {
     const totalBooks = home.collections.reduce((total, collection) => total + (collection.books?.length ?? 0), 0);
-    const largest = home.collections.reduce<Collection | null>((current, collection) => {
-      if (!current) return collection;
-      return (collection.books?.length ?? 0) > (current.books?.length ?? 0) ? collection : current;
-    }, null);
+    const largestIndex = home.collections.reduce((currentIndex, collection, index) => {
+      if (currentIndex < 0) return index;
+      return (collection.books?.length ?? 0) > (home.collections[currentIndex].books?.length ?? 0) ? index : currentIndex;
+    }, -1);
+    const largestTitle =
+      largestIndex >= 0 ? getFriendlyCollectionTitle(home.collections[largestIndex], largestIndex) : "Ainda sem destaque";
 
-    return { largest, totalBooks };
+    return { largestTitle, totalBooks };
   }, [home.collections]);
 
   if (loading) {
@@ -186,14 +205,14 @@ export function HomePage() {
   }
 
   return (
-    <section className="grid aura-page">
+    <section className="grid aura-page aura-home-page">
       <article className="card hero aura-hero aura-hero--home">
         <div className="aura-hero__content">
           <div>
-            <p className="eyebrow aura-eyebrow">Library Aura</p>
-            <h2>Bem-vinda, {auth?.name}</h2>
+            <p className="eyebrow aura-eyebrow">Library</p>
+            <h2>Continue sua jornada de leitura</h2>
             <p>
-              Um espaço de leitura com ritmo, conquistas e próximas jornadas prontas para você escolher.
+              Acompanhe seu progresso, descubra novas histórias e alcance suas metas de leitura.
             </p>
           </div>
           <div className="aura-hero__signal">
@@ -204,55 +223,55 @@ export function HomePage() {
         </div>
 
         <div className="card-actions aura-actions">
-          <Link to="/profile" className="btn-link">
-            Abrir perfil
+          <Link to={currentReading ? `/books/${currentReading.book.id}/read` : "/books"} className="btn-link">
+            {currentReading ? "Continuar leitura" : "Explorar livros"}
           </Link>
-          <Link to="/books" className="btn-link">
-            Explorar catálogo
-          </Link>
-          <Link to="/goals" className="btn-link">
-            Ver metas
-          </Link>
-          <Link to="/leaderboard" className="btn-link">
-            Abrir ranking
-          </Link>
+          {currentReading ? (
+            <Link to={`/books/${currentReading.book.id}`} className="btn-muted btn-link">
+              Ver detalhes
+            </Link>
+          ) : (
+            <Link to="/goals?action=config" className="btn-muted btn-link">
+              Definir meta
+            </Link>
+          )}
         </div>
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-home-stats-panel">
         <div className="section-head">
-          <h3><Sparkles aria-hidden="true" /> Resumo da conta</h3>
+          <h3><Sparkles aria-hidden="true" /> Resumo da sua atividade</h3>
           <span className="kpi">{home.userSummary.totalPagesRead} páginas lidas</span>
         </div>
         <div className="stats-grid aura-stats">
           <div className="stat-box">
             <BookOpen aria-hidden="true" />
             <strong>{home.userSummary.totalInProgress}</strong>
-            <span>leituras em andamento</span>
+            <span>Livros em andamento</span>
           </div>
           <div className="stat-box">
             <Trophy aria-hidden="true" />
             <strong>{home.userSummary.totalFinished}</strong>
-            <span>livros concluídos</span>
+            <span>Livros concluídos</span>
           </div>
           <div className="stat-box">
             <Target aria-hidden="true" />
             <strong>{home.readingProgress.pagesReadThisWeek}</strong>
-            <span>páginas nesta semana</span>
+            <span>Páginas lidas</span>
           </div>
           <div className="stat-box">
             <Flame aria-hidden="true" />
             <strong>{home.readingProgress.sessionsThisWeek}</strong>
-            <span>sessões de leitura</span>
+            <span>Sessões</span>
           </div>
         </div>
       </article>
 
-      <article className="card aura-panel aura-panel--focus">
+      <article className="card aura-panel aura-panel--focus aura-home-reading-panel">
         <div className="section-head">
-          <h3>Leitura atual</h3>
+          <h3>Continuar leitura</h3>
           <span className="kpi">
-            {currentReading ? `${currentReading.progress}% concluído` : "Sem leitura ativa"}
+            {currentReading ? `${currentReading.progress}% lido` : "Sem leitura ativa"}
           </span>
         </div>
         {currentReading ? (
@@ -276,30 +295,37 @@ export function HomePage() {
               <div className="progress-fill" style={{ width: `${currentReading.progress}%` }} />
             </div>
             <div className="card-actions">
-              <Link to={`/books/${currentReading.book.id}`} className="btn-muted btn-link">
-                Ver detalhes
-              </Link>
               <Link to={`/books/${currentReading.book.id}/read`} className="btn-link">
                 Continuar leitura
+              </Link>
+              <Link to={`/books/${currentReading.book.id}`} className="btn-muted btn-link">
+                Ver detalhes
               </Link>
             </div>
           </>
         ) : (
-          <p className="section-sub">Nenhuma leitura em andamento no momento.</p>
+          <>
+            <p className="section-sub">Nenhuma leitura em andamento no momento.</p>
+            <div className="card-actions">
+              <Link to="/books" className="btn-link">
+                Escolher leitura
+              </Link>
+            </div>
+          </>
         )}
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-home-goal-panel">
         <div className="section-head">
-          <h3>Meta atual</h3>
+          <h3>Meta de leitura</h3>
           <span className="kpi">
-            {home.readingProgress.goal ? `${progressPercent}%` : "Sem meta"}
+            {home.readingProgress.goal ? `${progressPercent}%` : "Nenhuma meta ativa"}
           </span>
         </div>
         {home.readingProgress.goal ? (
           <>
             <p>
-              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} páginas concluídas
+              {home.readingProgress.goal.progressPages} de {home.readingProgress.goal.targetPages} páginas lidas
             </p>
             <p className="section-sub">
               Faltam {home.readingProgress.goal.remainingPages} páginas · {formatReadingStatus(home.readingProgress.goal.status)}
@@ -307,23 +333,35 @@ export function HomePage() {
             <div className="progress-track aura-progress" aria-hidden="true">
               <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
             </div>
+            <div className="card-actions">
+              <Link to="/goals?action=config" className="btn-muted btn-link">
+                Ajustar meta
+              </Link>
+            </div>
           </>
         ) : (
-          <p className="section-sub">Crie uma meta para acompanhar o desempenho de leitura.</p>
+          <>
+            <p className="section-sub">Defina um objetivo mensal e acompanhe sua evolução.</p>
+            <div className="card-actions">
+              <Link to="/goals?action=config" className="btn-link">
+                Definir meta
+              </Link>
+            </div>
+          </>
         )}
       </article>
 
-      <article className="card aura-panel aura-panel--wide">
+      <article className="card aura-panel aura-panel--wide aura-home-recommendations-panel">
         <div className="section-head">
-          <h3><LibraryBig aria-hidden="true" /> Recomendações</h3>
-          <span className="kpi">{pluralizePt(home.recommendations.length, "destaque", "destaques")}</span>
+          <h3><LibraryBig aria-hidden="true" /> Sugestões para você</h3>
+          <span className="kpi">{pluralizePt(home.recommendations.length, "sugestão", "sugestões")}</span>
         </div>
         {home.recommendations.length > 0 ? (
           <>
             <div className="home-recommendation-insights">
               <div className="stat-box">
                 <strong>{recommendationInsights.localCount}</strong>
-                <span>leitura no app</span>
+                <span>{recommendationInsights.localCount === 1 ? "livro disponível" : "livros disponíveis"}</span>
               </div>
               <div className="stat-box">
                 <strong>{recommendationInsights.openCount}</strong>
@@ -331,32 +369,38 @@ export function HomePage() {
               </div>
               <div className="stat-box">
                 <strong>{recommendationInsights.gutenbergCount}</strong>
-                <span>Gutenberg</span>
+                <span>Projeto Gutenberg</span>
               </div>
               <div className="stat-box">
-                <strong>{recommendationInsights.averageRating.toFixed(1)}</strong>
-                <span>nota média</span>
+                <strong>
+                  {recommendationInsights.averageRating.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  })}
+                </strong>
+                <span>avaliação média</span>
               </div>
             </div>
-            <ul className="stacked-list aura-book-list">
-              {home.recommendations.slice(0, 4).map((book) => (
-                <li key={book.id} className="stacked-list-item">
+            <ul className="home-recommendation-rail">
+              {home.recommendations.slice(0, 6).map((book) => (
+                <li key={book.id} className="home-recommendation-card">
                   <BookCover title={book.title} coverUrl={book.coverUrl} isbn={book.isbn} size="small" />
                   <div>
                     <div className="home-recommendation-title-row">
                       <strong>{book.title}</strong>
-                      <span className={book.source === "OPEN" ? "import-badge" : "status-pill status-pill--muted"}>
-                        {formatBookSource(book.source)}
-                      </span>
-                      {book.favorite && <span className="favorite-badge">Favorito</span>}
+                      {book.favorite && <span className="sr-only">Na estante</span>}
                     </div>
                     <p className="section-sub">
-                      Nota {Number(book.averageRating ?? 0).toFixed(1)}
-                      {book.numberOfPages ? `. ${book.numberOfPages} páginas.` : ""}
+                      ⭐{" "}
+                      {Number(book.averageRating ?? 0).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })}
+                      {book.numberOfPages ? ` · ${book.numberOfPages} páginas` : ""}
                     </p>
                   </div>
                   <Link to={`/books/${book.id}`} className="btn-muted btn-link">
-                    Ver detalhes
+                    Ver detalhes <ChevronRight aria-hidden="true" />
                   </Link>
                 </li>
               ))}
@@ -367,9 +411,9 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-home-collections-panel">
         <div className="section-head">
-          <h3>Coleções em destaque</h3>
+          <h3>Coleções recomendadas</h3>
           <span className="kpi">{pluralizePt(home.collections.length, "coleção", "coleções")}</span>
         </div>
         {home.collections.length > 0 ? (
@@ -384,28 +428,31 @@ export function HomePage() {
                 <span>livros reunidos</span>
               </div>
               <div className="stat-box">
-                <strong>{collectionInsights.largest?.title ?? "Ainda sem destaque"}</strong>
-                <span>maior coleção</span>
+                <strong>{collectionInsights.largestTitle}</strong>
+                <span>Coleção principal</span>
               </div>
             </div>
             <ul className="stacked-list">
-              {home.collections.slice(0, 3).map((collection) => {
+              {home.collections.slice(0, 3).map((collection, index) => {
                 const firstBook = collection.books?.[0];
+                const collectionTitle = getFriendlyCollectionTitle(collection, index);
+                const collectionDescription = collection.description?.trim();
+                const showDescription = collectionDescription && collectionDescription.toLowerCase() !== "x";
                 return (
-                  <li key={collection.id} className="stacked-list-item">
+                  <li key={collection.id} className="stacked-list-item home-collection-row">
                     <div className="book-list-row">
                       <BookCover
-                        title={collection.title}
+                        title={collectionTitle}
                         coverUrl={firstBook?.coverUrl}
                         isbn={firstBook?.isbn}
                         size="small"
                       />
                       <div>
-                        <strong>{collection.title}</strong>
+                        <strong>{collectionTitle}</strong>
                         <p className="section-sub">
-                          {pluralizePt(collection.books?.length ?? 0, "livro relacionado", "livros relacionados")}
+                          {pluralizePt(collection.books?.length ?? 0, "livro nesta coleção", "livros nesta coleção")}
                         </p>
-                        {collection.description && <p className="section-sub">{collection.description}</p>}
+                        {showDescription && <p className="section-sub">{collectionDescription}</p>}
                         {(collection.books?.length ?? 0) > 0 && (
                           <small>{collection.books?.slice(0, 2).map((book) => book.title).join(", ")}</small>
                         )}
@@ -421,19 +468,19 @@ export function HomePage() {
         )}
       </article>
 
-      <article className="card aura-panel">
+      <article className="card aura-panel aura-home-reviews-panel">
         <div className="section-head">
-          <h3>Avaliações recentes</h3>
-          <span className="kpi">{pluralizePt(home.recentReviews.length, "item", "itens")}</span>
+          <h3>Últimas avaliações</h3>
+          <span className="kpi">{pluralizePt(home.recentReviews.length, "avaliação", "avaliações")}</span>
         </div>
         {home.recentReviews.length > 0 ? (
           <ul className="stacked-list">
             {home.recentReviews.slice(0, 4).map((review, index) => (
               <li key={`${review.bookTitle}-${index}`} className="stacked-list-item home-review-row">
                 <BookCover title={review.bookTitle} coverUrl={review.bookCoverUrl} isbn={review.bookIsbn} size="small" />
-                <div>
+                <div className="home-review-content">
                   <strong>{review.bookTitle}</strong>
-                  <p className="aura-rating"><RatingStars value={review.rating} /> Nota {review.rating}</p>
+                  <p className="aura-rating"><RatingStars value={review.rating} /> ⭐ {review.rating.toLocaleString("pt-BR", { minimumFractionDigits: 1 })}</p>
                 </div>
               </li>
             ))}

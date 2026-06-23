@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { API_BASE_URL } from "@shared/api/http";
-
-type ApiStatus = "checking" | "online" | "offline";
 
 function healthUrl() {
   return `${API_BASE_URL.replace(/\/$/, "")}/actuator/health`;
 }
 
 export function ApiStatusBanner() {
-  const [status, setStatus] = useState<ApiStatus>("checking");
-
   useEffect(() => {
     let active = true;
     let consecutiveFailures = 0;
     let timeoutId: number | undefined;
+
+    const reportOffline = (detail: string) => {
+      console.warn(`[Library] API indisponível: ${detail}. Healthcheck: ${healthUrl()}`);
+    };
 
     const checkHealth = async () => {
       const controller = new AbortController();
@@ -25,19 +25,23 @@ export function ApiStatusBanner() {
           signal: controller.signal,
           cache: "no-store",
         });
+
         if (active) {
           if (response.ok) {
             consecutiveFailures = 0;
-            setStatus("online");
           } else {
             consecutiveFailures += 1;
-            setStatus(consecutiveFailures >= 2 ? "offline" : "checking");
+            if (consecutiveFailures >= 2) {
+              reportOffline(`resposta HTTP ${response.status}`);
+            }
           }
         }
       } catch {
         if (active) {
           consecutiveFailures += 1;
-          setStatus(consecutiveFailures >= 2 ? "offline" : "checking");
+          if (consecutiveFailures >= 2) {
+            reportOffline("sem resposta do backend");
+          }
         }
       } finally {
         window.clearTimeout(timeout);
@@ -58,13 +62,5 @@ export function ApiStatusBanner() {
     };
   }, []);
 
-  if (status !== "offline") {
-    return null;
-  }
-
-  return (
-    <div className="api-status-banner" role="status" aria-live="polite">
-      Não foi possível confirmar a conexão com a API. Verifique se o backend está ativo e tente novamente.
-    </div>
-  );
+  return null;
 }

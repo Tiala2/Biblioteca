@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
-import { BookOpen, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, UserRound } from "lucide-react";
 import { useAuth } from "@features/auth/context/AuthContext";
 import { extractApiErrorMessage } from "@shared/api/errors";
 import { useToast } from "@shared/ui/toast/ToastContext";
@@ -16,6 +16,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -68,37 +69,59 @@ export function LoginPage() {
       <section className="login-shell">
         <form className="login-form ds-glass-card" onSubmit={onSubmit}>
           <div className="login-logo">
-            <BookOpen size={28} strokeWidth={2.2} />
-            <span>Library</span>
+            <img src="/assets/brand/library-journey-icon.png" alt="" aria-hidden="true" />
+            <span className="login-brand-text">
+              <strong>Library</strong>
+            </span>
           </div>
-          <p className="login-subtitle">Biblioteca Pública Digital</p>
+          <h1 className="login-title">Cada livro pode mudar uma parte da sua história.</h1>
+          <p className="login-subtitle">
+            <span>Vamos começar?</span>
+          </p>
 
-          <label htmlFor="login-email">Email</label>
+          <label className="sr-only" htmlFor="login-email">Email</label>
           <div className="login-input-wrap ds-input-wrap">
-            <span className="login-input-icon ds-input-icon" aria-hidden="true"><Mail size={18} /></span>
+            <span className="login-input-icon ds-input-icon" aria-hidden="true"><UserRound size={18} /></span>
             <input
               id="login-email"
               className="login-input ds-input"
               placeholder="Digite seu email"
+              type="email"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
 
-          <label htmlFor="login-password">Senha</label>
-          <div className="login-input-wrap ds-input-wrap">
+          <label className="sr-only" htmlFor="login-password">Senha</label>
+          <div className="login-input-wrap login-input-wrap--password ds-input-wrap">
             <span className="login-input-icon ds-input-icon" aria-hidden="true"><Lock size={18} /></span>
             <input
               id="login-password"
               className="login-input ds-input"
               placeholder="Digite sua senha"
-              type="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <button
+              type="button"
+              className="login-password-toggle"
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              onClick={() => setShowPassword((current) => !current)}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
+
+          <p className="login-forgot-row">
+            <Link className="login-link login-link-muted" to="/forgot-password">
+              Esqueceu sua senha?
+            </Link>
+          </p>
 
           {error && <p className="login-error">{error}</p>}
 
@@ -107,12 +130,7 @@ export function LoginPage() {
           </button>
 
           <p className="login-footnote">
-            <Link className="login-link login-link-muted" to="/forgot-password">
-              Esqueceu a senha?
-            </Link>
-          </p>
-          <p className="login-footnote">
-            Não tem conta? <Link className="login-link login-link-cta" to="/register">Criar conta</Link>
+            Não tem uma conta? <Link className="login-link login-link-cta" to="/register">Cadastre-se</Link>
           </p>
         </form>
       </section>

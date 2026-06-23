@@ -41,6 +41,7 @@ describe("BadgesPage", () => {
         data: {
           userSummary: { totalFinished: 3, totalPagesRead: 450 },
           readingProgress: { streakDays: 5 },
+          readings: [{ book: { id: "book-9" } }],
         },
       } as never);
 
@@ -60,6 +61,7 @@ describe("BadgesPage", () => {
     expect(screen.getByText("5 de 7 dias")).toBeInTheDocument();
     expect(screen.getByText("trilha completa")).toBeInTheDocument();
     expect(screen.getAllByText("Faltam 2 dias").length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: "Continuar lendo" })).toHaveAttribute("href", "/books/book-9/read");
     expect(screen.getByText("Concluída")).toBeInTheDocument();
   });
 });

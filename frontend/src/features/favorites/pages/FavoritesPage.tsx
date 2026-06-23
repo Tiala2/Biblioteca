@@ -26,6 +26,7 @@ export function FavoritesPage() {
   const headers = useAuthHeaders();
   const { showToast } = useToast();
   const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [deletingBookId, setDeletingBookId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -39,7 +40,7 @@ export function FavoritesPage() {
       setError("");
     } catch (error) {
       setFavorites([]);
-      setError(extractApiErrorMessage(error, "Não foi possível carregar favoritos."));
+      setError(extractApiErrorMessage(error, "Não foi possível carregar sua estante."));
     } finally {
       setLoading(false);
     }
@@ -60,6 +61,15 @@ export function FavoritesPage() {
 
     return { latest, gutenbergCount, localCount, openCount };
   }, [favorites]);
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredFavorites = useMemo(() => {
+    if (!normalizedSearch) return favorites;
+    return favorites.filter((item) =>
+      `${item.bookTitle} ${item.bookIsbn ?? ""} ${formatBookSource(item.source)} ${getFavoriteSourceDescription(item.source)}`
+        .toLowerCase()
+        .includes(normalizedSearch)
+    );
+  }, [favorites, normalizedSearch]);
 
   const removeFavorite = async (bookId: string) => {
     if (!headers) return;
@@ -67,44 +77,44 @@ export function FavoritesPage() {
     try {
       await api.delete(`/api/v1/users/me/favorites/${bookId}`, { headers });
       await loadFavorites();
-      showToast("Favorito removido com sucesso.", "success");
+      showToast("Livro removido da estante.", "success");
     } catch (error) {
-      showToast(extractApiErrorMessage(error, "Não foi possível remover o favorito."), "error");
+      showToast(extractApiErrorMessage(error, "Não foi possível remover o livro da estante."), "error");
     } finally {
       setDeletingBookId(null);
     }
   };
 
   return (
-    <section className="aura-page">
+    <section className="aura-page aura-favorites-page">
       <div className="card hero aura-hero aura-hero--favorites">
         <div>
           <p className="eyebrow aura-eyebrow">Estante afetiva</p>
-          <h2>Seus capítulos preferidos continuam aqui</h2>
+          <h2>Minha Estante</h2>
           <p>Retome os livros que marcaram sua jornada e mantenha perto o que ainda merece outra página.</p>
         </div>
         <div className="aura-hero__signal">
           <Heart aria-hidden="true" />
           <strong>{favorites.length}</strong>
-          <span>{favorites.length === 1 ? "favorito" : "favoritos"}</span>
+          <span>{favorites.length === 1 ? "livro salvo" : "livros salvos"}</span>
         </div>
       </div>
 
       {loading && (
         <StateCard
-          title="Favoritos em carregamento"
-          message="Estamos buscando sua biblioteca pessoal para você retomar a leitura."
+          title="Estante em carregamento"
+          message="Estamos buscando seus livros salvos para você retomar a leitura."
           variant="loading"
         />
       )}
-      {!loading && error && <StateCard title="Não foi possível carregar favoritos" message={error} variant="error" />}
+      {!loading && error && <StateCard title="Não foi possível carregar sua estante" message={error} variant="error" />}
 
       {!loading && favorites.length > 0 && (
-        <article className="card aura-panel aura-panel--wide">
+        <article className="card aura-panel aura-panel--wide favorite-library-panel">
           <div className="section-head">
             <div>
-              <h3><Library aria-hidden="true" /> Prontos para reabrir</h3>
-              <p className="section-sub">Escolha um favorito e volte direto para a experiência de leitura.</p>
+              <h3><Library aria-hidden="true" /> Livros salvos</h3>
+              <p className="section-sub">Escolha um livro salvo e volte direto para a experiência de leitura.</p>
             </div>
             <span className="kpi"><Sparkles aria-hidden="true" /> Biblioteca pessoal</span>
           </div>
@@ -112,12 +122,12 @@ export function FavoritesPage() {
             <div className="stat-box">
               <Heart aria-hidden="true" />
               <strong>{favorites.length}</strong>
-              <span>favoritos salvos</span>
+              <span>livros salvos</span>
             </div>
             <div className="stat-box">
               <Library aria-hidden="true" />
               <strong>{favoriteInsights.localCount}</strong>
-              <span>leitura no app</span>
+              <span>leitura integrada</span>
             </div>
             <div className="stat-box">
               <Sparkles aria-hidden="true" />
@@ -135,34 +145,50 @@ export function FavoritesPage() {
               Mais recente: <strong>{favoriteInsights.latest.bookTitle}</strong>
             </p>
           )}
+          <label className="field-stack favorite-search">
+            <span>Buscar na estante</span>
+            <input
+              aria-label="Buscar livros salvos por título, ISBN ou origem"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Buscar por título, ISBN ou origem"
+            />
+          </label>
         </article>
       )}
 
-      <div className="grid aura-book-grid">
-        {favorites.map((item) => (
+      <div className="grid aura-book-grid favorite-book-grid">
+        {filteredFavorites.map((item) => (
           <article key={item.bookId} className="card aura-book-card aura-favorite-card">
-            <BookCover title={item.bookTitle} coverUrl={item.coverUrl} isbn={item.bookIsbn} size="medium" />
-            <div className="book-card-badges">
-              <span className="import-badge">{formatBookSource(item.source)}</span>
-              <span className="favorite-badge"><BookMarked aria-hidden="true" /> Favorito</span>
+            <Link to={`/books/${item.bookId}`} className="book-cover-link" aria-label={`Abrir detalhes de ${item.bookTitle}`}>
+              <BookCover title={item.bookTitle} coverUrl={item.coverUrl} isbn={item.bookIsbn} size="medium" />
+            </Link>
+            <div className="book-card-content">
+              <div className="book-card-badges">
+                <span className="import-badge">{formatBookSource(item.source)}</span>
+              <span className="favorite-badge"><BookMarked aria-hidden="true" /> Na estante</span>
+              </div>
+              <h3>
+                <Link to={`/books/${item.bookId}`} className="text-link">
+                  {item.bookTitle}
+                </Link>
+              </h3>
+              <small>{getFavoriteSourceDescription(item.source)}</small>
+              <small>Salvo em {formatDateTimeBr(item.createdAt)}</small>
             </div>
-            <h3>{item.bookTitle}</h3>
-            <p>ISBN {item.bookIsbn}</p>
-            <small>{getFavoriteSourceDescription(item.source)}</small>
-            <small>Favoritado em {formatDateTimeBr(item.createdAt)}</small>
             <div className="card-actions">
-              <Link to={`/books/${item.bookId}`} className="btn-muted btn-link">
+              <Link to={`/books/${item.bookId}`} className="btn-muted btn-link" aria-label={`Abrir detalhes de ${item.bookTitle}`}>
                 <Eye aria-hidden="true" />
                 Ver detalhes
               </Link>
-              <Link to={`/books/${item.bookId}/read`} className="btn-link">
+              <Link to={`/books/${item.bookId}/read`} className="btn-link" aria-label={`Abrir ${item.bookTitle}`}>
                 <BookOpen aria-hidden="true" />
-                Ler agora
+                Abrir livro
               </Link>
               <button
                 type="button"
                 className="btn-muted btn-danger"
-                aria-label={`Remover ${item.bookTitle} dos favoritos`}
+                aria-label={`Remover ${item.bookTitle} da estante`}
                 onClick={() => removeFavorite(item.bookId)}
                 disabled={deletingBookId === item.bookId}
               >
@@ -174,13 +200,25 @@ export function FavoritesPage() {
         ))}
       </div>
 
+      {!loading && !error && favorites.length > 0 && filteredFavorites.length === 0 && (
+        <StateCard
+          title="Nenhum livro encontrado"
+          message="Revise a busca para encontrar outro livro salvo na sua estante."
+          action={
+            <button type="button" className="btn-muted" onClick={() => setSearch("")}>
+              Limpar busca
+            </button>
+          }
+        />
+      )}
+
       {!loading && !error && favorites.length === 0 && (
         <StateCard
-          title="Nenhum favorito salvo"
-          message="Explore o catálogo e marque os livros que você quer retomar com rapidez."
+          title="Nenhum livro salvo na estante"
+          message="Explore os livros e salve aqueles que você quer retomar com rapidez."
           action={
             <Link to="/books" className="btn-link">
-              Explorar catálogo
+              Explorar livros
             </Link>
           }
         />

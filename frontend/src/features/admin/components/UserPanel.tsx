@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 import { useMemo } from "react";
 import type { UserAdmin, UserForm } from "../types";
 import { formatAdminRole } from "../lib/labels";
+import { focusAdminPanelForm } from "../lib/focus";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type UserPanelProps = {
@@ -61,6 +62,10 @@ export function UserPanel({
 
     return { activeCount, adminCount, alertsCount, rankingCount };
   }, [users]);
+  const editUser = (user: UserAdmin) => {
+    onEdit(user);
+    focusAdminPanelForm("admin-users");
+  };
 
   return (
     <article id="admin-users" className="card admin-panel admin-panel--wide">
@@ -118,7 +123,7 @@ export function UserPanel({
           />
           Receber alertas
         </label>
-        <div className="card-actions">
+        <div className="card-actions admin-list-actions">
           <button type="submit" disabled={!form.id || busyKey === `user-save-${form.id}`}>
             {busyKey === `user-save-${form.id}` ? "Salvando..." : form.id ? "Salvar usuário" : "Selecione um usuário"}
           </button>
@@ -185,21 +190,19 @@ export function UserPanel({
           const isBusy = busyKey === `user-invalidate-${user.id}`;
           return (
             <li key={user.id} className="stacked-list-item">
-              <div>
+              <button type="button" className="admin-row-action" onClick={() => editUser(user)}>
                 <div className="admin-user-title-row">
                   <strong>{user.name}</strong>
                   <span className={user.role === "ADMIN" ? "import-badge" : "status-pill status-pill--muted"}>{formatAdminRole(user.role)}</span>
-                  <span className={user.active ? "import-badge" : "status-pill status-pill--muted"}>
-                    {user.active ? "Ativo" : "Invalidado"}
-                  </span>
+                  <span className={user.active ? "import-badge" : "status-pill status-pill--muted"}>{user.active ? "Ativo" : "Invalidado"}</span>
                 </div>
                 <p className="section-sub email-text">{user.email}</p>
                 <p className="section-sub">
                   Ranking {user.leaderboardOptIn ? "ativo" : "desligado"}. Alertas {user.alertsOptIn ? "ativos" : "desligados"}.
                 </p>
-              </div>
-              <div className="card-actions">
-                <button type="button" className="btn-muted" onClick={() => onEdit(user)}>
+              </button>
+              <div className="card-actions admin-list-actions admin-user-actions">
+                <button type="button" className="btn-muted" onClick={() => editUser(user)}>
                   Editar
                 </button>
                 <button

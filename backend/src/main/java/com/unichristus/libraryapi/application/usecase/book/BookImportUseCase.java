@@ -137,6 +137,7 @@ public class BookImportUseCase {
         int candidateLimit = resolveGutenbergCandidateLimit(targetImportCount);
         List<GutenbergClient.GutenbergBook> candidates = gutenbergClient.searchReadableBooks(
                 normalizeGutenbergQuery(request.query()),
+                request.resolvedLanguage(),
                 request.pages(),
                 candidateLimit);
 

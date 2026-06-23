@@ -38,7 +38,20 @@ vi.mock("@shared/api/http", () => {
 
 import { api } from "@shared/api/http";
 
-function mockAdminRequests() {
+const defaultBooks = [
+  {
+    id: "book-1",
+    title: "Spring em pratica",
+    author: "Equipe",
+    isbn: "123",
+    numberOfPages: 250,
+    publicationDate: "2024-01-01",
+    coverUrl: "https://example.com/capa.jpg",
+    categories: [{ id: "cat-1", name: "Backend" }],
+  },
+];
+
+function mockAdminRequests(books = defaultBooks) {
   vi.mocked(api.get)
     .mockResolvedValueOnce({
       data: {
@@ -58,18 +71,7 @@ function mockAdminRequests() {
     } as never)
     .mockResolvedValueOnce({
       data: {
-        content: [
-          {
-            id: "book-1",
-            title: "Spring em pratica",
-            author: "Equipe",
-            isbn: "123",
-            numberOfPages: 250,
-            publicationDate: "2024-01-01",
-            coverUrl: "https://example.com/capa.jpg",
-            categories: [{ id: "cat-1", name: "Backend" }],
-          },
-        ],
+        content: books,
       },
     } as never)
     .mockResolvedValueOnce({
@@ -178,7 +180,7 @@ describe("AdminPage", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByRole("heading", { name: "Painel admin" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Painel administrativo" })).toBeInTheDocument();
 
     await waitFor(() => expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0));
 
@@ -186,7 +188,7 @@ describe("AdminPage", () => {
     expect(screen.getByRole("heading", { name: "Gamificação e comunidade" })).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { name: "Gestão de usuários" }).length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "Usuários e permissões" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Alertas e rastreabilidade" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Central de Alertas" })).toBeInTheDocument();
     expect(screen.getByText("Admin Teste")).toBeInTheDocument();
     expect(screen.getByText("ativos na página")).toBeInTheDocument();
     expect(screen.getByText("admins na página")).toBeInTheDocument();
@@ -320,12 +322,90 @@ describe("AdminPage", () => {
 
     const isbnInput = screen.getByLabelText("ISBN do livro");
     await user.type(isbnInput, "978-0-13-449416-6");
-    await user.click(screen.getByRole("button", { name: "Buscar capa por ISBN" }));
+    await user.click(screen.getByRole("button", { name: "Buscar capa automaticamente" }));
 
     expect(screen.getByLabelText("URL da capa")).toHaveValue(
       "https://covers.openlibrary.org/b/isbn/9780134494166-L.jpg?default=false"
     );
   });
+
+  it("deve selecionar o livro criado para capa e arquivo de leitura", async () => {
+    const createdBook = {
+      id: "book-2",
+      title: "Livro Criado no Front",
+      author: "Tiala",
+      isbn: "9786580000001",
+      numberOfPages: 180,
+      publicationDate: "2026-05-28",
+      coverUrl: "https://example.com/livro-criado.jpg",
+      categories: [],
+    };
+    mockAdminRequests();
+    vi.mocked(api.get)
+      .mockResolvedValueOnce({
+        data: {
+          content: [createdBook, ...defaultBooks],
+          page: { size: 100, number: 0, totalElements: 2, totalPages: 1 },
+        },
+      } as never)
+      .mockResolvedValueOnce({
+        data: {
+          totalUsers: 12,
+          totalBooks: 31,
+          totalReviews: 18,
+          totalFavorites: 22,
+          totalCollections: 4,
+          totalTags: 8,
+        },
+      } as never);
+    vi.mocked(api.post)
+      .mockResolvedValueOnce({ data: createdBook } as never)
+      .mockResolvedValueOnce({ data: {} } as never);
+    const user = userEvent.setup();
+
+    render(
+      <MemoryRouter initialEntries={["/admin/catalog"]}>
+        <AdminPage visibleSections={["catalog"]} />
+      </MemoryRouter>
+    );
+
+    await screen.findByRole("heading", { name: "Acervo e descoberta" });
+    await user.type(screen.getByLabelText("Título do livro"), createdBook.title);
+    await user.type(screen.getByLabelText("Autor do livro"), createdBook.author);
+    await user.type(screen.getByLabelText("ISBN do livro"), createdBook.isbn);
+    await user.clear(screen.getByLabelText("Número de páginas"));
+    await user.type(screen.getByLabelText("Número de páginas"), String(createdBook.numberOfPages));
+    const pdf = new File(["conteudo"], "livro-criado.pdf", { type: "application/pdf" });
+    await user.upload(screen.getByLabelText("Arquivo de leitura do novo livro"), pdf);
+    await screen.findByText("livro-criado.pdf");
+    const createButton = screen.getByRole("button", { name: "Publicar livro" });
+    await waitFor(() => expect(createButton).toBeEnabled());
+    await user.click(createButton);
+
+    await waitFor(() => expect(vi.mocked(api.post)).toHaveBeenCalledWith(
+      "/api/admin/books",
+      {
+        title: createdBook.title,
+        author: createdBook.author,
+        isbn: createdBook.isbn,
+        numberOfPages: createdBook.numberOfPages,
+        publicationDate: "2020-01-01",
+        coverUrl: null,
+        categories: [],
+      },
+      { headers: { Authorization: "Bearer test-token" } }
+    ));
+
+    await waitFor(() => expect(vi.mocked(api.post)).toHaveBeenCalledWith(
+      "/api/admin/books/book-2/upload",
+      expect.any(FormData),
+      { headers: { Authorization: "Bearer test-token" } }
+    ));
+
+    await waitFor(() => expect(screen.getByLabelText("Buscar livro para enviar arquivo de leitura")).toHaveValue(createdBook.title));
+    expect(screen.getByLabelText("Buscar livro para atualizar capa")).toHaveValue(createdBook.title);
+    expect(screen.getByLabelText("Nova URL da capa")).toHaveValue(createdBook.coverUrl);
+  }, 10000);
 
   it("deve preencher atualizacao de capa pelo ISBN do livro selecionado", async () => {
     mockAdminRequests();

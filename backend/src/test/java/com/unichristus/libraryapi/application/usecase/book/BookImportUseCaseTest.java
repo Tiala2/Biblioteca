@@ -188,7 +188,7 @@ class BookImportUseCaseTest {
                 .categories(Set.of())
                 .build();
 
-        when(gutenbergClient.searchReadableBooks("fiction", 5, 3)).thenReturn(List.of(candidate));
+        when(gutenbergClient.searchReadableBooks("fiction", "en", 5, 3)).thenReturn(List.of(candidate));
         when(gutenbergClient.downloadPlainText(candidate.textUrl(), candidate.id())).thenReturn(text);
         when(bookService.upsertGutenbergBook(
                 eq("Pride and Prejudice"),
@@ -222,7 +222,7 @@ class BookImportUseCaseTest {
                 "https://www.gutenberg.org/cache/epub/9999/pg9999.txt"
         );
 
-        when(gutenbergClient.searchReadableBooks("fiction", 1, 3)).thenReturn(List.of(candidate));
+        when(gutenbergClient.searchReadableBooks("fiction", "en", 1, 3)).thenReturn(List.of(candidate));
         when(gutenbergClient.downloadPlainText(candidate.textUrl(), candidate.id())).thenReturn("word ".repeat(400));
 
         ExternalBooksImportResponse response = useCase.importFromGutenberg(request);
@@ -268,7 +268,7 @@ class BookImportUseCaseTest {
                 .categories(Set.of())
                 .build();
 
-        when(gutenbergClient.searchReadableBooks("fiction", 2, 3)).thenReturn(List.of(shortCandidate, validCandidate));
+        when(gutenbergClient.searchReadableBooks("fiction", "en", 2, 3)).thenReturn(List.of(shortCandidate, validCandidate));
         when(gutenbergClient.downloadPlainText(shortCandidate.textUrl(), shortCandidate.id())).thenReturn("word ".repeat(300));
         when(gutenbergClient.downloadPlainText(validCandidate.textUrl(), validCandidate.id())).thenReturn(validText);
         when(bookService.upsertGutenbergBook(
@@ -294,11 +294,11 @@ class BookImportUseCaseTest {
         BookImportUseCase useCase = new BookImportUseCase(openLibraryClient, gutenbergClient, textPdfRenderer, bookService, minioFileStorageService);
         ExternalBooksImportRequest request = new ExternalBooksImportRequest("subject:fiction", 2, 100, false, 1);
 
-        when(gutenbergClient.searchReadableBooks("fiction", 2, 3)).thenReturn(List.of());
+        when(gutenbergClient.searchReadableBooks("fiction", "en", 2, 3)).thenReturn(List.of());
 
         ExternalBooksImportResponse response = useCase.importFromGutenberg(request);
 
         assertThat(response.imported()).isZero();
-        verify(gutenbergClient).searchReadableBooks("fiction", 2, 3);
+        verify(gutenbergClient).searchReadableBooks("fiction", "en", 2, 3);
     }
 }

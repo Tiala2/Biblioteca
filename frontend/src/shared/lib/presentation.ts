@@ -15,10 +15,9 @@ export function formatBookSource(source?: BookSource) {
 }
 
 export function formatReadingMode(hasPdf?: boolean, source?: BookSource) {
-  if (hasPdf && source === "GUTENBERG") return "Leitura interna";
-  if (hasPdf) return "Leitura no app";
-  if (source === "OPEN") return "Leitura externa";
-  return "Progresso manual";
+  if (hasPdf) return "Leitura integrada";
+  if (source === "OPEN") return "Atualização manual";
+  return "Atualização manual";
 }
 
 export function formatReadingStatus(status?: string | null) {

@@ -27,6 +27,8 @@ const NARRATIVE_TEXT_REPLACEMENTS: Array<[RegExp, string]> = [
   [/\baliancas\b/g, "alianças"],
   [/\bTraicoes\b/g, "Traições"],
   [/\btraicoes\b/g, "traições"],
+  [/\btemporarias\b/g, "temporárias"],
+  [/\bTemporarias\b/g, "Temporárias"],
   [/\brelacoes\b/g, "relações"],
   [/\bRelacoes\b/g, "Relações"],
   [/\bequilibrio\b/g, "equilíbrio"],

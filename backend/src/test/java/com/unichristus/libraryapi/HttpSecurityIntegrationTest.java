@@ -15,9 +15,9 @@ class HttpSecurityIntegrationTest extends IntegrationTestSupport {
     void shouldExposeSecurityHeaders() throws Exception {
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Content-Security-Policy", "default-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"))
+                .andExpect(header().string("Content-Security-Policy", "default-src 'self'; frame-ancestors 'self' http://localhost:5173 http://127.0.0.1:5173 http://localhost:3000; object-src 'none'; base-uri 'self'; form-action 'self'"))
                 .andExpect(header().string("Referrer-Policy", "no-referrer"))
-                .andExpect(header().string("X-Frame-Options", "DENY"))
+                .andExpect(header().doesNotExist("X-Frame-Options"))
                 .andExpect(header().string("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()"))
                 .andExpect(header().exists("X-Trace-Id"));
     }

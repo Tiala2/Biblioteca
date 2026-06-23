@@ -1,6 +1,7 @@
-import type { NarrativeCharacter } from "../types";
-import { formatNarrativeRole, humanizeNarrativeText } from "../lib/readingPresentation";
+import { UsersRound } from "lucide-react";
 import { pluralizePt } from "@shared/lib/presentation";
+import { formatNarrativeRole, humanizeNarrativeText } from "../lib/readingPresentation";
+import type { NarrativeCharacter } from "../types";
 
 type CharactersPanelProps = {
   characters: NarrativeCharacter[];
@@ -10,7 +11,7 @@ export function CharactersPanel({ characters }: CharactersPanelProps) {
   return (
     <article className="card narrative-panel">
       <div className="section-head">
-        <h3>Quem é quem</h3>
+        <h3>Personagens deste trecho</h3>
         <span className="kpi">{pluralizePt(characters.length, "personagem", "personagens")}</span>
       </div>
       {characters.length ? (
@@ -27,11 +28,10 @@ export function CharactersPanel({ characters }: CharactersPanelProps) {
         </ul>
       ) : (
         <div className="panel-inline-state narrative-empty" role="status">
-          <p className="eyebrow">Dinâmica em preparação</p>
-          <h3>Personagens ainda não mapeados</h3>
-          <p className="section-sub">
-            Este livro ainda não tem elenco narrativo cadastrado para a página atual. O progresso continua funcionando normalmente.
-          </p>
+          <UsersRound aria-hidden="true" />
+          <p className="eyebrow">Elenco em preparo</p>
+          <h3>Nenhum personagem cadastrado para este trecho.</h3>
+          <p className="section-sub">Continue lendo normalmente; a curadoria aparece aqui quando estiver disponível.</p>
         </div>
       )}
     </article>

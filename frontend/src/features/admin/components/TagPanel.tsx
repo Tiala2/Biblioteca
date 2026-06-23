@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useState } from "react";
 import type { Tag, TagForm } from "../types";
+import { focusAdminPanelForm } from "../lib/focus";
 import { AdminEmptyState } from "./AdminEmptyState";
 
 type TagPanelProps = {
@@ -39,10 +40,14 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
   const totalPages = Math.max(1, Math.ceil(filteredTags.length / pageSize));
   const visibleTags = filteredTags.slice(page * pageSize, page * pageSize + pageSize);
   const saving = busyKey === "tag-create" || busyKey === `tag-save-${form.id}`;
+  const editTag = (tag: Tag) => {
+    onEdit(tag);
+    focusAdminPanelForm("admin-tags");
+  };
 
   return (
     <article id="admin-tags" className="card admin-panel">
-      <h3>{form.id ? "Editar tag" : "Nova tag"}</h3>
+      <h3>{form.id ? "Editar tag" : "Criar tag de descoberta"}</h3>
       <form className="admin-form" onSubmit={onSubmit}>
         <input
           aria-label="Nome da tag"
@@ -61,7 +66,7 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
         )}
       </form>
       <div className="section-head">
-        <h4>Lista de tags</h4>
+        <h4>Tags de descoberta</h4>
         <span className="kpi">{filteredTags.length}</span>
       </div>
       <div className="admin-taxonomy-summary">
@@ -85,17 +90,17 @@ export function TagPanel({ form, tags, busyKey, onSubmit, onFormChange, onEdit, 
           setSearch(event.target.value);
           setPage(0);
         }}
-        placeholder="Filtrar tags"
+        placeholder="Buscar tag"
       />
       <ul className="stacked-list">
         {visibleTags.map((tag) => (
           <li key={tag.id} className="stacked-list-item">
-            <div className="admin-taxonomy-title-row">
+            <button type="button" className="admin-row-action admin-taxonomy-title-row" onClick={() => editTag(tag)}>
               <strong>{tag.name}</strong>
               <span className="import-badge">{tag.name.length} caracteres</span>
-            </div>
-            <div className="card-actions">
-              <button type="button" className="btn-muted" onClick={() => onEdit(tag)}>
+            </button>
+            <div className="card-actions admin-list-actions">
+              <button type="button" className="btn-muted" onClick={() => editTag(tag)}>
                 Editar
               </button>
               <button type="button" className="btn-muted btn-danger" disabled={busyKey === `tag-delete-${tag.id}`} onClick={() => onDelete(tag.id)}>

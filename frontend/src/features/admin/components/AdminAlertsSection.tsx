@@ -21,8 +21,8 @@ type AdminAlertsSectionProps = {
 export function AdminAlertsSection(props: AdminAlertsSectionProps) {
   return (
     <AdminSection
-      eyebrow="Auditoria"
-      title="Alertas e rastreabilidade"
+      eyebrow="Histórico de ações"
+      title="Central de Alertas"
       description="Filtre entregas de alertas por texto, status e tipo sem depender de busca local limitada."
       icon={<BellRing aria-hidden="true" />}
     >
