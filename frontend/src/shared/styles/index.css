@@ -7710,3 +7710,415 @@ body[data-theme="night"] .content::after {
     justify-self: start;
   }
 }
+
+/* NP3 layout refinement branch: tighter hierarchy and safer responsive grids. */
+:root {
+  --refined-card-gap: 16px;
+  --refined-panel-pad: clamp(14px, 1.6vw, 20px);
+  --refined-radius: 18px;
+}
+
+body {
+  font-size: 14.5px;
+}
+
+h1,
+.hero h1 {
+  font-size: clamp(1.9rem, 3.6vw, 2.85rem);
+}
+
+h2,
+.hero h2 {
+  font-size: clamp(1.42rem, 2.35vw, 2.05rem);
+}
+
+h3,
+.section-head h3 {
+  font-size: clamp(1rem, 1.28vw, 1.22rem);
+}
+
+.section-sub,
+.card p,
+.aura-panel p,
+.nav-link,
+.btn-link,
+.btn-muted,
+button,
+input,
+select,
+textarea {
+  font-size: 0.92rem;
+}
+
+.aura-page,
+.aura-page.grid,
+.grid,
+.stats-grid {
+  gap: var(--refined-card-gap);
+}
+
+.card,
+.aura-panel,
+.hero,
+.stat-box {
+  padding: var(--refined-panel-pad);
+}
+
+.content {
+  padding-bottom: 5rem;
+}
+
+.content::after {
+  width: min(100%, 1040px);
+  height: 88px;
+  margin-top: 36px;
+  border-radius: 32px 32px 0 0;
+  border-color: color-mix(in srgb, var(--primary-b) 22%, transparent);
+  background:
+    radial-gradient(circle at 12% 30%, color-mix(in srgb, var(--primary-b) 16%, transparent), transparent 34%),
+    radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--primary-a) 13%, transparent), transparent 36%),
+    linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 88%, transparent), color-mix(in srgb, var(--page-bg) 74%, var(--primary-b) 8%));
+  box-shadow: 0 -18px 44px color-mix(in srgb, var(--primary-b) 10%, transparent);
+}
+
+body[data-theme="night"] .content::after {
+  border-color: rgba(45, 212, 255, 0.2);
+  background:
+    radial-gradient(circle at 16% 24%, rgba(45, 212, 255, 0.16), transparent 34%),
+    radial-gradient(circle at 72% 12%, rgba(139, 92, 246, 0.22), transparent 38%),
+    linear-gradient(135deg, rgba(11, 19, 43, 0.92), rgba(25, 20, 58, 0.82));
+  box-shadow: 0 -20px 48px rgba(45, 212, 255, 0.08);
+}
+
+.topbar-search {
+  min-width: 0;
+}
+
+.topbar-search svg {
+  left: 1.42rem;
+  width: 17px;
+  height: 17px;
+}
+
+.topbar-search input {
+  padding-left: 3.65rem;
+  padding-right: 1.25rem;
+  min-height: 46px;
+}
+
+.aura-filter-panel .filters-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.availability-toggle {
+  min-height: 46px;
+  justify-content: flex-start;
+  padding-inline: 16px;
+  border-radius: var(--refined-radius);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--card-bg) 86%, transparent), color-mix(in srgb, var(--primary-b) 7%, var(--card-bg)));
+}
+
+.availability-toggle span {
+  min-width: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.availability-toggle.active {
+  color: var(--text-main);
+}
+
+.aura-catalog-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.aura-catalog-grid .aura-book-card {
+  min-height: 320px;
+  padding: 14px;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.aura-catalog-grid .aura-book-card > .book-cover-link {
+  width: 116px;
+  max-width: 116px;
+}
+
+.aura-catalog-grid .aura-book-card .book-cover-link .book-cover--medium {
+  width: 116px;
+  height: 174px;
+}
+
+.aura-catalog-grid .aura-book-card h3 {
+  max-width: 100%;
+  font-size: 0.96rem;
+  line-height: 1.24;
+}
+
+.aura-catalog-grid .aura-book-card h3 .text-link {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.aura-catalog-grid .aura-book-card .card-actions {
+  width: 100%;
+  gap: 7px;
+}
+
+.aura-catalog-grid .aura-book-card .card-actions > * {
+  min-height: 38px;
+  border-radius: 999px;
+}
+
+.favorite-library-panel,
+.aura-favorite-card {
+  font-size: 0.92rem;
+}
+
+.aura-favorite-card h3,
+.aura-favorite-card h3 .btn-link {
+  font-size: 1rem;
+  line-height: 1.24;
+}
+
+.rating-picker {
+  gap: 4px;
+  padding: 0.22rem;
+  border-radius: 999px;
+}
+
+.rating-picker__star {
+  flex: 0 0 34px;
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+}
+
+.rating-picker__star svg {
+  width: 16px;
+  height: 16px;
+}
+
+.rating-picker__value {
+  min-width: 48px;
+  padding-inline: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.review-insights .stat-box,
+.aura-review-card,
+.review-book-preview,
+.review-book-row {
+  font-size: 0.92rem;
+}
+
+.aura-panel--goal-alerts .stacked-list {
+  gap: 12px;
+}
+
+.aura-panel--goal-alerts .stacked-list-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 14px;
+}
+
+.aura-panel--goal-alerts .goal-alert-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  line-height: 1.25;
+}
+
+.aura-panel--goal-alerts .goal-alert-title strong {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.aura-panel--goal-alerts .import-badge {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
+.aura-panel--goal-alerts .section-sub,
+.aura-panel--goal-alerts .text-break {
+  line-height: 1.42;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+}
+
+.badge-insights {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.aura-badge-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.aura-badge-progress-card {
+  min-height: 154px;
+  padding: 14px;
+}
+
+.aura-badge-progress-card h3 {
+  font-size: 1.02rem;
+}
+
+.aura-badge-progress-card p,
+.aura-badge-progress-card small,
+.aura-badge-progress-card .section-sub {
+  font-size: 0.86rem;
+}
+
+.aura-leaderboard-page > .aura-stats {
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.aura-leaderboard-page > .aura-stats .stat-box {
+  min-height: 108px;
+}
+
+.aura-leaderboard-page > .aura-stats .stat-box strong {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.leaderboard-empty-podium {
+  margin-top: 18px;
+}
+
+.aura-podium-grid {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.aura-podium-card {
+  min-height: 166px;
+  padding: 16px;
+}
+
+.aura-profile-page {
+  gap: 16px;
+  align-items: start;
+}
+
+.aura-profile-page .aura-panel {
+  min-width: 0;
+}
+
+.aura-profile-account-panel .profile-account-list {
+  gap: 10px;
+}
+
+.profile-account-row {
+  grid-template-columns: 28px minmax(88px, 0.32fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.profile-account-row > span:not(.favorite-badge):not(.import-badge),
+.profile-account-row .email-text {
+  justify-self: start;
+  text-align: left;
+}
+
+.profile-preference-row.profile-account-row {
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+}
+
+.aura-profile-actions-panel,
+.aura-profile-badges-panel {
+  align-self: start;
+}
+
+.aura-profile-actions-panel .quick-links-grid {
+  gap: 8px;
+}
+
+.aura-profile-actions-panel .quick-links-grid > * {
+  min-height: 40px;
+  font-size: 0.9rem;
+}
+
+.aura-profile-badges-panel .section-sub {
+  line-height: 1.45;
+}
+
+@media (min-width: 1025px) {
+  .aura-profile-performance-panel,
+  .aura-profile-actions-panel,
+  .aura-profile-badges-panel {
+    grid-column: span 4;
+  }
+
+  .aura-profile-account-panel,
+  .aura-profile-history-panel,
+  .aura-profile-reviews-panel {
+    grid-column: span 8;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 13.75px;
+  }
+
+  .content::after {
+    height: 54px;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .topbar-search svg {
+    left: 1.15rem;
+  }
+
+  .topbar-search input {
+    padding-left: 3.05rem;
+  }
+
+  .aura-filter-panel .filters-grid,
+  .aura-catalog-grid,
+  .aura-badge-grid,
+  .aura-podium-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aura-panel--goal-alerts .stacked-list-item {
+    grid-template-columns: 1fr;
+  }
+
+  .rating-picker {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-account-row,
+  .profile-preference-row.profile-account-row {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+
+  .profile-account-row > strong,
+  .profile-account-row > span,
+  .profile-preference-row.profile-account-row > div,
+  .profile-preference-row.profile-account-row > span {
+    grid-column: 2;
+  }
+}
