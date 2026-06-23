@@ -1,6 +1,6 @@
 -- DDL consolidado do banco PostgreSQL do projeto Library
 -- Referencia: migrations Liquibase em backend/src/main/resources/db/migrations
--- Data de consolidacao: 2026-06-08
+-- Data de consolidacao: 2026-06-23
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";

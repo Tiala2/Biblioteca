@@ -1,6 +1,6 @@
 # Documentacao Final - Library API
 
-Data de referencia: 2026-05-02
+Data de referencia: 2026-06-23
 
 ## 1. Escopo do projeto
 
@@ -71,14 +71,16 @@ Opcional (sem variaveis de ambiente):
 - Defina `LIBRARY_ADMIN_EMAIL` e `LIBRARY_ADMIN_PASSWORD` no `backend/.env`
 - Execute `./scripts/e2e-smoke.ps1`
 
-Resultados mais recentes desta rodada:
+Resultados mais recentes da rodada final:
 
-- Backend `./gradlew.bat test --no-daemon`: **BUILD SUCCESSFUL**
+- Backend `./gradlew.bat test --no-daemon`: **BUILD SUCCESSFUL** na rodada de prioridade alta
+- Backend `./gradlew.bat integrationTest --no-daemon`: **PASS** na rodada de prioridade alta
+- Frontend `npm run lint`: **PASS**
 - Frontend `npm run build`: **PASS**
-- Frontend `npm run test`: **57 passed**
-- Frontend `npm run test:e2e`: **13 passed** na ultima execucao completa
+- Frontend `npm run test -- --run`: **25 arquivos / 63 testes PASS**
+- Frontend `npm run test:e2e`: **23/23 cenarios PASS** em 2026-06-23
 - Smoke API (`scripts/e2e-smoke.ps1`): **PASS**
-- Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0** em 2026-06-05
+- Checklist de rotas (`scripts/route-checklist-exec.ps1`): **PASS=56 / FAIL=0**
 
 Cobertura de integracao inclui:
 
@@ -125,8 +127,7 @@ Cobertura de integracao inclui:
 - `docs/APRESENTACAO_COMPUTADOR_TIALA.md`
 - `docs/PLANO_RETA_FINAL.md`
 - `docs/ROTEIRO_APRESENTACAO.md`
-- `docs/VALIDACAO_FINAL_2026_05_24.md`
-- `docs/STATUS_ENTREGA_2026_05_24.md`
+- `docs/STATUS_ENTREGA_2026_06_23.md`
 - `docs/DDL_BANCO_DADOS.sql`
 - `docs/RESUMO_PARA_COLEGA.md`
 - `docs/GUIA_MERGE_MAIN.md`
@@ -162,5 +163,5 @@ Cobertura de integracao inclui:
 
 ## 9. Proximo passo tecnico recomendado
 
-- A base atual esta pronta para fechamento de entrega no escopo do template.
-- Antes de release formal, recomenda-se apenas revisao final do diff para commit.
+- A base atual esta pronta para entrega no escopo do template.
+- A `main` contem a versao validada da NP3; branches antigas devem ser tratadas apenas como historico.

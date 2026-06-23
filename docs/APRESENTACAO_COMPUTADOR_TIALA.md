@@ -4,7 +4,7 @@ Este guia assume que a demonstracao sera feita no computador principal do projet
 
 ## Antes de iniciar
 
-- Confirmar que esta na branch `feature/polimento-final-ui-textos`.
+- Confirmar que esta na branch `main`.
 - Confirmar que o Git esta limpo.
 - Confirmar que o banco usado e o Docker em `localhost:5437`.
 - Confirmar que o arquivo `backend/.env` local esta correto.
@@ -69,8 +69,9 @@ Resultado esperado:
 
 - Backend unit tests: `BUILD SUCCESSFUL`
 - Frontend lint: `PASS`
-- Frontend unit tests: `57 passed`
+- Frontend unit tests: `25 arquivos / 63 testes`
 - Frontend build: `PASS`
+- Frontend E2E final: `23/23` cenarios
 
 ## Fluxo de demonstracao
 
@@ -86,5 +87,5 @@ Seguir:
 - Se a porta `8080` estiver ocupada, usar `API_PORT=8081`.
 - Se recuperacao por email real falhar, explicar que o projeto tambem suporta Mailpit local.
 - Se algum dado sumir, restaurar backup do banco Docker.
-- Backup final validado nesta rodada: `backups/20260605-155841`.
+- Backup final validado nesta rodada: `backups/20260620-110534`.
 - Se a Open Library falhar, demonstrar livros locais e PDFs cadastrados.

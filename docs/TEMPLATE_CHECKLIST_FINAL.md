@@ -1,14 +1,15 @@
 # Checklist Final De Aderencia Ao Template
 
-Data de referencia: 2026-06-08
+Data de referencia: 2026-06-23
 
 Observacao adicional:
 
 - o backend tambem recebeu validacao operacional real em 2026-04-08 para `health`, `login` e `forgot-password`, registrada em `docs/BACKEND_FINAL_VALIDACAO.md`
 - a rodada de retomada em 2026-04-28 confirmou backend unitario, backend integracao, frontend unitario, build de producao, E2E completo e checklist de rotas
 - a rodada de 2026-05-02 confirmou frontend unitario, build de producao e checklist de rotas apos as melhorias pos-main
-- resultados atuais: backend `test` PASS, frontend `57 passed`, frontend build PASS, smoke autenticado PASS, rotas `56 PASS / 0 FAIL`
+- resultados atuais: backend `test` PASS, backend `integrationTest` PASS na rodada de prioridade alta, frontend lint PASS, frontend `25 arquivos / 63 testes` PASS, frontend build PASS, E2E autenticado `23/23` PASS, rotas `56 PASS / 0 FAIL`
 - rodada final de 2026-06-08 registrada em [STATUS_ENTREGA_2026_06_08.md](STATUS_ENTREGA_2026_06_08.md), com frontend completo, lint, build, backend test e validacao visual autenticada
+- rodada final de 2026-06-23 registrada em [STATUS_ENTREGA_2026_06_23.md](STATUS_ENTREGA_2026_06_23.md), com `main` validada e enviada ao GitHub
 
 ## Requisitos Funcionais
 

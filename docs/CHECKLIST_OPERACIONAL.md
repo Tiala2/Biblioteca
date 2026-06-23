@@ -1,6 +1,6 @@
 # Checklist Operacional
 
-Data de referencia: 2026-06-20
+Data de referencia: 2026-06-23
 
 ## 1) Subir ambiente
 
@@ -64,7 +64,7 @@ cd backend
 .\gradlew.bat test
 ```
 
-Validacao rapida usada na rodada final, sem depender de E2E autenticado:
+Validacao rapida usada na rodada final:
 
 ```powershell
 .\gradlew.bat test --no-daemon
@@ -74,6 +74,15 @@ npm.cmd run lint
 npm.cmd run test
 npm.cmd run build
 ```
+
+Validacao E2E completa executada em 2026-06-23:
+
+```powershell
+cd C:\workspace\library-api-projeto\frontend
+npm.cmd run test:e2e
+```
+
+Resultado final registrado: `23/23` cenarios E2E passaram com backend e banco reais nos fluxos criticos.
 
 Validacao completa antes da entrega, quando backend/front estiverem de pe e houver credenciais admin:
 
@@ -104,11 +113,11 @@ Opcao alternativa:
 
 ## 5) Evidencias minimas para validar
 
-- Status final registrado em `docs/STATUS_ENTREGA_2026_06_08.md`
+- Status final registrado em `docs/STATUS_ENTREGA_2026_06_23.md`
 - Roteiro de fala pronto em `docs/ROTEIRO_FALA_APRESENTACAO.md`
 - Backend `test` verde
 - Frontend `lint`, `test` e `build` verdes
-- Teste E2E/smoke autenticado executado quando houver backend, frontend e credenciais admin disponiveis
+- Teste E2E autenticado executado com `23/23` cenarios passando
 - Checklist de rotas com `56 PASS / 0 FAIL`
 - Health `UP`
 - Login JWT funcionando

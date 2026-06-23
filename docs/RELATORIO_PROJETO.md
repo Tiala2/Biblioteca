@@ -1,12 +1,12 @@
 # Relatorio Do Projeto - Library
 
-Data de referencia: 2026-05-02
+Data de referencia: 2026-06-23
 
 ## 1. Resumo Executivo
 
 O projeto `Library` e uma biblioteca digital com foco em leitura, engajamento e administracao de catalogo. A aplicacao foi organizada em backend e frontend separados, com autenticacao JWT, catalogo de livros, favoritos, progresso de leitura, metas, badges, ranking e painel administrativo.
 
-Nesta etapa final, o sistema foi validado com testes automatizados, smoke E2E, checklist de rotas e execucao real do frontend e do backend. Alem disso, o projeto recebeu uma rodada extra de melhorias sem custo para deixar o produto mais completo e a base mais facil de manter.
+Nesta etapa final, o sistema foi validado com testes automatizados, E2E autenticado, checklist de rotas e execucao real do frontend e do backend. Alem disso, o projeto recebeu uma rodada extra de melhorias de UI/UX, leitura interna, Docker/Linux, backup, DDL e documentacao final.
 
 Complementos finais de aderencia ao template:
 
@@ -182,8 +182,9 @@ Documento de apoio:
 ### Frontend
 
 - `npm run build`: PASS
-- `npm run test`: `57 passed`
-- `npm run test:e2e`: `13 passed` na ultima execucao completa
+- `npm run lint`: PASS
+- `npm run test -- --run`: `25` arquivos e `63` testes PASS
+- `npm run test:e2e`: `23/23` cenarios PASS na execucao final de 2026-06-23
 
 ### Fluxos E2E validados
 
@@ -198,6 +199,9 @@ Documento de apoio:
 - CRUD de livro no admin
 - invalidacao e reativacao de usuario pelo admin
 - subrotas administrativas especificas
+- auditoria visual real em telas de usuario e administrador
+- estados vazios reais
+- temas claro e escuro
 - reviews com criacao, edicao e remocao
 - badges e recuperacao de senha
 
