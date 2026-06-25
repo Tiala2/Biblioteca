@@ -8122,3 +8122,45 @@ body[data-theme="night"] .content::after {
     grid-column: 2;
   }
 }
+
+/* Delivery lock: only the day footer gets a clean white surface. */
+body[data-theme="day"] .content::after {
+  background: #ffffff !important;
+  border-color: rgba(37, 99, 235, 0.12) !important;
+  box-shadow: 0 -14px 32px rgba(37, 99, 235, 0.05) !important;
+}
+
+body[data-theme="night"] .content::after {
+  border-color: rgba(45, 212, 255, 0.2) !important;
+  background:
+    radial-gradient(circle at 16% 24%, rgba(45, 212, 255, 0.16), transparent 34%),
+    radial-gradient(circle at 72% 12%, rgba(139, 92, 246, 0.22), transparent 38%),
+    linear-gradient(135deg, rgba(8, 18, 42, 0.96), rgba(31, 24, 71, 0.88)) !important;
+  box-shadow: 0 -20px 48px rgba(45, 212, 255, 0.08) !important;
+}
+
+.topbar-search {
+  position: relative !important;
+}
+
+.topbar-search svg {
+  top: 50% !important;
+  left: 1.85rem !important;
+  width: 18px !important;
+  height: 18px !important;
+  transform: translateY(-50%) !important;
+}
+
+.topbar-search input {
+  padding-left: 4.35rem !important;
+}
+
+@media (max-width: 640px) {
+  .topbar-search svg {
+    left: 1.15rem !important;
+  }
+
+  .topbar-search input {
+    padding-left: 3.1rem !important;
+  }
+}
